@@ -5,13 +5,10 @@
 #
 class agent_upgrade::params {
   case $::osfamily {
-    'Debian': {
-      $package_name = 'agent_upgrade'
-      $service_name = 'agent_upgrade'
-    }
+    # TODO: Add Debian, Windows
     'RedHat', 'Amazon': {
-      $package_name = 'agent_upgrade'
-      $service_name = 'agent_upgrade'
+      $package_name = 'puppet-agent'
+      $service_names = ['puppet', 'mcollective']
     }
     default: {
       fail("${::operatingsystem} not supported")
