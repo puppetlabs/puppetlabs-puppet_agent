@@ -4,7 +4,7 @@ group :test do
   gem "rake"
   gem "puppet", :git => 'https://github.com/puppetlabs/puppet.git', :tag => '3.8.0'
   gem "rspec", '< 3.2.0'
-  gem "rspec-puppet", :git => 'https://github.com/rodjek/rspec-puppet.git'
+  gem "rspec-puppet"
   gem "puppetlabs_spec_helper"
   gem "metadata-json-lint"
   gem "rspec-puppet-facts"
