@@ -1,11 +1,13 @@
 require 'puppet'
-Facter.add('settings') do
+
+Facter.add('puppet_ssldir') do
   setcode do
-    result = {}
-    Puppet.settings.each { |k, v|
-      Puppet.info "#{k} = #{v.value}"
-      result[k.to_s] = v.value.to_s
-    }
-    result
+    Puppet.settings['ssldir']
+  end
+end
+
+Facter.add('puppet_config') do
+  setcode do
+    Puppet.settings['config']
   end
 end

@@ -26,10 +26,10 @@ class agent_upgrade (
     warning('Puppet 4+ already installed, nothing to do')
   }
   else {
-    class { '::agent_upgrade::prepare': } ~>
-    class { '::agent_upgrade::install': } ~>
+    class { '::agent_upgrade::prepare': } ->
+    class { '::agent_upgrade::install': } ->
     class { '::agent_upgrade::config': } ~>
-    class { '::agent_upgrade::service': } ~>
+    class { '::agent_upgrade::service': } ->
     Class['::agent_upgrade']
   }
 }

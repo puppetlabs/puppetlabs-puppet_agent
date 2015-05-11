@@ -15,7 +15,7 @@ class agent_upgrade::prepare {
 
   file { '/etc/puppetlabs/puppet/ssl':
     ensure  => directory,
-    source  => $::settings['ssldir'],
+    source  => $::puppet_ssldir,
     backup  => false,
     recurse => true,
   }
@@ -23,7 +23,7 @@ class agent_upgrade::prepare {
   $puppetconf = '/etc/puppetlabs/puppet/puppet.conf'
   file { $puppetconf:
     ensure => file,
-    source => $::settings['config'],
+    source => $::puppet_config,
   }
 
   # manage puppet.conf contents, using inifile module
