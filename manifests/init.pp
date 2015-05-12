@@ -29,7 +29,11 @@ class agent_upgrade (
     class { '::agent_upgrade::prepare': } ->
     class { '::agent_upgrade::install': } ->
     class { '::agent_upgrade::config': } ~>
-    class { '::agent_upgrade::service': } ->
-    Class['::agent_upgrade']
+    class { '::agent_upgrade::service': }
+
+    contain '::agent_upgrade::prepare'
+    contain '::agent_upgrade::install'
+    contain '::agent_upgrade::config'
+    contain '::agent_upgrade::service'
   }
 }
