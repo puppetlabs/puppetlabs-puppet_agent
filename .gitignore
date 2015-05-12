@@ -5,3 +5,5 @@ spec/fixtures
 .vagrant
 .bundle
 vendor
+log
+tmp
