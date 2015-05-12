@@ -23,11 +23,13 @@ describe 'agent_upgrade' do
 
                   it { is_expected.to compile.with_all_deps }
 
+                  it { is_expected.to contain_class('agent_upgrade') }
                   it { is_expected.to contain_class('agent_upgrade::params') }
                   it { is_expected.to contain_class('agent_upgrade::prepare') }
                   it { is_expected.to contain_class('agent_upgrade::install').that_comes_before('agent_upgrade::config') }
                   it { is_expected.to contain_class('agent_upgrade::config') }
                   it { is_expected.to contain_class('agent_upgrade::service').that_subscribes_to('agent_upgrade::config') }
+                  it { is_expected.to contain_class('agent_upgrade::puppetlabs_yum') }
 
                   if params[:service_names].nil?
                     it { is_expected.to contain_service('puppet') }
