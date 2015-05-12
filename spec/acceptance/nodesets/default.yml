@@ -1,10 +1,10 @@
 HOSTS:
-  ubuntu-server-1204-x64:
+  centos-7-x64:
     roles:
       - master
-    platform: ubuntu-1204-amd64
-    box: puppetlabs/ubuntu-12.04-64-nocm
-    box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-12.04-64-nocm
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.0-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
     hypervisor: vagrant
 
 CONFIG:
