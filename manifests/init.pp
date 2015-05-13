@@ -22,18 +22,14 @@ class agent_upgrade (
   if versioncmp("$::clientversion", '3.8.0' ) < 0 {
     fail('upgrading requires Puppet 3.8')
   }
-  elsif versioncmp("$::clientversion", '4.0.0') >= 0 {
-    warning('Puppet 4+ already installed, nothing to do')
-  }
-  else {
-    class { '::agent_upgrade::prepare': } ->
-    class { '::agent_upgrade::install': } ->
-    class { '::agent_upgrade::config': } ~>
-    class { '::agent_upgrade::service': }
 
-    contain '::agent_upgrade::prepare'
-    contain '::agent_upgrade::install'
-    contain '::agent_upgrade::config'
-    contain '::agent_upgrade::service'
-  }
+  class { '::agent_upgrade::prepare': } ->
+  class { '::agent_upgrade::install': } ->
+  class { '::agent_upgrade::config': } ~>
+  class { '::agent_upgrade::service': }
+
+  contain '::agent_upgrade::prepare'
+  contain '::agent_upgrade::install'
+  contain '::agent_upgrade::config'
+  contain '::agent_upgrade::service'
 }
