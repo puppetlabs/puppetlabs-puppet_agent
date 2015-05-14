@@ -98,4 +98,39 @@ describe 'agent_upgrade class' do
       it { is_expected.to be_running }
     end
   end
+
+  if master
+    context 'agent run' do
+      before(:all) {
+        setup_puppet true
+        pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"agent_upgrade\": }' }"
+        apply_manifest_on(master, pp, :catch_failures => true)
+      }
+      after (:all) {
+        teardown_puppet
+        pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
+        apply_manifest_on(master, pp, :catch_failures => true)
+      }
+
+      it 'should work idempotently with no errors' do
+        with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
+          on agents, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+        end
+      end
+
+      describe package('puppet-agent') do
+        it { is_expected.to be_installed }
+      end
+
+      describe service('puppet') do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
+
+      describe service('mcollective') do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
+    end
+  end
 end

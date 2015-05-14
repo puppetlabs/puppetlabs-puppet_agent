@@ -1,7 +1,7 @@
 HOSTS:
   fedora-20-x64:
     roles:
-      - master
+      - agent
     platform: el-7-x86_64
     box: chef/fedora-20
     box_url: https://vagrantcloud.com/chef/boxes/fedora-20
@@ -10,3 +10,4 @@ HOSTS:
 CONFIG:
   log_level: verbose
   type: foss
+  masterless: true
