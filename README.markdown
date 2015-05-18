@@ -30,7 +30,7 @@ Installs the Puppet Collection 1 repo (on systems that support repositories); mi
 
 ### Setup Requirements
 
-Must be running Puppet 3.8 with `stringify_facts` set to `false` and future parser enabled. Agents should be pointed at a master running `Puppet Server 2.1` or greater.
+Must be running Puppet 3.8 with `stringify_facts` set to `false`. Agents should already be pointed at a master running `Puppet Server 2.1` or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
 ### Beginning with agent_upgrade
 
