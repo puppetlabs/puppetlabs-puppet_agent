@@ -4,25 +4,81 @@ base_facts = {
   :osfamily               => 'RedHat',
   :puppet_ssldir          => '/dev/null/ssl',
   :puppet_config          => '/dev/null/puppet.conf',
-  :mcollective_configured => false,
+  :mco_server_config      => nil,
+  :mco_client_config      => nil,
 }
+
+MCO_CFG = {:server => '/etc/puppetlabs/mcollective/server.cfg', :client => '/etc/puppetlabs/mcollective/client.cfg'}
+MCO_LIBDIR = '/opt/puppetlabs/mcollective/plugins'
+MCO_PLUGIN_YAML = '/etc/puppetlabs/mcollective/facts.yaml'
+MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
 describe 'agent_upgrade::prepare' do
   context 'on RedHat' do
     let(:facts) { base_facts }
 
-    [true, false].each do |mcollective_configured|
-      context "with mcollective_configured = #{mcollective_configured}" do
-        let(:facts) { base_facts.merge({:mcollective_configured => mcollective_configured}) }
+    [
+      MCO_CFG,
+      {:server => '/etc/mcollective/server.cfg'},
+      {:client => '/etc/mcollective/client.cfg'}
+    ].each do |mco_config|
+      [
+        {'libdir' => 'libdir', 'plugin.yaml' => 'plugins'},
+        {'libdir' => "libdir:#{MCO_LIBDIR}", 'plugin.yaml' => "plugins:#{MCO_PLUGIN_YAML}"},
+        {'libdir' => nil, 'plugin.yaml' => nil},
+        nil
+      ].each do |mco_settings|
+        context "with mco_config = #{mco_config} and mco_settings = #{mco_settings}" do
+          let(:facts) {
+            base_facts.merge( {
+              :mco_server_config => mco_config[:server],
+              :mco_client_config => mco_config[:client],
+              :mco_server_settings => mco_settings,
+              :mco_client_settings => mco_settings,
+            })
+          }
 
-        if mcollective_configured
           it { is_expected.to contain_file('/etc/puppetlabs/mcollective').with_ensure('directory') }
-          it { is_expected.to contain_file('/etc/puppetlabs/mcollective/server.cfg').with({
-            'ensure' => 'file',
-            'source' => '/etc/mcollective/server.cfg',
-          }) }
-        else
-          it { is_expected.to_not contain_file('/etc/puppetlabs/mcollective') }
+
+          mco_config.each do |node, cfg|
+            if cfg
+              it { is_expected.to contain_file(MCO_CFG[node]).with({
+                'ensure' => 'file',
+                'source' => cfg,
+              }) }
+
+              if mco_settings && mco_settings['libdir'] && !mco_settings['libdir'].include?(MCO_LIBDIR)
+                it { is_expected.to contain_ini_setting("#{node}/libdir").with({
+                  'section' => '',
+                  'setting' => 'libdir',
+                  'path'    => MCO_CFG[node],
+                  'value'   => "#{mco_settings['libdir']}:#{MCO_LIBDIR}",
+                }).that_requires("File[#{MCO_CFG[node]}]") }
+              else
+                it { is_expected.to_not contain_ini_setting("#{node}/libdir") }
+              end
+
+              if mco_settings && mco_settings['plugin.yaml'] && !mco_settings['plugin.yaml'].include?(MCO_PLUGIN_YAML)
+                it { is_expected.to contain_ini_setting("#{node}/plugin.yaml").with({
+                  'section' => '',
+                  'setting' => 'plugin.yaml',
+                  'path'    => MCO_CFG[node],
+                  'value'   => "#{mco_settings['plugin.yaml']}:#{MCO_PLUGIN_YAML}",
+                }).that_requires("File[#{MCO_CFG[node]}]") }
+              else
+                it { is_expected.to_not contain_ini_setting("#{node}/plugin.yaml") }
+              end
+
+              it { is_expected.to contain_ini_setting("#{node}/logfile").with({
+                'section' => '',
+                'setting' => 'logfile',
+                'path'    => MCO_CFG[node],
+                'value'   => MCO_LOGFILE,
+              }).that_requires("File[#{MCO_CFG[node]}]") }
+            else
+              it { is_expected.to_not contain_file(MCO_CFG[node]) }
+            end
+          end
         end
       end
     end

@@ -105,6 +105,30 @@ describe 'agent_upgrade class' do
       it { is_expected.to be_enabled }
       it { is_expected.to be_running }
     end
+
+    it 'should have mcollective correctly configured' do
+        on default, '/opt/puppetlabs/bin/mco ping' do
+          assert_match(/^#{default}\s+time=/, stdout)
+        end
+    end
+
+    describe file('/etc/puppetlabs/mcollective/server.cfg') do
+      it { is_expected.to exist }
+      its(:content) {
+        is_expected.to include 'libdir = /usr/libexec/mcollective/plugins:/opt/puppetlabs/mcollective/plugins'
+        is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
+        is_expected.to include 'plugin.yaml = /etc/mcollective/facts.yaml:/etc/puppetlabs/mcollective/facts.yaml'
+      }
+    end
+
+    describe file('/etc/puppetlabs/mcollective/client.cfg') do
+      it { is_expected.to exist }
+      its(:content) {
+        is_expected.to include 'libdir = /usr/libexec/mcollective/plugins:/opt/puppetlabs/mcollective/plugins'
+        is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
+        is_expected.to_not match /plugin.yaml[ ]*=/
+      }
+    end
   end
 
   if master
