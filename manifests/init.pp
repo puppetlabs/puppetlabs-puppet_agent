@@ -18,18 +18,21 @@ class agent_upgrade (
   $service_names = $::agent_upgrade::params::service_names,
 ) inherits ::agent_upgrade::params {
 
-  # check puppet version: if < 3.8, fail; elif >= 4.0, warn and stop; else proceed
-  if versioncmp("$::clientversion", '3.8.0' ) < 0 {
+  if versioncmp("$::clientversion", '3.8.0') < 0 {
     fail('upgrading requires Puppet 3.8')
   }
+  elsif versioncmp("$::clientversion", '4.0.0') >= 0 {
+    info('agent_upgrade performs no actions on Puppet 4+')
+  }
+  else {
+    class { '::agent_upgrade::prepare': } ->
+    class { '::agent_upgrade::install': } ->
+    class { '::agent_upgrade::config': } ~>
+    class { '::agent_upgrade::service': }
 
-  class { '::agent_upgrade::prepare': } ->
-  class { '::agent_upgrade::install': } ->
-  class { '::agent_upgrade::config': } ~>
-  class { '::agent_upgrade::service': }
-
-  contain '::agent_upgrade::prepare'
-  contain '::agent_upgrade::install'
-  contain '::agent_upgrade::config'
-  contain '::agent_upgrade::service'
+    contain '::agent_upgrade::prepare'
+    contain '::agent_upgrade::install'
+    contain '::agent_upgrade::config'
+    contain '::agent_upgrade::service'
+  }
 }
