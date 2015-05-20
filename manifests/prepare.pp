@@ -40,7 +40,7 @@ class agent_upgrade::prepare {
      # Deprecated for global config
      'config_version', 'manifest', 'modulepath',
      # Settings that should be reset to defaults
-     'disable_warnings', 'vardir', 'rundir', 'libdir', 'confdir'].each |$setting| {
+     'disable_warnings', 'vardir', 'rundir', 'libdir', 'confdir', 'ssldir'].each |$setting| {
       ini_setting { "${section}/${setting}":
         ensure  => absent,
         section => $section,
