@@ -18,6 +18,7 @@ end
 
 # Project root
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
 
 unless ENV['BEAKER_provision'] == 'no'
   # Work-around for BKR-262
@@ -54,14 +55,41 @@ def parser_opts
   }
 end
 
-def setup_puppet_on(host, agent_run = false)
+def setup_puppet_on(host, opts = {})
+  opts = {:agent => false, :mcollective => false}.merge(opts)
 
   step "Setup puppet on #{host}"
   install_package host, 'puppet'
 
   configure_puppet_on(host, parser_opts)
 
-  if master and agent_run
+  if opts[:mcollective]
+    install_package host, 'mcollective'
+    install_package host, 'mcollective-client'
+    install_package host, 'activemq'
+
+    ['xml', 'truststore', 'keystore'].each do |ext|
+      scp_to host, "#{TEST_FILES}/activemq.#{ext}", "/etc/activemq/activemq.#{ext}"
+    end
+
+    on host, puppet('resource', 'service', 'activemq', 'ensure=running')
+
+    # sleep to give activemq time to start
+    sleep 10
+
+    ['server.cfg', 'client.cfg', 'ca_crt.pem', 'server.crt', 'server.key', 'client.crt', 'client.key'].each do |file|
+      scp_to host, "#{TEST_FILES}/#{file}", "/etc/mcollective/#{file}"
+    end
+
+    on host, 'mkdir /etc/mcollective/ssl-clients'
+    scp_to host, "#{TEST_FILES}/client.crt", '/etc/mcollective/ssl-clients/client.pem'
+    on host, 'mkdir -p /usr/libexec/mcollective/plugins'
+
+    on host, puppet('resource', 'service', 'mcollective', 'ensure=stopped')
+    on host, puppet('resource', 'service', 'mcollective', 'ensure=running')
+  end
+
+  if master and opts[:agent]
     hostname = on(master, 'facter hostname').stdout.strip
     fqdn = on(master, 'facter fqdn').stdout.strip
 
@@ -119,7 +147,10 @@ def teardown_puppet_on(host)
   pp = <<-EOS
 package { 'puppet-agent': ensure => absent }
 package { 'puppet': ensure => absent }
-file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
+package { 'mcollective': ensure => absent }
+package { 'mcollective-client': ensure => absent }
+package { 'activemq': ensure => absent }
+file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective', '/etc/activemq']: ensure => absent, force => true, backup => false }
 yumrepo { 'pc1_repo': ensure => absent }
   EOS
   on host, "/opt/puppetlabs/bin/puppet apply -e \"#{pp}\""

@@ -72,18 +72,17 @@ describe 'agent_upgrade class' do
   end
 
   context 'with mcollective configured' do
-    before(:all) { setup_puppet_on default }
+    before(:all) { setup_puppet_on default, :mcollective => true }
     after (:all) { teardown_puppet_on default }
+
+    it 'mco should be running' do
+      on default, 'mco ping' do
+        assert_match(/^#{default}\s+time=/, stdout)
+      end
+    end
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      file { '/etc/mcollective': ensure => directory }
-      file { '/etc/mcollective/server.cfg':
-        ensure  => file,
-        notify  => Class['agent_upgrade'],
-        content => '#{File.read(File.join(File.expand_path(File.dirname(__FILE__)), 'server.cfg'))}'
-      }
-
       class { 'agent_upgrade': }
       EOS
 
@@ -111,7 +110,7 @@ describe 'agent_upgrade class' do
   if master
     context 'agent run' do
       before(:all) {
-        setup_puppet_on default, true
+        setup_puppet_on default, :agent => true
         pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"agent_upgrade\": }' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
