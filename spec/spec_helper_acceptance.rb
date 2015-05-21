@@ -145,11 +145,7 @@ def teardown_puppet_on(host)
   # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
   pp = <<-EOS
-package { 'puppet-agent': ensure => absent }
-package { 'puppet': ensure => absent }
-package { 'mcollective': ensure => absent }
-package { 'mcollective-client': ensure => absent }
-package { 'activemq': ensure => absent }
+package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client', 'activemq']: ensure => purged }
 file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective', '/etc/activemq']: ensure => absent, force => true, backup => false }
 yumrepo { 'pc1_repo': ensure => absent }
   EOS
