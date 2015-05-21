@@ -3,8 +3,8 @@ require 'spec_helper_acceptance'
 describe 'agent_upgrade class' do
 
   context 'default parameters' do
-    before(:all) { setup_puppet }
-    after (:all) { teardown_puppet }
+    before(:all) { setup_puppet_on default }
+    after (:all) { teardown_puppet_on default }
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
@@ -33,8 +33,8 @@ describe 'agent_upgrade class' do
   end
 
   context 'no services enabled on install' do
-    before(:all) { setup_puppet }
-    after (:all) { teardown_puppet }
+    before(:all) { setup_puppet_on default }
+    after (:all) { teardown_puppet_on default }
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
@@ -63,8 +63,8 @@ describe 'agent_upgrade class' do
   end
 
   context 'with mcollective configured' do
-    before(:all) { setup_puppet }
-    after (:all) { teardown_puppet }
+    before(:all) { setup_puppet_on default }
+    after (:all) { teardown_puppet_on default }
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
@@ -102,19 +102,19 @@ describe 'agent_upgrade class' do
   if master
     context 'agent run' do
       before(:all) {
-        setup_puppet true
+        setup_puppet_on default, true
         pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"agent_upgrade\": }' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
       after (:all) {
-        teardown_puppet
+        teardown_puppet_on default
         pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
 
       it 'should work idempotently with no errors' do
         with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
-          on agents, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+          on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
         end
       end
 

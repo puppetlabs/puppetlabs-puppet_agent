@@ -2,6 +2,7 @@ HOSTS:
   centos-7-x64-master:
     roles:
       - master
+      - agent
     platform: el-7-x86_64
     box: puppetlabs/centos-7.0-64-nocm
     box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
