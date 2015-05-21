@@ -10,6 +10,8 @@ class agent_upgrade::prepare {
   }
 
   # Migrate old files; assumes user Puppet runs under won't change during upgrade
+  # We assume the current Puppet settings are authoritative; if anything exists
+  # in the destination but not the source, it'll be overwritten.
   file { $::agent_upgrade::params::puppetdirs:
     ensure => directory,
   }

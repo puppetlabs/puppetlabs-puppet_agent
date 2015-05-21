@@ -30,6 +30,15 @@ describe 'agent_upgrade class' do
       it { is_expected.to be_enabled }
       it { is_expected.to be_running }
     end
+
+    describe file('/etc/puppetlabs/puppet/puppet.conf') do
+      it { is_expected.to exist }
+      its(:content) {
+        is_expected.to match /cfacter[ ]*=[ ]*true/
+        is_expected.to_not match /stringify_facts[ ]*=[ ]*false/
+        is_expected.to_not match /parser[ ]*=[ ]*future/
+      }
+    end
   end
 
   context 'no services enabled on install' do

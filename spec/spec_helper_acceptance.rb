@@ -48,8 +48,9 @@ end
 def parser_opts
   # Configuration only needed on 3.x master
   {
-    :main => {:stringify_facts => false, :parser => 'future'},
-    :agent => {:ssldir => '$vardir/ssl'},
+    :main => {:stringify_facts => false, :parser => 'future', :color => 'ansi'},
+    :agent => {:stringify_facts => false, :cfacter => true, :ssldir => '$vardir/ssl'},
+    :master => {:stringify_facts => false, :cfacter => true},
   }
 end
 
