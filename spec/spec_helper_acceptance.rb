@@ -47,7 +47,10 @@ end
 
 def parser_opts
   # Configuration only needed on 3.x master
-  {:main => {:stringify_facts => false, :parser => 'future'}}
+  {
+    :main => {:stringify_facts => false, :parser => 'future'},
+    :agent => {:ssldir => '$vardir/ssl'},
+  }
 end
 
 def setup_puppet_on(host, agent_run = false)

@@ -89,6 +89,7 @@ describe 'agent_upgrade::prepare' do
        'smtphelo',
        'smtpport',
        'smtpserver',
+       'ssldir',
        'stringify_facts',
        'tagmap',
        'templatedir',
