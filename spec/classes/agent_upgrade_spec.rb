@@ -25,19 +25,25 @@ describe 'agent_upgrade' do
 
                   it { is_expected.to contain_class('agent_upgrade') }
                   it { is_expected.to contain_class('agent_upgrade::params') }
-                  it { is_expected.to contain_class('agent_upgrade::prepare') }
-                  it { is_expected.to contain_class('agent_upgrade::install').that_comes_before('agent_upgrade::config') }
-                  it { is_expected.to contain_class('agent_upgrade::config') }
-                  it { is_expected.to contain_class('agent_upgrade::service').that_subscribes_to('agent_upgrade::config') }
+                  if Puppet.version < "4.0.0"
+                    it { is_expected.to contain_class('agent_upgrade::prepare') }
+                    it { is_expected.to contain_class('agent_upgrade::install').that_comes_before('agent_upgrade::config') }
+                    it { is_expected.to contain_class('agent_upgrade::config') }
+                    it { is_expected.to contain_class('agent_upgrade::service').that_subscribes_to('agent_upgrade::config') }
 
-                  if params[:service_names].nil?
-                    it { is_expected.to contain_service('puppet') }
-                    it { is_expected.to contain_service('mcollective') }
+                    if params[:service_names].nil?
+                      it { is_expected.to contain_service('puppet') }
+                      it { is_expected.to contain_service('mcollective') }
+                    else
+                      it { is_expected.to_not contain_service('puppet') }
+                      it { is_expected.to_not contain_service('mcollective') }
+                    end
+                    it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
                   else
                     it { is_expected.to_not contain_service('puppet') }
                     it { is_expected.to_not contain_service('mcollective') }
+                    it { is_expected.to_not contain_package('puppet-agent') }
                   end
-                  it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
                 end
               end
             end
