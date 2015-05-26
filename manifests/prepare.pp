@@ -3,24 +3,25 @@
 # This class is called from agent_upgrade to prepare for the upgrade.
 #
 class agent_upgrade::prepare {
+  include agent_upgrade::params
 
   File {
     source_permissions => use,
   }
 
   # Migrate old files; assumes user Puppet runs under won't change during upgrade
-  file { ['/etc/puppetlabs', '/etc/puppetlabs/puppet']:
+  file { $::agent_upgrade::params::puppetdirs:
     ensure => directory,
   }
 
-  file { '/etc/puppetlabs/puppet/ssl':
+  file { $::agent_upgrade::params::ssldir:
     ensure  => directory,
     source  => $::puppet_ssldir,
     backup  => false,
     recurse => true,
   }
 
-  $puppetconf = '/etc/puppetlabs/puppet/puppet.conf'
+  $puppetconf = $::agent_upgrade::params::config
   file { $puppetconf:
     ensure => file,
     source => $::puppet_config,
@@ -53,15 +54,25 @@ class agent_upgrade::prepare {
 
   # TODO: manage server.cfg contents
   if $::mcollective_configured {
-    file { '/etc/puppetlabs/mcollective':
+    file { $::agent_upgrade::params::mcodirs:
       ensure => directory,
     }
-    file { '/etc/puppetlabs/mcollective/server.cfg':
+    file { $::agent_upgrade::params::mcoserver:
       ensure => file,
-      source => '/etc/mcollective/server.cfg',
+      source => $::agent_upgrade::params::oldmcoserver,
     }
   }
 
-  # Install PC1 yum repo; based off puppetlabs_yum
-  contain '::agent_upgrade::puppetlabs_yum'
+  # PLATFORM SPECIFIC CONFIGURATION
+  # Break out the platform-specific configuration into subclasses, dependent on
+  # the osfamily of the client being configured.
+
+  case $::osfamily {
+    'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse': {
+      contain downcase("::agent_upgrade::osfamily::${::osfamily}")
+    }
+    default: {
+      fail("agent_upgrade not supported on ${::osfamily}")
+    }
+  }
 }

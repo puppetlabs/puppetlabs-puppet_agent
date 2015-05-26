@@ -8,7 +8,7 @@ base_facts = {
 }
 
 describe 'agent_upgrade::prepare' do
-  context 'on Linux' do
+  context 'on RedHat' do
     let(:facts) { base_facts }
 
     [true, false].each do |mcollective_configured|
@@ -107,5 +107,7 @@ describe 'agent_upgrade::prepare' do
          it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
        end
     end
+
+    it { is_expected.to contain_class('agent_upgrade::osfamily::redhat') }
   end
 end

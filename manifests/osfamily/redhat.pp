@@ -1,11 +1,9 @@
-class agent_upgrade::puppetlabs_yum {
-
-  if $::osfamily == 'RedHat' {
-    if $::operatingsystem == 'Fedora' {
-      $urlbit = 'fedora/f$releasever'
-    } else {
-      $urlbit = 'el/$releasever'
-    }
+class agent_upgrade::osfamily::redhat {
+  if $::operatingsystem == 'Fedora' {
+    $urlbit = 'fedora/f$releasever'
+  }
+  else {
+    $urlbit = 'el/$releasever'
   }
 
   $keyname = 'RPM-GPG-KEY-puppetlabs'
@@ -23,8 +21,13 @@ class agent_upgrade::puppetlabs_yum {
     source => "puppet:///modules/agent_upgrade/${keyname}",
   }
 
-  agent_upgrade::rpm_gpg_key{ $keyname:
-    path    => $gpg_path,
+  # Given the path to a key, see if it is imported, if not, import it
+  exec {  "import-${keyname}":
+    path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command   => "rpm --import ${gpg_path}",
+    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${gpg_path}) | cut --characters=11-18 | tr [A-Z] [a-z]`",
+    require   => File[$gpg_path],
+    logoutput => 'on_failure',
   }
 
   yumrepo { 'pc1_repo':
@@ -35,3 +38,4 @@ class agent_upgrade::puppetlabs_yum {
     gpgkey   => "file://$gpg_path",
   }
 }
+
