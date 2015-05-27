@@ -10,6 +10,8 @@ class agent_upgrade::prepare {
   }
 
   # Migrate old files; assumes user Puppet runs under won't change during upgrade
+  # We assume the current Puppet settings are authoritative; if anything exists
+  # in the destination but not the source, it'll be overwritten.
   file { $::agent_upgrade::params::puppetdirs:
     ensure => directory,
   }
@@ -52,14 +54,103 @@ class agent_upgrade::prepare {
     }
   }
 
-  # TODO: manage server.cfg contents
-  if $::mcollective_configured {
-    file { $::agent_upgrade::params::mcodirs:
-      ensure => directory,
+  # manage client.cfg and server.cfg contents
+  file { $::agent_upgrade::params::mcodirs:
+    ensure => directory,
+  }
+  # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
+  if $::mco_server_config {
+    $mco_server = $::agent_upgrade::params::mco_server
+    file { $mco_server:
+      ensure  => file,
+      source  => $::mco_server_config,
     }
-    file { $::agent_upgrade::params::mcoserver:
-      ensure => file,
-      source => $::agent_upgrade::params::oldmcoserver,
+
+    if $::mco_server_settings {
+      $mco_server_libdir = $::mco_server_settings['libdir']
+      if $mco_server_libdir {
+        $mco_server_libdir_array = split($mco_server_libdir, $::agent_upgrade::params::path_separator)
+        # Only add the new path if it's not already in libdir
+        if [] == $mco_server_libdir_array.filter |$x| { $x == $::agent_upgrade::params::mco_libdir } {
+          ini_setting { 'server/libdir':
+            section => '',
+            setting => 'libdir',
+            path    => $mco_server,
+            value   => "${mco_server_libdir}:$::agent_upgrade::params::mco_libdir",
+            require => File[$mco_server],
+          }
+        }
+      }
+
+      $mco_server_plugins = $::mco_server_settings['plugin.yaml']
+      if $mco_server_plugins {
+        $mco_server_plugins_array = split($mco_server_plugins, $::agent_upgrade::params::path_separator)
+        # Only add the new path if it's not already in plugin.yaml
+        if [] == $mco_server_plugins_array.filter |$x| { $x == $::agent_upgrade::params::mco_plugins } {
+          ini_setting { 'server/plugin.yaml':
+            section => '',
+            setting => 'plugin.yaml',
+            path    => $mco_server,
+            value   => "${mco_server_plugins}:$::agent_upgrade::params::mco_plugins",
+            require => File[$mco_server],
+          }
+        }
+      }
+    }
+
+    ini_setting { 'server/logfile':
+      section => '',
+      setting => 'logfile',
+      path    => $mco_server,
+      value   => $::agent_upgrade::params::mco_log,
+      require => File[$mco_server],
+    }
+  }
+  if $::mco_client_config {
+    $mco_client = $::agent_upgrade::params::mco_client
+    file { $mco_client:
+      ensure  => file,
+      source  => $::mco_client_config,
+    }
+
+    if $::mco_client_settings {
+      $mco_client_libdir = $::mco_client_settings['libdir']
+      if $mco_client_libdir {
+        $mco_client_libdir_array = split($mco_client_libdir, $::agent_upgrade::params::path_separator)
+        # Only add the new path if it's not already in libdir
+        if [] == $mco_client_libdir_array.filter |$x| { $x == $::agent_upgrade::params::mco_libdir } {
+          ini_setting { 'client/libdir':
+            section => '',
+            setting => 'libdir',
+            path    => $mco_client,
+            value   => "${mco_client_libdir}:$::agent_upgrade::params::mco_libdir",
+            require => File[$mco_client],
+          }
+        }
+      }
+
+      $mco_client_plugins = $::mco_client_settings['plugin.yaml']
+      if $mco_client_plugins {
+        $mco_client_plugins_array = split($mco_client_plugins, $::agent_upgrade::params::path_separator)
+        # Only add the new path if it's not already in plugin.yaml
+        if [] == $mco_client_plugins_array.filter |$x| { $x == $::agent_upgrade::params::mco_plugins } {
+          ini_setting { 'client/plugin.yaml':
+            section => '',
+            setting => 'plugin.yaml',
+            path    => $mco_client,
+            value   => "${mco_client_plugins}:$::agent_upgrade::params::mco_plugins",
+            require => File[$mco_client],
+          }
+        }
+      }
+    }
+
+    ini_setting { 'client/logfile':
+      section => '',
+      setting => 'logfile',
+      path    => $mco_client,
+      value   => $::agent_upgrade::params::mco_log,
+      require => File[$mco_client],
     }
   }
 

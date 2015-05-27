@@ -11,25 +11,29 @@ class agent_upgrade::params {
       $service_names = ['puppet', 'mcollective']
 
       $confdir = '/etc/puppetlabs/puppet'
-      $mcodir = '/etc/puppetlabs/mcollective'
+      $mco_dir = '/etc/puppetlabs/mcollective'
 
-      # Can't be detected by puppet, so hard-code it here
-      $oldmcodir = '/etc/mcollective'
+      $mco_install = '/opt/puppetlabs/mcollective'
+      $logdir = '/var/log/puppetlabs'
 
       # A list of dirs that need to be created. Mainly done this way because
       # Windows requires more directories to exist for confdir.
       $puppetdirs = ['/etc/puppetlabs', $confdir]
-      $mcodirs = [$mcodir]
+      $mcodirs = [$mco_dir]
+
+      $path_separator = ':'
     }
     default: {
       fail("${::operatingsystem} not supported")
     }
   }
 
-  $ssldir  = "$confdir/ssl"
+  $ssldir = "$confdir/ssl"
   $config = "$confdir/puppet.conf"
-  $mcoserver = "$mcodir/server.cfg"
-  $mcoclient = "$mcodir/client.cfg"
-  $oldmcoserver = "$oldmcodir/server.cfg"
-  $oldmcoclient = "$oldmcodir/client.cfg"
+
+  $mco_server  = "$mco_dir/server.cfg"
+  $mco_client  = "$mco_dir/client.cfg"
+  $mco_libdir  = "$mco_install/plugins"
+  $mco_plugins = "$mco_dir/facts.yaml"
+  $mco_log     = "$logdir/mcollective.log"
 }

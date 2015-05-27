@@ -30,6 +30,15 @@ describe 'agent_upgrade class' do
       it { is_expected.to be_enabled }
       it { is_expected.to be_running }
     end
+
+    describe file('/etc/puppetlabs/puppet/puppet.conf') do
+      it { is_expected.to exist }
+      its(:content) {
+        is_expected.to match /cfacter[ ]*=[ ]*true/
+        is_expected.to_not match /stringify_facts[ ]*=[ ]*false/
+        is_expected.to_not match /parser[ ]*=[ ]*future/
+      }
+    end
   end
 
   context 'no services enabled on install' do
@@ -63,18 +72,17 @@ describe 'agent_upgrade class' do
   end
 
   context 'with mcollective configured' do
-    before(:all) { setup_puppet_on default }
+    before(:all) { setup_puppet_on default, :mcollective => true }
     after (:all) { teardown_puppet_on default }
+
+    it 'mco should be running' do
+      on default, 'mco ping' do
+        assert_match(/^#{default}\s+time=/, stdout)
+      end
+    end
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      file { '/etc/mcollective': ensure => directory }
-      file { '/etc/mcollective/server.cfg':
-        ensure  => file,
-        notify  => Class['agent_upgrade'],
-        content => '#{File.read(File.join(File.expand_path(File.dirname(__FILE__)), 'server.cfg'))}'
-      }
-
       class { 'agent_upgrade': }
       EOS
 
@@ -97,12 +105,36 @@ describe 'agent_upgrade class' do
       it { is_expected.to be_enabled }
       it { is_expected.to be_running }
     end
+
+    it 'should have mcollective correctly configured' do
+        on default, '/opt/puppetlabs/bin/mco ping' do
+          assert_match(/^#{default}\s+time=/, stdout)
+        end
+    end
+
+    describe file('/etc/puppetlabs/mcollective/server.cfg') do
+      it { is_expected.to exist }
+      its(:content) {
+        is_expected.to include 'libdir = /usr/libexec/mcollective/plugins:/opt/puppetlabs/mcollective/plugins'
+        is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
+        is_expected.to include 'plugin.yaml = /etc/mcollective/facts.yaml:/etc/puppetlabs/mcollective/facts.yaml'
+      }
+    end
+
+    describe file('/etc/puppetlabs/mcollective/client.cfg') do
+      it { is_expected.to exist }
+      its(:content) {
+        is_expected.to include 'libdir = /usr/libexec/mcollective/plugins:/opt/puppetlabs/mcollective/plugins'
+        is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
+        is_expected.to_not match /plugin.yaml[ ]*=/
+      }
+    end
   end
 
   if master
     context 'agent run' do
       before(:all) {
-        setup_puppet_on default, true
+        setup_puppet_on default, :agent => true
         pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"agent_upgrade\": }' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
