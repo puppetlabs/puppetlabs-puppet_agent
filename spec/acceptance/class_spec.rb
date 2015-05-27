@@ -77,7 +77,8 @@ describe 'agent_upgrade class' do
 
     it 'mco should be running' do
       on default, 'mco ping' do
-        assert_match(/^#{default}\s+time=/, stdout)
+        hostname = default.hostname.split('.', 2).first
+        assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
       end
     end
 
@@ -107,9 +108,10 @@ describe 'agent_upgrade class' do
     end
 
     it 'should have mcollective correctly configured' do
-        on default, '/opt/puppetlabs/bin/mco ping' do
-          assert_match(/^#{default}\s+time=/, stdout)
-        end
+      on default, '/opt/puppetlabs/bin/mco ping' do
+        hostname = default.hostname.split('.', 2).first
+        assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
+      end
     end
 
     describe file('/etc/puppetlabs/mcollective/server.cfg') do
