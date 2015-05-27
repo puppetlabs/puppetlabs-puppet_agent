@@ -69,7 +69,7 @@ class agent_upgrade::prepare {
     if $::mco_server_settings {
       $mco_server_libdir = $::mco_server_settings['libdir']
       if $mco_server_libdir {
-        $mco_server_libdir_array = split($mco_server_libdir, ':')
+        $mco_server_libdir_array = split($mco_server_libdir, $::agent_upgrade::params::path_separator)
         # Only add the new path if it's not already in libdir
         if [] == $mco_server_libdir_array.filter |$x| { $x == $::agent_upgrade::params::mco_libdir } {
           ini_setting { 'server/libdir':
@@ -84,7 +84,7 @@ class agent_upgrade::prepare {
 
       $mco_server_plugins = $::mco_server_settings['plugin.yaml']
       if $mco_server_plugins {
-        $mco_server_plugins_array = split($mco_server_plugins, ':')
+        $mco_server_plugins_array = split($mco_server_plugins, $::agent_upgrade::params::path_separator)
         # Only add the new path if it's not already in plugin.yaml
         if [] == $mco_server_plugins_array.filter |$x| { $x == $::agent_upgrade::params::mco_plugins } {
           ini_setting { 'server/plugin.yaml':
@@ -116,7 +116,7 @@ class agent_upgrade::prepare {
     if $::mco_client_settings {
       $mco_client_libdir = $::mco_client_settings['libdir']
       if $mco_client_libdir {
-        $mco_client_libdir_array = split($mco_client_libdir, ':')
+        $mco_client_libdir_array = split($mco_client_libdir, $::agent_upgrade::params::path_separator)
         # Only add the new path if it's not already in libdir
         if [] == $mco_client_libdir_array.filter |$x| { $x == $::agent_upgrade::params::mco_libdir } {
           ini_setting { 'client/libdir':
@@ -131,7 +131,7 @@ class agent_upgrade::prepare {
 
       $mco_client_plugins = $::mco_client_settings['plugin.yaml']
       if $mco_client_plugins {
-        $mco_client_plugins_array = split($mco_client_plugins, ':')
+        $mco_client_plugins_array = split($mco_client_plugins, $::agent_upgrade::params::path_separator)
         # Only add the new path if it's not already in plugin.yaml
         if [] == $mco_client_plugins_array.filter |$x| { $x == $::agent_upgrade::params::mco_plugins } {
           ini_setting { 'client/plugin.yaml':

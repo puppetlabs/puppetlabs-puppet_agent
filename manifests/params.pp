@@ -20,6 +20,8 @@ class agent_upgrade::params {
       # Windows requires more directories to exist for confdir.
       $puppetdirs = ['/etc/puppetlabs', $confdir]
       $mcodirs = [$mco_dir]
+
+      $path_separator = ':'
     }
     default: {
       fail("${::operatingsystem} not supported")
