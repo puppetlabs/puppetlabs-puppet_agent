@@ -1,9 +1,9 @@
-# == Class agent_upgrade::params
+# == Class puppet_agent::params
 #
-# This class is meant to be called from agent_upgrade.
+# This class is meant to be called from puppet_agent.
 # It sets variables according to platform.
 #
-class agent_upgrade::params {
+class puppet_agent::params {
   case $::osfamily {
     # TODO: Add Debian, Windows
     'RedHat', 'Amazon': {

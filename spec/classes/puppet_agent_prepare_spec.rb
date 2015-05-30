@@ -13,7 +13,7 @@ MCO_LIBDIR = '/opt/puppetlabs/mcollective/plugins'
 MCO_PLUGIN_YAML = '/etc/puppetlabs/mcollective/facts.yaml'
 MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
-describe 'agent_upgrade::prepare' do
+describe 'puppet_agent::prepare' do
   context 'on RedHat' do
     let(:facts) { base_facts }
 
@@ -164,6 +164,6 @@ describe 'agent_upgrade::prepare' do
        end
     end
 
-    it { is_expected.to contain_class('agent_upgrade::osfamily::redhat') }
+    it { is_expected.to contain_class('puppet_agent::osfamily::redhat') }
   end
 end

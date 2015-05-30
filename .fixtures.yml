@@ -3,4 +3,4 @@ fixtures:
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
     inifile: "https://github.com/puppetlabs/puppetlabs-inifile.git"
   symlinks:
-    agent_upgrade: "#{source_dir}"
+    puppet_agent: "#{source_dir}"

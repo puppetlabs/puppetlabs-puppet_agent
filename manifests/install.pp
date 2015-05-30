@@ -1,10 +1,10 @@
-# == Class agent_upgrade::install
+# == Class puppet_agent::install
 #
-# This class is called from agent_upgrade for install.
+# This class is called from puppet_agent for install.
 #
-class agent_upgrade::install {
+class puppet_agent::install {
 
-  package { $::agent_upgrade::package_name:
+  package { $::puppet_agent::package_name:
     ensure => present,
   }
 }

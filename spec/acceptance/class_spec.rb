@@ -1,6 +1,6 @@
 require 'spec_helper_acceptance'
 
-describe 'agent_upgrade class' do
+describe 'puppet_agent class' do
 
   context 'default parameters' do
     before(:all) { setup_puppet_on default }
@@ -8,7 +8,7 @@ describe 'agent_upgrade class' do
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'agent_upgrade': }
+      class { 'puppet_agent': }
       EOS
 
       # TODO: Run it twice and test for idempotency; requires ability to change
@@ -47,7 +47,7 @@ describe 'agent_upgrade class' do
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'agent_upgrade': service_names => [] }
+      class { 'puppet_agent': service_names => [] }
       EOS
 
       # TODO: Run it twice and test for idempotency; requires ability to change
@@ -84,7 +84,7 @@ describe 'agent_upgrade class' do
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'agent_upgrade': }
+      class { 'puppet_agent': }
       EOS
 
       # TODO: Run it twice and test for idempotency; requires ability to change
@@ -137,7 +137,7 @@ describe 'agent_upgrade class' do
     context 'agent run' do
       before(:all) {
         setup_puppet_on default, :agent => true
-        pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"agent_upgrade\": }' }"
+        pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
       after (:all) {

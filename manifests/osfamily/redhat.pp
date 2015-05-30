@@ -1,4 +1,4 @@
-class agent_upgrade::osfamily::redhat {
+class puppet_agent::osfamily::redhat {
   if $::operatingsystem == 'Fedora' {
     $urlbit = 'fedora/f$releasever'
   }
@@ -18,7 +18,7 @@ class agent_upgrade::osfamily::redhat {
     owner  => 0,
     group  => 0,
     mode   => '0644',
-    source => "puppet:///modules/agent_upgrade/${keyname}",
+    source => "puppet:///modules/puppet_agent/${keyname}",
   }
 
   # Given the path to a key, see if it is imported, if not, import it
