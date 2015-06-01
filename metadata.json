@@ -1,11 +1,11 @@
 {
-  "name": "puppetlabs-agent_upgrade",
+  "name": "puppetlabs-puppet_agent",
   "version": "0.1.0",
   "author": "puppetlabs",
   "summary": "Upgrades Puppet 3.8 to the All-In-One Puppet 4 Agent",
   "license": "Apache-2.0",
-  "source": "https://github.com/puppetlabs/puppetlabs-agent_upgrade",
-  "project_page": "https://github.com/puppetlabs/puppetlabs-agent_upgrade",
+  "source": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
+  "project_page": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "issues_url": "http://tickets.puppetlabs.com/browse/PUP",
   "dependencies": [
     {

@@ -40,7 +40,7 @@ unless ENV['BEAKER_provision'] == 'no'
     master['use-service'] = true
 
     step "Install module and dependencies"
-    puppet_module_install_on(master, :source => PROJ_ROOT, :module_name => 'agent_upgrade')
+    puppet_module_install_on(master, :source => PROJ_ROOT, :module_name => 'puppet_agent')
     on master, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
     on master, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
   end
@@ -134,7 +134,7 @@ def setup_puppet_on(host, opts = {})
     end
   else
     step "Install module and dependencies"
-    puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'agent_upgrade')
+    puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
     on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
     on host, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
   end

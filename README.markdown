@@ -2,10 +2,10 @@
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with agent_upgrade](#setup)
-    * [What agent_upgrade affects](#what-agent_upgrade-affects)
+3. [Setup - The basics of getting started with puppet_agent](#setup)
+    * [What puppet_agent affects](#what-puppet_agent-affects)
     * [Setup requirements](#setup-requirements)
-    * [Beginning with agent_upgrade](#beginning-with-agent_upgrade)
+    * [Beginning with puppet_agent](#beginning-with-puppet_agent)
 4. [Usage - Configuration options and additional functionality](#usage)
 5. [Limitations - OS compatibility, etc.](#limitations)
 6. [Development - Guide for contributing to the module](#development)
@@ -20,7 +20,7 @@ Installs the Puppet Collection 1 repo (on systems that support repositories); mi
 
 ## Setup
 
-### What agent_upgrade affects
+### What puppet_agent affects
 
 * Puppet, Facter, Hiera, and MCollective
 * Puppet's SSL directory and puppet.conf
@@ -32,9 +32,9 @@ Installs the Puppet Collection 1 repo (on systems that support repositories); mi
 
 Must be running Puppet 3.8 with `stringify_facts` set to `false`. Agents should already be pointed at a master running `Puppet Server 2.1` or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
-### Beginning with agent_upgrade
+### Beginning with puppet_agent
 
-Install the agent_upgrade module with `puppet module install puppetlabs-agent_upgrade`.
+Install the puppet_agent module with `puppet module install puppetlabs-puppet_agent`.
 
 ## Usage
 

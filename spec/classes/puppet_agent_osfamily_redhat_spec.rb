@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'agent_upgrade::osfamily::redhat' do
+describe 'puppet_agent::osfamily::redhat' do
   [['Fedora', 'fedora/f$releasever'], ['CentOS', 'el/$releasever']].each do |os, urlbit|
     context "with #{os} and #{urlbit}" do
       let(:facts) {{
@@ -28,7 +28,7 @@ describe 'agent_upgrade::osfamily::redhat' do
         'owner'  => '0',
         'group'  => '0',
         'mode'   => '0644',
-        'source' => 'puppet:///modules/agent_upgrade/RPM-GPG-KEY-puppetlabs',
+        'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppetlabs',
       }) }
 
       it { is_expected.to contain_yumrepo('pc1_repo').with({
