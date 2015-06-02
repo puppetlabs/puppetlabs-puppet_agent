@@ -7,16 +7,6 @@
   "source": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "project_page": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "issues_url": "http://tickets.puppetlabs.com/browse/PUP",
-  "dependencies": [
-    {
-      "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 1.0.0"
-    },
-    {
-      "name": "puppetlabs-inifile",
-      "version_requirement": ">= 1.2.0"
-    }
-  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -26,5 +16,9 @@
         "7"
       ]
     }
+  ],
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"},
+    {"name":"puppetlabs-inifile","version_requirement":">= 1.2.0"}
   ]
 }
