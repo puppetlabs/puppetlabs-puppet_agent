@@ -23,10 +23,26 @@
         "6",
         "7"
       ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04",
+        "14.10"
+      ]
     }
   ],
   "dependencies": [
     {"name":"puppetlabs-stdlib","version_requirement":">= 4.6.0"},
-    {"name":"puppetlabs-inifile","version_requirement":">= 1.2.0"}
+    {"name":"puppetlabs-inifile","version_requirement":">= 1.2.0"},
+    {"name":"puppetlabs-apt","version_requirement":">= 2.0.1"}
   ]
 }

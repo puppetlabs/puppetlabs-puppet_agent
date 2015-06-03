@@ -48,6 +48,7 @@ unless ENV['BEAKER_provision'] == 'no'
   puppet_module_install_on(master, :source => PROJ_ROOT, :module_name => 'puppet_agent')
   on master, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
   on master, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
+  on master, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
 
   # Install activemq on master
   install_package master, 'activemq'
@@ -153,6 +154,7 @@ def setup_puppet_on(host, opts = {})
     puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
     on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
     on host, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
+    on host, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
   end
 end
 
@@ -160,10 +162,21 @@ def teardown_puppet_on(host)
   step "Purge puppet from #{host}"
   # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
+  case host['platform']
+  when /debian|ubuntu/
+    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', { :acceptable_exit_codes => [0,1] }
+    clean_repo = "include apt\napt::source { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+  when /fedora|el|centos/
+    clean_repo = "yumrepo { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+  else
+    logger.notify("Not sure how to remove repos on #{host['platform']}")
+    clean_repo = ''
+  end
+
   pp = <<-EOS
-package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
+#{clean_repo}
 file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
-yumrepo { 'pc1_repo': ensure => absent }
+package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
   EOS
   on host, "/opt/puppetlabs/bin/puppet apply -e \"#{pp}\""
 end

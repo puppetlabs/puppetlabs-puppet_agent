@@ -2,5 +2,6 @@ fixtures:
   repositories:
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
     inifile: "https://github.com/puppetlabs/puppetlabs-inifile.git"
+    apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
   symlinks:
     puppet_agent: "#{source_dir}"

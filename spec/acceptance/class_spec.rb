@@ -61,12 +61,10 @@ describe 'puppet_agent class' do
     end
 
     describe service('puppet') do
-      it { is_expected.to_not be_enabled }
       it { is_expected.to_not be_running }
     end
 
     describe service('mcollective') do
-      it { is_expected.to_not be_enabled }
       it { is_expected.to_not be_running }
     end
   end
