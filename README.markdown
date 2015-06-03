@@ -42,7 +42,7 @@ Add the class to agents you wish to upgrade.
 
 ## Limitations
 
-Only supports RPM-based distros: Redhat and Centos 5/6/7, Fedora 20/21.
+Only supports RPM-based distros: Redhat and Centos 5/6/7.
 
 ## Development
 
