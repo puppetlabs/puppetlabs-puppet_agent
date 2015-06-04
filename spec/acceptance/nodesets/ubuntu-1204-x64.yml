@@ -1,7 +1,17 @@
 HOSTS:
-  ubuntu-1204-x64:
+  master:
+    roles:
+      - master
+      - agent
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.0-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+    hypervisor: vagrant
+
+  agent:
     roles:
       - agent
+      - default
     platform: ubuntu-1204-amd64
     box: puppetlabs/ubuntu-12.04-64-nocm
     box_url: https://vagrantcloud.com/puppetlabs/boxes/ubuntu-12.04-64-nocm
@@ -10,4 +20,3 @@ HOSTS:
 CONFIG:
   log_level: verbose
   type: foss
-  masterless: true

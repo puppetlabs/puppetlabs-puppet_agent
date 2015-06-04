@@ -71,9 +71,50 @@ describe 'puppet_agent class' do
     end
   end
 
+  context 'agent run' do
+    before(:all) {
+      setup_puppet_on default, :agent => true
+      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
+      apply_manifest_on(master, pp, :catch_failures => true)
+    }
+    after (:all) {
+      teardown_puppet_on default
+      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
+      apply_manifest_on(master, pp, :catch_failures => true)
+    }
+
+    it 'should work idempotently with no errors' do
+      with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
+        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+      end
+    end
+
+    describe package('puppet-agent') do
+      it { is_expected.to be_installed }
+    end
+
+    describe service('puppet') do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end
+
+    describe service('mcollective') do
+      it { is_expected.to be_enabled }
+      it { is_expected.to be_running }
+    end
+  end
+
   context 'with mcollective configured' do
-    before(:all) { setup_puppet_on default, :mcollective => true }
-    after (:all) { teardown_puppet_on default }
+    before(:all) {
+      setup_puppet_on default, :mcollective => true, :agent => true
+      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
+      apply_manifest_on(master, pp, :catch_failures => true)
+    }
+    after (:all) {
+      teardown_puppet_on default
+      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
+      apply_manifest_on(master, pp, :catch_failures => true)
+    }
 
     it 'mco should be running' do
       on default, 'mco ping' do
@@ -83,14 +124,9 @@ describe 'puppet_agent class' do
     end
 
     it 'should work idempotently with no errors' do
-      pp = <<-EOS
-      class { 'puppet_agent': }
-      EOS
-
-      # TODO: Run it twice and test for idempotency; requires ability to change
-      #       Beaker config to AIO mid-run.
-      apply_manifest(pp, :catch_failures => true)
-      #apply_manifest(pp, :catch_changes  => true)
+      with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
+        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+      end
     end
 
     describe package('puppet-agent') do
@@ -130,41 +166,6 @@ describe 'puppet_agent class' do
         is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
         is_expected.to_not match /plugin.yaml[ ]*=/
       }
-    end
-  end
-
-  if master
-    context 'agent run' do
-      before(:all) {
-        setup_puppet_on default, :agent => true
-        pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
-        apply_manifest_on(master, pp, :catch_failures => true)
-      }
-      after (:all) {
-        teardown_puppet_on default
-        pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
-        apply_manifest_on(master, pp, :catch_failures => true)
-      }
-
-      it 'should work idempotently with no errors' do
-        with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
-          on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
-        end
-      end
-
-      describe package('puppet-agent') do
-        it { is_expected.to be_installed }
-      end
-
-      describe service('puppet') do
-        it { is_expected.to be_enabled }
-        it { is_expected.to be_running }
-      end
-
-      describe service('mcollective') do
-        it { is_expected.to be_enabled }
-        it { is_expected.to be_running }
-      end
     end
   end
 end
