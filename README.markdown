@@ -9,8 +9,12 @@
     * [Setup requirements](#setup-requirements)
     * [Beginning with puppet_agent](#beginning-with-puppet_agent)
 4. [Usage - Configuration options and additional functionality](#usage)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+5. [Reference](#reference)
+    * [Public classes](#public-classes)
+    * [Private classes](#private-classes)
+    * [Parameters](#parameters)
+6. [Limitations - OS compatibility, etc.](#limitations)
+7. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
