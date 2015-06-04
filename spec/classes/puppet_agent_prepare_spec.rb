@@ -52,7 +52,7 @@ describe 'puppet_agent::prepare' do
                   'section' => '',
                   'setting' => 'libdir',
                   'path'    => MCO_CFG[node],
-                  'value'   => "#{mco_settings['libdir']}:#{MCO_LIBDIR}",
+                  'value'   => "#{MCO_LIBDIR}:#{mco_settings['libdir']}",
                 }).that_requires("File[#{MCO_CFG[node]}]") }
               else
                 it { is_expected.to_not contain_ini_setting("#{node}/libdir") }

@@ -70,13 +70,13 @@ class puppet_agent::prepare {
       $mco_server_libdir = $::mco_server_settings['libdir']
       if $mco_server_libdir {
         $mco_server_libdir_array = split($mco_server_libdir, $::puppet_agent::params::path_separator)
-        # Only add the new path if it's not already in libdir
+        # Only add the new path if it's not already in libdir; prepend so we prefer versions at the new location
         if [] == $mco_server_libdir_array.filter |$x| { $x == $::puppet_agent::params::mco_libdir } {
           ini_setting { 'server/libdir':
             section => '',
             setting => 'libdir',
             path    => $mco_server,
-            value   => "${mco_server_libdir}:$::puppet_agent::params::mco_libdir",
+            value   => "${::puppet_agent::params::mco_libdir}${::puppet_agent::params::path_separator}${mco_server_libdir}",
             require => File[$mco_server],
           }
         }
@@ -91,7 +91,7 @@ class puppet_agent::prepare {
             section => '',
             setting => 'plugin.yaml',
             path    => $mco_server,
-            value   => "${mco_server_plugins}:$::puppet_agent::params::mco_plugins",
+            value   => "${mco_server_plugins}${::puppet_agent::params::path_separator}${::puppet_agent::params::mco_plugins}",
             require => File[$mco_server],
           }
         }
@@ -117,13 +117,13 @@ class puppet_agent::prepare {
       $mco_client_libdir = $::mco_client_settings['libdir']
       if $mco_client_libdir {
         $mco_client_libdir_array = split($mco_client_libdir, $::puppet_agent::params::path_separator)
-        # Only add the new path if it's not already in libdir
+        # Only add the new path if it's not already in libdir; prepend so we prefer versions at the new location
         if [] == $mco_client_libdir_array.filter |$x| { $x == $::puppet_agent::params::mco_libdir } {
           ini_setting { 'client/libdir':
             section => '',
             setting => 'libdir',
             path    => $mco_client,
-            value   => "${mco_client_libdir}:$::puppet_agent::params::mco_libdir",
+            value   => "${::puppet_agent::params::mco_libdir}${::puppet_agent::params::path_separator}${mco_client_libdir}",
             require => File[$mco_client],
           }
         }
@@ -138,7 +138,7 @@ class puppet_agent::prepare {
             section => '',
             setting => 'plugin.yaml',
             path    => $mco_client,
-            value   => "${mco_client_plugins}:$::puppet_agent::params::mco_plugins",
+            value   => "${mco_client_plugins}${::puppet_agent::params::path_separator}${::puppet_agent::params::mco_plugins}",
             require => File[$mco_client],
           }
         }
