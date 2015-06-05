@@ -27,9 +27,6 @@ PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
 
 unless ENV['BEAKER_provision'] == 'no'
-  # Work-around for BKR-262
-  @logger = logger
-
   # Install repos on hosts
   hosts.each do |host|
     install_puppetlabs_release_repo(host)
