@@ -22,6 +22,13 @@ def activemq_host
   master
 end
 
+def install_modules_on(host)
+  puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
+  on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
+  on host, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
+  on host, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
+end
+
 # Project root
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
@@ -39,11 +46,7 @@ unless ENV['BEAKER_provision'] == 'no'
   install_package master, 'puppetserver'
   master['use-service'] = true
 
-  step "Install module and dependencies"
-  puppet_module_install_on(master, :source => PROJ_ROOT, :module_name => 'puppet_agent')
-  on master, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
-  on master, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
-  on master, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
+  install_modules_on master
 
   # Install activemq on master
   install_puppetlabs_release_repo master
@@ -82,6 +85,8 @@ def setup_puppet_on(host, opts = {})
 
   step "Setup puppet on #{host}"
   install_package host, 'puppet'
+  add_foss_defaults_on host
+  add_puppet_paths_on host
 
   configure_puppet_on(host, parser_opts)
 
@@ -108,17 +113,22 @@ def setup_puppet_on(host, opts = {})
   end
 
   if opts[:agent]
-    step "Clear SSL on all hosts"
+    step "Clear SSL on all hosts and disable firewalls"
     hosts.each do |host|
+      stop_firewall_on host
       on(host, "rm -rf '#{host.puppet['ssldir']}'")
     end
   else
-    step "Install module and dependencies"
-    puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
-    on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
-    on host, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
-    on host, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
+    install_modules_on host
   end
+end
+
+def configure_agent_on(host, agent_run = false)
+  remove_foss_defaults_on host
+  add_aio_defaults_on host
+  add_puppet_paths_on host
+
+  install_modules_on host unless agent_run
 end
 
 def teardown_puppet_on(host)
@@ -141,7 +151,8 @@ def teardown_puppet_on(host)
 file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
 package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
   EOS
-  on host, "/opt/puppetlabs/bin/puppet apply -e \"#{pp}\""
+  on host, puppet('apply', '-e', "\"#{pp}\"")
+  remove_aio_defaults_on host
 end
 
 RSpec.configure do |c|
