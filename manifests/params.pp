@@ -4,6 +4,12 @@
 # It sets variables according to platform.
 #
 class puppet_agent::params {
+
+  # Need to determine if we are going to use cgi and patterns will continue to match
+  # https://puppetlabs.com/misc/pe-files prior to setting, also package installs work
+  # some distros so it will not be needed
+  $_source = undef
+
   case $::osfamily {
     # TODO: Add Debian, Windows
     'RedHat', 'Amazon': {

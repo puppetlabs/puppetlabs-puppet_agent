@@ -14,9 +14,13 @@
 #   None will be started if the array is empty.
 #
 class puppet_agent (
-  $package_name = $::puppet_agent::params::package_name,
+  $arch          = $::architecture,
+  $package_name  = $::puppet_agent::params::package_name,
   $service_names = $::puppet_agent::params::service_names,
+  $source        = $::puppet_agent::params::_source,
 ) inherits ::puppet_agent::params {
+
+  validate_re($arch, ['^x86$','^x64$','^i386$','^amd64$','^x86_64$','^power$'])
 
   if versioncmp("$::clientversion", '3.8.0') < 0 {
     fail('upgrading requires Puppet 3.8')

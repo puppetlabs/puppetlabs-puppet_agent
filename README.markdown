@@ -65,6 +65,10 @@ include ::puppet_agent
 
 ####Class: puppet_agent
 
+#####`arch`
+
+The architecture version you wish to install, defaults to `$::architecture`.
+
 #####`package_name`
 
 The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only accepted value is `puppet-agent`.
@@ -72,6 +76,10 @@ The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only
 #####`service_name`
 
 An array of services to start, normally `puppet` and `mcollective`. If the array is empty, no services are started.
+
+#####`source`
+
+Alternate source you wish to download the latest version of Puppet from.
 
 ## Limitations
 
