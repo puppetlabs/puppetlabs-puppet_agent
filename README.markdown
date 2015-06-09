@@ -83,7 +83,7 @@ Alternate source you wish to download the latest version of Puppet from.
 
 ## Limitations
 
-Supports only RPM-based distros: Redhat and Centos 5/6/7.
+Supports DEB and RPM-based distros: Redhat and Centos 5/6/7, Ubuntu 12.04/14.04/14.10, and Debian 6/7.
 
 ##Development
 

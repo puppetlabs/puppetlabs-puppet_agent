@@ -11,8 +11,8 @@ class puppet_agent::params {
   $_source = undef
 
   case $::osfamily {
-    # TODO: Add Debian, Windows
-    'RedHat', 'Amazon': {
+    # TODO: Windows
+    'RedHat', 'Amazon', 'Debian': {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 

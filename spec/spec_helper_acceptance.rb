@@ -1,5 +1,6 @@
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
+require 'erb'
 
 def stop_firewall_on(host)
   case host['platform']
@@ -14,6 +15,11 @@ def stop_firewall_on(host)
   else
     logger.notify("Not sure how to clear firewall on #{host['platform']}")
   end
+end
+
+# Helper for setting the activemq host in erb templates.
+def activemq_host
+  master
 end
 
 # Project root
@@ -35,15 +41,30 @@ unless ENV['BEAKER_provision'] == 'no'
   end
 
   # Install puppet-server on master
-  if master
-    install_package master, 'puppet-server'
-    master['use-service'] = true
+  install_package master, 'puppet-server'
+  master['use-service'] = true
 
-    step "Install module and dependencies"
-    puppet_module_install_on(master, :source => PROJ_ROOT, :module_name => 'puppet_agent')
-    on master, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
-    on master, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
+  step "Install module and dependencies"
+  puppet_module_install_on(master, :source => PROJ_ROOT, :module_name => 'puppet_agent')
+  on master, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
+  on master, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
+  on master, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
+
+  # Install activemq on master
+  install_package master, 'activemq'
+
+  ['truststore', 'keystore'].each do |ext|
+    scp_to master, "#{TEST_FILES}/activemq.#{ext}", "/etc/activemq/activemq.#{ext}"
   end
+
+  erb = ERB.new(File.read("#{TEST_FILES}/activemq.xml.erb"))
+  create_remote_file master, '/etc/activemq/activemq.xml', erb.result(binding)
+
+  stop_firewall_on master
+  on master, puppet('resource', 'service', 'activemq', 'ensure=running')
+
+  # sleep to give activemq time to start
+  sleep 10
 end
 
 def parser_opts
@@ -66,19 +87,15 @@ def setup_puppet_on(host, opts = {})
   if opts[:mcollective]
     install_package host, 'mcollective'
     install_package host, 'mcollective-client'
-    install_package host, 'activemq'
+    stop_firewall_on host
 
-    ['xml', 'truststore', 'keystore'].each do |ext|
-      scp_to host, "#{TEST_FILES}/activemq.#{ext}", "/etc/activemq/activemq.#{ext}"
+    ['ca_crt.pem', 'server.crt', 'server.key', 'client.crt', 'client.key'].each do |file|
+      scp_to host, "#{TEST_FILES}/#{file}", "/etc/mcollective/#{file}"
     end
 
-    on host, puppet('resource', 'service', 'activemq', 'ensure=running')
-
-    # sleep to give activemq time to start
-    sleep 10
-
-    ['server.cfg', 'client.cfg', 'ca_crt.pem', 'server.crt', 'server.key', 'client.crt', 'client.key'].each do |file|
-      scp_to host, "#{TEST_FILES}/#{file}", "/etc/mcollective/#{file}"
+    ['client.cfg', 'server.cfg'].each do |file|
+      erb = ERB.new(File.read("#{TEST_FILES}/#{file}.erb"))
+      create_remote_file host, "/etc/mcollective/#{file}", erb.result(binding)
     end
 
     on host, 'mkdir /etc/mcollective/ssl-clients'
@@ -89,7 +106,7 @@ def setup_puppet_on(host, opts = {})
     on host, puppet('resource', 'service', 'mcollective', 'ensure=running')
   end
 
-  if master and opts[:agent]
+  if opts[:agent]
     hostname = on(master, 'facter hostname').stdout.strip
     fqdn = on(master, 'facter fqdn').stdout.strip
 
@@ -103,12 +120,12 @@ def setup_puppet_on(host, opts = {})
 
     step "Clear SSL on all hosts"
     hosts.each do |host|
-      stop_firewall_on host
       ssldir = on(host, puppet('agent --configprint ssldir')).stdout.chomp
       on(host, "rm -rf '#{ssldir}'")
     end
 
     step "Master: Start Puppet Master"
+    stop_firewall_on host
     master_opts = {
       :main => {
         :dns_alt_names => "puppet,#{hostname},#{fqdn}",
@@ -137,6 +154,7 @@ def setup_puppet_on(host, opts = {})
     puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
     on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
     on host, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
+    on host, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
   end
 end
 
@@ -144,10 +162,21 @@ def teardown_puppet_on(host)
   step "Purge puppet from #{host}"
   # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
+  case host['platform']
+  when /debian|ubuntu/
+    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', { :acceptable_exit_codes => [0,1] }
+    clean_repo = "include apt\napt::source { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+  when /fedora|el|centos/
+    clean_repo = "yumrepo { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+  else
+    logger.notify("Not sure how to remove repos on #{host['platform']}")
+    clean_repo = ''
+  end
+
   pp = <<-EOS
-package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client', 'activemq']: ensure => purged }
-file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective', '/etc/activemq']: ensure => absent, force => true, backup => false }
-yumrepo { 'pc1_repo': ensure => absent }
+#{clean_repo}
+file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
+package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
   EOS
   on host, "/opt/puppetlabs/bin/puppet apply -e \"#{pp}\""
 end
