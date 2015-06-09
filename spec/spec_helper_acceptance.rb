@@ -104,8 +104,7 @@ def setup_puppet_on(host, opts = {})
     step "Clear SSL on all hosts"
     hosts.each do |host|
       stop_firewall_on host
-      ssldir = on(host, puppet('agent --configprint ssldir')).stdout.chomp
-      on(host, "rm -rf '#{ssldir}'")
+      on(host, "rm -rf '#{host.puppet['ssldir']}'")
     end
 
     step "Master: Start Puppet Master"
