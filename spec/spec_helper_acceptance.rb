@@ -40,9 +40,6 @@ unless ENV['BEAKER_provision'] == 'no'
     end
     install_pe
   else
-    # Install release repo for puppet 3.x
-    install_puppetlabs_release_repo default
-
     # Install puppet-server on master
     options['is_puppetserver'] = true
     master['puppetservice'] = 'puppetserver'
@@ -104,9 +101,7 @@ def setup_puppet_on(host, opts = {})
   opts = {:agent => false, :mcollective => false}.merge(opts)
 
   step "Setup puppet on #{host}"
-  install_package host, 'puppet'
-  add_foss_defaults_on host
-  add_puppet_paths_on host
+  install_puppet_on host
 
   configure_puppet_on(host, parser_opts)
 
@@ -144,10 +139,7 @@ def setup_puppet_on(host, opts = {})
 end
 
 def configure_agent_on(host, agent_run = false)
-  remove_foss_defaults_on host
-  add_aio_defaults_on host
-  add_puppet_paths_on host
-
+  configure_defaults_on host, 'aio'
   install_modules_on host unless agent_run
 end
 
@@ -172,7 +164,7 @@ file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent,
 package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
   EOS
   on host, puppet('apply', '-e', "\"#{pp}\"")
-  remove_aio_defaults_on host
+  remove_defaults_on host
 end
 
 RSpec.configure do |c|
