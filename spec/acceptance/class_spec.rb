@@ -72,17 +72,17 @@ describe 'puppet_agent class' do
   context 'agent run' do
     before(:all) {
       setup_puppet_on default, :agent => true
-      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
     after (:all) {
       teardown_puppet_on default
-      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
 
     it 'should work idempotently with no errors' do
-      with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
+      with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
         on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
       end
     end
@@ -105,12 +105,12 @@ describe 'puppet_agent class' do
   context 'with mcollective configured' do
     before(:all) {
       setup_puppet_on default, :mcollective => true, :agent => true
-      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
     after (:all) {
       teardown_puppet_on default
-      pp = "file { '#{master.puppet['confdir']}/manifests/site.pp': ensure => absent }"
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
 
@@ -122,7 +122,7 @@ describe 'puppet_agent class' do
     end
 
     it 'should work idempotently with no errors' do
-      with_puppet_running_on(master, parser_opts, master.tmpdir('puppet')) do
+      with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
         on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
       end
     end

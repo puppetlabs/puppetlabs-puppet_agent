@@ -6,17 +6,22 @@ MCO_PLUGIN_YAML = '/etc/puppetlabs/mcollective/facts.yaml'
 MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
 describe 'puppet_agent::prepare' do
-  context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
-      context "on #{os}" do
-        let(:facts) do
-          facts.merge({
-            :puppet_ssldir => '/dev/null/ssl',
-            :puppet_config => '/dev/null/puppet.conf',
-            :mco_server_config => nil,
-            :mco_client_config => nil,
-          })
-        end
+  context 'supported operating system families' do
+    ['Debian', 'RedHat'].each do |osfamily|
+      facts = {
+        :operatingsystem => 'foo',
+        :architecture => 'bar',
+        :osfamily => osfamily,
+        :lsbdistid => osfamily,
+        :lsbdistcodename => 'baz',
+        :puppet_ssldir => '/dev/null/ssl',
+        :puppet_config => '/dev/null/puppet.conf',
+        :mco_server_config => nil,
+        :mco_client_config => nil,
+      }
+
+      context "on #{osfamily}" do
+        let(:facts) { facts }
 
         [
           MCO_CFG,
@@ -31,9 +36,7 @@ describe 'puppet_agent::prepare' do
           ].each do |mco_settings|
             context "with mco_config = #{mco_config} and mco_settings = #{mco_settings}" do
               let(:facts) {
-                facts.merge( {
-                  :puppet_ssldir => '/dev/null/ssl',
-                  :puppet_config => '/dev/null/puppet.conf',
+                facts.merge({
                   :mco_server_config => mco_config[:server],
                   :mco_client_config => mco_config[:client],
                   :mco_server_settings => mco_settings,
