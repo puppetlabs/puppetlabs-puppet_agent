@@ -11,10 +11,10 @@ describe 'puppet_agent class' do
       class { 'puppet_agent': }
       EOS
 
-      # TODO: Run it twice and test for idempotency; requires ability to change
-      #       Beaker config to AIO mid-run.
+      # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
-      #apply_manifest(pp, :catch_changes  => true)
+      configure_agent_on default
+      apply_manifest(pp, :catch_changes  => true)
     end
 
     describe package('puppet-agent') do
@@ -50,10 +50,10 @@ describe 'puppet_agent class' do
       class { 'puppet_agent': service_names => [] }
       EOS
 
-      # TODO: Run it twice and test for idempotency; requires ability to change
-      #       Beaker config to AIO mid-run.
+      # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
-      #apply_manifest(pp, :catch_changes  => true)
+      configure_agent_on default
+      apply_manifest(pp, :catch_changes  => true)
     end
 
     describe package('puppet-agent') do
@@ -83,7 +83,11 @@ describe 'puppet_agent class' do
 
     it 'should work idempotently with no errors' do
       with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
+        # Run it twice and test for idempotency
         on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+        configure_agent_on default, true
+        # We're after idempotency so allow exit code 0 only
+        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0] }
       end
     end
 
@@ -123,7 +127,11 @@ describe 'puppet_agent class' do
 
     it 'should work idempotently with no errors' do
       with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
+        # Run it twice and test for idempotency
         on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+        configure_agent_on default, true
+        # We're after idempotency so allow exit code 0 only
+        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0] }
       end
     end
 
@@ -142,7 +150,7 @@ describe 'puppet_agent class' do
     end
 
     it 'should have mcollective correctly configured' do
-      on default, '/opt/puppetlabs/bin/mco ping' do
+      on default, 'mco ping' do
         hostname = default.hostname.split('.', 2).first
         assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
       end
