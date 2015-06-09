@@ -6,8 +6,8 @@ MCO_PLUGIN_YAML = '/etc/puppetlabs/mcollective/facts.yaml'
 MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
 describe 'puppet_agent::prepare' do
-  context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
+  context 'supported operating system families' do
+    on_supported_os.to_a.uniq { |os, facts| facts[:osfamily] }.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
           facts.merge({
