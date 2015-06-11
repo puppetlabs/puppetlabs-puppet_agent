@@ -29,6 +29,10 @@ class puppet_agent::params {
 
       $path_separator = ':'
     }
+    'windows' : {
+       # Logic is to be handed by agent_upgrade provider for windows,
+       # core directories such as SSL and conf have not changed for windows
+    }
     default: {
       fail("${::operatingsystem} not supported")
     }

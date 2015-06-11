@@ -7,11 +7,16 @@
 #
 # === Parameters
 #
+# [arch]
+#   Which architecture version you would like to install, only used by windows,
+#   defaults to $::architecture
 # [package_name]
 #   The package to upgrade to, i.e. `puppet-agent`.
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
+# [source]
+#   Alternate download URL, currently only used by windows
 #
 class puppet_agent (
   $arch          = $::architecture,
@@ -29,14 +34,26 @@ class puppet_agent (
     info('puppet_agent performs no actions on Puppet 4+')
   }
   else {
-    class { '::puppet_agent::prepare': } ->
-    class { '::puppet_agent::install': } ->
-    class { '::puppet_agent::config': } ~>
-    class { '::puppet_agent::service': }
+    if $::architecture == 'x86' and $arch == 'x64' {
+      fail('64 bit agent can not be installed on 32 bit system')
+    }
+    if $::osfamily == 'windows' {
+      agent_upgrade { 'Windows Puppet Agent Upgrade':
+        arch    => $arch,
+        source  => $source,
+        version => 'latest',
+      }
+    }
+    else {
+      class { '::puppet_agent::prepare': } ->
+      class { '::puppet_agent::install': } ->
+      class { '::puppet_agent::config': } ~>
+      class { '::puppet_agent::service': }
 
-    contain '::puppet_agent::prepare'
-    contain '::puppet_agent::install'
-    contain '::puppet_agent::config'
-    contain '::puppet_agent::service'
+      contain '::puppet_agent::prepare'
+      contain '::puppet_agent::install'
+      contain '::puppet_agent::config'
+      contain '::puppet_agent::service'
+    }
   }
 }
