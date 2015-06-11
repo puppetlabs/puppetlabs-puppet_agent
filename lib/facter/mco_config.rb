@@ -16,13 +16,21 @@
       settings = nil
       config = Facter.fact("mco_#{node}_config".to_sym)
       if config and config.value
-        settings = Hash[File.readlines(config.value).select {|v|
+        settings = {}
+
+        File.readlines(config.value).select {|v|
           v.lstrip =~ /[^#].+=.+/
         }.map {|x|
           x.split('=', 2).map {|s| s.strip}
         }.select {|k, v|
           k == 'libdir' || k == 'plugin.yaml'
-        }]
+        }.each {|k, v|
+          if settings[k]
+            settings[k] += ':' + v
+          else
+            settings[k] = v
+          end
+        }
       end
       settings
     end
