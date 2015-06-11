@@ -11,7 +11,6 @@ class puppet_agent::params {
   $_source = undef
 
   case $::osfamily {
-    # TODO: Windows
     'RedHat', 'Amazon', 'Debian': {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
@@ -29,6 +28,7 @@ class puppet_agent::params {
 
       $path_separator = ':'
     }
+    'windows' : {    }
     default: {
       fail("${::operatingsystem} not supported")
     }
