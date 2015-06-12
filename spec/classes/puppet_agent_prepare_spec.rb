@@ -18,10 +18,52 @@ describe 'puppet_agent::prepare' do
         :puppet_config => '/dev/null/puppet.conf',
         :mco_server_config => nil,
         :mco_client_config => nil,
+        :puppet_sslpaths => {
+          'privatedir'    => {
+            'path'   => '/dev/null/ssl/private',
+            'path_exists' => true,
+          },
+          'privatekeydir' => {
+            'path'   => '/dev/null/ssl/private_keys',
+            'path_exists' => true,
+          },
+          'publickeydir'  => {
+            'path'   => '/dev/null/ssl/public_keys',
+            'path_exists' => true,
+          },
+          'certdir'       => {
+            'path'   => '/dev/null/ssl/certs',
+            'path_exists' => true,
+          },
+          'requestdir'    => {
+            'path'   => '/dev/null/ssl/certificate_requests',
+            'path_exists' => true,
+          },
+          'hostcrl'       => {
+            'path'   => '/dev/null/ssl/crl.pem',
+            'path_exists' => true,
+          },
+        },
       }
 
       context "on #{osfamily}" do
         let(:facts) { facts }
+
+        context "when SSL paths do not exist" do
+          let(:facts) {
+            facts.merge({ :puppet_sslpaths => {
+              'privatedir' => { 'path_exists' => false },
+              'privatekeydir' => { 'path_exists' => false },
+              'publickeydir' => { 'path_exists' => false },
+              'certdir' => { 'path_exists' => false },
+              'requestdir' => { 'path_exists' => false },
+              'hostcrl' => { 'path_exists' => false }
+            }})
+          }
+          ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys', 'crl.pem'].each do |path|
+            it { is_expected.to_not contain_file("/etc/puppetlabs/puppet/ssl/#{path}") }
+          end
+        end
 
         [
           MCO_CFG,
@@ -102,7 +144,22 @@ describe 'puppet_agent::prepare' do
           'ensure'  => 'directory',
           'source'  => '/dev/null/ssl',
           'backup'  => 'false',
-          'recurse' => 'true',
+          'recurse' => 'false',
+        }) }
+
+        ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys'].each do |dir|
+          it { is_expected.to contain_file("/etc/puppetlabs/puppet/ssl/#{dir}").with({
+            'ensure'  => 'directory',
+            'source'  => "/dev/null/ssl/#{dir}",
+            'backup'  => 'false',
+            'recurse' => 'true',
+          }) }
+        end
+
+        it { is_expected.to contain_file('/etc/puppetlabs/puppet/ssl/crl.pem').with({
+          'ensure' => 'file',
+          'source' => '/dev/null/ssl/crl.pem',
+          'backup' => 'false',
         }) }
 
         ['agent', 'main', 'master'].each do |section|
