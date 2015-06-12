@@ -7,16 +7,17 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
       is_expected.to_not contain_class('::puppet_agent::windows::install')
     }
   elsif Puppet.version >= "3.8.0"
-    {'5.1' => {:expect_arch => 'x86', :common_appdata => 'C:\\Document and Settings\\All Users\\Application Data'},
-     '6.1' => {:expect_arch => 'x64', :common_appdata => 'C:\\ProgramData'}}.each do |kernelmajversion, values|
+    {'5.1' => {:expect_arch => 'x86', :appdata => 'C:/Document and Settings/All Users/Application Data/Puppetlabs'},
+     '6.1' => {:expect_arch => 'x64', :appdata => 'C:/ProgramData/Puppetlabs'}}.each do |kernelmajversion, values|
       context "Windows Kernelmajversion #{kernelmajversion}" do
         let(:facts) { {
           :architecture => 'x64',
-          :common_appdata => values[:common_appdata],
           :env_temp_variable => 'C:\tmp',
           :kernelmajversion => kernelmajversion,
           :osfamily => 'windows',
           :puppetversion => '3.8.0',
+          :puppet_confdir => "#{values[:appdata]}/puppet/etc",
+          :mco_confdir =>  "#{values[:appdata]}/mcollective/etc",
           :puppet_agent_pid => 42,
           :system32 => 'C:\windows\system32',
         } }

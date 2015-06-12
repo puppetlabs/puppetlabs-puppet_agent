@@ -2,7 +2,13 @@
   Facter.add("mco_#{node}_config") do
     setcode do
       config = nil
-      ["/etc/puppetlabs/mcollective/#{node}.cfg", "/etc/mcollective/#{node}.cfg"].each do |cfg|
+      if Facter.fact(:kernel).value =~ /windows/i
+        config_dir = File.expand_path(File.join(Puppet.settings['confdir'],'../../mcollective/etc'))
+        locations = ["#{config_dir}/#{node}.cfg"]
+      else
+        locations = ["/etc/puppetlabs/mcollective/#{node}.cfg", "/etc/mcollective/#{node}.cfg"]
+      end
+      locations.each do |cfg|
         if File.exists? cfg
           config = cfg
         end

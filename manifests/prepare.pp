@@ -4,9 +4,16 @@
 #
 class puppet_agent::prepare {
   include puppet_agent::params
-
-  File {
-    source_permissions => use,
+  $_windows_client = downcase($::osfamily) == 'windows'
+  if $_windows_client {
+    File{
+      source_permissions => ignore,
+    }
+  }
+  else  {
+    File {
+      source_permissions => use,
+    }
   }
 
   # Migrate old files; assumes user Puppet runs under won't change during upgrade
@@ -31,27 +38,27 @@ class puppet_agent::prepare {
     'publickeydir'  => 'public_keys',
     'requestdir'    => 'certificate_requests',
   }
+  if !$_windows_client { #Windows didn't change only nix systems
+    $sslpaths.each |String $setting, String $subdir| {
+      if $::puppet_sslpaths[$setting]['path_exists'] {
+        file { "${ssl_dir}/${subdir}":
+          ensure  => directory,
+          source  => $::puppet_sslpaths[$setting]['path'],
+          backup  => false,
+          recurse => true,
+        }
+      }
+    }
 
-  $sslpaths.each |String $setting, String $subdir| {
-    if $::puppet_sslpaths[$setting]['path_exists'] {
-      file { "${ssl_dir}/${subdir}":
-        ensure  => directory,
-        source  => $::puppet_sslpaths[$setting]['path'],
-        backup  => false,
-        recurse => true,
+  # The only one that's a file, not a directory.
+    if $::puppet_sslpaths['hostcrl']['path_exists'] {
+      file { "${ssl_dir}/crl.pem":
+        ensure  => file,
+        source  => $::puppet_sslpaths['hostcrl']['path'],
+        backup  => false
       }
     }
   }
-
-  # The only one that's a file, not a directory.
-  if $::puppet_sslpaths['hostcrl']['path_exists'] {
-    file { "${ssl_dir}/crl.pem":
-      ensure  => file,
-      source  => $::puppet_sslpaths['hostcrl']['path'],
-      backup  => false
-    }
-  }
-
   $puppetconf = $::puppet_agent::params::config
   file { $puppetconf:
     ensure => file,
@@ -68,7 +75,7 @@ class puppet_agent::prepare {
      'legacy_query_parameter_serialization', 'listen', 'localconfig', 'manifestdir', 'masterlog', 'parser',
      'preview_outputdir', 'puppetport', 'queue_source', 'queue_type', 'rails_loglevel', 'railslog',
      'report_serialization_format', 'reportfrom', 'rrddir', 'rrdinterval', 'sendmail', 'smtphelo', 'smtpport',
-     'smtpserver', 'stringify_facts', 'tagmap', 'templatedir', 'thin_storeconfigs', 'trusted_node_data', 'zlib', 
+     'smtpserver', 'stringify_facts', 'tagmap', 'templatedir', 'thin_storeconfigs', 'trusted_node_data', 'zlib',
      # Deprecated for global config
      'config_version', 'manifest', 'modulepath',
      # Settings that should be reset to defaults
@@ -88,7 +95,7 @@ class puppet_agent::prepare {
     ensure => directory,
   }
   # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
-  if $::mco_server_config {
+  if $::mco_server_config and !$_windows_client {
     $mco_server = $::puppet_agent::params::mco_server
     file { $mco_server:
       ensure  => file,
@@ -135,7 +142,7 @@ class puppet_agent::prepare {
       require => File[$mco_server],
     }
   }
-  if $::mco_client_config {
+  if $::mco_client_config and !$_windows_client {
     $mco_client = $::puppet_agent::params::mco_client
     file { $mco_client:
       ensure  => file,

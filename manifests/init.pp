@@ -33,6 +33,7 @@ class puppet_agent (
       fail('Unable to install x64 on a x86 system')
     }
     if $::osfamily == 'windows' {
+      class { '::puppet_agent::prepare': } ->
       class { '::puppet_agent::windows::install': }
     }
     else {
