@@ -159,7 +159,8 @@ describe 'puppet_agent class' do
     describe file('/etc/puppetlabs/mcollective/server.cfg') do
       it { is_expected.to exist }
       its(:content) {
-        is_expected.to include 'libdir = /opt/puppetlabs/mcollective/plugins:/usr/libexec/mcollective/plugins'
+        is_expected.to include 'libdir = /opt/puppetlabs/mcollective/plugins'
+        is_expected.to include 'libdir = /usr/libexec/mcollective/plugins'
         is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
         is_expected.to include 'plugin.yaml = /etc/mcollective/facts.yaml:/etc/puppetlabs/mcollective/facts.yaml'
       }
@@ -168,7 +169,7 @@ describe 'puppet_agent class' do
     describe file('/etc/puppetlabs/mcollective/client.cfg') do
       it { is_expected.to exist }
       its(:content) {
-        is_expected.to include 'libdir = /opt/puppetlabs/mcollective/plugins:/usr/libexec/mcollective/plugins'
+        is_expected.to include 'libdir = /opt/puppetlabs/mcollective/plugins:/usr/share/mcollective/plugins:/usr/libexec/mcollective'
         is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
         is_expected.to_not match /plugin.yaml[ ]*=/
       }
