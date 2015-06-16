@@ -4,16 +4,16 @@ require 'erb'
 
 def stop_firewall_on(host)
   case host['platform']
-  when /debian/
-    on host, 'iptables -F'
-  when /fedora|el-7/
-    on host, puppet('resource', 'service', 'firewalld', 'ensure=stopped')
-  when /el|centos/
-    on host, puppet('resource', 'service', 'iptables', 'ensure=stopped')
-  when /ubuntu/
-    on host, puppet('resource', 'service', 'ufw', 'ensure=stopped')
-  else
-    logger.notify("Not sure how to clear firewall on #{host['platform']}")
+    when /debian/
+      on host, 'iptables -F'
+    when /fedora|el-7/
+      on host, puppet('resource', 'service', 'firewalld', 'ensure=stopped')
+    when /el|centos/
+      on host, puppet('resource', 'service', 'iptables', 'ensure=stopped')
+    when /ubuntu/
+      on host, puppet('resource', 'service', 'ufw', 'ensure=stopped')
+    else
+      logger.notify("Not sure how to clear firewall on #{host['platform']}")
   end
 end
 
@@ -24,9 +24,9 @@ end
 
 def install_modules_on(host)
   puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
-  on host, puppet('module', 'install', 'puppetlabs-stdlib'), { :acceptable_exit_codes => [0,1] }
-  on host, puppet('module', 'install', 'puppetlabs-inifile'), { :acceptable_exit_codes => [0,1] }
-  on host, puppet('module', 'install', 'puppetlabs-apt'), { :acceptable_exit_codes => [0,1] }
+  on host, puppet('module', 'install', 'puppetlabs-stdlib'), {:acceptable_exit_codes => [0, 1]}
+  on host, puppet('module', 'install', 'puppetlabs-inifile'), {:acceptable_exit_codes => [0, 1]}
+  on host, puppet('module', 'install', 'puppetlabs-apt'), {:acceptable_exit_codes => [0, 1]}
 end
 
 # Project root
@@ -34,36 +34,56 @@ PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
 
 unless ENV['BEAKER_provision'] == 'no'
-  # Install release repo for puppet 3.x
-  install_puppetlabs_release_repo default
+  if default['platform'] =~ /windows/i
+    if default['platform'] =~ /2003/
+      default['install_32'] = true #Ensure we only attempt to install 32 bit on server 2003
+    end
+    install_pe
+  else
+    # Install release repo for puppet 3.x
+    install_puppetlabs_release_repo default
 
-  # Install puppet-server on master
-  options['is_puppetserver'] = true
-  master['puppetservice'] = 'puppetserver'
-  master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
-  master['type'] = 'aio'
-  install_puppet_agent_on master, {}
-  install_package master, 'puppetserver'
-  master['use-service'] = true
+    # Install puppet-server on master
+    options['is_puppetserver'] = true
+    master['puppetservice'] = 'puppetserver'
+    master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
+    master['type'] = 'aio'
+    install_puppet_agent_on master, {}
+    install_package master, 'puppetserver'
+    master['use-service'] = true
 
-  install_modules_on master
+    install_modules_on master
 
-  # Install activemq on master
-  install_puppetlabs_release_repo master
-  install_package master, 'activemq'
+    # Install activemq on master
+    install_puppetlabs_release_repo master
+    install_package master, 'activemq'
 
-  ['truststore', 'keystore'].each do |ext|
-    scp_to master, "#{TEST_FILES}/activemq.#{ext}", "/etc/activemq/activemq.#{ext}"
+    ['truststore', 'keystore'].each do |ext|
+      scp_to master, "#{TEST_FILES}/activemq.#{ext}", "/etc/activemq/activemq.#{ext}"
+    end
+
+    erb = ERB.new(File.read("#{TEST_FILES}/activemq.xml.erb"))
+    create_remote_file master, '/etc/activemq/activemq.xml', erb.result(binding)
+
+    stop_firewall_on master
+    on master, puppet('resource', 'service', 'activemq', 'ensure=running')
+
+    # sleep to give activemq time to start
+    sleep 10
+
   end
+end
 
-  erb = ERB.new(File.read("#{TEST_FILES}/activemq.xml.erb"))
-  create_remote_file master, '/etc/activemq/activemq.xml', erb.result(binding)
-
-  stop_firewall_on master
-  on master, puppet('resource', 'service', 'activemq', 'ensure=running')
-
-  # sleep to give activemq time to start
-  sleep 10
+unless ENV['MODULE_provision'] == 'no'
+  if default['platform'] =~ /windows/i
+    target = (on default, puppet('config print modulepath')).stdout.split(';')[0]
+    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+    {'stdlib' => '4.6.0', 'inifile' => '1.3.0', 'apt' => '2.0.1'}.each do |repo, version|
+      on default, "rm -rf \"#{target}/#{repo}\";git clone --branch #{version} --depth 1 https://github.com/puppetlabs/puppetlabs-#{repo} \"#{target}/#{repo}\""
+    end
+    # default['distmoduledir'] = '`cygpath -smF 35`/PuppetLabs/puppet/etc/modules' should be set
+    install_dev_puppet_module_on(default, {:proj_root => proj_root, :module_name => 'puppet_agent'})
+  end
 end
 
 def parser_opts
@@ -136,14 +156,14 @@ def teardown_puppet_on(host)
   # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
   case host['platform']
-  when /debian|ubuntu/
-    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', { :acceptable_exit_codes => [0,1] }
-    clean_repo = "include apt\napt::source { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
-  when /fedora|el|centos/
-    clean_repo = "yumrepo { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
-  else
-    logger.notify("Not sure how to remove repos on #{host['platform']}")
-    clean_repo = ''
+    when /debian|ubuntu/
+      on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', {:acceptable_exit_codes => [0, 1]}
+      clean_repo = "include apt\napt::source { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+    when /fedora|el|centos/
+      clean_repo = "yumrepo { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+    else
+      logger.notify("Not sure how to remove repos on #{host['platform']}")
+      clean_repo = ''
   end
 
   pp = <<-EOS
