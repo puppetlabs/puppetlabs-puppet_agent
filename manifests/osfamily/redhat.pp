@@ -1,4 +1,6 @@
 class puppet_agent::osfamily::redhat {
+  assert_private()
+
   if $::operatingsystem == 'Fedora' {
     $urlbit = 'fedora/f$releasever'
   }

@@ -1,4 +1,12 @@
+# == Class puppet_agent::prepare::mco_client_config
+#
+# Private class called from puppet_agent::prepare class
+#
+# MCO Client Config specific config class
+#
 class puppet_agent::prepare::mco_client_config {
+  assert_private()
+
   $mco_client = $::puppet_agent::params::mco_client
   file { $mco_client:
     ensure  => file,

@@ -1,4 +1,10 @@
+# == Class puppet_agent::prepare::puppet_config
+#
+# Private class called from puppet_agent::prepare class
+#
 class puppet_agent::prepare::puppet_config {
+  assert_private()
+
   $puppetconf = $::puppet_agent::params::config
   file { $puppetconf:
     ensure => file,

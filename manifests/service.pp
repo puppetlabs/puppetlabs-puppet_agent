@@ -4,6 +4,7 @@
 # It ensures services is running.
 #
 class puppet_agent::service {
+  assert_private()
 
   $::puppet_agent::service_names.each |$service| {
     service { $service:

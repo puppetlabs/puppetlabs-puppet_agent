@@ -1,4 +1,6 @@
 class puppet_agent::osfamily::debian {
+  assert_private()
+
   include apt
 
   apt::source { 'pc1_repo':

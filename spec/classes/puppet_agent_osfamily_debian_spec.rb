@@ -1,12 +1,39 @@
 require 'spec_helper'
 
-describe 'puppet_agent::osfamily::debian' do
+describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
   let(:facts) {{
     :lsbdistid => 'Debian',
     :osfamily => 'Debian',
     :lsbdistcodename => 'wheezy',
     :operatingsystem => 'Debian',
-    :architecture => 'foo',
+    :architecture => 'x64',
+    :puppet_ssldir   => '/dev/null/ssl',
+    :puppet_config   => '/dev/null/puppet.conf',
+    :puppet_sslpaths => {
+      'privatedir'    => {
+        'path'   => '/dev/null/ssl/private',
+        'path_exists' => true,
+      },
+      'privatekeydir' => {
+        'path'   => '/dev/null/ssl/private_keys',
+        'path_exists' => true,
+      },
+      'publickeydir'  => {
+        'path'   => '/dev/null/ssl/public_keys',
+        'path_exists' => true,
+      },
+      'certdir'       => {
+        'path'   => '/dev/null/ssl/certs',
+        'path_exists' => true,
+      },
+      'requestdir'    => {
+        'path'   => '/dev/null/ssl/certificate_requests',
+        'path_exists' => true,
+      },
+      'hostcrl'       => {
+        'path'   => '/dev/null/ssl/crl.pem',
+        'path_exists' => true,
+      },}
   }}
 
   it { is_expected.to contain_class('apt') }

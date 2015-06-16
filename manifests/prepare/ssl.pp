@@ -1,5 +1,12 @@
-
+# == Class puppet_agent::prepare::ssl
+#
+# Private class called from puppet_agent::prepare class
+#
+# All SSL reconfigure changes should be done within this class
+#
 class puppet_agent::prepare::ssl {
+  assert_private()
+
   $ssl_dir = $::puppet_agent::params::ssldir
   file { $ssl_dir:
     ensure   => directory,
