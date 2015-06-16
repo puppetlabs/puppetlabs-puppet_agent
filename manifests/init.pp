@@ -29,14 +29,23 @@ class puppet_agent (
     info('puppet_agent performs no actions on Puppet 4+')
   }
   else {
-    class { '::puppet_agent::prepare': } ->
-    class { '::puppet_agent::install': } ->
-    class { '::puppet_agent::config': } ~>
-    class { '::puppet_agent::service': }
+    if $::architecture == 'x86' and $arch == 'x64' {
+      fail('Unable to install x64 on a x86 system')
+    }
+    if $::osfamily == 'windows' {
+      class { '::puppet_agent::prepare': } ->
+      class { '::puppet_agent::windows::install': }
+    }
+    else {
+      class { '::puppet_agent::prepare': } ->
+      class { '::puppet_agent::install': } ->
+      class { '::puppet_agent::config': } ~>
+      class { '::puppet_agent::service': }
 
-    contain '::puppet_agent::prepare'
-    contain '::puppet_agent::install'
-    contain '::puppet_agent::config'
-    contain '::puppet_agent::service'
+      contain '::puppet_agent::prepare'
+      contain '::puppet_agent::install'
+      contain '::puppet_agent::config'
+      contain '::puppet_agent::service'
+    }
   }
 }
