@@ -63,98 +63,10 @@ class puppet_agent::prepare {
   }
   # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
   if $::mco_server_config and !$_windows_client {
-    $mco_server = $::puppet_agent::params::mco_server
-    file { $mco_server:
-      ensure  => file,
-      source  => $::mco_server_config,
-    }
-
-    if $::mco_server_settings {
-      $mco_server_libdir = $::mco_server_settings['libdir']
-      if $mco_server_libdir {
-        $mco_server_libdir_array = split($mco_server_libdir, $::puppet_agent::params::path_separator)
-        # Only add the new path if it's not already in libdir; prepend so we prefer versions at the new location
-        if [] == $mco_server_libdir_array.filter |$x| { $x == $::puppet_agent::params::mco_libdir } {
-          ini_setting { 'server/libdir':
-            section => '',
-            setting => 'libdir',
-            path    => $mco_server,
-            value   => "${::puppet_agent::params::mco_libdir}${::puppet_agent::params::path_separator}${mco_server_libdir}",
-            require => File[$mco_server],
-          }
-        }
-      }
-
-      $mco_server_plugins = $::mco_server_settings['plugin.yaml']
-      if $mco_server_plugins {
-        $mco_server_plugins_array = split($mco_server_plugins, $::puppet_agent::params::path_separator)
-        # Only add the new path if it's not already in plugin.yaml
-        if [] == $mco_server_plugins_array.filter |$x| { $x == $::puppet_agent::params::mco_plugins } {
-          ini_setting { 'server/plugin.yaml':
-            section => '',
-            setting => 'plugin.yaml',
-            path    => $mco_server,
-            value   => "${mco_server_plugins}${::puppet_agent::params::path_separator}${::puppet_agent::params::mco_plugins}",
-            require => File[$mco_server],
-          }
-        }
-      }
-    }
-
-    ini_setting { 'server/logfile':
-      section => '',
-      setting => 'logfile',
-      path    => $mco_server,
-      value   => $::puppet_agent::params::mco_log,
-      require => File[$mco_server],
-    }
+    include puppet_agent::prepare::mco_server_config
   }
   if $::mco_client_config and !$_windows_client {
-    $mco_client = $::puppet_agent::params::mco_client
-    file { $mco_client:
-      ensure  => file,
-      source  => $::mco_client_config,
-    }
-
-    if $::mco_client_settings {
-      $mco_client_libdir = $::mco_client_settings['libdir']
-      if $mco_client_libdir {
-        $mco_client_libdir_array = split($mco_client_libdir, $::puppet_agent::params::path_separator)
-        # Only add the new path if it's not already in libdir; prepend so we prefer versions at the new location
-        if [] == $mco_client_libdir_array.filter |$x| { $x == $::puppet_agent::params::mco_libdir } {
-          ini_setting { 'client/libdir':
-            section => '',
-            setting => 'libdir',
-            path    => $mco_client,
-            value   => "${::puppet_agent::params::mco_libdir}${::puppet_agent::params::path_separator}${mco_client_libdir}",
-            require => File[$mco_client],
-          }
-        }
-      }
-
-      $mco_client_plugins = $::mco_client_settings['plugin.yaml']
-      if $mco_client_plugins {
-        $mco_client_plugins_array = split($mco_client_plugins, $::puppet_agent::params::path_separator)
-        # Only add the new path if it's not already in plugin.yaml
-        if [] == $mco_client_plugins_array.filter |$x| { $x == $::puppet_agent::params::mco_plugins } {
-          ini_setting { 'client/plugin.yaml':
-            section => '',
-            setting => 'plugin.yaml',
-            path    => $mco_client,
-            value   => "${mco_client_plugins}${::puppet_agent::params::path_separator}${::puppet_agent::params::mco_plugins}",
-            require => File[$mco_client],
-          }
-        }
-      }
-    }
-
-    ini_setting { 'client/logfile':
-      section => '',
-      setting => 'logfile',
-      path    => $mco_client,
-      value   => $::puppet_agent::params::mco_log,
-      require => File[$mco_client],
-    }
+    include puppet_agent::prepare::mco_client_config
   }
 
   # PLATFORM SPECIFIC CONFIGURATION
