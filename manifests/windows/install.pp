@@ -6,8 +6,9 @@ class puppet_agent::windows::install {
   }
 
   $_source = $::puppet_agent::source ? {
-    undef   => "https://downloads.puppetlabs.com/windows/puppet-agent-${_arch}-latest.msi",
-    default => $::puppet_agent::source,
+    undef          => "https://downloads.puppetlabs.com/windows/puppet-agent-${_arch}-latest.msi",
+    /^[a-zA-Z]:/ => windows_native_path($::puppet_agent::source),
+    default        => $::puppet_agent::source,
   }
 
   $_msi_location = $_source ? {
