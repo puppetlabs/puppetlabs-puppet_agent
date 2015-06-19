@@ -33,6 +33,50 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
               is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/PID eq 42/)
             }
           end
+          describe 'C:/tmp/puppet-agent-x64.msi' do
+            let(:params) { {
+              :source => 'C:/tmp/puppet-agent-x64.msi',
+            } }
+            it {
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
+                               /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent-x64\.msi"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/PID eq 42/)
+            }
+          end
+          describe 'C:\Temp/ Folder\puppet-agent-x64.msi' do
+            let(:params) { {
+              :source => 'C:\Temp/ Folder\puppet-agent-x64.msi',
+            } }
+            it {
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
+                               /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/PID eq 42/)
+            }
+          end
+          describe 'C:/Temp/ Folder/puppet-agent-x64.msi' do
+            let(:params) { {
+              :source => 'C:/Temp/ Folder/puppet-agent-x64.msi',
+            } }
+            it {
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
+                               /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/PID eq 42/)
+            }
+          end
+          describe '\\\\garded\c$\puppet-agent-x64.msi' do
+            let(:params) { {
+              :source => "\\\\garded\\c$\\puppet-agent-x64.msi",
+            } }
+            it {
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
+                               /msiexec.exe \/qn \/norestart \/i "\\\\garded\\c\$\\puppet-agent-x64\.msi"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+              is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/PID eq 42/)
+            }
+          end
           describe 'default source' do
             let(:params) { {} }
             it {
