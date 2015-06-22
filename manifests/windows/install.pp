@@ -2,7 +2,7 @@ class puppet_agent::windows::install {
 
   $_arch = $::kernelmajversion ?{
     /^5\.\d+/ => 'x86', # x64 is never allowed on windows 2003
-    default   => $::puppet_agent::arch,
+    default   => $::puppet_agent::arch
   }
 
   $_source = $::puppet_agent::source ? {
@@ -23,6 +23,11 @@ class puppet_agent::windows::install {
     }
   }
 
+  $_cmd_location = $::rubyplatform ? {
+    /i386/  => "C:\\Windows\\system32\\cmd.exe",
+    default => "${::system32}\\cmd.exe"
+  }
+
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
   $_logfile = "${env_temp_variable}\\puppet-${_timestamp}-installer.log"
   notice ("Puppet upgrade log file at ${_logfile}")
@@ -32,7 +37,7 @@ class puppet_agent::windows::install {
     content => template('puppet_agent/install_puppet.bat.erb')
   }->
   exec { 'install_puppet.bat':
-    command   => "${::system32}\\cmd.exe /c start /b ${::system32}\\cmd.exe /c \"${env_temp_variable}\\install_puppet.bat\"",
+    command   => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${env_temp_variable}\\install_puppet.bat\"",
     path      => $::path,
   }
 }
