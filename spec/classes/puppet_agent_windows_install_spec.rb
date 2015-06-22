@@ -17,9 +17,9 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
           :osfamily => 'windows',
           :puppetversion => '3.8.0',
           :puppet_confdir => "#{values[:appdata]}/puppet/etc",
-          :mco_confdir =>  "#{values[:appdata]}/mcollective/etc",
+          :mco_confdir => "#{values[:appdata]}/mcollective/etc",
           :puppet_agent_pid => 42,
-          :system32 => 'C:\windows\system32',
+          :system32 => 'C:\windows\sysnative',
         } }
         context 'source =>' do
           describe 'https://alterernate.com/puppet-agent.msi' do
@@ -87,7 +87,7 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
             }
             it {
               should contain_exec('install_puppet.bat').with { {
-                       'command' => 'C:\windows\system32\cmd.exe /c start /b "C:\tmp\install_puppet.bat"',
+                       'command' => 'C:\windows\sysnative\cmd.exe /c start /b "C:\tmp\install_puppet.bat"',
                      } }
             }
             it {
@@ -120,13 +120,45 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
               :puppetversion => '3.8.0',
               :tmpdir => 'C:\tmp',
               :architecture => 'x86',
-              :system32 => 'C:\windows\system32'
+              :system32 => 'C:\windows\sysnative'
             } }
             let(:params) { {:arch => 'x64'} }
             it {
               expect { catalogue }.to raise_error(Puppet::Error, /Unable to install x64 on a x86 system/)
             }
           end
+        end
+      end
+      context 'rubyplatform' do
+        facts = {
+          :architecture => 'x64',
+          :env_temp_variable => 'C:\tmp',
+          :kernelmajversion => kernelmajversion,
+          :osfamily => 'windows',
+          :puppetversion => '3.8.0',
+          :puppet_confdir => "#{values[:appdata]}/puppet/etc",
+          :mco_confdir => "#{values[:appdata]}/mcollective/etc",
+          :puppet_agent_pid => 42,
+          :system32 => 'C:\windows\sysnative',
+          :tmpdir => 'C:\tmp',
+        }
+        describe 'i386-ming32' do
+          let(:facts) { facts.merge({:rubyplatform => 'i386-ming32'}) }
+          it {
+            is_expected.to contain_exec('install_puppet.bat').with { {
+                             'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\system32\cmd.exe /c "C:\tmp\install_puppet.bat"',
+                           } }
+
+          }
+        end
+        describe 'x86' do
+          let(:facts) { facts.merge({:rubyplatform => 'x86_64'}) }
+          it {
+            is_expected.to contain_exec('install_puppet.bat').with { {
+                             'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\sysnative\cmd.exe /c "C:\tmp\install_puppet.bat"',
+                           } }
+
+          }
         end
       end
     end
