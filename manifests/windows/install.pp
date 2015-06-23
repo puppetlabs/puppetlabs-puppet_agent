@@ -1,4 +1,11 @@
+# == Class puppet_agent::windows::install
+#
+# Private class called from puppet_agent class
+#
+# Manage the install process for windows specifically
+#
 class puppet_agent::windows::install {
+  assert_private()
 
   $_arch = $::kernelmajversion ?{
     /^5\.\d+/ => 'x86', # x64 is never allowed on windows 2003

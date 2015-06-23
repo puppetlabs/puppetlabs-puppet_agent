@@ -1,12 +1,39 @@
 require 'spec_helper'
 
-describe 'puppet_agent::osfamily::redhat' do
+describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
   [['Fedora', 'fedora/f$releasever'], ['CentOS', 'el/$releasever']].each do |os, urlbit|
     context "with #{os} and #{urlbit}" do
       let(:facts) {{
         :osfamily => 'RedHat',
         :operatingsystem => os,
-        :architecture => 'foo',
+        :architecture => 'x64',
+        :puppet_ssldir   => '/dev/null/ssl',
+        :puppet_config   => '/dev/null/puppet.conf',
+        :puppet_sslpaths => {
+          'privatedir'    => {
+            'path'   => '/dev/null/ssl/private',
+            'path_exists' => true,
+          },
+          'privatekeydir' => {
+            'path'   => '/dev/null/ssl/private_keys',
+            'path_exists' => true,
+          },
+          'publickeydir'  => {
+            'path'   => '/dev/null/ssl/public_keys',
+            'path_exists' => true,
+          },
+          'certdir'       => {
+            'path'   => '/dev/null/ssl/certs',
+            'path_exists' => true,
+          },
+          'requestdir'    => {
+            'path'   => '/dev/null/ssl/certificate_requests',
+            'path_exists' => true,
+          },
+          'hostcrl'       => {
+            'path'   => '/dev/null/ssl/crl.pem',
+            'path_exists' => true,
+          },}
       }}
 
       it { is_expected.to contain_exec('import-RPM-GPG-KEY-puppetlabs').with({
@@ -32,7 +59,7 @@ describe 'puppet_agent::osfamily::redhat' do
       }) }
 
       it { is_expected.to contain_yumrepo('pc1_repo').with({
-        'baseurl' => "https://yum.puppetlabs.com/#{urlbit}/PC1/foo",
+        'baseurl' => "https://yum.puppetlabs.com/#{urlbit}/PC1/x64",
         'enabled' => 'true',
           'gpgcheck' => '1',
           'gpgkey' => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs',
