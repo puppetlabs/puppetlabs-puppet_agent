@@ -72,7 +72,7 @@ describe 'puppet_agent class' do
   context 'agent run' do
     before(:all) {
       setup_puppet_on default, :agent => true
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": service_names => [\"mcollective\"] }' }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
     after (:all) {
@@ -95,11 +95,6 @@ describe 'puppet_agent class' do
       it { is_expected.to be_installed }
     end
 
-    describe service('puppet') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
-    end
-
     describe service('mcollective') do
       it { is_expected.to be_enabled }
       it { is_expected.to be_running }
@@ -109,7 +104,7 @@ describe 'puppet_agent class' do
   context 'with mcollective configured' do
     before(:all) {
       setup_puppet_on default, :mcollective => true, :agent => true
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": }' }"
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": service_names => [\"mcollective\"] }' }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
     after (:all) {
@@ -137,11 +132,6 @@ describe 'puppet_agent class' do
 
     describe package('puppet-agent') do
       it { is_expected.to be_installed }
-    end
-
-    describe service('puppet') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
     end
 
     describe service('mcollective') do
