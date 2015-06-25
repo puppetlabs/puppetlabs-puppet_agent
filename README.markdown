@@ -14,6 +14,7 @@
     * [Private classes](#private-classes)
     * [Parameters](#parameters)
 6. [Limitations - OS compatibility, etc.](#limitations)
+    * [Known issues](#known-issues)
 7. [Development - Guide for contributing to the module](#development)
 
 ## Overview
@@ -83,8 +84,24 @@ Alternate source you wish to download the latest version of Puppet from.
 
 ## Limitations
 
-Supports DEB and RPM-based distros: Redhat and Centos 5/6/7, Ubuntu 12.04/14.04/14.10, and Debian 6/7.
+This module supports:
 
+* RHEL 5, 6, 7
+* Centos 5, 6, 7
+* Debian 6, 7
+* Ubuntu 12.04, 14.04, 14.10
+* Windows Server 2003 or later
+
+###Known issues
+
+* In masterless environments, modules installed manually on individual agents cannot be found after upgrading to Puppet 4.x. You should reinstall these modules on the agents with `puppet module install`.
+
+In addition, there are several known issues with Windows:
+
+* To upgrade the agent by executing `puppet agent -t` interactively in a console, you must close the console and wait for the upgrade to finish before attempting to use the `puppet` command again.
+* MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent.
+   If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
+ 
 ##Development
 
 Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
