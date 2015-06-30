@@ -8,6 +8,11 @@ class puppet_agent::osfamily::redhat {
     $urlbit = 'el/$releasever'
   }
 
+  $source = $::puppet_agent::source ? {
+    undef   => "https://yum.puppetlabs.com/${urlbit}/PC1/${::architecture}",
+    default => $::puppet_agent::source,
+  }
+
   $keyname = 'RPM-GPG-KEY-puppetlabs'
   $gpg_path = "/etc/pki/rpm-gpg/${keyname}"
 
@@ -33,7 +38,7 @@ class puppet_agent::osfamily::redhat {
   }
 
   yumrepo { 'pc1_repo':
-    baseurl  => "https://yum.puppetlabs.com/${urlbit}/PC1/${::architecture}",
+    baseurl  => $source,
     descr    => "Puppet Labs PC1 Repository",
     enabled  => true,
     gpgcheck => '1',
