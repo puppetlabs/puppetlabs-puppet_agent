@@ -3,9 +3,22 @@ class puppet_agent::osfamily::debian {
 
   include apt
 
-  $source = $::puppet_agent::source ? {
-    undef   => 'http://apt.puppetlabs.com',
-    default => $::puppet_agent::source,
+  if $::is_pe {
+    $pe_server_version = pe_build_version()
+    $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
+    $source_host = uri_host_from_string($source)
+
+    # If this is PE, we're using a self signed certificate, so need to disable SSL verification
+    apt::setting { 'conf-pc1_repo':
+      content  => "Acquire::https::${source_host}::Verify-Peer false;\nAcquire::http::Proxy::${source_host} DIRECT;",
+      priority => 90,
+    }
+  }
+  else {
+    $source = $::puppet_agent::source ? {
+      undef   => 'http://apt.puppetlabs.com',
+      default => $::puppet_agent::source,
+    }
   }
 
 

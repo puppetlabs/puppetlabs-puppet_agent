@@ -5,10 +5,18 @@
 #
 class puppet_agent::params {
 
-  # Need to determine if we are going to use cgi and patterns will continue to match
-  # https://puppetlabs.com/misc/pe-files prior to setting, also package installs work
-  # some distros so it will not be needed
-  $_source = undef
+  # If this is PE, by default the packages are kept on the master,
+  # However if they are in a large environment with compile masters,
+  # they may have the packages on a different server.
+  if $::is_pe {
+    # The repo structure on the PE master is the following:
+    # https://server:8140/packages/pe_version/os-os_version-os_arch
+    # https://server:8140/packages/3.8.0/el-7-x86_64
+    $_source = "https://${::servername}:8140/packages"
+  }
+  else {
+    $_source = undef
+  }
 
   case $::osfamily {
     'RedHat', 'Amazon', 'Debian': {

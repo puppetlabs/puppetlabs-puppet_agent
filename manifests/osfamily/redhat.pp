@@ -8,9 +8,18 @@ class puppet_agent::osfamily::redhat {
     $urlbit = 'el/$releasever'
   }
 
-  $source = $::puppet_agent::source ? {
-    undef   => "https://yum.puppetlabs.com/${urlbit}/PC1/${::architecture}",
-    default => $::puppet_agent::source,
+  if $::is_pe {
+    # If this is PE, we're using a self signed certificate, so need to disable SSL verification
+    $sslverify = 'False'
+    $pe_server_version = pe_build_version()
+    $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
+  }
+  else {
+    $sslverify = 'True'
+    $source = $::puppet_agent::source ? {
+      undef   => "https://yum.puppetlabs.com/${urlbit}/PC1/${::architecture}",
+      default => $::puppet_agent::source,
+    }
   }
 
   $keyname = 'RPM-GPG-KEY-puppetlabs'
@@ -38,11 +47,12 @@ class puppet_agent::osfamily::redhat {
   }
 
   yumrepo { 'pc1_repo':
-    baseurl  => $source,
-    descr    => "Puppet Labs PC1 Repository",
-    enabled  => true,
-    gpgcheck => '1',
-    gpgkey   => "file://$gpg_path",
+    baseurl   => $source,
+    descr     => "Puppet Labs PC1 Repository",
+    enabled   => true,
+    gpgcheck  => '1',
+    gpgkey    => "file://$gpg_path",
+    sslverify => $sslverify,
   }
 }
 
