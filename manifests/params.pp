@@ -5,17 +5,18 @@
 #
 class puppet_agent::params {
 
-  # If this is PE, by default the packages are kept on the master,
-  # However if they are in a large environment with compile masters,
-  # they may have the packages on a different server.
-  if $::is_pe {
-    # The repo structure on the PE master is the following:
-    # https://server:8140/packages/pe_version/os-os_version-os_arch
-    # https://server:8140/packages/3.8.0/el-7-x86_64
-    $_source = "https://${::servername}:8140/packages"
-  }
-  else {
-    $_source = undef
+  # The `is_pe` fact currently works by echoing out the puppet version
+  # and greping for "puppet enterprise". With Puppet 4 and PE 2015.2, there
+  # is no longer a "PE Puppet", and so that fact will no longer work.
+  # Instead check both the `is_pe` fact as well as if a PE provided
+  # function is available
+  $_is_pe = ($::is_pe or is_function_available('pe_compiling_server_version'))
+
+  # In Puppet Enterprise, agent packages are provided by the master
+  # with a default prefix of `/packages`.
+  $_source = $_is_pe ? {
+    true    => "https://${::servername}:8140/packages",
+    default => undef,
   }
 
   case $::osfamily {

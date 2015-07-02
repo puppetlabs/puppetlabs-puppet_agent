@@ -3,7 +3,7 @@ class puppet_agent::osfamily::debian {
 
   include apt
 
-  if $::is_pe {
+  if $::puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
     $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
     $source_host = uri_host_from_string($source)

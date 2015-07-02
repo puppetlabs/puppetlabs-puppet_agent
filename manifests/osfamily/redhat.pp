@@ -8,7 +8,7 @@ class puppet_agent::osfamily::redhat {
     $urlbit = 'el/$releasever'
   }
 
-  if $::is_pe {
+  if $::puppet_agent::is_pe {
     # If this is PE, we're using a self signed certificate, so need to disable SSL verification
     $sslverify = 'False'
     $pe_server_version = pe_build_version()
