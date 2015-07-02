@@ -6,11 +6,30 @@ class puppet_agent::osfamily::debian {
   if $::puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
     $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
-    $source_host = uri_host_from_string($source)
 
-    # If this is PE, we're using a self signed certificate, so need to disable SSL verification
+    # In Puppet Enterprise, agent packages are served by the same server
+    # as the master, which can be using either a self signed CA, or an external CA.
+    # In order for apt to authenticate to the repo on the PE Master, it will need
+    # to be configured to pass in the agents certificates. By the time this code is called,
+    # the module has already moved the certs to $ssl_dir/{certs,private_keys}, which
+    # happen to be the default in PE already.
+    $_ssl_dir = $::puppet_agent::params::ssldir
+    $_sslcacert_path = "${_ssl_dir}/certs/ca.pem"
+    $_sslclientcert_path = "${_ssl_dir}/certs/${::clientcert}.pem"
+    $_sslclientkey_path = "${_ssl_dir}/private_keys/${::clientcert}.pem"
+
+    # For debian based platforms, in order to add SSL verification, you need to add a
+    # configuration file specific to just the sources host
+    $source_host = uri_host_from_string($source)
+    $_apt_settings = [
+      "Acquire::https::${source_host}::CaInfo \"${_sslcacert_path}\";",
+      "Acquire::https::${source_host}::SslCert \"${_sslclientcert_path}\";",
+      "Acquire::https::${source_host}::SslKey \"${_sslclientkey_path}\";",
+      "Acquire::http:::proxy::${source_host} DIRECT;",
+    ]
+
     apt::setting { 'conf-pc1_repo':
-      content  => "Acquire::https::${source_host}::Verify-Peer false;\nAcquire::http::Proxy::${source_host} DIRECT;",
+      content  => $_apt_settings.join(''),
       priority => 90,
     }
   }
