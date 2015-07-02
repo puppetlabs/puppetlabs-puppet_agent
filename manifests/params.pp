@@ -19,7 +19,7 @@ class puppet_agent::params {
   }
 
   case $::osfamily {
-    'RedHat', 'Amazon', 'Debian': {
+    'RedHat', 'Amazon', 'Debian', 'Suse': {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 

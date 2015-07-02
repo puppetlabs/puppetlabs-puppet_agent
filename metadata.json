@@ -38,6 +38,12 @@
         "14.04",
         "14.10"
       ]
+    },
+    {
+      "operatingsystem": "SLES",
+      "operatingsystemrelease": [
+        "12"
+      ]
     }
   ],
   "dependencies": [
