@@ -100,7 +100,7 @@ end
 def setup_puppet_on(host, opts = {})
   opts = {:agent => false, :mcollective => false}.merge(opts)
 
-  step "Setup puppet on #{host}"
+  puts "Setup puppet on #{host}"
   install_puppet_on host
 
   configure_puppet_on(host, parser_opts)
@@ -128,7 +128,7 @@ def setup_puppet_on(host, opts = {})
   end
 
   if opts[:agent]
-    step "Clear SSL on all hosts and disable firewalls"
+    puts "Clear SSL on all hosts and disable firewalls"
     hosts.each do |host|
       stop_firewall_on host
       on(host, "rm -rf '#{host.puppet['ssldir']}'")
@@ -144,7 +144,7 @@ def configure_agent_on(host, agent_run = false)
 end
 
 def teardown_puppet_on(host)
-  step "Purge puppet from #{host}"
+  puts "Purge puppet from #{host}"
   # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
   case host['platform']
