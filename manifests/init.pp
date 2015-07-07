@@ -15,6 +15,7 @@
 #
 class puppet_agent (
   $arch          = $::architecture,
+  $is_pe         = $::puppet_agent::params::_is_pe,
   $package_name  = $::puppet_agent::params::package_name,
   $service_names = $::puppet_agent::params::service_names,
   $source        = $::puppet_agent::params::_source,

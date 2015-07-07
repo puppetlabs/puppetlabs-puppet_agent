@@ -5,13 +5,22 @@
 #
 class puppet_agent::params {
 
-  # Need to determine if we are going to use cgi and patterns will continue to match
-  # https://puppetlabs.com/misc/pe-files prior to setting, also package installs work
-  # some distros so it will not be needed
-  $_source = undef
+  # The `is_pe` fact currently works by echoing out the puppet version
+  # and greping for "puppet enterprise". With Puppet 4 and PE 2015.2, there
+  # is no longer a "PE Puppet", and so that fact will no longer work.
+  # Instead check both the `is_pe` fact as well as if a PE provided
+  # function is available
+  $_is_pe = ($::is_pe or is_function_available('pe_compiling_server_version'))
+
+  # In Puppet Enterprise, agent packages are provided by the master
+  # with a default prefix of `/packages`.
+  $_source = $_is_pe ? {
+    true    => "https://${::servername}:8140/packages",
+    default => undef,
+  }
 
   case $::osfamily {
-    'RedHat', 'Amazon', 'Debian': {
+    'RedHat', 'Amazon', 'Debian', 'Suse': {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
