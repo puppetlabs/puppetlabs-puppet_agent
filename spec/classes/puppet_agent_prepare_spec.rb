@@ -14,36 +14,8 @@ describe 'puppet_agent::prepare' do
         :osfamily => osfamily,
         :lsbdistid => osfamily,
         :lsbdistcodename => 'baz',
-        :puppet_ssldir => '/dev/null/ssl',
-        :puppet_config => '/dev/null/puppet.conf',
         :mco_server_config => nil,
         :mco_client_config => nil,
-        :puppet_sslpaths => {
-          'privatedir'    => {
-            'path'   => '/dev/null/ssl/private',
-            'path_exists' => true,
-          },
-          'privatekeydir' => {
-            'path'   => '/dev/null/ssl/private_keys',
-            'path_exists' => true,
-          },
-          'publickeydir'  => {
-            'path'   => '/dev/null/ssl/public_keys',
-            'path_exists' => true,
-          },
-          'certdir'       => {
-            'path'   => '/dev/null/ssl/certs',
-            'path_exists' => true,
-          },
-          'requestdir'    => {
-            'path'   => '/dev/null/ssl/certificate_requests',
-            'path_exists' => true,
-          },
-          'hostcrl'       => {
-            'path'   => '/dev/null/ssl/crl.pem',
-            'path_exists' => true,
-          },
-        },
       }
 
       context "on #{osfamily}" do

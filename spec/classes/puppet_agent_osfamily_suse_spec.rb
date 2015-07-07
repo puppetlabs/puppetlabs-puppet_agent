@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'puppet_agent::osfamily::suse' do
+describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
   before(:each) do
     # Need to mock the function pe_build_version
     pe_build_version = {}
@@ -17,9 +17,12 @@ describe 'puppet_agent::osfamily::suse' do
     :osfamily                  => 'Suse',
     :operatingsystem           => 'SLES',
     :operatingsystemmajrelease => '12',
+    :architecture              => 'x64',
+    :servername                => 'master.example.vm',
+    :clientcert                => 'foo.example.vm',
   }
 
-  describe 'not supported' do
+  describe 'unsupported environment' do
     context 'when not PE' do
       let(:facts) do
         facts.merge({
@@ -59,7 +62,7 @@ describe 'puppet_agent::osfamily::suse' do
     end
   end
 
-  describe 'supported' do
+  describe 'supported environment' do
     context "when operatingsystemmajrelease is supported" do
       ['12'].each do |os_version|
         context "when SLES #{os_version}" do
@@ -96,7 +99,7 @@ describe 'puppet_agent::osfamily::suse' do
             'name'        => 'pc1_repo',
             'enabled'      => '1',
             'autorefresh' => '0',
-            'baseurl'     => "/4.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
+            'baseurl'     => "https://master.example.vm:8140/packages/4.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
             'type'        => 'rpm-md',
           }.each do |setting, value|
               it { is_expected.to contain_ini_setting("zypper pc1_repo #{setting}").with({
