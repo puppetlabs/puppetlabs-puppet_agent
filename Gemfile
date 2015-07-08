@@ -11,6 +11,6 @@ group :test do
 end
 
 group :system_tests do
-  gem 'beaker', '~> 2.15'
+  gem 'beaker', '~> 2.16'
   gem 'beaker-rspec', '~> 5.1'
 end

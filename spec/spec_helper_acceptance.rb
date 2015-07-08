@@ -45,7 +45,7 @@ unless ENV['BEAKER_provision'] == 'no'
     master['puppetservice'] = 'puppetserver'
     master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
     master['type'] = 'aio'
-    install_puppet_agent_on master, {}
+    install_puppet_agent_on master, {:puppet_agent_version => '1.2.1'}
     install_package master, 'puppetserver'
     master['use-service'] = true
 
