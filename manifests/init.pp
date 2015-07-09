@@ -23,10 +23,10 @@ class puppet_agent (
 
   validate_re($arch, ['^x86$','^x64$','^i386$','^amd64$','^x86_64$','^power$'])
 
-  if versioncmp("$::clientversion", '3.8.0') < 0 {
+  if versioncmp("${::clientversion}", '3.8.0') < 0 {
     fail('upgrading requires Puppet 3.8')
   }
-  elsif versioncmp("$::clientversion", '4.0.0') >= 0 {
+  elsif versioncmp("${::clientversion}", '4.0.0') >= 0 {
     info('puppet_agent performs no actions on Puppet 4+')
   }
   else {

@@ -42,13 +42,13 @@ class puppet_agent::osfamily::debian {
 
 
   apt::source { 'pc1_repo':
-    location   => $source,
-    repos      => 'PC1',
-    key        => {
+    location => $source,
+    repos    => 'PC1',
+    key      => {
       'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
       'server' => 'pgp.mit.edu',
     },
-    notify     => Notify['pc1_repo_force'],
+    notify   => Notify['pc1_repo_force'],
   }
 
   # apt_update doesn't inherit the future class dependency, so it

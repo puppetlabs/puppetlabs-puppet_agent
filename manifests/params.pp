@@ -38,8 +38,8 @@ class puppet_agent::params {
       $path_separator = ':'
     }
     'windows' : {
-      $confdir = $puppet_confdir
-      $mco_dir = $mco_confdir
+      $confdir = $::puppet_confdir
+      $mco_dir = $::mco_confdir
 
       $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
@@ -50,12 +50,12 @@ class puppet_agent::params {
     }
   }
 
-  $ssldir = "$confdir/ssl"
-  $config = "$confdir/puppet.conf"
+  $ssldir = "${confdir}/ssl"
+  $config = "${confdir}/puppet.conf"
 
-  $mco_server  = "$mco_dir/server.cfg"
-  $mco_client  = "$mco_dir/client.cfg"
-  $mco_libdir  = "$mco_install/plugins"
-  $mco_plugins = "$mco_dir/facts.yaml"
-  $mco_log     = "$logdir/mcollective.log"
+  $mco_server  = "${mco_dir}/server.cfg"
+  $mco_client  = "${mco_dir}/client.cfg"
+  $mco_libdir  = "${mco_install}/plugins"
+  $mco_plugins = "${mco_dir}/facts.yaml"
+  $mco_log     = "${logdir}/mcollective.log"
 }

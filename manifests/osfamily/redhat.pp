@@ -56,14 +56,14 @@ class puppet_agent::osfamily::redhat {
   }
 
   yumrepo { 'pc1_repo':
-    baseurl   => $source,
-    descr     => "Puppet Labs PC1 Repository",
-    enabled   => true,
-    gpgcheck  => '1',
-    gpgkey    => "file://$gpg_path",
-    sslcacert => $_sslcacert_path,
+    baseurl       => $source,
+    descr         => 'Puppet Labs PC1 Repository',
+    enabled       => true,
+    gpgcheck      => '1',
+    gpgkey        => "file://${gpg_path}",
+    sslcacert     => $_sslcacert_path,
     sslclientcert => $_sslclientcert_path,
-    sslclientkey => $_sslclientkey_path,
+    sslclientkey  => $_sslclientkey_path,
   }
 }
 
