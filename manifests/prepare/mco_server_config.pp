@@ -9,8 +9,8 @@ class puppet_agent::prepare::mco_server_config {
 
   $mco_server = $::puppet_agent::params::mco_server
   file { $mco_server:
-    ensure  => file,
-    source  => $::mco_server_config,
+    ensure => file,
+    source => $::mco_server_config,
   }
 
   if $::mco_server_settings {

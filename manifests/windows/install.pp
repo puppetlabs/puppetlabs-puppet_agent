@@ -19,32 +19,32 @@ class puppet_agent::windows::install {
   }
 
   $_msi_location = $_source ? {
-    /^puppet:/ => "${env_temp_variable}\\puppet-agent.msi",
+    /^puppet:/ => "${::env_temp_variable}\\puppet-agent.msi",
     default    => $_source,
   }
 
   if $_source =~ /^puppet:/ {
     file{ $_msi_location:
       source => $_source,
-      before => File["${env_temp_variable}\\install_puppet.bat"],
+      before => File["${::env_temp_variable}\\install_puppet.bat"],
     }
   }
 
   $_cmd_location = $::rubyplatform ? {
-    /i386/  => "C:\\Windows\\system32\\cmd.exe",
+    /i386/  => 'C:\\Windows\\system32\\cmd.exe',
     default => "${::system32}\\cmd.exe"
   }
 
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
-  $_logfile = "${env_temp_variable}\\puppet-${_timestamp}-installer.log"
+  $_logfile = "${::env_temp_variable}\\puppet-${_timestamp}-installer.log"
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
-  file { "${env_temp_variable}\\install_puppet.bat":
+  file { "${::env_temp_variable}\\install_puppet.bat":
     ensure  => file,
     content => template('puppet_agent/install_puppet.bat.erb')
   }->
   exec { 'install_puppet.bat':
-    command   => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${env_temp_variable}\\install_puppet.bat\"",
-    path      => $::path,
+    command => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${::env_temp_variable}\\install_puppet.bat\"",
+    path    => $::path,
   }
 }

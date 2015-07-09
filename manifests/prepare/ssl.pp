@@ -9,10 +9,10 @@ class puppet_agent::prepare::ssl {
 
   $ssl_dir = $::puppet_agent::params::ssldir
   file { $ssl_dir:
-    ensure   => directory,
-    source   => $::puppet_ssldir,
-    backup   => false,
-    recurse  => false,
+    ensure  => directory,
+    source  => $::puppet_ssldir,
+    backup  => false,
+    recurse => false,
   }
 
   $sslpaths = {
@@ -37,9 +37,9 @@ class puppet_agent::prepare::ssl {
   # The only one that's a file, not a directory.
   if $::puppet_sslpaths['hostcrl']['path_exists'] {
     file { "${ssl_dir}/crl.pem":
-      ensure  => file,
-      source  => $::puppet_sslpaths['hostcrl']['path'],
-      backup  => false
+      ensure => file,
+      source => $::puppet_sslpaths['hostcrl']['path'],
+      backup => false
     }
   }
 }
