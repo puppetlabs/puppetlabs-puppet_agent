@@ -34,6 +34,17 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       })
     }
 
+    it { is_expected.to contain_apt__setting('conf-pe-repo').with({
+      'priority' => 90,
+      'content'  => '',
+      'ensure'   => 'absent',
+    }) }
+
+    it { is_expected.to contain_apt__setting('list-puppet-enterprise-installer').with({
+      'content'  => '',
+      'ensure'   => 'absent',
+    }) }
+
     apt_settings = [
       "Acquire::https::master.example.vm::CaInfo \"/etc/puppetlabs/puppet/ssl/certs/ca.pem\";",
       "Acquire::https::master.example.vm::SslCert \"/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem\";",
@@ -57,6 +68,9 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
   end
 
   context 'when FOSS' do
+    it { is_expected.not_to contain_apt__setting('conf-pe-repo') }
+    it { is_expected.not_to contain_apt__setting('list-puppet-enterprise-installer') }
+
     it { is_expected.to contain_apt__source('pc1_repo').with({
       'location' => 'http://apt.puppetlabs.com',
       'repos'    => 'PC1',

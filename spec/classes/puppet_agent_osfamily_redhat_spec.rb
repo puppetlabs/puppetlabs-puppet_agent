@@ -36,6 +36,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       }) }
 
       context 'when FOSS' do
+        it { is_expected.not_to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
         it { is_expected.to contain_yumrepo('pc1_repo').with({
           'baseurl' => "https://yum.puppetlabs.com/#{urlbit}/PC1/x64",
           'enabled' => 'true',
@@ -62,6 +63,8 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
             :platform_tag => 'el-7-x86_64',
           })
         }
+
+        it { is_expected.to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
 
         it { is_expected.to contain_yumrepo('pc1_repo').with({
           'baseurl' => "https://master.example.vm:8140/packages/4.0.0/el-7-x86_64",
