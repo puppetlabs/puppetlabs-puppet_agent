@@ -4,7 +4,7 @@ class puppet_agent::osfamily::suse {
   }
 
   case $::operatingsystemmajrelease {
-    '12': {
+    '11', '12': {
       # Import the GPG key
       $keyname = 'RPM-GPG-KEY-puppetlabs'
       $gpg_path = "/etc/pki/rpm-gpg/${keyname}"

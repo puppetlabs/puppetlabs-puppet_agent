@@ -45,7 +45,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
     end
 
     context "when operatingsystemmajrelease is not supported" do
-      ['10', '11'].each do |os_version|
+      ['10'].each do |os_version|
         context "when SLES #{os_version}" do
           let(:facts) do
             facts.merge({
@@ -64,7 +64,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
 
   describe 'supported environment' do
     context "when operatingsystemmajrelease is supported" do
-      ['12'].each do |os_version|
+      ['11', '12'].each do |os_version|
         context "when SLES #{os_version}" do
           let(:facts) do
             facts.merge({
