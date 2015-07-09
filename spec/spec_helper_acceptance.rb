@@ -40,15 +40,12 @@ unless ENV['BEAKER_provision'] == 'no'
     end
     install_pe
   else
-    # Install release repo for puppet 3.x
-    install_puppetlabs_release_repo default
-
     # Install puppet-server on master
     options['is_puppetserver'] = true
     master['puppetservice'] = 'puppetserver'
     master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
     master['type'] = 'aio'
-    install_puppet_agent_on master, {}
+    install_puppet_agent_on master, {:puppet_agent_version => '1.2.1'}
     install_package master, 'puppetserver'
     master['use-service'] = true
 
@@ -103,10 +100,8 @@ end
 def setup_puppet_on(host, opts = {})
   opts = {:agent => false, :mcollective => false}.merge(opts)
 
-  step "Setup puppet on #{host}"
-  install_package host, 'puppet'
-  add_foss_defaults_on host
-  add_puppet_paths_on host
+  puts "Setup puppet on #{host}"
+  install_puppet_on host
 
   configure_puppet_on(host, parser_opts)
 
@@ -133,7 +128,7 @@ def setup_puppet_on(host, opts = {})
   end
 
   if opts[:agent]
-    step "Clear SSL on all hosts and disable firewalls"
+    puts "Clear SSL on all hosts and disable firewalls"
     hosts.each do |host|
       stop_firewall_on host
       on(host, "rm -rf '#{host.puppet['ssldir']}'")
@@ -144,15 +139,12 @@ def setup_puppet_on(host, opts = {})
 end
 
 def configure_agent_on(host, agent_run = false)
-  remove_foss_defaults_on host
-  add_aio_defaults_on host
-  add_puppet_paths_on host
-
+  configure_defaults_on host, 'aio'
   install_modules_on host unless agent_run
 end
 
 def teardown_puppet_on(host)
-  step "Purge puppet from #{host}"
+  puts "Purge puppet from #{host}"
   # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
   case host['platform']
@@ -172,7 +164,7 @@ file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent,
 package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
   EOS
   on host, puppet('apply', '-e', "\"#{pp}\"")
-  remove_aio_defaults_on host
+  remove_defaults_on host
 end
 
 RSpec.configure do |c|
