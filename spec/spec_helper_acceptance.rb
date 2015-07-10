@@ -67,7 +67,6 @@ unless ENV['BEAKER_provision'] == 'no'
 
     # sleep to give activemq time to start
     sleep 10
-
   end
 end
 
@@ -99,7 +98,8 @@ end
 def setup_puppet_on(host, opts = {})
   opts = {:agent => false, :mcollective => false}.merge(opts)
 
-  puts "Setup puppet on #{host}"
+  puts "Setup foss puppet on #{host}"
+  configure_defaults_on host, 'foss'
   install_puppet_on host
 
   configure_puppet_on(host, parser_opts)
@@ -163,7 +163,6 @@ file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent,
 package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
   EOS
   on host, puppet('apply', '-e', "\"#{pp}\"")
-  remove_defaults_on host
 end
 
 RSpec.configure do |c|
