@@ -17,6 +17,10 @@ def stop_firewall_on(host)
   end
 end
 
+# Project root
+PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
+
 # Helper for setting the activemq host in erb templates.
 def activemq_host
   master
@@ -28,10 +32,6 @@ def install_modules_on(host)
   on host, puppet('module', 'install', 'puppetlabs-inifile'), {:acceptable_exit_codes => [0, 1]}
   on host, puppet('module', 'install', 'puppetlabs-apt'), {:acceptable_exit_codes => [0, 1]}
 end
-
-# Project root
-PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
 
 unless ENV['BEAKER_provision'] == 'no'
   if default['platform'] =~ /windows/i
@@ -74,12 +74,11 @@ end
 unless ENV['MODULE_provision'] == 'no'
   if default['platform'] =~ /windows/i
     target = (on default, puppet('config print modulepath')).stdout.split(';')[0]
-    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
     {'stdlib' => '4.6.0', 'inifile' => '1.3.0', 'apt' => '2.0.1'}.each do |repo, version|
       on default, "rm -rf \"#{target}/#{repo}\";git clone --branch #{version} --depth 1 https://github.com/puppetlabs/puppetlabs-#{repo} \"#{target}/#{repo}\""
     end
     # default['distmoduledir'] = '`cygpath -smF 35`/PuppetLabs/puppet/etc/modules' should be set
-    install_dev_puppet_module_on(default, {:proj_root => proj_root, :module_name => 'puppet_agent'})
+    install_dev_puppet_module_on(default, {:proj_root => PROJ_ROOT, :module_name => 'puppet_agent'})
   end
 end
 
