@@ -32,6 +32,22 @@ class puppet_agent::osfamily::debian {
       content  => $_apt_settings.join(''),
       priority => 90,
     }
+
+    # Due to the file paths changing on the PE Master, the 3.8 repository is no longer valid.
+    # On upgrade, remove the repo file so that a dangling reference is not left behind returning
+    # a 404 on subsequent runs.
+
+    # Pass in an empty content string since apt requires it even though we are removing it
+    apt::setting {'list-puppet-enterprise-installer':
+      ensure  => absent,
+      content => '',
+    }
+
+    apt::setting { 'conf-pe-repo':
+      ensure   => absent,
+      priority => '90',
+      content  => '',
+    }
   }
   else {
     $source = $::puppet_agent::source ? {

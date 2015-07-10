@@ -23,6 +23,13 @@ class puppet_agent::osfamily::redhat {
 
     $pe_server_version = pe_build_version()
     $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
+
+    # Due to the file paths changing on the PE Master, the 3.8 repository is no longer valid.
+    # On upgrade, remove the repo file so that a dangling reference is not left behind returning
+    # a 404 on subsequent runs.
+    yumrepo { 'puppetlabs-pepackages':
+      ensure => absent,
+    }
   }
   else {
     $source = $::puppet_agent::source ? {
