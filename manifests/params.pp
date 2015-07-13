@@ -14,9 +14,11 @@ class puppet_agent::params {
 
   # In Puppet Enterprise, agent packages are provided by the master
   # with a default prefix of `/packages`.
-  $_source = $_is_pe ? {
-    true    => "https://${::servername}:8140/packages",
-    default => undef,
+  if $::osfamily != 'windows' {
+    $_source = $_is_pe ? {
+      true    => "https://${::servername}:8140/packages",
+      default => undef,
+    }
   }
 
   case $::osfamily {
