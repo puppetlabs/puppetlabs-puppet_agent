@@ -89,7 +89,7 @@ This module supports:
 * RHEL 5, 6, 7
 * Centos 5, 6, 7
 * Debian 6, 7
-* Ubuntu 12.04, 14.04, 14.10
+* Ubuntu 12.04, 14.04
 * Windows Server 2003 or later
 
 ###Known issues
