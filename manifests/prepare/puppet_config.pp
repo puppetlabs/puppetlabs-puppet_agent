@@ -12,7 +12,7 @@ class puppet_agent::prepare::puppet_config {
   }
 
 # manage puppet.conf contents, using inifile module
-  ['master', 'agent', 'main'].each |$loop_section| {
+  ['', 'master', 'agent', 'main'].each |$loop_section| {
     $section = $loop_section
     [# Removed settings
       'allow_variables_with_dashes', 'async_storeconfigs', 'binder', 'catalog_format', 'certdnsnames',
