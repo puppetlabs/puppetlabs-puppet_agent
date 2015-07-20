@@ -134,7 +134,7 @@ describe 'puppet_agent::prepare' do
           'backup' => 'false',
         }) }
 
-        ['agent', 'main', 'master'].each do |section|
+        ['', 'agent', 'main', 'master'].each do |section|
           ['allow_variables_with_dashes',
            'async_storeconfigs',
            'binder',
