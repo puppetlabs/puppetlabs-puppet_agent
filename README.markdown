@@ -68,7 +68,7 @@ include ::puppet_agent
 
 #####`arch`
 
-The architecture version you wish to install, defaults to `$::architecture`.
+The architecture version you wish to install. Defaults to `$::architecture`. This parameter is [ignored](#known-issues) in Windows Server 2003.
 
 #####`package_name`
 
@@ -80,7 +80,7 @@ An array of services to start, normally `puppet` and `mcollective`. If the array
 
 #####`source`
 
-Alternate source you wish to download the latest version of Puppet from.
+Alternate source from which you wish to download the latest version of Puppet.
 
 ## Limitations
 
@@ -101,6 +101,7 @@ In addition, there are several known issues with Windows:
 * To upgrade the agent by executing `puppet agent -t` interactively in a console, you must close the console and wait for the upgrade to finish before attempting to use the `puppet` command again.
 * MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent.
    If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
+   * On Windows Server 2003, only x86 is supported, and the `arch` parameter is ignored. If you try to force an upgrade to x64, Puppet installs the x86 version with no error message.
  
 ##Development
 
