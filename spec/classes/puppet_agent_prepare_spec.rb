@@ -194,7 +194,8 @@ describe 'puppet_agent::prepare' do
            'vardir',
            'rundir',
            'libdir',
-           'confdir'].each do |setting|
+           'confdir',
+           'classfile'].each do |setting|
              it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
            end
         end
