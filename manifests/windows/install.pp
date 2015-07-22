@@ -12,8 +12,17 @@ class puppet_agent::windows::install {
     default   => $::puppet_agent::arch
   }
 
+  if $::puppet_agent::is_pe {
+    $_agent_version = chomp(file('/opt/puppetlabs/puppet/VERSION'))
+    $_pe_server_version = pe_build_version()
+    $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/puppet-agent-${_arch}.msi"
+  }
+  else {
+    $_https_source = "https://downloads.puppetlabs.com/windows/puppet-agent-${_arch}-latest.msi"
+  }
+
   $_source = $::puppet_agent::source ? {
-    undef          => "https://downloads.puppetlabs.com/windows/puppet-agent-${_arch}-latest.msi",
+    undef          => $_https_source,
     /^[a-zA-Z]:/ => windows_native_path($::puppet_agent::source),
     default        => $::puppet_agent::source,
   }
