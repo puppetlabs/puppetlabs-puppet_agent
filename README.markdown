@@ -31,9 +31,9 @@ The puppet_agent module installs the Puppet Collection 1 repo (on systems that s
 
 * Puppet, Facter, Hiera, and MCollective.
 * Puppet's SSL directory and puppet.conf.
-* MCollective's server.cfg.
+* MCollective's server.cfg and client.cfg.
 * Removes deprecated settings from puppet.conf.
-* Updates puppet.conf and server.cfg for behavioral changes in puppet-agent (future parser is the now the default, and MCollective has a new varlog location).
+* Updates puppet.conf and server.cfg for behavioral changes in puppet-agent (future parser is now the default, and MCollective has a new varlog location).
 
 ### Setup Requirements
 
