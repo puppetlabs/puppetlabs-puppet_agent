@@ -37,7 +37,7 @@ The puppet_agent module installs the Puppet Collection 1 repo (on systems that s
 
 ### Setup Requirements
 
-You must be running Puppet 3.8 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+Your agents must be running Puppet 3.8 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
 ### Beginning with puppet_agent
 
@@ -51,13 +51,22 @@ Add the class to agents you want to upgrade:
 include ::puppet_agent
 ~~~
 
+This installs the latest released version of Puppet from Puppet Collection 1.
+
+To upgrade with this module, first stand up a Puppet Server 2.1 master---which supports backward compatibility with Puppet 3 agents---and point the agent you want to upgrade at that master. Once you've confirmed the agent runs successfully against the new master, and thus the Puppet 4 language, apply the class to the agent and confirm that it checks back in after a successful upgrade. Further details on upgrading are available [here](http://docs.puppetlabs.com/puppet/4.2/reference/upgrade_major_pre.html).
+
+As part of preparing the agent for Puppet 4, the module performs several significant steps:
+* Copies SSL files (based on their location settings: ssldir, certdir, privatedir, privatekeydir, publickeydir, requestdir) to new Puppet 4 defaults, and restore those settings to default in puppet.conf.
+* Resets non-deprecated settings to defaults: disable_warnings, vardir, rundir, libdir, confdir, ssldir, and classfile.
+* Resets logfile in MCollective's server.cfg and client.cfg.
+* Adds new libdir and plugin.yaml locations to MCollective's server.cfg and client.cfg.
+
 ##Reference
 
 ###Public classes
 * [`puppet_agent`](#class-puppetagent)
 
 ###Private classes
-* `puppet_agent::config` : Configures the services.
 * `puppet_agent::install`: Installs packages.
 * `puppet_agent::prepare`: Prepares the agent for upgrade.
 * `puppet_agent::service`: Ensures the services are running.
