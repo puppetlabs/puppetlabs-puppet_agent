@@ -40,12 +40,10 @@ class puppet_agent (
     else {
       class { '::puppet_agent::prepare': } ->
       class { '::puppet_agent::install': } ->
-      class { '::puppet_agent::config': } ~>
       class { '::puppet_agent::service': }
 
       contain '::puppet_agent::prepare'
       contain '::puppet_agent::install'
-      contain '::puppet_agent::config'
       contain '::puppet_agent::service'
     }
   }

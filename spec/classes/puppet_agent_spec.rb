@@ -19,9 +19,8 @@ describe 'puppet_agent' do
               it { is_expected.to contain_class('puppet_agent::params') }
               if Puppet.version < "4.0.0"
                 it { is_expected.to contain_class('puppet_agent::prepare') }
-                it { is_expected.to contain_class('puppet_agent::install').that_comes_before('puppet_agent::config') }
-                it { is_expected.to contain_class('puppet_agent::config') }
-                it { is_expected.to contain_class('puppet_agent::service').that_subscribes_to('puppet_agent::config') }
+                it { is_expected.to contain_class('puppet_agent::install').that_comes_before('puppet_agent::service') }
+                it { is_expected.to contain_class('puppet_agent::service') }
 
                 if params[:service_names].nil?
                   it { is_expected.to contain_service('puppet') }
