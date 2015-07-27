@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-puppet_agent",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "author": "puppetlabs",
   "summary": "Upgrades Puppet 3.8 to the All-In-One Puppet 4 Agent",
   "license": "Apache-2.0",
