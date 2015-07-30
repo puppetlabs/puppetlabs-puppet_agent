@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.0.0] - 2015-07-28
+
+### Summary
+
+Fixed minor bugs and improved documentation. Now a Puppet Supported module.
+
+### Features
+- Improved documentation of upgrade process.
+
+### Bugfixes
+- For Windows PE upgrades, by default install the agent version corresponding to the PE master.
+- Reset puppet.conf's classfile setting.
+
 ## [0.2.0] - 2015-07-21
 
 ### Summary
