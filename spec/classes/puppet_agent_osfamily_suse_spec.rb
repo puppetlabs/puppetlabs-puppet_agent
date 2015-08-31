@@ -30,7 +30,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
         })
       end
 
-      it { should compile.and_raise_error(/SLES not supported/) }
+      it { expect { catalogue }.to raise_error(/SLES not supported/) }
     end
 
     context 'when not SLES' do
@@ -41,7 +41,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
         })
       end
 
-      it { should compile.and_raise_error(/OpenSuse not supported/) }
+      it { expect { catalogue }.to raise_error(/OpenSuse not supported/) }
     end
 
     context "when operatingsystemmajrelease is not supported" do
@@ -56,7 +56,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
             })
           end
 
-          it { should compile.and_raise_error(/SLES #{os_version} not supported/) }
+          it { expect { catalogue }.to raise_error(/SLES #{os_version} not supported/) }
         end
       end
     end
