@@ -1,6 +1,7 @@
 require 'spec_helper'
 
-describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
+describe 'puppet_agent', :if => Puppet.version >= '3.8.0' do
+
   [['Fedora', 'fedora/f$releasever'], ['CentOS', 'el/$releasever']].each do |os, urlbit|
     context "with #{os} and #{urlbit}" do
       facts = {
@@ -37,7 +38,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
 
       context 'when FOSS' do
         it { is_expected.not_to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
-        it { is_expected.to contain_yumrepo('pc1_repo').with({
+        it { is_expected.to contain_yumrepo('pc_repo').with({
           'baseurl' => "https://yum.puppetlabs.com/#{urlbit}/PC1/x64",
           'enabled' => 'true',
             'gpgcheck' => '1',
@@ -67,7 +68,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
 
         it { is_expected.to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
 
-        it { is_expected.to contain_yumrepo('pc1_repo').with({
+        it { is_expected.to contain_yumrepo('pc_repo').with({
           'baseurl' => "https://master.example.vm:8140/packages/4.0.0/el-7-x86_64",
           'enabled' => 'true',
           'gpgcheck' => '1',

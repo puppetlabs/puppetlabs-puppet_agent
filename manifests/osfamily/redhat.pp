@@ -35,7 +35,7 @@ class puppet_agent::osfamily::redhat(
   }
   else {
     $source = $::puppet_agent::source ? {
-      undef   => "https://yum.puppetlabs.com/${urlbit}/PC1/${::architecture}",
+      undef   => "https://yum.puppetlabs.com/${urlbit}/${::puppet_agent::collection}/${::architecture}",
       default => $::puppet_agent::source,
     }
   }
@@ -64,9 +64,9 @@ class puppet_agent::osfamily::redhat(
     logoutput => 'on_failure',
   }
 
-  yumrepo { 'pc1_repo':
+  yumrepo { 'pc_repo':
     baseurl       => $source,
-    descr         => 'Puppet Labs PC1 Repository',
+    descr         => "Puppet Labs ${::puppet_agent::collection} Repository",
     enabled       => true,
     gpgcheck      => '1',
     gpgkey        => "file://${gpg_path}",

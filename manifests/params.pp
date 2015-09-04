@@ -12,6 +12,9 @@ class puppet_agent::params {
   # function is available
   $_is_pe = ($::is_pe or is_function_available('pe_compiling_server_version'))
 
+  $version = undef
+  $collection = 'PC1'
+
   # In Puppet Enterprise, agent packages are provided by the master
   # with a default prefix of `/packages`.
   if $::osfamily != 'windows' {
@@ -46,6 +49,7 @@ class puppet_agent::params {
       $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
       $path_separator = ';'
+      $_windows_client = true
     }
     default: {
       fail("${::operatingsystem} not supported")
