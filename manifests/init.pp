@@ -7,11 +7,17 @@
 #
 # === Parameters
 #
+# [arch]
+#   The package architecture.
+# [is_pe]
+#   Install from Puppet Enterprise repos.
 # [package_name]
 #   The package to upgrade to, i.e. `puppet-agent`.
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
+# [source]
+#   The location to find packages.
 #
 class puppet_agent (
   $arch          = $::architecture,
