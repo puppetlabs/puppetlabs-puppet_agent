@@ -5,12 +5,13 @@ MCO_LIBDIR = '/opt/puppetlabs/mcollective/plugins'
 MCO_PLUGIN_YAML = '/etc/puppetlabs/mcollective/facts.yaml'
 MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
-describe 'puppet_agent::prepare' do
+describe 'puppet_agent', :if => (Puppet.version >= '3.8.0' and Puppet.version < '4.0.0') do
+
   context 'supported operating system families' do
     ['Debian', 'RedHat'].each do |osfamily|
       facts = {
         :operatingsystem => 'foo',
-        :architecture => 'bar',
+        :architecture => 'x86_64',
         :osfamily => osfamily,
         :lsbdistid => osfamily,
         :lsbdistcodename => 'baz',
@@ -122,9 +123,9 @@ describe 'puppet_agent::prepare' do
         ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys'].each do |dir|
           it { is_expected.to contain_file("/etc/puppetlabs/puppet/ssl/#{dir}").with({
             'ensure'  => 'directory',
-            'source'  => "/dev/null/ssl/#{dir}",
+              'source'  => "/dev/null/ssl/#{dir}",
             'backup'  => 'false',
-            'recurse' => 'true',
+              'recurse' => 'true',
           }) }
         end
 
@@ -199,6 +200,26 @@ describe 'puppet_agent::prepare' do
              it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
            end
         end
+      end
+    end
+  end
+end
+
+describe 'puppet_agent', :if => Puppet.version >= '3.8.0' do
+  context 'supported operating system families' do
+    ['Debian', 'RedHat'].each do |osfamily|
+      facts = {
+        :operatingsystem => 'foo',
+        :architecture => 'x86_64',
+        :osfamily => osfamily,
+        :lsbdistid => osfamily,
+        :lsbdistcodename => 'baz',
+        :mco_server_config => nil,
+        :mco_client_config => nil,
+      }
+
+      context "on #{osfamily}" do
+        let(:facts) { facts }
 
         it { is_expected.to contain_class("puppet_agent::osfamily::#{facts[:osfamily]}") }
       end
