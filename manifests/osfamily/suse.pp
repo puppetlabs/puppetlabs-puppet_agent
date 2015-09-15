@@ -1,9 +1,19 @@
-class puppet_agent::osfamily::suse {
+class puppet_agent::osfamily::suse(
+  $package_file_name = undef,
+) {
+  assert_private()
+
   if $::operatingsystem != 'SLES' or $::puppet_agent::is_pe == false {
     fail("${::operatingsystem} not supported")
   }
 
   case $::operatingsystemmajrelease {
+    '10': {
+      class { 'puppet_agent::prepare::package':
+        package_file_name => $package_file_name,
+      }
+      contain puppet_agent::prepare::package
+    }
     '11', '12': {
       # Import the GPG key
       $keyname = 'RPM-GPG-KEY-puppetlabs'

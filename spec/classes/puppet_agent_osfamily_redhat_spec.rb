@@ -47,7 +47,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
 
       context 'when PE' do
         before(:each) do
-          # Need to mock the function PE functions
+          # Need to mock the PE functions
 
           Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
             '4.0.0'

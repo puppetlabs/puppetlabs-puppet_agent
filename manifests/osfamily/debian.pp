@@ -1,4 +1,6 @@
-class puppet_agent::osfamily::debian {
+class puppet_agent::osfamily::debian(
+  $package_file_name = undef,
+) {
   assert_private()
 
   include apt
