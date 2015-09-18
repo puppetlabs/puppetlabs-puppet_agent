@@ -65,7 +65,7 @@ describe 'puppet_agent' do
     end
   end
 
-  context 'unsupported operating system' do
+  context 'unsupported operating system', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
     describe 'puppet_agent class without any parameters on Solaris/Nexenta' do
       let(:facts) {{
         :osfamily        => 'Solaris',
