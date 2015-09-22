@@ -13,7 +13,7 @@ class puppet_agent::windows::install {
   }
 
   if $::puppet_agent::is_pe {
-    $_agent_version = chomp(file('/opt/puppetlabs/puppet/VERSION'))
+    $_agent_version = $puppet_agent::params::master_agent_version
     $_pe_server_version = pe_build_version()
     $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/puppet-agent-${_arch}.msi"
   }
