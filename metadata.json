@@ -47,6 +47,12 @@
       ]
     },
     {
+      "operatingsystem": "Solaris",
+      "operatingsystemrelease": [
+        "10"
+      ]
+    },
+    {
       "operatingsystem": "Windows",
       "operatingsystemrelease": [
         "Server 2003",

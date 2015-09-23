@@ -72,6 +72,7 @@ describe 'puppet_agent' do
         :operatingsystem => 'Nexenta',
         :puppet_ssldir   => '/dev/null/ssl',
         :puppet_config   => '/dev/null/puppet.conf',
+        :architecture    => 'i386',
       }}
 
       it { expect { is_expected.to contain_package('puppet_agent') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
