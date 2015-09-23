@@ -4,7 +4,30 @@ describe 'puppet_agent' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
-        let(:facts) { facts }
+        let(:facts) do
+          if os =~ /sles/
+            facts.merge({
+              :is_pe => true,
+              :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[0],
+            })
+          else
+            facts
+          end
+        end
+
+        before(:each) do
+          if os =~ /sles/
+            # Need to mock the PE functions
+
+            Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
+              '4.0.0'
+            end
+
+            Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
+              '1.2.5'
+            end
+          end
+        end
 
         if Puppet.version < "3.8.0"
           it { expect { is_expected.to contain_package('puppet_agent') }.to raise_error(Puppet::Error, /upgrading requires Puppet 3.8/) }
