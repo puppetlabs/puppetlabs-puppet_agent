@@ -49,8 +49,18 @@ class puppet_agent::install(
     $_package_options = {}
   }
 
-  package { $::puppet_agent::package_name:
-    ensure => present,
-    *      => $_package_options,
+  if $::osfamily == 'windows' {
+    if $::puppet_agent::is_pe == true and $::puppet_agent::source == undef {
+      class { 'puppet_agent::windows::install':
+        source => $::puppet_agent::prepare::package::file_dest,
+      }
+    } else {
+      class { 'puppet_agent::windows::install': }
+    }
+  } else {
+    package { $::puppet_agent::package_name:
+      ensure => present,
+      *      => $_package_options,
+    }
   }
 }

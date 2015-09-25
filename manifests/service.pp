@@ -6,17 +6,19 @@
 class puppet_agent::service {
   assert_private()
 
-  $::puppet_agent::service_names.each |$service| {
-    service { $service:
-      ensure     => running,
-      enable     => true,
-      hasstatus  => true,
-      hasrestart => true,
+  if ! empty($::puppet_agent::service_names) {
+    $::puppet_agent::service_names.each |$service| {
+      service { $service:
+        ensure     => running,
+        enable     => true,
+        hasstatus  => true,
+        hasrestart => true,
+      }
     }
-  }
 
-  if $::operatingsystem == 'Solaris' {
-    contain '::puppet_agent::service::solaris'
-    Service[$::puppet_agent::service_names] -> Class['::puppet_agent::service::solaris']
+    if $::operatingsystem == 'Solaris' {
+      contain '::puppet_agent::service::solaris'
+      Service[$::puppet_agent::service_names] -> Class['::puppet_agent::service::solaris']
+    }
   }
 }

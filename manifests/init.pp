@@ -33,40 +33,38 @@ class puppet_agent (
     if $::architecture == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')
     }
-    if $::osfamily == 'windows' {
-      class { '::puppet_agent::prepare': } ->
-      class { '::puppet_agent::windows::install': }
-    }
-    else {
 
-      if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
-        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sles10.${::architecture}.rpm"
-      } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
-        if $arch =~ '^sun4[uv]$' {
-          $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sparc.pkg.gz"
-        } else {
-          $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.i386.pkg.gz"
-        }
-      } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
-        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx${$::macosx_productversion_major}.dmg"
-      } elsif $::operatingsystem == 'aix' and $::architecture =~ 'PowerPC_POWER[5,6,7]' {
-        $aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
-        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.aix${aix_ver_number}.ppc.rpm"
+    if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
+      $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sles10.${::architecture}.rpm"
+    } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+      if $arch =~ '^sun4[uv]$' {
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sparc.pkg.gz"
       } else {
-        $_package_file_name = undef
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.i386.pkg.gz"
       }
-
-      class { '::puppet_agent::prepare':
-        package_file_name => $_package_file_name,
-      } ->
-      class { '::puppet_agent::install':
-        package_file_name => $_package_file_name,
-      } ->
-      class { '::puppet_agent::service': }
-
-      contain '::puppet_agent::prepare'
-      contain '::puppet_agent::install'
-      contain '::puppet_agent::service'
+    } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
+      $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx${$::macosx_productversion_major}.dmg"
+    } elsif $::operatingsystem == 'aix' and $::architecture =~ 'PowerPC_POWER[5,6,7]' {
+      $aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
+      $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.aix${aix_ver_number}.ppc.rpm"
+    } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
+      $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx${$::macosx_productversion_major}.dmg"
+    } elsif $::osfamily == 'windows' {
+      $_package_file_name = "${package_name}-${arch}.msi"
+    } else {
+      $_package_file_name = undef
     }
+
+    class { '::puppet_agent::prepare':
+      package_file_name => $_package_file_name,
+    } ->
+    class { '::puppet_agent::install':
+      package_file_name => $_package_file_name,
+    } ->
+    class { '::puppet_agent::service': }
+
+    contain '::puppet_agent::prepare'
+    contain '::puppet_agent::install'
+    contain '::puppet_agent::service'
   }
 }

@@ -38,14 +38,23 @@ class puppet_agent::params {
       $mcodirs = [$mco_dir]
 
       $path_separator = ':'
+
+      $user  = 0
+      $group = 0
     }
     'windows' : {
+      $package_name = 'puppet-agent'
+      $service_names = ['puppet', 'mcollective']
+
       $confdir = $::puppet_confdir
       $mco_dir = $::mco_confdir
 
       $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
       $path_separator = ';'
+
+      $user  = 'S-1-5-32-544'
+      $group = 'S-1-5-32-544'
     }
     default: {
       fail("${::operatingsystem} not supported")

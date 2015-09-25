@@ -17,20 +17,28 @@ class puppet_agent::prepare::package(
   if $puppet_agent::params::master_agent_version != $::aio_agent_version {
     $pe_server_version = pe_build_version()
 
-    $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
-
-    file { ['/opt/puppetlabs', '/opt/puppetlabs/packages']:
-      ensure => directory,
+    if $::osfamily == 'windows' {
+      $tag = $::puppet_agent::arch ? {
+        'x64' => 'windows-x86_64',
+      }
+      $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
+      $dest = "C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages"
+      $file_dest = "C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages\\${package_file_name}"
+    } else {
+      $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+      $dest = "/opt/puppetlabs/packages"
     }
 
-    file { "/opt/puppetlabs/packages/${package_file_name}":
-      ensure  => present,
-      owner   => 0,
-      group   => 0,
-      mode    => '0644',
-      source  => $source,
-      backup  => false,
-      require => File['/opt/puppetlabs/packages'],
+    file { $dest:
+      ensure => directory,
+    }
+    file { "${dest}/${package_file_name}":
+      ensure => present,
+      owner  => $::puppet_agent::params::user,
+      group  => $::puppet_agent::params::group,
+      mode   => '0644',
+      source => $source,
+      require => File[$dest],
     }
   }
 }
