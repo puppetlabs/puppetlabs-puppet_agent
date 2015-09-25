@@ -57,6 +57,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
         })
       end
 
+      it { should compile.with_all_deps }
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
@@ -69,6 +70,9 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
         is_expected.to contain_exec('unzip puppet-agent-1.2.5-1.i386.pkg.gz').with_command('gzip -d /opt/puppetlabs/packages/puppet-agent-1.2.5-1.i386.pkg.gz')
         is_expected.to contain_exec('unzip puppet-agent-1.2.5-1.i386.pkg.gz').with_creates('/opt/puppetlabs/packages/puppet-agent-1.2.5-1.i386.pkg')
       end
+
+      it { is_expected.to contain_service('pe-puppet').with_ensure('stopped') }
+      it { is_expected.to contain_service('pe-mcollective').with_ensure('stopped') }
 
       [
         'PUPpuppet',
