@@ -43,6 +43,10 @@ class puppet_agent (
         $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sles10.${::architecture}.rpm"
       } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
         $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.i386.pkg.gz"
+      } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major == '10.9' {
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx10.9.dmg"
+      } else {
+        $_package_file_name = undef
       }
 
       class { '::puppet_agent::prepare':
