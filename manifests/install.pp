@@ -38,6 +38,13 @@ class puppet_agent::install(
       source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require   => Class['puppet_agent::install::remove_packages'],
     }
+  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
+    contain puppet_agent::install::remove_packages
+
+    $_package_options = {
+      source    => "/opt/puppetlabs/packages/${package_file_name}",
+      require   => Class['puppet_agent::install::remove_packages'],
+    }
   } else {
     $_package_options = {}
   }
