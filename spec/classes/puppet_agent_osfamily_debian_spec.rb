@@ -17,14 +17,15 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
 
   context 'when PE' do
     before(:each) do
-      # Need to mock the function pe_build_version
-      pe_build_version = {}
+      # Need to mock the PE functions
 
-      Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) {
-        |args| pe_build_version.call()
-      }
+      Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
+        '4.0.0'
+      end
 
-      pe_build_version.stubs(:call).returns('4.0.0')
+      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
+        '1.2.5'
+      end
     end
 
     let(:facts) {

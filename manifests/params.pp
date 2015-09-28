@@ -52,6 +52,13 @@ class puppet_agent::params {
     }
   }
 
+  # The aio puppet-agent version currently installed on the compiling master
+  # (only used in PE)
+  $master_agent_version = $_is_pe ? {
+    true    => pe_compiling_server_aio_build(),
+    default => undef,
+  }
+
   $ssldir = "${confdir}/ssl"
   $config = "${confdir}/puppet.conf"
 

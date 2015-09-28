@@ -38,8 +38,17 @@ class puppet_agent (
       class { '::puppet_agent::windows::install': }
     }
     else {
-      class { '::puppet_agent::prepare': } ->
-      class { '::puppet_agent::install': } ->
+
+      if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sles10.${::architecture}.rpm"
+      }
+
+      class { '::puppet_agent::prepare':
+        package_file_name => $_package_file_name,
+      } ->
+      class { '::puppet_agent::install':
+        package_file_name => $_package_file_name,
+      } ->
       class { '::puppet_agent::service': }
 
       contain '::puppet_agent::prepare'

@@ -10,7 +10,7 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
     {'5.1' => {:expect_arch => 'x86', :appdata => 'C:/Document and Settings/All Users/Application Data/Puppetlabs'},
      '6.1' => {:expect_arch => 'x64', :appdata => 'C:/ProgramData/Puppetlabs'}}.each do |kernelmajversion, values|
       context "Windows Kernelmajversion #{kernelmajversion}" do
-        let(:facts) { {
+        facts = {
           :architecture => 'x64',
           :env_temp_variable => 'C:\tmp',
           :kernelmajversion => kernelmajversion,
@@ -20,24 +20,25 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
           :mco_confdir => "#{values[:appdata]}/mcollective/etc",
           :puppet_agent_pid => 42,
           :system32 => 'C:\windows\sysnative',
-        } }
+        }
+
+        let(:facts) { facts }
+
         context 'is_pe' do
           before(:each) do
-            # Need to mock the function pe_build_version
-            pe_build_version = {}
-            file = {}
+            # Need to mock the PE functions
 
-            Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) {
-              |args| pe_build_version.call()
-            }
-            Puppet::Parser::Functions.newfunction(:file, :type => :rvalue) {
-              |args| file.call(args[0])
-            }
+            Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
+              '4.0.0'
+            end
 
-            pe_build_version.stubs(:call).returns('4.0.0')
-            file.stubs(:call).with('/opt/puppetlabs/puppet/VERSION').returns('1.2.1.1')
+            Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
+              '1.2.1.1'
+            end
           end
-          let(:params) {{ :is_pe => true }}
+
+          let(:facts) { facts.merge({:is_pe => true}) }
+
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
               %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"https://pm.puppetlabs.com/puppet-agent/4.0.0/1.2.1.1/repos/windows/puppet-agent-#{values[:expect_arch]}.msi\"")}])

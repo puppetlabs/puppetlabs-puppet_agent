@@ -2,7 +2,16 @@
 #
 # This class is called from puppet_agent to prepare for the upgrade.
 #
-class puppet_agent::prepare {
+# === Parameters
+#
+# [package_file_name]
+#   The file name, with platform and version, of the puppet-agent package to be
+#   downloaded and installed.  Older systems and package managers may require
+#   us to manually download the puppet-agent package.
+#
+class puppet_agent::prepare(
+  $package_file_name = undef,
+){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'
   if $_windows_client {
@@ -47,7 +56,11 @@ class puppet_agent::prepare {
 
   case $::osfamily {
     'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse': {
-      contain downcase("::puppet_agent::osfamily::${::osfamily}")
+      $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
+      class { $_osfamily_class:
+        package_file_name => $package_file_name
+      }
+      contain $_osfamily_class
     }
     default: {
       fail("puppet_agent not supported on ${::osfamily}")

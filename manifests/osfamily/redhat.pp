@@ -1,4 +1,6 @@
-class puppet_agent::osfamily::redhat {
+class puppet_agent::osfamily::redhat(
+  $package_file_name = undef,
+) {
   assert_private()
 
   if $::operatingsystem == 'Fedora' {
