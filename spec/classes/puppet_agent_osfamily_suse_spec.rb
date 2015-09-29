@@ -55,7 +55,6 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
         })
       end
 
-      it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
         is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.2.5-1.sles10.x86_64.rpm').with_ensure('present')

@@ -41,7 +41,7 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
 
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-              %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"https://pm.puppetlabs.com/puppet-agent/4.0.0/1.2.1.1/repos/windows/puppet-agent-#{values[:expect_arch]}.msi\"")}])
+              %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
           }
         end
         context 'source =>' do
