@@ -23,27 +23,14 @@ class puppet_agent::prepare::package(
       ensure => directory,
     }
 
-    #    case $::osfamily {
-    #      'Darwin': {
-    #        exec { "curl ${package_file_name} for osx":
-    #          path    => '/bin:/usr/bin:/sbin:/usr/sbin',
-    #          cwd     => "/opt/puppetlabs/packages",
-    #          command => "curl --cacert ${::puppet_agent::params::ssldir} https://${servername}:8140/packages/current/${::platform_tag}/${package_file_name}",
-    #          creates  => "/opt/puppetlabs/packages/${package_file_name}",
-    #          require => File['/opt/puppetlabs/packages'],
-    #        }
-    #      }
-    #      default: {
-        file { "/opt/puppetlabs/packages/${package_file_name}":
-          ensure  => present,
-          owner   => 0,
-          group   => 0,
-          mode    => '0644',
-          source  => $source,
-          backup  => false,
-          require => File['/opt/puppetlabs/packages'],
-        }
-        #      }
-        #    }
+    file { "/opt/puppetlabs/packages/${package_file_name}":
+      ensure  => present,
+      owner   => 0,
+      group   => 0,
+      mode    => '0644',
+      source  => $source,
+      backup  => false,
+      require => File['/opt/puppetlabs/packages'],
+    }
   }
 }
