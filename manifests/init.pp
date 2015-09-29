@@ -50,7 +50,16 @@ class puppet_agent (
     } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
       $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx${$::macosx_productversion_major}.dmg"
     } elsif $::osfamily == 'windows' {
-      $_package_file_name = "${package_name}-${arch}.msi"
+      $_arch = $::kernelmajversion ?{
+        /^5\.\d+/ => 'x86', # x64 is never allowed on windows 2003
+        default   => $arch
+      }
+
+      if $is_pe {
+        $_package_file_name = "${package_name}-${_arch}.msi"
+      } else {
+        $_package_file_name = "${package_name}-${_arch}-latest.msi"
+      }
     } else {
       $_package_file_name = undef
     }
