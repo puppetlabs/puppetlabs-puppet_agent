@@ -65,13 +65,14 @@ describe 'puppet_agent' do
     end
   end
 
-  context 'unsupported operating system' do
+  context 'unsupported operating system', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
     describe 'puppet_agent class without any parameters on Solaris/Nexenta' do
       let(:facts) {{
         :osfamily        => 'Solaris',
         :operatingsystem => 'Nexenta',
         :puppet_ssldir   => '/dev/null/ssl',
         :puppet_config   => '/dev/null/puppet.conf',
+        :architecture    => 'i386',
       }}
 
       it { expect { is_expected.to contain_package('puppet_agent') }.to raise_error(Puppet::Error, /Nexenta not supported/) }

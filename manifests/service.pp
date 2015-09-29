@@ -14,4 +14,9 @@ class puppet_agent::service {
       hasrestart => true,
     }
   }
+
+  if $::operatingsystem == 'Solaris' {
+    contain '::puppet_agent::service::solaris'
+    Service[$::puppet_agent::service_names] -> Class['::puppet_agent::service::solaris']
+  }
 }

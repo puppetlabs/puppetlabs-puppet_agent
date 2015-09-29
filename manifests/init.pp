@@ -21,7 +21,7 @@ class puppet_agent (
   $source        = $::puppet_agent::params::_source,
 ) inherits ::puppet_agent::params {
 
-  validate_re($arch, ['^x86$','^x64$','^i386$','^amd64$','^x86_64$','^power$'])
+  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$'])
 
   if versioncmp("${::clientversion}", '3.8.0') < 0 {
     fail('upgrading requires Puppet 3.8')
@@ -41,6 +41,8 @@ class puppet_agent (
 
       if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
         $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.sles10.${::architecture}.rpm"
+      } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.i386.pkg.gz"
       }
 
       class { '::puppet_agent::prepare':

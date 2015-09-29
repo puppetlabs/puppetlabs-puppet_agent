@@ -29,6 +29,15 @@ class puppet_agent::install(
       provider        => 'rpm',
       source          => "/opt/puppetlabs/packages/${package_file_name}",
     }
+  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+    contain puppet_agent::install::remove_packages
+
+    $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
+    $_package_options = {
+      adminfile => '/opt/puppetlabs/packages/solaris-noask',
+      source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
+      require   => Class['puppet_agent::install::remove_packages'],
+    }
   } else {
     $_package_options = {}
   }
