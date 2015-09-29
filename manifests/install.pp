@@ -52,7 +52,7 @@ class puppet_agent::install(
   if $::osfamily == 'windows' {
     if $::puppet_agent::is_pe == true and $::puppet_agent::source == undef {
       class { 'puppet_agent::windows::install':
-        source => $::puppet_agent::prepare::package::file_dest,
+        source => "${::puppet_agent::params::local_packages_dir}/${package_file_name}",
       }
     } else {
       class { 'puppet_agent::windows::install': }

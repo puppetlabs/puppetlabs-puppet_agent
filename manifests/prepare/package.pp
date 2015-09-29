@@ -22,17 +22,14 @@ class puppet_agent::prepare::package(
         'x64' => 'windows-x86_64',
       }
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
-      $dest = "C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages"
-      $file_dest = "C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages\\${package_file_name}"
     } else {
       $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
-      $dest = "/opt/puppetlabs/packages"
     }
 
-    file { $dest:
+    file { $::puppet_agent::params::local_packages_dir:
       ensure => directory,
     }
-    file { "${dest}/${package_file_name}":
+    file { "${::puppet_agent::params::local_packages_dir}/${package_file_name}":
       ensure => present,
       owner  => $::puppet_agent::params::user,
       group  => $::puppet_agent::params::group,
