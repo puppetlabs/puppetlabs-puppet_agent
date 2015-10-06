@@ -26,7 +26,7 @@ class puppet_agent::params {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
-      $local_packages_dir = "/opt/puppetlabs/packages"
+      $local_packages_dir = '/opt/puppetlabs/packages'
 
       $confdir = '/etc/puppetlabs/puppet'
       $mco_dir = '/etc/puppetlabs/mcollective'
@@ -48,7 +48,7 @@ class puppet_agent::params {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
-      $local_packages_dir = "C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages"
+      $local_packages_dir = 'C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages'
 
       $confdir = $::puppet_confdir
       $mco_dir = $::mco_confdir

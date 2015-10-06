@@ -30,12 +30,12 @@ class puppet_agent::prepare::package(
       ensure => directory,
     }
     file { "${::puppet_agent::params::local_packages_dir}/${package_file_name}":
-      ensure => present,
-      owner  => $::puppet_agent::params::user,
-      group  => $::puppet_agent::params::group,
-      mode   => '0644',
-      source => $source,
-      require => File[$dest],
+      ensure  => present,
+      owner   => $::puppet_agent::params::user,
+      group   => $::puppet_agent::params::group,
+      mode    => '0644',
+      source  => $source,
+      require => File[$::puppet_agent::params::local_packages_dir],
     }
   }
 }
