@@ -83,7 +83,7 @@ The architecture version you wish to install. Defaults to `$::architecture`. Thi
 
 The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only accepted value is `puppet-agent`.
 
-#####`service_name`
+#####`service_names`
 
 An array of services to start, normally `puppet` and `mcollective`. If the array is empty, no services are started.
 
