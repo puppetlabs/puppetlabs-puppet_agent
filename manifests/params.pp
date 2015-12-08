@@ -1,6 +1,6 @@
 # == Class puppet_agent::params
 #
-# This class is meant to be called from puppet_agent.
+# This class is meant to be called from puppet_agent
 # It sets variables according to platform.
 #
 class puppet_agent::params {
@@ -22,7 +22,7 @@ class puppet_agent::params {
   }
 
   case $::osfamily {
-    'RedHat', 'Amazon', 'Debian', 'Suse', 'Solaris': {
+    'RedHat', 'Amazon', 'Debian', 'Suse', 'Solaris', 'Darwin': {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 

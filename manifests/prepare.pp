@@ -55,7 +55,7 @@ class puppet_agent::prepare(
   # the osfamily of the client being configured.
 
   case $::osfamily {
-    'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse': {
+    'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
       $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
       class { $_osfamily_class:
         package_file_name => $package_file_name

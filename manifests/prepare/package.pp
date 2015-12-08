@@ -22,12 +22,15 @@ class puppet_agent::prepare::package(
     file { ['/opt/puppetlabs', '/opt/puppetlabs/packages']:
       ensure => directory,
     }
+
     file { "/opt/puppetlabs/packages/${package_file_name}":
-      ensure => present,
-      owner  => 0,
-      group  => 0,
-      mode   => '0644',
-      source => $source,
+      ensure  => present,
+      owner   => 0,
+      group   => 0,
+      mode    => '0644',
+      source  => $source,
+      backup  => false,
+      require => File['/opt/puppetlabs/packages'],
     }
   }
 }

@@ -47,6 +47,10 @@ class puppet_agent (
         } else {
           $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.i386.pkg.gz"
         }
+      } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx${$::macosx_productversion_major}.dmg"
+      } else {
+        $_package_file_name = undef
       }
 
       class { '::puppet_agent::prepare':
