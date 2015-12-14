@@ -21,7 +21,7 @@ class puppet_agent (
   $source        = $::puppet_agent::params::_source,
 ) inherits ::puppet_agent::params {
 
-  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$', '^sun4[uv]$'])
+  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$','PowerPC_POWER'])
 
   if versioncmp("${::clientversion}", '3.8.0') < 0 {
     fail('upgrading requires Puppet 3.8')
@@ -49,6 +49,9 @@ class puppet_agent (
         }
       } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
         $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.osx${$::macosx_productversion_major}.dmg"
+      } elsif $::operatingsystem == 'aix' and $::architecture =~ 'PowerPC_POWER[5,6,7]' {
+        $aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
+        $_package_file_name = "${puppet_agent::package_name}-${puppet_agent::params::master_agent_version}-1.aix${aix_ver_number}.ppc.rpm"
       } else {
         $_package_file_name = undef
       }
