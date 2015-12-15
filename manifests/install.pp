@@ -53,7 +53,7 @@ class puppet_agent::install(
     if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
       class { 'puppet_agent::windows::install':
         package_file_name => $package_file_name,
-        source            => "${::puppet_agent::params::local_packages_dir}/${package_file_name}",
+        source            => windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}"),
       }
     } else {
       class { 'puppet_agent::windows::install':

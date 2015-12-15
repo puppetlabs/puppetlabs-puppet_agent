@@ -7,8 +7,8 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
       is_expected.to_not contain_class('::puppet_agent::windows::install')
     }
   elsif Puppet.version >= "3.8.0"
-    {'5.1' => {:expect_arch => 'x86', :appdata => 'C:/Document and Settings/All Users/Application Data/Puppetlabs'},
-     '6.1' => {:expect_arch => 'x64', :appdata => 'C:/ProgramData/Puppetlabs'}}.each do |kernelmajversion, values|
+    {'5.1' => {:expect_arch => 'x86', :appdata => 'C:\Document and Settings\All Users\Application Data'},
+     '6.1' => {:expect_arch => 'x64', :appdata => 'C:\ProgramData'}}.each do |kernelmajversion, values|
       context "Windows Kernelmajversion #{kernelmajversion}" do
         facts = {
           :architecture => 'x64',
@@ -16,10 +16,11 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
           :kernelmajversion => kernelmajversion,
           :osfamily => 'windows',
           :puppetversion => '3.8.0',
-          :puppet_confdir => "#{values[:appdata]}/puppet/etc",
-          :mco_confdir => "#{values[:appdata]}/mcollective/etc",
+          :puppet_confdir => "#{values[:appdata]}\\Puppetlabs\\puppet\\etc",
+          :mco_confdir => "#{values[:appdata]}\\Puppetlabs\\mcollective\\etc",
           :puppet_agent_pid => 42,
           :system32 => 'C:\windows\sysnative',
+          :common_appdata => values[:appdata],
         }
 
         let(:facts) { facts }
@@ -41,7 +42,7 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
 
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-              %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
+              %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
           }
         end
         context 'source =>' do
@@ -153,8 +154,8 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
           :kernelmajversion => kernelmajversion,
           :osfamily => 'windows',
           :puppetversion => '3.8.0',
-          :puppet_confdir => "#{values[:appdata]}/puppet/etc",
-          :mco_confdir => "#{values[:appdata]}/mcollective/etc",
+          :puppet_confdir => "#{values[:appdata]}/PuppetLabs/puppet/etc",
+          :mco_confdir => "#{values[:appdata]}/PuppetLabs/mcollective/etc",
           :puppet_agent_pid => 42,
           :system32 => 'C:\windows\sysnative',
           :tmpdir => 'C:\tmp',

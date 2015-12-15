@@ -48,7 +48,7 @@ class puppet_agent::params {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
-      $local_packages_dir = 'C:\\Program Files\\Puppet Labs\\Puppet Enterprise\\packages'
+      $local_packages_dir = windows_native_path("${::common_appdata}/Puppetlabs/packages")
 
       $confdir = $::puppet_confdir
       $mco_dir = $::mco_confdir
