@@ -15,24 +15,26 @@ class puppet_agent::install::remove_packages {
 
     } else {
 
-      $package_options = $::operatingsystem ? {
-        'SLES'  => {
+      if $::operatingsystem == 'SLES' {
+        $package_options = {
           uninstall_options => '--nodeps',
           provider          => 'rpm',
-        },
-        'AIX'  => {
-          uninstall_options => '--nodeps',
-          provider          => 'rpm',
-        },
-        'Solaris' => {
-          adminfile => '/opt/puppetlabs/packages/solaris-noask',
-        },
-        default => {
         }
+      } elsif $::operatingsystem == 'AIX' {
+        $package_options = {
+          uninstall_options => '--nodeps',
+          provider          => 'rpm',
+        }
+      } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+        $package_options = {
+          adminfile => '/opt/puppetlabs/packages/solaris-noask',
+        }
+      } else {
+        $package_options = {}
       }
 
-      $packages = $::operatingsystem ? {
-        'Solaris' => [
+      if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+        $packages = [
           'PUPpuppet',
           'PUPaugeas',
           'PUPdeep-merge',
@@ -47,8 +49,31 @@ class puppet_agent::install::remove_packages {
           'PUPruby-rgen',
           'PUPruby-shadow',
           'PUPstomp',
-        ],
-        default => [
+        ]
+      } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+        # This order matters since solaris 11 won't uninstall packages that have dependencies installed
+        $packages = [
+          'pe-mcollective',
+          'pe-mcollective-common',
+          'pe-virt-what',
+          'pe-libldap',
+          'pe-deep-merge',
+          'pe-ruby-ldap',
+          'pe-ruby-augeas',
+          'pe-augeas',
+          'pe-ruby-shadow',
+          'pe-stomp',
+          'pe-puppet',
+          'pe-facter',
+          'pe-hiera',
+          'pe-ruby-rgen',
+          'pe-ruby',
+          'pe-openssl',
+          'pe-libyaml',
+          'pe-puppet-enterprise-release',
+        ]
+      } else {
+        $packages = [
           'pe-augeas',
           'pe-mcollective-common',
           'pe-rubygem-deep-merge',
