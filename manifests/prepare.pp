@@ -27,6 +27,8 @@ class puppet_agent::prepare(
     }
   }
 
+  $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
+
   if versioncmp("${::clientversion}", '4.0.0') < 0 {
     # Migrate old files; assumes user Puppet runs under won't change during upgrade
     # We assume the current Puppet settings are authoritative; if anything exists
@@ -34,10 +36,16 @@ class puppet_agent::prepare(
     file { $::puppet_agent::params::puppetdirs:
       ensure => directory,
     }
-    include puppet_agent::prepare::puppet_config
+    class { 'puppet_agent::prepare::puppet_config':
+      before => Class[$_osfamily_class],
+    }
+    contain puppet_agent::prepare::puppet_config
 
     if !$_windows_client { #Windows didn't change only nix systems
-      include puppet_agent::prepare::ssl
+      class { 'puppet_agent::prepare::ssl':
+        before => Class[$_osfamily_class],
+      }
+      contain puppet_agent::prepare::ssl
 
     # manage client.cfg and server.cfg contents
       file { $::puppet_agent::params::mcodirs:
@@ -46,10 +54,16 @@ class puppet_agent::prepare(
 
       # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
       if $::mco_server_config {
-        include puppet_agent::prepare::mco_server_config
+        class { 'puppet_agent::prepare::mco_server_config':
+          before => Class[$_osfamily_class],
+        }
+        contain puppet_agent::prepare::mco_server_config
       }
       if $::mco_client_config {
-        include puppet_agent::prepare::mco_client_config
+        class { 'puppet_agent::prepare::mco_client_config':
+          before => Class[$_osfamily_class],
+        }
+        contain puppet_agent::prepare::mco_client_config
       }
     }
   }
@@ -60,7 +74,6 @@ class puppet_agent::prepare(
 
   case $::osfamily {
     'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
-      $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
       class { $_osfamily_class:
         package_file_name => $package_file_name,
       }

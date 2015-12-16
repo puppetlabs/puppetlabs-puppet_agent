@@ -56,11 +56,25 @@ class puppet_agent (
 
     if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
       $_package_file_name = "${puppet_agent::package_name}-${_package_version}-1.sles10.${::architecture}.rpm"
-    } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+    } elsif $::operatingsystem == 'Solaris' {
       if $arch =~ /^sun4[uv]$/ {
-        $_package_file_name = "${puppet_agent::package_name}-${_package_version}-1.sparc.pkg.gz"
+        if $::operatingsystemmajrelease == '10' {
+          $_package_file_name = "${puppet_agent::package_name}-${_package_version}-1.sparc.pkg.gz"
+        } elsif $::operatingsystemmajrelease == '11' {
+          # Strip letters from development builds.
+          $_version_without_letters = regsubst($_package_version, /[a-zA-Z]/, '', 'G')
+          $_solaris_version = regsubst($_version_without_letters, /(^-|-$)/, '', 'G')
+          $_package_file_name = "${puppet_agent::package_name}@${_solaris_version},5.11-1.sparc.p5p"
+        }
       } else {
-        $_package_file_name = "${puppet_agent::package_name}-${_package_version}-1.i386.pkg.gz"
+        if $::operatingsystemmajrelease == '10' {
+          $_package_file_name = "${puppet_agent::package_name}-${_package_version}-1.i386.pkg.gz"
+        } elsif $::operatingsystemmajrelease == '11' {
+          # Strip letters from development builds.
+          $_version_without_letters = regsubst($_package_version, /[a-zA-Z]/, '', 'G')
+          $_solaris_version = regsubst($_version_without_letters, /(^-|-$)/, '', 'G')
+          $_package_file_name = "${puppet_agent::package_name}@${_solaris_version},5.11-1.i386.p5p"
+        }
       }
     } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
       $_package_file_name = "${puppet_agent::package_name}-${_package_version}-1.osx${$::macosx_productversion_major}.dmg"

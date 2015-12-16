@@ -41,6 +41,25 @@ class puppet_agent::install(
       source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require   => Class['puppet_agent::install::remove_packages'],
     }
+  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+    contain puppet_agent::install::remove_packages
+
+    exec { 'puppet_agent restore /etc/puppetlabs':
+      command => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+      require => Class['puppet_agent::install::remove_packages'],
+    }
+
+    exec { 'puppet_agent post-install restore /etc/puppetlabs':
+      command     => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path        => '/bin:/usr/bin:/sbin:/usr/sbin',
+      refreshonly => true,
+    }
+
+    $_package_options = {
+      require => Exec['puppet_agent restore /etc/puppetlabs'],
+      notify  => Exec['puppet_agent post-install restore /etc/puppetlabs'],
+    }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
     contain puppet_agent::install::remove_packages
 
@@ -67,7 +86,7 @@ class puppet_agent::install(
         }
       }
     }
-  } elsif ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '10') or $::osfamily == 'Darwin' or $::osfamily == 'AIX' or ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
+  } elsif $::osfamily == 'Solaris' or $::osfamily == 'Darwin' or $::osfamily == 'AIX' or ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
     # Solaris 10/OSX/AIX/SLES 10 package provider does not provide 'versionable'
     # Package is removed above, then re-added as the new version here.
     package { $::puppet_agent::package_name:
