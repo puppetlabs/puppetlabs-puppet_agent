@@ -51,7 +51,6 @@ class puppet_agent::install::remove_packages {
           'PUPstomp',
         ]
       } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
-        # This order matters since solaris 11 won't uninstall packages that have dependencies installed
         $packages = [
           'pe-mcollective',
           'pe-mcollective-common',
@@ -60,18 +59,58 @@ class puppet_agent::install::remove_packages {
           'pe-deep-merge',
           'pe-ruby-ldap',
           'pe-ruby-augeas',
-          'pe-augeas',
           'pe-ruby-shadow',
-          'pe-stomp',
           'pe-puppet',
           'pe-facter',
-          'pe-hiera',
-          'pe-ruby-rgen',
-          'pe-ruby',
-          'pe-openssl',
-          'pe-libyaml',
-          'pe-puppet-enterprise-release',
         ]
+        package { 'pe-augeas':
+          ensure => absent,
+          require => Package['pe-ruby-augeas'],
+        }
+        package { 'pe-stomp':
+          ensure => absent,
+          require => Package['pe-mcollective'],
+        }
+        package { ['pe-hiera', 'pe-ruby-rgen']:
+          ensure => absent,
+          require => Package['pe-puppet'],
+        }
+        package { 'pe-ruby':
+          ensure => absent,
+          require => Package[
+            'pe-hiera',
+            'pe-deep-merge',
+            'pe-ruby-rgen',
+            'pe-stomp',
+            'pe-ruby-shadow',
+            'pe-puppet',
+            'pe-mcollective',
+            'pe-facter',
+            'pe-facter',
+            'pe-ruby-augeas',
+          ]
+        }
+        package { ['pe-openssl', 'pe-libyaml']:
+          ensure => absent,
+          require => Package['pe-ruby'],
+        }
+        package { 'pe-puppet-enterprise-release':
+          ensure => absent,
+          require => Package[
+            'pe-hiera',
+            'pe-stomp',
+            'pe-deep-merge',
+            'pe-libyaml',
+            'pe-ruby',
+            'pe-ruby-shadow',
+            'pe-augeas',
+            'pe-puppet',
+            'pe-ruby-rgen',
+            'pe-facter',
+            'pe-mcollective',
+            'pe-ruby-augeas',
+          ],
+        }
       } else {
         $packages = [
           'pe-augeas',
