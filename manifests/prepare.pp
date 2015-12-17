@@ -58,7 +58,8 @@ class puppet_agent::prepare(
     'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
       $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
       class { $_osfamily_class:
-        package_file_name => $package_file_name
+        package_file_name => $package_file_name,
+        require => Class['puppet_agent::prepare::puppet_config'],
       }
       contain $_osfamily_class
     }
