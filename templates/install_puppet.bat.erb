@@ -5,7 +5,7 @@ echo %_task% | findstr "No tasks are running" >nul
 IF NOT %errorlevel% == 0 ( GOTO wait_for_pid )
 
 
-msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*v "<%= @_logfile %>"
+msiexec.exe /qn /norestart /i "<%= if (!@_msi_location.include?("http")); @_msi_location.gsub(/\//, '\\'); else @_msi_location; end %>" /l*v "<%= @_logfile.gsub(/\//, '\\') %>"
 
 :End
 ENDLOCAL
