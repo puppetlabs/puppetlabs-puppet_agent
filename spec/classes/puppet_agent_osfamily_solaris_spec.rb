@@ -34,20 +34,129 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
     end
   end
 
-  describe 'not yet supported releases' do
-    context 'when Solaris 11' do
+  describe 'supported environment' do
+
+    context "when Solaris 11 i386" do
       let(:facts) do
         facts.merge({
-          :is_pe => true,
+          :is_pe                     => true,
+          :platform_tag              => "solaris-11-i386",
           :operatingsystemmajrelease => '11',
         })
       end
 
-      it { expect { catalogue }.to raise_error(/Solaris 11 not supported/) }
-    end
-  end
+      it { should compile.with_all_deps }
+      it { is_expected.to contain_file('/opt/puppetlabs') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages') }
+      it do
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p').with_ensure('present')
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p').with({
+          'source' => 'puppet:///pe_packages/4.0.0/solaris-11-i386/puppet-agent@1.2.5,5.11-1.i386.p5p',
+        })
+      end
 
-  describe 'supported environment' do
+      it do
+        is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
+          'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+        })
+        is_expected.to contain_exec('puppet_agent remove existing repo').with_command("pkgrepo remove -s '/etc/puppetlabs/installer/solaris.repo' '*'")
+        is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
+        is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
+        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+
+      end
+
+      [
+          'pe-augeas',
+          'pe-deep-merge',
+          'pe-facter',
+          'pe-hiera',
+          'pe-libldap',
+          'pe-libyaml',
+          'pe-mcollective',
+          'pe-mcollective-common',
+          'pe-openssl',
+          'pe-puppet',
+          'pe-puppet-enterprise-release',
+          'pe-ruby',
+          'pe-ruby-augeas',
+          'pe-ruby-ldap',
+          'pe-ruby-rgen',
+          'pe-ruby-shadow',
+          'pe-stomp',
+          'pe-virt-what',
+      ].each do |package|
+        it do
+          is_expected.to contain_package(package).with_ensure('absent')
+        end
+      end
+
+      it do
+        is_expected.to contain_package('puppet-agent').with_ensure('present')
+      end
+    end
+
+    context "when Solaris 11 sparc sun4u" do
+      let(:facts) do
+        facts.merge({
+          :is_pe                     => true,
+          :platform_tag              => "solaris-11-sparc",
+          :operatingsystemmajrelease => '11',
+          :architecture              => 'sun4u',
+        })
+      end
+
+      it { should compile.with_all_deps }
+      it { is_expected.to contain_file('/opt/puppetlabs') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages') }
+      it do
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p').with_ensure('present')
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p').with({
+          'source' => 'puppet:///pe_packages/4.0.0/solaris-11-sparc/puppet-agent@1.2.5,5.11-1.sparc.p5p',
+        })
+      end
+
+      it do
+        is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
+          'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+        })
+        is_expected.to contain_exec('puppet_agent remove existing repo').with_command("pkgrepo remove -s '/etc/puppetlabs/installer/solaris.repo' '*'")
+        is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
+        is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
+        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+
+      end
+
+      [
+          'pe-augeas',
+          'pe-deep-merge',
+          'pe-facter',
+          'pe-hiera',
+          'pe-libldap',
+          'pe-libyaml',
+          'pe-mcollective',
+          'pe-mcollective-common',
+          'pe-openssl',
+          'pe-puppet',
+          'pe-puppet-enterprise-release',
+          'pe-ruby',
+          'pe-ruby-augeas',
+          'pe-ruby-ldap',
+          'pe-ruby-rgen',
+          'pe-ruby-shadow',
+          'pe-stomp',
+          'pe-virt-what',
+      ].each do |package|
+        it do
+          is_expected.to contain_package(package).with_ensure('absent')
+        end
+      end
+
+      it do
+        is_expected.to contain_package('puppet-agent').with_ensure('present')
+      end
+    end
+
     context "when Solaris 10 i386" do
       let(:facts) do
         facts.merge({

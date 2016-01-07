@@ -10,13 +10,18 @@ describe 'puppet_agent' do
               :is_pe => true,
               :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[0],
             })
+          elsif os =~ /solaris/
+            facts.merge({
+              :is_pe => true,
+              :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[1],
+            })
           else
             facts
           end
         end
 
         before(:each) do
-          if os =~ /sles/
+          if os =~ /sles/ || os =~ /solaris/
             # Need to mock the PE functions
 
             Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
