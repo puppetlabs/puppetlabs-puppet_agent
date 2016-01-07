@@ -59,7 +59,7 @@ class puppet_agent::prepare(
       $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
       class { $_osfamily_class:
         package_file_name => $package_file_name,
-        require => Class['puppet_agent::prepare::puppet_config'],
+        require           => Class['puppet_agent::prepare::puppet_config'],
       }
       contain $_osfamily_class
     }

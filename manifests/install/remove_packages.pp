@@ -64,19 +64,19 @@ class puppet_agent::install::remove_packages {
           'pe-facter',
         ]
         package { 'pe-augeas':
-          ensure => absent,
+          ensure  => absent,
           require => Package['pe-ruby-augeas'],
         }
         package { 'pe-stomp':
-          ensure => absent,
+          ensure  => absent,
           require => Package['pe-mcollective'],
         }
         package { ['pe-hiera', 'pe-ruby-rgen']:
-          ensure => absent,
+          ensure  => absent,
           require => Package['pe-puppet'],
         }
         package { 'pe-ruby':
-          ensure => absent,
+          ensure  => absent,
           require => Package[
             'pe-hiera',
             'pe-deep-merge',
@@ -87,15 +87,15 @@ class puppet_agent::install::remove_packages {
             'pe-mcollective',
             'pe-facter',
             'pe-facter',
-            'pe-ruby-augeas',
+            'pe-ruby-augeas'
           ]
         }
         package { ['pe-openssl', 'pe-libyaml']:
-          ensure => absent,
+          ensure  => absent,
           require => Package['pe-ruby'],
         }
         package { 'pe-puppet-enterprise-release':
-          ensure => absent,
+          ensure  => absent,
           require => Package[
             'pe-hiera',
             'pe-stomp',
@@ -108,7 +108,7 @@ class puppet_agent::install::remove_packages {
             'pe-ruby-rgen',
             'pe-facter',
             'pe-mcollective',
-            'pe-ruby-augeas',
+            'pe-ruby-augeas'
           ],
         }
       } else {

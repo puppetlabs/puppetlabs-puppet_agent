@@ -42,9 +42,9 @@ class puppet_agent::install(
     contain puppet_agent::install::remove_packages
 
     exec { 'puppet_agent restore /etc/puppetlabs':
-      command   => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
-      path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-      require   => Class['puppet_agent::install::remove_packages'],
+      command => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+      require => Class['puppet_agent::install::remove_packages'],
     }
 
     exec { 'puppet_agent post-install restore /etc/puppetlabs':

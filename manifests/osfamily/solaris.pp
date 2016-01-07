@@ -44,9 +44,9 @@ class puppet_agent::osfamily::solaris(
         ensure => directory,
       }
       exec { 'puppet_agent backup /etc/puppetlabs/':
-        command  => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
-        require  => [Exec['puppet_agent copy packages'], File['/tmp/puppet_agent/']],
-        path     => '/bin:/usr/bin:/sbin:/usr/sbin',
+        command => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+        require => [Exec['puppet_agent copy packages'], File['/tmp/puppet_agent/']],
+        path    => '/bin:/usr/bin:/sbin:/usr/sbin',
       }
 
       $pkgrepo_dir = '/etc/puppetlabs/installer/solaris.repo'
