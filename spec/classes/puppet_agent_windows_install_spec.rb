@@ -120,7 +120,7 @@ RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/
           describe 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi' do
             let(:params) { {:source => 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi'} }
             it {
-              is_expected.to contain_file('C:\tmp\puppet-agent.msi').that_comes_before('File[C:\tmp\install_puppet.bat]')
+              is_expected.to contain_file('C:\tmp\puppet-agent.msi').with_before('File[C:\tmp\install_puppet.bat]')
               is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                                /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent.msi"/
                              )
