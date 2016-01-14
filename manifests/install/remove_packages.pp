@@ -20,6 +20,10 @@ class puppet_agent::install::remove_packages {
           uninstall_options => '--nodeps',
           provider          => 'rpm',
         },
+        'AIX'  => {
+          uninstall_options => '--nodeps',
+          provider          => 'rpm',
+        },
         'Solaris' => {
           adminfile => '/opt/puppetlabs/packages/solaris-noask',
         },

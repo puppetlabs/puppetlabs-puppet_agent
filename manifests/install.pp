@@ -13,7 +13,7 @@ class puppet_agent::install(
 ) {
   assert_private()
 
-  if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
+  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or ($::operatingsystem == 'AIX' and  $::architecture =~ 'PowerPC_POWER[5,6,7]') {
     contain puppet_agent::install::remove_packages
 
     exec { 'replace puppet.conf removed by package removal':
