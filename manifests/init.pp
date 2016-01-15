@@ -7,8 +7,6 @@
 #
 # === Parameters
 #
-# [version]
-#   The package version to upgrade to. Defaults to undef, meaning only upgrade from Puppet < 4.0.
 # [arch]
 #   The package architecture. Defaults to the architecture fact.
 # [collection]
@@ -17,6 +15,8 @@
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 # [package_name]
 #   The package to upgrade to, i.e. `puppet-agent`.
+# [package_version]
+#   The package version to upgrade to. Defaults to undef, meaning only upgrade from Puppet < 4.0.
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
@@ -24,13 +24,13 @@
 #   The location to find packages.
 #
 class puppet_agent (
-  $version       = $::puppet_agent::params::version,
-  $collection    = $::puppet_agent::params::collection,
-  $arch          = $::architecture,
-  $is_pe         = $::puppet_agent::params::_is_pe,
-  $package_name  = $::puppet_agent::params::package_name,
-  $service_names = $::puppet_agent::params::service_names,
-  $source        = $::puppet_agent::params::_source,
+  $collection      = $::puppet_agent::params::collection,
+  $arch            = $::architecture,
+  $is_pe           = $::puppet_agent::params::_is_pe,
+  $package_name    = $::puppet_agent::params::package_name,
+  $package_version = $::puppet_agent::params::package_version,
+  $service_names   = $::puppet_agent::params::service_names,
+  $source          = $::puppet_agent::params::_source,
 ) inherits ::puppet_agent::params {
 
   validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$','PowerPC_POWER'])
@@ -41,8 +41,8 @@ class puppet_agent (
   elsif $::architecture == 'x86' and $arch == 'x64' {
     fail('unable to install x64 on a x86 system')
   }
-  elsif $version != undef and $version !~ /^\d+\.\d+\.\d+$/ {
-    fail("invalid version ${version} requested")
+  elsif $package_version != undef and $package_version !~ /^\d+\.\d+\.\d+[.-]?\d*$/ {
+    fail("invalid version ${package_version} requested")
   }
   else {
     if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
@@ -67,9 +67,9 @@ class puppet_agent (
     } ->
     class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
-      version => $version,
+      package_version   => $package_version,
     }
-    
+
     contain '::puppet_agent::prepare'
     contain '::puppet_agent::install'
 

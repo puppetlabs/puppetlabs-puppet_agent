@@ -4,8 +4,8 @@
 #
 # Manage the install process for windows specifically
 #
-class puppet_agent::install::windows (
-  $version
+class puppet_agent::windows::install (
+  $package_version
 ) {
   assert_private()
 
@@ -16,17 +16,17 @@ class puppet_agent::install::windows (
 
   # If version is undefined and not at Puppet 4, upgrade to latest.
   # Otherwise only perform an upgrade if version declares a version different from the current one.
-  if ($version == undef and versioncmp("${::clientversion}", '4.0.0') < 0) or ($version != undef and versioncmp("${::clientversion}", $version) != 0) {
+  if ($package_version == undef and versioncmp("${::clientversion}", '4.0.0') < 0) or ($package_version != undef and versioncmp("${::clientversion}", $package_version) != 0) {
     if $::puppet_agent::is_pe {
       $_agent_version = chomp(file('/opt/puppetlabs/puppet/VERSION'))
       $_pe_server_version = pe_build_version()
       $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/puppet-agent-${_arch}.msi"
     }
-    elsif $version == undef {
+    elsif $package_version == undef {
       $_https_source = "https://downloads.puppetlabs.com/windows/puppet-agent-${_arch}-latest.msi"
     }
     else {
-      $_https_source = "https://downloads.puppetlabs.com/windows/puppet-agent-${version}-${_arch}.msi"
+      $_https_source = "https://downloads.puppetlabs.com/windows/puppet-agent-${package_version}-${_arch}.msi"
     }
 
     $_source = $::puppet_agent::source ? {

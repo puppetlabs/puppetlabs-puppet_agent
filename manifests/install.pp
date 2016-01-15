@@ -12,18 +12,19 @@
 #   The puppet-agent version to install.
 class puppet_agent::install(
   $package_file_name = undef,
-  $version
+  $package_version
 ) {
   assert_private()
 
   if $::puppet_agent::params::_windows_client {
-    class { '::puppet_agent::install::windows':
-      version => $version,
+    class { '::puppet_agent::windows::install':
+      package_version    => $package_version,
     }
-    contain '::puppet_agent::install::windows'
+    contain '::puppet_agent::windows::install'
   } else {
     class { '::puppet_agent::install::default':
-      version => $version,
+      package_file_name => $package_file_name,
+      package_version   => $package_version,
     }
     contain '::puppet_agent::install::default'
   }

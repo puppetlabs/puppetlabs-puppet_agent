@@ -6,12 +6,12 @@
 #
 class puppet_agent::install::default (
   $package_file_name = undef,
-  $version
+  $package_version
 ) {
   assert_private()
 
-  if $version == undef {
-    $version = 'present'
+  if $package_version == undef {
+    $package_version = 'present'
   }
 
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or ($::operatingsystem == 'AIX' and  $::architecture =~ 'PowerPC_POWER[5,6,7]') {
@@ -51,7 +51,7 @@ class puppet_agent::install::default (
   }
 
   package { $::puppet_agent::package_name:
-    ensure => $version,
+    ensure => $package_version,
     *      => $_package_options,
   }
 }

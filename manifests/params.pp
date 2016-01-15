@@ -12,7 +12,7 @@ class puppet_agent::params {
   # function is available
   $_is_pe = ($::is_pe or is_function_available('pe_compiling_server_version'))
 
-  $version = undef
+  $package_version = undef
   $collection = 'PC1'
 
   # In Puppet Enterprise, agent packages are provided by the master

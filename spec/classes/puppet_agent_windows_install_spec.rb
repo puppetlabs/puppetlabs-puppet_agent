@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe 'puppet_agent', :if => (Puppet.version >= '3.8.0' and Puppet.version < '4.0.0') do
+RSpec.describe 'puppet_agent', :unless => Puppet.version =~ /^(3\.7|4.\d+)\.\d+/ do
   {'5.1' => {:expect_arch => 'x86', :appdata => 'C:/Document and Settings/All Users/Application Data/Puppetlabs'},
    '6.1' => {:expect_arch => 'x64', :appdata => 'C:/ProgramData/Puppetlabs'}}.each do |kernelmajversion, values|
     context "Windows Kernelmajversion #{kernelmajversion}" do
-      let(:facts) { {
+      facts = {
         :architecture => 'x64',
         :env_temp_variable => 'C:\tmp',
         :kernelmajversion => kernelmajversion,
@@ -13,7 +13,9 @@ describe 'puppet_agent', :if => (Puppet.version >= '3.8.0' and Puppet.version < 
         :mco_confdir => "#{values[:appdata]}/mcollective/etc",
         :puppet_agent_pid => 42,
         :system32 => 'C:\windows\sysnative',
-      } }
+      }
+
+      let(:facts) { facts }
       context 'is_pe' do
         before(:each) do
           # Need to mock the function pe_build_version
@@ -29,8 +31,19 @@ describe 'puppet_agent', :if => (Puppet.version >= '3.8.0' and Puppet.version < 
 
           pe_build_version.stubs(:call).returns('4.0.0')
           file.stubs(:call).with('/opt/puppetlabs/puppet/VERSION').returns('1.2.1.1')
+
+          # Need to mock the PE functions
+          Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
+            '4.0.0'
+          end
+
+          Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
+            '1.2.1.1'
+          end
         end
         let(:params) {{ :is_pe => true }}
+        let(:facts) { facts.merge({:is_pe => true}) }
+
         it {
           is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
             %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"https://pm.puppetlabs.com/puppet-agent/4.0.0/1.2.1.1/repos/windows/puppet-agent-#{values[:expect_arch]}.msi\"")}])
@@ -112,7 +125,7 @@ describe 'puppet_agent', :if => (Puppet.version >= '3.8.0' and Puppet.version < 
         describe 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi' do
           let(:params) { {:source => 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi'} }
           it {
-            is_expected.to contain_file('C:\tmp\puppet-agent.msi').that_comes_before('File[C:\tmp\install_puppet.bat]')
+            is_expected.to contain_file('C:\tmp\puppet-agent.msi').with_before('File[C:\tmp\install_puppet.bat]')
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
               /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent.msi"/
             )
