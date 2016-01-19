@@ -1,6 +1,7 @@
 require 'spec_helper'
 
-describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
+describe 'puppet_agent', :if => Puppet.version >= '3.8.0' do
+
   facts = {
     :lsbdistid => 'Debian',
     :osfamily => 'Debian',
@@ -52,12 +53,12 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       "Acquire::https::master.example.vm::SslKey \"/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem\";",
       "Acquire::http:::proxy::master.example.vm DIRECT;",
     ]
-    it { is_expected.to contain_apt__setting('conf-pc1_repo').with({
+    it { is_expected.to contain_apt__setting('conf-pc_repo').with({
       'priority' => 90,
       'content'  => apt_settings.join(''),
     }) }
 
-    it { is_expected.to contain_apt__source('pc1_repo').with({
+    it { is_expected.to contain_apt__source('pc_repo').with({
       'location' => 'https://master.example.vm:8140/packages/4.0.0/debian-7-x86_64',
       'repos'    => 'PC1',
       'key'      => {
@@ -72,7 +73,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
     it { is_expected.not_to contain_apt__setting('conf-pe-repo') }
     it { is_expected.not_to contain_apt__setting('list-puppet-enterprise-installer') }
 
-    it { is_expected.to contain_apt__source('pc1_repo').with({
+    it { is_expected.to contain_apt__source('pc_repo').with({
       'location' => 'http://apt.puppetlabs.com',
       'repos'    => 'PC1',
       'key'      => {

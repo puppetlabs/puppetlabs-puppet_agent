@@ -13,8 +13,8 @@ class puppet_agent::prepare(
   $package_file_name = undef,
 ){
   include puppet_agent::params
-  $_windows_client = downcase($::osfamily) == 'windows'
-  if $_windows_client {
+
+  if $::puppet_agent::params::_windows_client {
     File{
       source_permissions => ignore,
     }
@@ -25,28 +25,30 @@ class puppet_agent::prepare(
     }
   }
 
-  # Migrate old files; assumes user Puppet runs under won't change during upgrade
-  # We assume the current Puppet settings are authoritative; if anything exists
-  # in the destination but not the source, it'll be overwritten.
-  file { $::puppet_agent::params::puppetdirs:
-    ensure => directory,
-  }
-  include puppet_agent::prepare::puppet_config
-
-  if !$_windows_client { #Windows didn't change only nix systems
-    include puppet_agent::prepare::ssl
-
-  # manage client.cfg and server.cfg contents
-    file { $::puppet_agent::params::mcodirs:
+  if versioncmp("${::clientversion}", '4.0.0') < 0 {
+    # Migrate old files; assumes user Puppet runs under won't change during upgrade
+    # We assume the current Puppet settings are authoritative; if anything exists
+    # in the destination but not the source, it'll be overwritten.
+    file { $::puppet_agent::params::puppetdirs:
       ensure => directory,
     }
+    include puppet_agent::prepare::puppet_config
 
-    # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
-    if $::mco_server_config {
-      include puppet_agent::prepare::mco_server_config
-    }
-    if $::mco_client_config {
-      include puppet_agent::prepare::mco_client_config
+    if !$::puppet_agent::params::_windows_client { #Windows didn't change only nix systems
+      include puppet_agent::prepare::ssl
+
+      # manage client.cfg and server.cfg contents
+      file { $::puppet_agent::params::mcodirs:
+        ensure => directory,
+      }
+
+      # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
+      if $::mco_server_config {
+        include puppet_agent::prepare::mco_server_config
+      }
+      if $::mco_client_config {
+        include puppet_agent::prepare::mco_client_config
+      }
     }
   }
 
