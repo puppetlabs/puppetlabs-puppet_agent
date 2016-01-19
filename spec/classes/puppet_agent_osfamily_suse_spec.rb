@@ -50,6 +50,7 @@ describe 'puppet_agent', :if => Puppet.version >= '3.8.0' do
     context "when operatingsystemmajrelease 10 is supported" do
       let(:facts) do
         facts.merge({
+          :operatingsystem           => 'SLES',
           :operatingsystemmajrelease => '10',
           :platform_tag              => "sles-10-x86_64",
           :architecture              => "x86_64",
@@ -63,36 +64,44 @@ describe 'puppet_agent', :if => Puppet.version >= '3.8.0' do
         is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.2.5-1.sles10.x86_64.rpm').with_source('puppet:///pe_packages/4.0.0/sles-10-x86_64/puppet-agent-1.2.5-1.sles10.x86_64.rpm')
       end
 
-      [
-        'pe-augeas',
-        'pe-mcollective-common',
-        'pe-rubygem-deep-merge',
-        'pe-mcollective',
-        'pe-puppet-enterprise-release',
-        'pe-libldap',
-        'pe-libyaml',
-        'pe-ruby-stomp',
-        'pe-ruby-augeas',
-        'pe-ruby-shadow',
-        'pe-hiera',
-        'pe-facter',
-        'pe-puppet',
-        'pe-openssl',
-        'pe-ruby',
-        'pe-ruby-rgen',
-        'pe-virt-what',
-        'pe-ruby-ldap',
-      ].each do |package|
+      context "remove existing packages on pre-4 puppet", :if => Puppet.version < '4.0.0' do
+        [
+          'pe-augeas',
+          'pe-mcollective-common',
+          'pe-rubygem-deep-merge',
+          'pe-mcollective',
+          'pe-puppet-enterprise-release',
+          'pe-libldap',
+          'pe-libyaml',
+          'pe-ruby-stomp',
+          'pe-ruby-augeas',
+          'pe-ruby-shadow',
+          'pe-hiera',
+          'pe-facter',
+          'pe-puppet',
+          'pe-openssl',
+          'pe-ruby',
+          'pe-ruby-rgen',
+          'pe-virt-what',
+          'pe-ruby-ldap',
+        ].each do |package|
+          it do
+            is_expected.to contain_package(package).with_ensure('absent')
+            is_expected.to contain_package(package).with_uninstall_options('--nodeps')
+            is_expected.to contain_package(package).with_provider('rpm')
+          end
+        end
+
         it do
-          is_expected.to contain_package(package).with_ensure('absent')
-          is_expected.to contain_package(package).with_uninstall_options('--nodeps')
-          is_expected.to contain_package(package).with_provider('rpm')
+          is_expected.to contain_exec('replace puppet.conf removed by package removal').with_command('cp /etc/puppetlabs/puppet/puppet.conf.rpmsave /etc/puppetlabs/puppet/puppet.conf')
+          is_expected.to contain_exec('replace puppet.conf removed by package removal').with_creates('/etc/puppetlabs/puppet/puppet.conf')
         end
       end
 
-      it do
-        is_expected.to contain_exec('replace puppet.conf removed by package removal').with_command('cp /etc/puppetlabs/puppet/puppet.conf.rpmsave /etc/puppetlabs/puppet/puppet.conf')
-        is_expected.to contain_exec('replace puppet.conf removed by package removal').with_creates('/etc/puppetlabs/puppet/puppet.conf')
+      context 'no removal of existing packages on puppet 4+', :if => Puppet.version >= '4.0.0' do
+        it do
+          is_expected.not_to contain_class('::puppet_agent::install::remove_packages')
+        end
       end
 
       it do
