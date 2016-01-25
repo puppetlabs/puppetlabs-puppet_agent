@@ -69,11 +69,18 @@ class puppet_agent (
     } ->
     class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
-    } ->
-    class { '::puppet_agent::service': }
+    }
 
     contain '::puppet_agent::prepare'
     contain '::puppet_agent::install'
-    contain '::puppet_agent::service'
+
+    # On windows, our MSI handles the services
+    if $::osfamily != 'windows' {
+      class { '::puppet_agent::service':
+        require => Class['::puppet_agent::install'],
+      }
+      contain '::puppet_agent::service'
+    }
+
   }
 }

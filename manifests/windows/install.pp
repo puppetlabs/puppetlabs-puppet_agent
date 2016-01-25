@@ -52,6 +52,9 @@ class puppet_agent::windows::install(
     content => template('puppet_agent/install_puppet.bat.erb')
   }->
   exec { 'install_puppet.bat':
+    # This script ends in an MSI exec that does not block. Any attempts to manage
+    # the puppet service or configuration after executing this script will behave
+    # strangely or error out.
     command => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${_installbat}\" ${::puppet_agent_pid}",
     path    => $::path,
   }
