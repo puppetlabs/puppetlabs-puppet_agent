@@ -24,7 +24,9 @@ class puppet_agent::params {
   case $::osfamily {
     'RedHat', 'Amazon', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {
       $package_name = 'puppet-agent'
-      $service_names = ['puppet', 'mcollective']
+      if !($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
+        $service_names = ['puppet', 'mcollective']
+      }
 
       $local_puppet_dir = '/opt/puppetlabs'
       $local_packages_dir = "${local_puppet_dir}/packages"

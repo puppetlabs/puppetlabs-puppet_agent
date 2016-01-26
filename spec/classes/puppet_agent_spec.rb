@@ -13,7 +13,6 @@ describe 'puppet_agent' do
           elsif os =~ /solaris/
             facts.merge({
               :is_pe => true,
-              :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[1],
             })
           else
             facts
@@ -51,12 +50,18 @@ describe 'puppet_agent' do
                 it { is_expected.to contain_class('puppet_agent::service') }
 
                 if params[:service_names].nil?
-                  it { is_expected.to contain_service('puppet') }
-                  it { is_expected.to contain_service('mcollective') }
+                  if (facts[:osfamily] == 'Solaris' and facts[:operatingsystemmajrelease] == '11') || facts[:osfamily] == 'Sles'
+                    it { is_expected.to_not contain_service('puppet') }
+                    it { is_expected.to_not contain_service('mcollective') }
+                  else
+                    it { is_expected.to contain_service('puppet') }
+                    it { is_expected.to contain_service('mcollective') }
+                  end
                 else
                   it { is_expected.to_not contain_service('puppet') }
                   it { is_expected.to_not contain_service('mcollective') }
                 end
+
                 it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
               else
                 it { is_expected.to_not contain_service('puppet') }
