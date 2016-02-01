@@ -45,7 +45,7 @@ class puppet_agent::windows::install(
 
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
   $_logfile = windows_native_path("${::env_temp_variable}/puppet-${_timestamp}-installer.log")
-  $_puppet_master = $settings::server
+  $_puppet_master = $::puppet_master_server
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
   file { "${_installbat}":
