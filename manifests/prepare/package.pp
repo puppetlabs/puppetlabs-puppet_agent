@@ -17,20 +17,25 @@ class puppet_agent::prepare::package(
   if $puppet_agent::params::master_agent_version != $::aio_agent_version {
     $pe_server_version = pe_build_version()
 
-    $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
-
-    file { ['/opt/puppetlabs', '/opt/puppetlabs/packages']:
-      ensure => directory,
+    if $::osfamily == 'windows' {
+      $tag = $::puppet_agent::arch ? {
+        'x64' => 'windows-x86_64',
+      }
+      $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
+    } else {
+      $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
     }
 
-    file { "/opt/puppetlabs/packages/${package_file_name}":
+    file { $::puppet_agent::params::local_packages_dir:
+      ensure => directory,
+    }
+    file { "${::puppet_agent::params::local_packages_dir}/${package_file_name}":
       ensure  => present,
-      owner   => 0,
-      group   => 0,
+      owner   => $::puppet_agent::params::user,
+      group   => $::puppet_agent::params::group,
       mode    => '0644',
       source  => $source,
-      backup  => false,
-      require => File['/opt/puppetlabs/packages'],
+      require => File[$::puppet_agent::params::local_packages_dir],
     }
   }
 }

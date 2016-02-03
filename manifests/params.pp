@@ -26,6 +26,8 @@ class puppet_agent::params {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
+      $local_packages_dir = '/opt/puppetlabs/packages'
+
       $confdir = '/etc/puppetlabs/puppet'
       $mco_dir = '/etc/puppetlabs/mcollective'
 
@@ -38,14 +40,25 @@ class puppet_agent::params {
       $mcodirs = [$mco_dir]
 
       $path_separator = ':'
+
+      $user  = 0
+      $group = 0
     }
     'windows' : {
+      $package_name = 'puppet-agent'
+      $service_names = ['puppet', 'mcollective']
+
+      $local_packages_dir = windows_native_path("${::common_appdata}/Puppetlabs/packages")
+
       $confdir = $::puppet_confdir
       $mco_dir = $::mco_confdir
 
       $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
       $path_separator = ';'
+
+      $user  = 'S-1-5-32-544'
+      $group = 'S-1-5-32-544'
     }
     default: {
       fail("${::operatingsystem} not supported")

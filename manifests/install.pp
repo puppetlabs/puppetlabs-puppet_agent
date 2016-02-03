@@ -49,8 +49,22 @@ class puppet_agent::install(
     $_package_options = {}
   }
 
-  package { $::puppet_agent::package_name:
-    ensure => present,
-    *      => $_package_options,
+  if $::osfamily == 'windows' {
+    if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
+      class { 'puppet_agent::windows::install':
+        package_file_name => $package_file_name,
+        source            => windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}"),
+      }
+    } else {
+      class { 'puppet_agent::windows::install':
+        package_file_name => $package_file_name,
+        source            => $::puppet_agent::source,
+      }
+    }
+  } else {
+    package { $::puppet_agent::package_name:
+      ensure => present,
+      *      => $_package_options,
+    }
   }
 }

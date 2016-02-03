@@ -4,38 +4,37 @@
 #
 # Manage the install process for windows specifically
 #
-class puppet_agent::windows::install {
+class puppet_agent::windows::install(
+  $package_file_name,
+  $source = $::puppet_agent::source,
+  ) {
   assert_private()
-
-  $_arch = $::kernelmajversion ?{
-    /^5\.\d+/ => 'x86', # x64 is never allowed on windows 2003
-    default   => $::puppet_agent::arch
-  }
 
   if $::puppet_agent::is_pe {
     $_agent_version = $puppet_agent::params::master_agent_version
     $_pe_server_version = pe_build_version()
-    $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/puppet-agent-${_arch}.msi"
+    $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/${package_file_name}"
   }
   else {
-    $_https_source = "https://downloads.puppetlabs.com/windows/puppet-agent-${_arch}-latest.msi"
+    $_https_source = "https://downloads.puppetlabs.com/windows/${package_file_name}"
   }
 
-  $_source = $::puppet_agent::source ? {
+  $_source = $source ? {
     undef          => $_https_source,
-    /^[a-zA-Z]:/ => windows_native_path($::puppet_agent::source),
-    default        => $::puppet_agent::source,
+    /^[a-zA-Z]:/ => windows_native_path($source),
+    default        => $source,
   }
 
   $_msi_location = $_source ? {
-    /^puppet:/ => "${::env_temp_variable}\\puppet-agent.msi",
+    /^puppet:/ => windows_native_path("${::env_temp_variable}/puppet-agent.msi"),
     default    => $_source,
   }
 
+  $_installbat = windows_native_path("${::env_temp_variable}/install_puppet.bat")
   if $_source =~ /^puppet:/ {
     file{ $_msi_location:
       source => $_source,
-      before => File["${::env_temp_variable}\\install_puppet.bat"],
+      before => File["${_installbat}"],
     }
   }
 
@@ -45,15 +44,16 @@ class puppet_agent::windows::install {
   }
 
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
-  $_logfile = "${::env_temp_variable}\\puppet-${_timestamp}-installer.log"
+  $_logfile = windows_native_path("${::env_temp_variable}/puppet-${_timestamp}-installer.log")
+  $_puppet_master = $::puppet_master_server
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
-  file { "${::env_temp_variable}\\install_puppet.bat":
+  file { "${_installbat}":
     ensure  => file,
     content => template('puppet_agent/install_puppet.bat.erb')
   }->
   exec { 'install_puppet.bat':
-    command => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${::env_temp_variable}\\install_puppet.bat\" ${::puppet_agent_pid}",
+    command => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${_installbat}\" ${::puppet_agent_pid}",
     path    => $::path,
   }
 }

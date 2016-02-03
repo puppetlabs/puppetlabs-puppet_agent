@@ -28,6 +28,12 @@ Facter.add('puppet_sslpaths') do
   end
 end
 
+Facter.add('puppet_master_server') do
+  setcode do
+    Puppet.settings['server']
+  end
+end
+
 Facter.add('puppet_confdir') do
   setcode do
     Puppet.settings['confdir']
