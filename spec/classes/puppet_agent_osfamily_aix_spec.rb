@@ -36,6 +36,8 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
 
       it { is_expected.to contain_file('/etc/puppetlabs/puppet/puppet.conf') }
 
+      it { is_expected.to contain_file('/opt/puppetlabs') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it { is_expected.to contain_file("/opt/puppetlabs/packages/#{rpmname}")}
 
       it { is_expected.to contain_class('Puppet_agent::Install').with({
