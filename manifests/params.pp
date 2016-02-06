@@ -26,12 +26,13 @@ class puppet_agent::params {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
-      $local_packages_dir = '/opt/puppetlabs/packages'
+      $local_puppet_dir = '/opt/puppetlabs'
+      $local_packages_dir = "${local_puppet_dir}/packages"
 
       $confdir = '/etc/puppetlabs/puppet'
       $mco_dir = '/etc/puppetlabs/mcollective'
 
-      $mco_install = '/opt/puppetlabs/mcollective'
+      $mco_install = "${local_puppet_dir}/mcollective"
       $logdir = '/var/log/puppetlabs'
 
       # A list of dirs that need to be created. Mainly done this way because
@@ -48,7 +49,8 @@ class puppet_agent::params {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
-      $local_packages_dir = windows_native_path("${::common_appdata}/Puppetlabs/packages")
+      $local_puppet_dir = windows_native_path("${::common_appdata}/Puppetlabs")
+      $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
       $confdir = $::puppet_confdir
       $mco_dir = $::mco_confdir
