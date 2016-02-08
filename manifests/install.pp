@@ -50,7 +50,7 @@ class puppet_agent::install(
   }
 
   if $::osfamily == 'windows' {
-    if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
+    if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) and defined(File["${::puppet_agent::params::local_packages_dir}/${package_file_name}"]) {
       class { 'puppet_agent::windows::install':
         package_file_name => $package_file_name,
         source            => windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}"),
