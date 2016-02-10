@@ -16,8 +16,9 @@ class puppet_agent::osfamily::suse(
     }
     '11', '12': {
       # Import the GPG key
-      $keyname = 'RPM-GPG-KEY-puppetlabs'
-      $gpg_path = "/etc/pki/rpm-gpg/${keyname}"
+      $keyname     = 'RPM-GPG-KEY-puppetlabs'
+      $gpg_path    = "/etc/pki/rpm-gpg/${keyname}"
+      $gpg_homedir = '/root/.gnupg'
 
       file { ['/etc/pki', '/etc/pki/rpm-gpg']:
         ensure => directory,
@@ -35,7 +36,7 @@ class puppet_agent::osfamily::suse(
       exec {  "import-${keyname}":
         path      => '/bin:/usr/bin:/sbin:/usr/sbin',
         command   => "rpm --import ${gpg_path}",
-        unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${gpg_path}) | cut --characters=11-18 | tr [A-Z] [a-z]`",
+        unless    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --throw-keyids < ${gpg_path}) | cut --characters=11-18 | tr [A-Z] [a-z])",
         require   => File[$gpg_path],
         logoutput => 'on_failure',
       }
