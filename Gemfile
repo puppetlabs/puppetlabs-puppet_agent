@@ -7,7 +7,7 @@ group :test do
   gem 'rspec-puppet', '~> 2.2'
   gem 'puppetlabs_spec_helper', '~> 0.10'
   gem 'metadata-json-lint', '~> 0.0'
-  gem 'rspec-puppet-facts', '~> 0.10'
+  gem 'rspec-puppet-facts', '~> 1.3'
 end
 
 group :system_tests do

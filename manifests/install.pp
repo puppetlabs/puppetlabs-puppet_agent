@@ -38,6 +38,25 @@ class puppet_agent::install(
       source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require   => Class['puppet_agent::install::remove_packages'],
     }
+  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+    contain puppet_agent::install::remove_packages
+
+    exec { 'puppet_agent restore /etc/puppetlabs':
+      command => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+      require => Class['puppet_agent::install::remove_packages'],
+    }
+
+    exec { 'puppet_agent post-install restore /etc/puppetlabs':
+      command     => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path        => '/bin:/usr/bin:/sbin:/usr/sbin',
+      refreshonly => true,
+    }
+
+    $_package_options = {
+      require => Exec['puppet_agent restore /etc/puppetlabs'],
+      notify  => Exec['puppet_agent post-install restore /etc/puppetlabs'],
+    }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
     contain puppet_agent::install::remove_packages
 

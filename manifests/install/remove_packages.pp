@@ -15,24 +15,26 @@ class puppet_agent::install::remove_packages {
 
     } else {
 
-      $package_options = $::operatingsystem ? {
-        'SLES'  => {
+      if $::operatingsystem == 'SLES' {
+        $package_options = {
           uninstall_options => '--nodeps',
           provider          => 'rpm',
-        },
-        'AIX'  => {
-          uninstall_options => '--nodeps',
-          provider          => 'rpm',
-        },
-        'Solaris' => {
-          adminfile => '/opt/puppetlabs/packages/solaris-noask',
-        },
-        default => {
         }
+      } elsif $::operatingsystem == 'AIX' {
+        $package_options = {
+          uninstall_options => '--nodeps',
+          provider          => 'rpm',
+        }
+      } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+        $package_options = {
+          adminfile => '/opt/puppetlabs/packages/solaris-noask',
+        }
+      } else {
+        $package_options = {}
       }
 
-      $packages = $::operatingsystem ? {
-        'Solaris' => [
+      if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+        $packages = [
           'PUPpuppet',
           'PUPaugeas',
           'PUPdeep-merge',
@@ -47,8 +49,70 @@ class puppet_agent::install::remove_packages {
           'PUPruby-rgen',
           'PUPruby-shadow',
           'PUPstomp',
-        ],
-        default => [
+        ]
+      } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+        $packages = [
+          'pe-mcollective',
+          'pe-mcollective-common',
+          'pe-virt-what',
+          'pe-libldap',
+          'pe-deep-merge',
+          'pe-ruby-ldap',
+          'pe-ruby-augeas',
+          'pe-ruby-shadow',
+          'pe-puppet',
+          'pe-facter',
+        ]
+        package { 'pe-augeas':
+          ensure  => absent,
+          require => Package['pe-ruby-augeas'],
+        }
+        package { 'pe-stomp':
+          ensure  => absent,
+          require => Package['pe-mcollective'],
+        }
+        package { ['pe-hiera', 'pe-ruby-rgen']:
+          ensure  => absent,
+          require => Package['pe-puppet'],
+        }
+        package { 'pe-ruby':
+          ensure  => absent,
+          require => Package[
+            'pe-hiera',
+            'pe-deep-merge',
+            'pe-ruby-rgen',
+            'pe-stomp',
+            'pe-ruby-shadow',
+            'pe-puppet',
+            'pe-mcollective',
+            'pe-facter',
+            'pe-facter',
+            'pe-ruby-augeas'
+          ]
+        }
+        package { ['pe-openssl', 'pe-libyaml']:
+          ensure  => absent,
+          require => Package['pe-ruby'],
+        }
+        package { 'pe-puppet-enterprise-release':
+          ensure  => absent,
+          require => Package[
+            'pe-hiera',
+            'pe-stomp',
+            'pe-deep-merge',
+            'pe-libyaml',
+            'pe-ruby',
+            'pe-ruby-shadow',
+            'pe-augeas',
+            'pe-puppet',
+            'pe-ruby-rgen',
+            'pe-facter',
+            'pe-mcollective',
+            'pe-ruby-augeas'
+          ],
+        }
+      } else {
+        $packages = [
           'pe-augeas',
           'pe-mcollective-common',
           'pe-rubygem-deep-merge',
