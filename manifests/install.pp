@@ -13,7 +13,7 @@ class puppet_agent::install(
 ) {
   assert_private()
 
-  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or ($::operatingsystem == 'AIX' and  $::architecture =~ 'PowerPC_POWER[5,6,7]') {
+  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or ($::operatingsystem == 'AIX' and  $::architecture =~ /PowerPC_POWER[5,6,7]/) {
     contain puppet_agent::install::remove_packages
 
     exec { 'replace puppet.conf removed by package removal':
@@ -38,7 +38,7 @@ class puppet_agent::install(
       source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require   => Class['puppet_agent::install::remove_packages'],
     }
-  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ '10\.[9,10,11]' {
+  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
     contain puppet_agent::install::remove_packages
 
     $_package_options = {
