@@ -3,8 +3,12 @@ class puppet_agent::osfamily::solaris(
 ) {
   assert_private()
 
-  if $::operatingsystem != 'Solaris' or $::puppet_agent::is_pe == false {
+  if $::operatingsystem != 'Solaris' {
     fail("${::operatingsystem} not supported")
+  }
+
+  if $::puppet_agent::is_pe == false {
+    fail('Solaris upgrades are only supported on Puppet Enterprise')
   }
 
   case $::operatingsystemmajrelease {

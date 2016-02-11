@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >= "4.0.0" do
+describe 'puppet_agent' do
   facts = {
     :lsbdistid => 'Debian',
     :osfamily => 'Debian',
@@ -11,9 +11,17 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       :clientcert   => 'foo.example.vm',
   }
 
+  # All FOSS and all Puppet 4+ upgrades require the package_version
+  package_version = '1.2.5'
+  let(:params) {
+    {
+      :package_version => package_version
+    }
+  }
   let(:facts) { facts }
 
   it { is_expected.to contain_class('apt') }
+  it { is_expected.to contain_notify('pc_repo_force') }
 
   context 'when PE' do
     before(:each) do
@@ -24,7 +32,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       end
 
       Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-        '1.2.5'
+        package_version
       end
     end
 
@@ -52,12 +60,12 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       "Acquire::https::master.example.vm::SslKey \"/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem\";",
       "Acquire::http::proxy::master.example.vm DIRECT;",
     ]
-    it { is_expected.to contain_apt__setting('conf-pc1_repo').with({
+    it { is_expected.to contain_apt__setting('conf-pc_repo').with({
       'priority' => 90,
       'content'  => apt_settings.join(''),
     }) }
 
-    it { is_expected.to contain_apt__source('pc1_repo').with({
+    it { is_expected.to contain_apt__source('pc_repo').with({
       'location' => 'https://master.example.vm:8140/packages/4.0.0/debian-7-x86_64',
       'repos'    => 'PC1',
       'key'      => {
@@ -66,13 +74,15 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       },
     }) }
 
+    it { is_expected.to contain_class("puppet_agent::osfamily::debian") }
+
   end
 
   context 'when FOSS' do
     it { is_expected.not_to contain_apt__setting('conf-pe-repo') }
     it { is_expected.not_to contain_apt__setting('list-puppet-enterprise-installer') }
 
-    it { is_expected.to contain_apt__source('pc1_repo').with({
+    it { is_expected.to contain_apt__source('pc_repo').with({
       'location' => 'http://apt.puppetlabs.com',
       'repos'    => 'PC1',
       'key'      => {
@@ -80,5 +90,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
         'server' => 'pgp.mit.edu',
       },
     }) }
+
+    it { is_expected.to contain_class("puppet_agent::osfamily::debian") }
   end
 end

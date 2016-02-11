@@ -6,10 +6,24 @@ MCO_PLUGIN_YAML = '/etc/puppetlabs/mcollective/facts.yaml'
 MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
 describe 'puppet_agent::prepare' do
+  let(:params) { {
+    :package_version => '4.0.0',
+  } }
   context 'supported operating system families' do
-    ['Debian', 'RedHat'].each do |osfamily|
+    ['Debian', 'RedHat', 'SuSE'].each do |osfamily|
+      case osfamily
+      when 'SuSE'
+        os = 'SLES'
+        osmajor = '10'
+      else
+        os = 'foo'
+        osmajor = '42'
+      end
+
+
       facts = {
-        :operatingsystem => 'foo',
+        :operatingsystem => os,
+        :operatingsystemmajrelease => osmajor,
         :architecture => 'bar',
         :osfamily => osfamily,
         :lsbdistid => osfamily,
@@ -32,8 +46,11 @@ describe 'puppet_agent::prepare' do
               'hostcrl' => { 'path_exists' => false }
             }})
           }
-          ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys', 'crl.pem'].each do |path|
-            it { is_expected.to_not contain_file("/etc/puppetlabs/puppet/ssl/#{path}") }
+          # We don't perform SSL migration post-4 upgrade
+          if Puppet.version < "4.0.0"
+            ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys', 'crl.pem'].each do |path|
+              it { is_expected.to_not contain_file("/etc/puppetlabs/puppet/ssl/#{path}") }
+            end
           end
         end
 
@@ -58,146 +75,158 @@ describe 'puppet_agent::prepare' do
                 })
               }
 
-              it { is_expected.to contain_file('/etc/puppetlabs/mcollective').with_ensure('directory') }
+              # We don't perform MCO migration post-4 upgrade
+              if Puppet.version < "4.0.0"
+                it { is_expected.to contain_file('/etc/puppetlabs/mcollective').with_ensure('directory') }
 
-              mco_config.each do |node, cfg|
-                if cfg
-                  it { is_expected.to contain_file(MCO_CFG[node]).with({
-                    'ensure' => 'file',
-                    'source' => cfg,
-                  }) }
+                mco_config.each do |node, cfg|
+                  if cfg
+                    it { is_expected.to contain_file(MCO_CFG[node]).with({
+                      'ensure' => 'file',
+                      'source' => cfg,
+                    }) }
 
-                  if mco_settings && mco_settings['libdir'] && !mco_settings['libdir'].include?(MCO_LIBDIR)
-                    it { is_expected.to contain_ini_setting("#{node}/libdir").with({
+                    if mco_settings && mco_settings['libdir'] && !mco_settings['libdir'].include?(MCO_LIBDIR)
+                      it { is_expected.to contain_ini_setting("#{node}/libdir").with({
+                        'section' => '',
+                        'setting' => 'libdir',
+                        'path'    => MCO_CFG[node],
+                        'value'   => "#{MCO_LIBDIR}:#{mco_settings['libdir']}",
+                      }).that_requires("File[#{MCO_CFG[node]}]") }
+                    else
+                      it { is_expected.to_not contain_ini_setting("#{node}/libdir") }
+                    end
+
+                    if mco_settings && mco_settings['plugin.yaml'] && !mco_settings['plugin.yaml'].include?(MCO_PLUGIN_YAML)
+                      it { is_expected.to contain_ini_setting("#{node}/plugin.yaml").with({
+                        'section' => '',
+                        'setting' => 'plugin.yaml',
+                        'path'    => MCO_CFG[node],
+                        'value'   => "#{mco_settings['plugin.yaml']}:#{MCO_PLUGIN_YAML}",
+                      }).that_requires("File[#{MCO_CFG[node]}]") }
+                    else
+                      it { is_expected.to_not contain_ini_setting("#{node}/plugin.yaml") }
+                    end
+
+                    it { is_expected.to contain_ini_setting("#{node}/logfile").with({
                       'section' => '',
-                      'setting' => 'libdir',
+                      'setting' => 'logfile',
                       'path'    => MCO_CFG[node],
-                      'value'   => "#{MCO_LIBDIR}:#{mco_settings['libdir']}",
+                      'value'   => MCO_LOGFILE,
                     }).that_requires("File[#{MCO_CFG[node]}]") }
                   else
-                    it { is_expected.to_not contain_ini_setting("#{node}/libdir") }
+                    it { is_expected.to_not contain_file(MCO_CFG[node]) }
                   end
-
-                  if mco_settings && mco_settings['plugin.yaml'] && !mco_settings['plugin.yaml'].include?(MCO_PLUGIN_YAML)
-                    it { is_expected.to contain_ini_setting("#{node}/plugin.yaml").with({
-                      'section' => '',
-                      'setting' => 'plugin.yaml',
-                      'path'    => MCO_CFG[node],
-                      'value'   => "#{mco_settings['plugin.yaml']}:#{MCO_PLUGIN_YAML}",
-                    }).that_requires("File[#{MCO_CFG[node]}]") }
-                  else
-                    it { is_expected.to_not contain_ini_setting("#{node}/plugin.yaml") }
-                  end
-
-                  it { is_expected.to contain_ini_setting("#{node}/logfile").with({
-                    'section' => '',
-                    'setting' => 'logfile',
-                    'path'    => MCO_CFG[node],
-                    'value'   => MCO_LOGFILE,
-                  }).that_requires("File[#{MCO_CFG[node]}]") }
-                else
-                  it { is_expected.to_not contain_file(MCO_CFG[node]) }
                 end
               end
             end
           end
         end
 
-        ['/etc/puppetlabs', '/etc/puppetlabs/puppet'].each do |dir|
-          it { is_expected.to contain_file(dir).with_ensure('directory') }
-        end
+        # We don't perform file migration post-4 upgrade
+        if Puppet.version < "4.0.0"
+          ['/etc/puppetlabs', '/etc/puppetlabs/puppet'].each do |dir|
+            it { is_expected.to contain_file(dir).with_ensure('directory') }
+          end
 
-        it { is_expected.to contain_file('/etc/puppetlabs/puppet/puppet.conf').with({
-          'ensure' => 'file',
-          'source' => '/dev/null/puppet.conf',
-        }) }
-
-        it { is_expected.to contain_file('/etc/puppetlabs/puppet/ssl').with({
-          'ensure'  => 'directory',
-          'source'  => '/dev/null/ssl',
-          'backup'  => 'false',
-          'recurse' => 'false',
-        }) }
-
-        ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys'].each do |dir|
-          it { is_expected.to contain_file("/etc/puppetlabs/puppet/ssl/#{dir}").with({
-            'ensure'  => 'directory',
-            'source'  => "/dev/null/ssl/#{dir}",
-            'backup'  => 'false',
-            'recurse' => 'true',
+          it { is_expected.to contain_file('/etc/puppetlabs/puppet/puppet.conf').with({
+            'ensure' => 'file',
+            'source' => '/dev/null/puppet.conf',
           }) }
+
+          it { is_expected.to contain_file('/etc/puppetlabs/puppet/ssl').with({
+            'ensure'  => 'directory',
+            'source'  => '/dev/null/ssl',
+            'backup'  => 'false',
+            'recurse' => 'false',
+          }) }
+
+          ['certificate_requests', 'certs', 'private', 'private_keys', 'public_keys'].each do |dir|
+            it { is_expected.to contain_file("/etc/puppetlabs/puppet/ssl/#{dir}").with({
+              'ensure'  => 'directory',
+              'source'  => "/dev/null/ssl/#{dir}",
+              'backup'  => 'false',
+              'recurse' => 'true',
+            }) }
+          end
+
+          it { is_expected.to contain_file('/etc/puppetlabs/puppet/ssl/crl.pem').with({
+            'ensure' => 'file',
+            'source' => '/dev/null/ssl/crl.pem',
+            'backup' => 'false',
+          }) }
+
+          ['', 'agent', 'main', 'master'].each do |section|
+            ['allow_variables_with_dashes',
+             'async_storeconfigs',
+             'binder',
+             'catalog_format',
+             'certdnsnames',
+             'certificate_expire_warning',
+             'couchdb_url',
+             'dbadapter',
+             'dbconnections',
+             'dblocation',
+             'dbmigrate',
+             'dbname',
+             'dbpassword',
+             'dbport',
+             'dbserver',
+             'dbsocket',
+             'dbuser',
+             'dynamicfacts',
+             'http_compression',
+             'httplog',
+             'ignoreimport',
+             'immutable_node_data',
+             'inventory_port',
+             'inventory_server',
+             'inventory_terminus',
+             'legacy_query_parameter_serialization',
+             'listen',
+             'localconfig',
+             'manifestdir',
+             'masterlog',
+             'parser',
+             'preview_outputdir',
+             'puppetport',
+             'queue_source',
+             'queue_type',
+             'rails_loglevel',
+             'railslog',
+             'report_serialization_format',
+             'reportfrom',
+             'rrddir',
+             'rrdinterval',
+             'sendmail',
+             'smtphelo',
+             'smtpport',
+             'smtpserver',
+             'ssldir',
+             'stringify_facts',
+             'tagmap',
+             'templatedir',
+             'thin_storeconfigs',
+             'trusted_node_data',
+             'zlib',
+             'config_version',
+             'manifest',
+             'modulepath',
+             'disable_warnings',
+             'vardir',
+             'rundir',
+             'libdir',
+             'confdir',
+             'classfile'].each do |setting|
+               it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
+             end
+          end
         end
 
-        it { is_expected.to contain_file('/etc/puppetlabs/puppet/ssl/crl.pem').with({
-          'ensure' => 'file',
-          'source' => '/dev/null/ssl/crl.pem',
-          'backup' => 'false',
-        }) }
-
-        ['', 'agent', 'main', 'master'].each do |section|
-          ['allow_variables_with_dashes',
-           'async_storeconfigs',
-           'binder',
-           'catalog_format',
-           'certdnsnames',
-           'certificate_expire_warning',
-           'couchdb_url',
-           'dbadapter',
-           'dbconnections',
-           'dblocation',
-           'dbmigrate',
-           'dbname',
-           'dbpassword',
-           'dbport',
-           'dbserver',
-           'dbsocket',
-           'dbuser',
-           'dynamicfacts',
-           'http_compression',
-           'httplog',
-           'ignoreimport',
-           'immutable_node_data',
-           'inventory_port',
-           'inventory_server',
-           'inventory_terminus',
-           'legacy_query_parameter_serialization',
-           'listen',
-           'localconfig',
-           'manifestdir',
-           'masterlog',
-           'parser',
-           'preview_outputdir',
-           'puppetport',
-           'queue_source',
-           'queue_type',
-           'rails_loglevel',
-           'railslog',
-           'report_serialization_format',
-           'reportfrom',
-           'rrddir',
-           'rrdinterval',
-           'sendmail',
-           'smtphelo',
-           'smtpport',
-           'smtpserver',
-           'ssldir',
-           'stringify_facts',
-           'tagmap',
-           'templatedir',
-           'thin_storeconfigs',
-           'trusted_node_data',
-           'zlib',
-           'config_version',
-           'manifest',
-           'modulepath',
-           'disable_warnings',
-           'vardir',
-           'rundir',
-           'libdir',
-           'confdir',
-           'classfile'].each do |setting|
-             it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
-           end
+        if Puppet.version >= "4.0.0"
+          it { is_expected.not_to contain_class("puppet_agent::prepare::puppet_config") }
+          it { is_expected.not_to contain_class("puppet_agent::prepare::ssl") }
+          it { is_expected.not_to contain_class("puppet_agent::prepare::mco_client_config") }
         end
 
         it { is_expected.to contain_class("puppet_agent::osfamily::#{facts[:osfamily]}") }
