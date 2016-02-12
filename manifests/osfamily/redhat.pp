@@ -23,8 +23,15 @@ class puppet_agent::osfamily::redhat(
     $_sslclientcert_path = "${_ssl_dir}/certs/${::clientcert}.pem"
     $_sslclientkey_path = "${_ssl_dir}/private_keys/${::clientcert}.pem"
 
+    # Treat Amazon Linux just like Enterprise Linux 6
+    if $::operatingsystem == 'Amazon' {
+      $_repo_dir = "el-6-${::architecture}"
+    }
+    else {
+      $_repo_dir = $::platform_tag
+    }
     $pe_server_version = pe_build_version()
-    $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
+    $source = "${::puppet_agent::source}/${pe_server_version}/${_repo_dir}"
 
     # Due to the file paths changing on the PE Master, the 3.8 repository is no longer valid.
     # On upgrade, remove the repo file so that a dangling reference is not left behind returning
