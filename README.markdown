@@ -112,6 +112,11 @@ In addition, there are several known issues with Windows:
 * On Windows Server 2003, only x86 is supported, and the `arch` parameter is ignored. If you try to force an upgrade to x64, Puppet installs the x86 version with no error message.
 * On Windows Server 2003 with Puppet Enterprise, the default download location is unreachable. You can work around this issue by specifying an alternate download URL in the `source` parameter.
  
+Specifically in the 1.1.0 Release:
+* For Windows, trigger an agent after upgrade run to get Puppet to create the necessary directory structures.
+* There is currently ongoing work to allow for upgrading from 2015.2.x to 2015.3.x.
+* Solaris 11 support work is in progess, but currently still buggy.
+
 ##Development
 
 Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
