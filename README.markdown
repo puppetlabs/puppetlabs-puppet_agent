@@ -113,9 +113,9 @@ In addition, there are several known issues with Windows:
 * On Windows Server 2003 with Puppet Enterprise, the default download location is unreachable. You can work around this issue by specifying an alternate download URL in the `source` parameter.
  
 Specifically in the 1.1.0 Release:
-* For Windows, trigger an agent after upgrade run to get Puppet to create the necessary directory structures.
-* There is currently ongoing work to allow for upgrading from 2015.2.x to 2015.3.x.
-* Solaris 11 support work is in progess, but currently still buggy.
+* For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
+* Upgrading from 2015.2.x to 2015.3.x is not yet supported.
+* Solaris 11 is not yet supported.
 
 ##Development
 
