@@ -2,6 +2,48 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.0]
+
+### Summary
+The addition of several OS support features and a considerable amount of compatibility and bug fixes. 
+
+### Known issues
+While this release adds considerable features and bug fixes the following areas are known issues and require more work:
+- For Windows, trigger an agent run after upgrade to get Puppet to create the nessesary directory structures.
+- There is currently ongoing work to allow for upgrading from 2015.2.x to 2015.3.x.
+- Solaris 11 support work is in progess, but currently still buggy.
+
+### Features
+- Adds support for SLES 10, Solaris 10, AIX.
+- Add OSX 10.9 upgrades.
+- Add no-internet Windows upgrade in PE.
+- Added puppet_master_server fact.
+- Adds `/opt/puppetlabs` to the managed directories.
+- Additional test checks for /opt/puppetlabs.
+
+### Bugfixes
+- Use rspec expect syntax for catching errors.
+- Base master_agent_version on pe_compiling_server_aio_build().
+- Update in metadata to include support for SLES 10 and 11.
+- Ensure pe-puppet/mcollective services stopped after removing the PUPpuppet and PUPmcollective packages.
+- Small readme typo fix.
+- Pass in Puppet agent PID as command line parameter to avoid recreating install_puppet.bat at every agent run.
+- Allow using the internal mirror when resolving gems.
+- Add Solaris 10 sparc to supported arch.
+- No longer converts Windows file resource to RAL catalog.
+- Create/use local_package_dir in params.pp.
+- Fix behavior for non-PE.
+- Fix specs for Windows changes.
+- Remove check for null $service_names.
+- Fix linter errors on Windows PR 66.
+- Use common_appdata on Windows.
+- Removes management of the puppet/mco services on Windows systems.
+- Add start/wait to Windows upgrade.
+- Pass in configured server to Windows MSI.
+- Fixes SLES11 GPG key import issue.
+- Fixed regex for SLES compatibility.
+- Ensures local MSI package resource defined on Windows.
+
 ## [1.0.0] - 2015-07-28
 
 ### Summary
