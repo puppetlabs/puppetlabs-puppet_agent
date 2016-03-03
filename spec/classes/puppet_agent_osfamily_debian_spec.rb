@@ -50,7 +50,7 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       "Acquire::https::master.example.vm::CaInfo \"/etc/puppetlabs/puppet/ssl/certs/ca.pem\";",
       "Acquire::https::master.example.vm::SslCert \"/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem\";",
       "Acquire::https::master.example.vm::SslKey \"/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem\";",
-      "Acquire::http:::proxy::master.example.vm DIRECT;",
+      "Acquire::http::proxy::master.example.vm DIRECT;",
     ]
     it { is_expected.to contain_apt__setting('conf-pc1_repo').with({
       'priority' => 90,

@@ -27,7 +27,7 @@ class puppet_agent::osfamily::debian(
       "Acquire::https::${source_host}::CaInfo \"${_sslcacert_path}\";",
       "Acquire::https::${source_host}::SslCert \"${_sslclientcert_path}\";",
       "Acquire::https::${source_host}::SslKey \"${_sslclientkey_path}\";",
-      "Acquire::http:::proxy::${source_host} DIRECT;",
+      "Acquire::http::proxy::${source_host} DIRECT;",
     ]
 
     apt::setting { 'conf-pc1_repo':
