@@ -30,6 +30,12 @@ class puppet_agent::osfamily::debian(
       "Acquire::http::proxy::${source_host} DIRECT;",
     ]
 
+    $_key_settings = {
+      id      => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+      source  => "${::puppet_agent::source}/GPG-KEY-puppetlabs",
+      options => "ca-cert-file=${_ssl_dir}/certs/ca.pem"
+    }
+
     apt::setting { 'conf-pc1_repo':
       content  => $_apt_settings.join(''),
       priority => 90,
@@ -56,16 +62,18 @@ class puppet_agent::osfamily::debian(
       undef   => 'http://apt.puppetlabs.com',
       default => $::puppet_agent::source,
     }
+
+    $_key_settings = {
+      'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+      'server' => 'pgp.mit.edu',
+    }
   }
 
 
   apt::source { 'pc1_repo':
     location => $source,
     repos    => 'PC1',
-    key      => {
-      'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
-      'server' => 'pgp.mit.edu',
-    },
+    key      => $_key_settings,
     notify   => Notify['pc1_repo_force'],
   }
 
