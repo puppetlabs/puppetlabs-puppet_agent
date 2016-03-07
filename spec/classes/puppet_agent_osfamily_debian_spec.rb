@@ -61,8 +61,9 @@ describe 'puppet_agent', :unless => Puppet.version < "3.8.0" || Puppet.version >
       'location' => 'https://master.example.vm:8140/packages/4.0.0/debian-7-x86_64',
       'repos'    => 'PC1',
       'key'      => {
-        'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
-        'server' => 'pgp.mit.edu',
+        'id'      => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+        'source'  => "https://master.example.vm:8140/packages/GPG-KEY-puppetlabs",
+        'options' => "ca-cert-file=/etc/puppetlabs/puppet/ssl/certs/ca.pem"
       },
     }) }
 
