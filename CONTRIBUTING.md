@@ -80,11 +80,19 @@ Beaker tests with:
     bundle exec rake acceptance
 
 This will use the host described in `spec/acceptance/nodeset/default.yml`
-by default. To run against another host, set the `BEAKER_set` environment
-variable to the name of a host described by a `.yml` file in the
-`nodeset` directory. For example, to run against CentOS 6.4:
+and start from Puppet 3.8.6 by default.
+
+To run against another host, set the `BEAKER_set` environment variable to
+the name of a host described by a `.yml` file in the `nodeset` directory.
+For example, to run against CentOS 6.4:
 
     BEAKER_set=centos-64-x64 bundle exec rake acceptance
+
+To run starting from a different Puppet version, set the
+`PUPPET_CLIENT_VERSION` environment variable to a full version string. For
+example, to start with Puppet 3.7.1:
+
+    PUPPET_CLIENT_VERSION=3.7.1 bundle exec rake acceptance
 
 If you don't want to have to recreate the virtual machine every time you
 can use `BEAKER_destroy=no` and `BEAKER_provision=no`. On the first run you will

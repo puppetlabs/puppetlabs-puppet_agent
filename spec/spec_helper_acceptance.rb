@@ -45,7 +45,7 @@ unless ENV['BEAKER_provision'] == 'no'
     master['puppetservice'] = 'puppetserver'
     master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
     master['type'] = 'aio'
-    install_puppet_agent_on master, {:puppet_agent_version => '1.2.1'}
+    install_puppet_agent_on master, {}
     install_package master, 'puppetserver'
     master['use-service'] = true
 
@@ -91,7 +91,7 @@ end
 
 def server_opts
   {
-    :master => {:autosign => true},
+    :master => {:autosign => true, :dns_alt_names => master},
   }
 end
 
@@ -100,7 +100,7 @@ def setup_puppet_on(host, opts = {})
 
   puts "Setup foss puppet on #{host}"
   configure_defaults_on host, 'foss'
-  install_puppet_on host
+  install_puppet_on host, :version => ENV['PUPPET_CLIENT_VERSION'] || '3.8.6'
 
   configure_puppet_on(host, parser_opts)
 
