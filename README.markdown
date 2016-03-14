@@ -93,13 +93,7 @@ Alternate source from which you wish to download the latest version of Puppet.
 
 ## Limitations
 
-This module supports:
-
-* RHEL 5, 6, 7
-* Centos 5, 6, 7
-* Debian 6, 7
-* Ubuntu 12.04, 14.04
-* Windows Server 2003 or later
+This module supports [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix) except Solaris 11.
 
 ###Known issues
 
