@@ -110,6 +110,7 @@ Specifically in the 1.1.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
 * Upgrading from 2015.2.x to 2015.3.x is not yet supported.
 * Solaris 11 is not yet supported.
+* AIX package names are based on PowerPC architecture version. PowerPC 8 is not yet supported.
 
 ##Development
 

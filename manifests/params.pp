@@ -22,7 +22,7 @@ class puppet_agent::params {
   }
 
   case $::osfamily {
-    'RedHat', 'Amazon', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {
+    'RedHat', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {
       $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
@@ -65,6 +65,12 @@ class puppet_agent::params {
     default: {
       fail("${::operatingsystem} not supported")
     }
+  }
+
+  # Treat Amazon Linux just like Enterprise Linux 6
+  $pe_repo_dir = ($::operatingsystem == 'Amazon') ? {
+    true    => "el-6-${::architecture}",
+    default =>  $::platform_tag,
   }
 
   # The aio puppet-agent version currently installed on the compiling master
