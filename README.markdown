@@ -19,7 +19,7 @@
 
 ## Overview
 
-A module for upgrading Puppet 3.8 agents to puppet-agent in Puppet Collection 1 (i.e., Puppet 4).
+A module for upgrading Puppet 3 agents to puppet-agent in Puppet Collection 1 (i.e., Puppet 4).
 
 ## Module Description
 
@@ -37,7 +37,9 @@ The puppet_agent module installs the Puppet Collection 1 repo (on systems that s
 
 ### Setup Requirements
 
-Your agents must be running Puppet 3.8 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+Your agents must be running Puppet 3 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+
+Puppet 3.7 with future parser is required to compile this module, meaning it can be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
 
 ### Beginning with puppet_agent
 
