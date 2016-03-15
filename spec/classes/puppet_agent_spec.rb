@@ -29,35 +29,31 @@ describe 'puppet_agent' do
           end
         end
 
-        if Puppet.version < "3.8.0"
-          it { expect { is_expected.to contain_package('puppet_agent') }.to raise_error(Puppet::Error, /upgrading requires Puppet 3.8/) }
-        else
-          [{}, {:service_names => []}].each do |params|
-            context "puppet_agent class without any parameters" do
-              let(:params) { params }
+        [{}, {:service_names => []}].each do |params|
+          context "puppet_agent class without any parameters" do
+            let(:params) { params }
 
-              it { is_expected.to compile.with_all_deps }
+            it { is_expected.to compile.with_all_deps }
 
-              it { is_expected.to contain_class('puppet_agent') }
-              it { is_expected.to contain_class('puppet_agent::params') }
-              if Puppet.version < "4.0.0"
-                it { is_expected.to contain_class('puppet_agent::prepare') }
-                it { is_expected.to contain_class('puppet_agent::install').that_comes_before('puppet_agent::service') }
-                it { is_expected.to contain_class('puppet_agent::service') }
+            it { is_expected.to contain_class('puppet_agent') }
+            it { is_expected.to contain_class('puppet_agent::params') }
+            if Puppet.version < "4.0.0"
+              it { is_expected.to contain_class('puppet_agent::prepare') }
+              it { is_expected.to contain_class('puppet_agent::install').that_comes_before('puppet_agent::service') }
+              it { is_expected.to contain_class('puppet_agent::service') }
 
-                if params[:service_names].nil?
-                  it { is_expected.to contain_service('puppet') }
-                  it { is_expected.to contain_service('mcollective') }
-                else
-                  it { is_expected.to_not contain_service('puppet') }
-                  it { is_expected.to_not contain_service('mcollective') }
-                end
-                it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
+              if params[:service_names].nil?
+                it { is_expected.to contain_service('puppet') }
+                it { is_expected.to contain_service('mcollective') }
               else
                 it { is_expected.to_not contain_service('puppet') }
                 it { is_expected.to_not contain_service('mcollective') }
-                it { is_expected.to_not contain_package('puppet-agent') }
               end
+              it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
+            else
+              it { is_expected.to_not contain_service('puppet') }
+              it { is_expected.to_not contain_service('mcollective') }
+              it { is_expected.to_not contain_package('puppet-agent') }
             end
           end
         end
