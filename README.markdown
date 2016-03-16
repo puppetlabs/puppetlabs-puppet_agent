@@ -19,7 +19,7 @@
 
 ## Overview
 
-A module for upgrading Puppet 3.8 agents to puppet-agent in Puppet Collection 1 (i.e., Puppet 4).
+A module for upgrading Puppet 3 agents to puppet-agent in Puppet Collection 1 (i.e., Puppet 4).
 
 ## Module Description
 
@@ -37,7 +37,9 @@ The puppet_agent module installs the Puppet Collection 1 repo (on systems that s
 
 ### Setup Requirements
 
-Your agents must be running Puppet 3.8 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+Your agents must be running Puppet 3 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+
+Puppet 3.7 with future parser is required to compile this module, meaning it can be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
 
 ### Beginning with puppet_agent
 
@@ -93,13 +95,7 @@ Alternate source from which you wish to download the latest version of Puppet.
 
 ## Limitations
 
-This module supports:
-
-* RHEL 5, 6, 7
-* Centos 5, 6, 7
-* Debian 6, 7
-* Ubuntu 12.04, 14.04
-* Windows Server 2003 or later
+This module supports [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix) except Solaris 11.
 
 ###Known issues
 
@@ -116,6 +112,7 @@ Specifically in the 1.1.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
 * Upgrading from 2015.2.x to 2015.3.x is not yet supported.
 * Solaris 11 is not yet supported.
+* AIX package names are based on PowerPC architecture version. PowerPC 8 is not yet supported.
 
 ##Development
 
