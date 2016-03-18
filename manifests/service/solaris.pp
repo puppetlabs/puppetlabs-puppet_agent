@@ -15,12 +15,12 @@ class puppet_agent::service::solaris {
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
     file { '/tmp/solaris_start_puppet.sh':
-      ensure  => file,
-      content => template('puppet_agent/solaris_start_puppet.sh.erb'),
-      mode    => '0755',
+      ensure => file,
+      source => 'puppet:///modules/puppet_agent/solaris_start_puppet.sh',
+      mode   => '0755',
     } ->
     exec { 'solaris_start_puppet.sh':
-      command => '/tmp/solaris_start_puppet.sh &',
+      command => "/tmp/solaris_start_puppet.sh ${::puppet_agent_pid} &",
       path    => '/usr/bin:/bin:/usr/sbin',
     }
     file { ['/var/opt/lib', '/var/opt/lib/pe-puppet', '/var/opt/lib/pe-puppet/state']:

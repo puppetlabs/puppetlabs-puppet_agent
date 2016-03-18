@@ -1,6 +1,6 @@
 #!/bin/bash
 
-puppet_pid="<%= @puppet_agent_pid %>"
+puppet_pid=$1
 while $(kill -0 ${puppet_pid:?}); do
   sleep 5
 done
