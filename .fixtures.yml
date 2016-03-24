@@ -1,6 +1,7 @@
 fixtures:
   repositories:
     stdlib: "https://github.com/puppetlabs/puppetlabs-stdlib.git"
+    transition: "https://github.com/puppetlabs/puppetlabs-transition.git"
     inifile: "https://github.com/puppetlabs/puppetlabs-inifile.git"
     apt: "https://github.com/puppetlabs/puppetlabs-apt.git"
   symlinks:

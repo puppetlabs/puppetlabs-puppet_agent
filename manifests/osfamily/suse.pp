@@ -46,8 +46,8 @@ class puppet_agent::osfamily::suse(
       $pe_server_version = pe_build_version()
       $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
 
-      $repo_file = '/etc/zypp/repos.d/pc1_repo.repo'
-      $repo_name = 'pc1_repo'
+      $repo_file = '/etc/zypp/repos.d/pc_repo.repo'
+      $repo_name = 'pc_repo'
 
       # In Puppet Enterprise, agent packages are served by the same server
       # as the master, which can be using either a self signed CA, or an external CA.
