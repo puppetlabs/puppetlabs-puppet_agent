@@ -38,7 +38,7 @@ RSpec.describe 'puppet_agent' do
           end
 
           Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-            '1.2.1.1'
+            package_version
           end
         end
 
