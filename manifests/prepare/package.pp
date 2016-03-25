@@ -20,6 +20,7 @@ class puppet_agent::prepare::package(
     if $::osfamily == 'windows' {
       $tag = $::puppet_agent::arch ? {
         'x64' => 'windows-x86_64',
+        'x86' => 'windows-i386',
       }
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
     } else {
