@@ -13,7 +13,6 @@
 #
 class puppet_agent::prepare(
   $package_file_name = undef,
-  $package_version
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'

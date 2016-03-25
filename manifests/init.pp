@@ -84,7 +84,6 @@ class puppet_agent (
 
     class { '::puppet_agent::prepare':
       package_file_name => $_package_file_name,
-      package_version   => $_package_version,
     } ->
     class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
