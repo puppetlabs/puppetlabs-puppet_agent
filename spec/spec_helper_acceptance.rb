@@ -31,6 +31,7 @@ def install_modules_on(host)
   on host, puppet('module', 'install', 'puppetlabs-stdlib'), {:acceptable_exit_codes => [0, 1]}
   on host, puppet('module', 'install', 'puppetlabs-inifile'), {:acceptable_exit_codes => [0, 1]}
   on host, puppet('module', 'install', 'puppetlabs-apt'), {:acceptable_exit_codes => [0, 1]}
+  on host, puppet('module', 'install', 'puppetlabs-transition'), {:acceptable_exit_codes => [0, 1]}
 end
 
 unless ENV['BEAKER_provision'] == 'no'
@@ -73,7 +74,7 @@ end
 unless ENV['MODULE_provision'] == 'no'
   if default['platform'] =~ /windows/i
     target = (on default, puppet('config print modulepath')).stdout.split(';')[0]
-    {'stdlib' => '4.6.0', 'inifile' => '1.3.0', 'apt' => '2.0.1'}.each do |repo, version|
+    {'stdlib' => '4.6.0', 'inifile' => '1.3.0', 'apt' => '2.0.1', 'transition' => '0.1.0'}.each do |repo, version|
       on default, "rm -rf \"#{target}/#{repo}\";git clone --branch #{version} --depth 1 https://github.com/puppetlabs/puppetlabs-#{repo} \"#{target}/#{repo}\""
     end
     # default['distmoduledir'] = '`cygpath -smF 35`/PuppetLabs/puppet/etc/modules' should be set
@@ -144,14 +145,14 @@ end
 
 def teardown_puppet_on(host)
   puts "Purge puppet from #{host}"
-  # Note pc1_repo is specific to the module's manifests. This is knowledge we need to clean
+  # Note pc_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
   case host['platform']
     when /debian|ubuntu/
       on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', {:acceptable_exit_codes => [0, 1]}
-      clean_repo = "include apt\napt::source { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+      clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     when /fedora|el|centos/
-      clean_repo = "yumrepo { 'pc1_repo': ensure => absent, notify => Package['puppet-agent'] }"
+      clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     else
       logger.notify("Not sure how to remove repos on #{host['platform']}")
       clean_repo = ''
