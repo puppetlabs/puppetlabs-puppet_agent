@@ -80,6 +80,12 @@ class puppet_agent::install(
       ensure => "${package_version}-1.el${::operatingsystemmajrelease}",
       *      => $_package_options,
     }
+  } elsif ($::osfamily == 'Debian') and ($package_version != 'present') {
+    # Workaround PUP-5802/PUP-5025
+    package { $::puppet_agent::package_name:
+      ensure => "${package_version}-1${::lsbdistcodename}",
+      *      => $_package_options,
+    }
   } else {
     package { $::puppet_agent::package_name:
       ensure => $package_version,
