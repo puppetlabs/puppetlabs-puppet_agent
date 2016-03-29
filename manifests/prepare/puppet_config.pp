@@ -14,7 +14,7 @@ class puppet_agent::prepare::puppet_config {
 # manage puppet.conf contents, using inifile module
   ['', 'master', 'agent', 'main'].each |$loop_section| {
     $section = $loop_section
-    [# Removed settings
+    $_removedSettings = [# Removed settings
       'allow_variables_with_dashes', 'async_storeconfigs', 'binder', 'catalog_format', 'certdnsnames',
       'certificate_expire_warning', 'couchdb_url', 'dbadapter', 'dbconnections', 'dblocation', 'dbmigrate', 'dbname',
       'dbpassword', 'dbport', 'dbserver', 'dbsocket', 'dbuser', 'dynamicfacts', 'http_compression', 'httplog',
@@ -26,7 +26,14 @@ class puppet_agent::prepare::puppet_config {
       # Deprecated for global config
       'config_version', 'manifest', 'modulepath',
       # Settings that should be reset to defaults
-      'disable_warnings', 'vardir', 'rundir', 'libdir', 'confdir', 'ssldir', 'classfile'].each |$setting| {
+      'disable_warnings', 'vardir', 'rundir', 'libdir', 'confdir', 'ssldir', 'classfile']
+    # When upgrading to 1.4.x or later remove pluginsync
+    if ($::puppet_agent::package_version == undef) or (versioncmp($::puppet_agent::package_version, '1.4.0') >= 0) {
+      $removedSettings = $_removedSettings + ['pluginsync']
+    } else {
+      $removedSettings = $_removedSettings
+    }
+    $removedSettings.each |$setting| {
       ini_setting { "${section}/${setting}":
         ensure  => absent,
         section => $section,
