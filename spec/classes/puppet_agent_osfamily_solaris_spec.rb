@@ -72,14 +72,10 @@ describe 'puppet_agent' do
       end
 
       it do
-        is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
-          'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
-        })
         is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
         is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
         is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
         is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
-
       end
 
       if Puppet.version < "4.0.0"
@@ -107,18 +103,19 @@ describe 'puppet_agent' do
             is_expected.to contain_package(package).with_ensure('absent')
           end
         end
+
+        it do
+          is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
+            'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+          })
+
+          is_expected.to contain_package('puppet-agent').with_ensure('present')
+        end
       else
         it do
-          is_expected.to contain_transition("remove puppet-agent").with(
-            :attributes => {
-              'ensure' => 'absent',
-              'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
-            })
+          is_expected.not_to contain_transition("remove puppet-agent")
+          is_expected.to contain_package('puppet-agent').with_ensure(package_version)
         end
-      end
-
-      it do
-        is_expected.to contain_package('puppet-agent').with_ensure('present')
       end
     end
 
@@ -143,9 +140,6 @@ describe 'puppet_agent' do
       end
 
       it do
-        is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
-          'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
-        })
         is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
         is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
         is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
@@ -178,18 +172,19 @@ describe 'puppet_agent' do
             is_expected.to contain_package(package).with_ensure('absent')
           end
         end
+
+        it do
+          is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
+            'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+          })
+
+          is_expected.to contain_package('puppet-agent').with_ensure('present')
+        end
       else
         it do
-          is_expected.to contain_transition("remove puppet-agent").with(
-            :attributes => {
-              'ensure' => 'absent',
-              'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
-            })
+          is_expected.not_to contain_transition("remove puppet-agent")
+          is_expected.to contain_package('puppet-agent').with_ensure(package_version)
         end
-      end
-
-      it do
-        is_expected.to contain_package('puppet-agent').with_ensure('present')
       end
     end
 

@@ -74,7 +74,7 @@ describe 'puppet_agent' do
               # Workaround PUP-5802/PUP-5025
               deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
-            elsif facts[:osfamily] == 'Solaris'
+            elsif facts[:osfamily] == 'Solaris' && (facts[:operatingsystemmajrelease] == '10' || Puppet.version < '4.0.0')
               it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
             else
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }

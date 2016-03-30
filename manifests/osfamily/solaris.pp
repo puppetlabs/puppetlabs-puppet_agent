@@ -87,15 +87,17 @@ class puppet_agent::osfamily::solaris(
         logoutput => 'on_failure',
       }
 
-      # Backup user configuration because solaris 11 will blow away
-      # /etc/puppetlabs/ when uninstalling the pe-* modules.
-      file { '/tmp/puppet_agent/':
-        ensure => directory,
-      } ->
-      exec { 'puppet_agent backup /etc/puppetlabs/':
-        command => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
-        require => Exec['puppet_agent copy packages'],
-        path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+      if versioncmp("${::clientversion}", '4.0.0') < 0 {
+        # Backup user configuration because solaris 11 will blow away
+        # /etc/puppetlabs/ when uninstalling the pe-* modules.
+        file { '/tmp/puppet_agent/':
+          ensure => directory,
+        } ->
+        exec { 'puppet_agent backup /etc/puppetlabs/':
+          command => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+          require => Exec['puppet_agent copy packages'],
+          path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+        }
       }
 
     }
