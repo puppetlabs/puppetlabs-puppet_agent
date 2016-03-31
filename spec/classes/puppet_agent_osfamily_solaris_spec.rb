@@ -76,6 +76,7 @@ describe 'puppet_agent' do
         is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
         is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
         is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+        is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
       end
 
       if Puppet.version < "4.0.0"
@@ -144,6 +145,7 @@ describe 'puppet_agent' do
         is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
         is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
         is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+        is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
 
       end
 
