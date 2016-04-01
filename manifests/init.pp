@@ -54,24 +54,19 @@ class puppet_agent (
     if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.sles10.${::architecture}.rpm"
     } elsif $::operatingsystem == 'Solaris' {
-      if $arch =~ /^sun4[uv]$/ {
-        if $::operatingsystemmajrelease == '10' {
-          $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.sparc.pkg.gz"
-        } elsif $::operatingsystemmajrelease == '11' {
-          # Strip letters from development builds.
-          $_version_without_letters = regsubst($package_version, /[a-zA-Z]/, '', 'G')
-          $_solaris_version = regsubst($_version_without_letters, /(^-|-$)/, '', 'G')
-          $_package_file_name = "${puppet_agent::package_name}@${_solaris_version},5.11-1.sparc.p5p"
-        }
-      } else {
-        if $::operatingsystemmajrelease == '10' {
-          $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.i386.pkg.gz"
-        } elsif $::operatingsystemmajrelease == '11' {
-          # Strip letters from development builds.
-          $_version_without_letters = regsubst($package_version, /[a-zA-Z]/, '', 'G')
-          $_solaris_version = regsubst($_version_without_letters, /(^-|-$)/, '', 'G')
-          $_package_file_name = "${puppet_agent::package_name}@${_solaris_version},5.11-1.i386.p5p"
-        }
+      $pkg_arch = $arch ? {
+        /^sun4[uv]$/ => 'sparc',
+        default      => 'i386',
+      }
+
+      if $::operatingsystemmajrelease == '10' {
+        $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.${pkg_arch}.pkg.gz"
+      } elsif $::operatingsystemmajrelease == '11' {
+        # Strip letters from development builds. Unique to Solaris 11 packaging.
+        $_version_without_letters = regsubst($package_version, /[a-zA-Z]/, '', 'G')
+        $_solaris_version = regsubst($_version_without_letters, /(^-|-$)/, '', 'G')
+
+        $_package_file_name = "${puppet_agent::package_name}@${_solaris_version},5.11-1.${pkg_arch}.p5p"
       }
     } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
