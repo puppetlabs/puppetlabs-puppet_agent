@@ -16,6 +16,8 @@ class puppet_agent::install(
 ) {
   assert_private()
 
+  $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
+
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or ($::operatingsystem == 'AIX' and  $::architecture =~ /PowerPC_POWER[5,6,7]/) {
     contain puppet_agent::install::remove_packages
 
@@ -40,6 +42,27 @@ class puppet_agent::install(
       adminfile => '/opt/puppetlabs/packages/solaris-noask',
       source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require   => Class['puppet_agent::install::remove_packages'],
+    }
+  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $old_packages {
+    # Updating from PE 3.x requires removing all the old packages before installing the puppet-agent package.
+    # After puppet-agent is installed, we can use 'pkg update' for future upgrades.
+    contain puppet_agent::install::remove_packages
+
+    exec { 'puppet_agent restore /etc/puppetlabs':
+      command => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
+      require => Class['puppet_agent::install::remove_packages'],
+    }
+
+    exec { 'puppet_agent post-install restore /etc/puppetlabs':
+      command     => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
+      path        => '/bin:/usr/bin:/sbin:/usr/sbin',
+      refreshonly => true,
+    }
+
+    $_package_options = {
+      require => Exec['puppet_agent restore /etc/puppetlabs'],
+      notify  => Exec['puppet_agent post-install restore /etc/puppetlabs'],
     }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
     contain puppet_agent::install::remove_packages
@@ -67,7 +90,7 @@ class puppet_agent::install(
         }
       }
     }
-  } elsif ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '10') or $::osfamily == 'Darwin' or $::osfamily == 'AIX' or ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
+  } elsif ($::osfamily == 'Solaris' and ($::operatingsystemmajrelease == '10' or $old_packages)) or $::osfamily == 'Darwin' or $::osfamily == 'AIX' or ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
     # Solaris 10/OSX/AIX/SLES 10 package provider does not provide 'versionable'
     # Package is removed above, then re-added as the new version here.
     package { $::puppet_agent::package_name:

@@ -11,6 +11,7 @@ describe 'puppet_agent' do
   }
 
   package_version = '1.2.5'
+  pe_version = '2000.0.0'
   if Puppet.version >= "4.0.0"
     let(:params) do
       {
@@ -39,39 +40,153 @@ describe 'puppet_agent' do
     end
   end
 
-  describe 'not yet supported releases' do
-    before(:each) do
-      # Need to mock the PE functions
-      Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-        "4.0.0"
-      end
-
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-        package_version
-      end
-    end
-
-    context 'when Solaris 11' do
-      let(:facts) do
-        facts.merge({
-          :is_pe => true,
-          :operatingsystemmajrelease => '11',
-        })
-      end
-
-      it { expect { catalogue }.to raise_error(/Solaris 11 not supported/) }
-    end
-  end
-
   describe 'supported environment' do
     before(:each) do
       # Need to mock the PE functions
       Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-        "4.0.0"
+        pe_version
       end
 
       Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
         package_version
+      end
+    end
+
+    context "when Solaris 11 i386" do
+      let(:facts) do
+        facts.merge({
+          :is_pe                     => true,
+          :platform_tag              => "solaris-11-i386",
+          :operatingsystemmajrelease => '11',
+        })
+      end
+
+      it { should compile.with_all_deps }
+      it { is_expected.to contain_file('/opt/puppetlabs') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages') }
+      it do
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{package_version},5.11-1.i386.p5p").with_ensure('present')
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{package_version},5.11-1.i386.p5p").with({
+          'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-i386/puppet-agent@#{package_version},5.11-1.i386.p5p",
+        })
+      end
+
+      it do
+        is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
+        is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
+        is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
+        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+        is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
+      end
+
+      if Puppet.version < "4.0.0"
+        [
+          'pe-augeas',
+          'pe-deep-merge',
+          'pe-facter',
+          'pe-hiera',
+          'pe-libldap',
+          'pe-libyaml',
+          'pe-mcollective',
+          'pe-mcollective-common',
+          'pe-openssl',
+          'pe-puppet',
+          'pe-puppet-enterprise-release',
+          'pe-ruby',
+          'pe-ruby-augeas',
+          'pe-ruby-ldap',
+          'pe-ruby-rgen',
+          'pe-ruby-shadow',
+          'pe-stomp',
+          'pe-virt-what',
+        ].each do |package|
+          it do
+            is_expected.to contain_package(package).with_ensure('absent')
+          end
+        end
+
+        it do
+          is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
+            'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+          })
+
+          is_expected.to contain_package('puppet-agent').with_ensure('present')
+        end
+      else
+        it do
+          is_expected.not_to contain_transition("remove puppet-agent")
+          is_expected.to contain_package('puppet-agent').with_ensure(package_version)
+        end
+      end
+    end
+
+    context "when Solaris 11 sparc sun4u" do
+      let(:facts) do
+        facts.merge({
+          :is_pe                     => true,
+          :platform_tag              => "solaris-11-sparc",
+          :operatingsystemmajrelease => '11',
+          :architecture              => 'sun4u',
+        })
+      end
+
+      it { should compile.with_all_deps }
+      it { is_expected.to contain_file('/opt/puppetlabs') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages') }
+      it do
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p').with_ensure('present')
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p').with({
+          'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-sparc/puppet-agent@#{package_version},5.11-1.sparc.p5p",
+        })
+      end
+
+      it do
+        is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
+        is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
+        is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
+        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+        is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
+
+      end
+
+      if Puppet.version < "4.0.0"
+        [
+          'pe-augeas',
+          'pe-deep-merge',
+          'pe-facter',
+          'pe-hiera',
+          'pe-libldap',
+          'pe-libyaml',
+          'pe-mcollective',
+          'pe-mcollective-common',
+          'pe-openssl',
+          'pe-puppet',
+          'pe-puppet-enterprise-release',
+          'pe-ruby',
+          'pe-ruby-augeas',
+          'pe-ruby-ldap',
+          'pe-ruby-rgen',
+          'pe-ruby-shadow',
+          'pe-stomp',
+          'pe-virt-what',
+        ].each do |package|
+          it do
+            is_expected.to contain_package(package).with_ensure('absent')
+          end
+        end
+
+        it do
+          is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
+            'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
+          })
+
+          is_expected.to contain_package('puppet-agent').with_ensure('present')
+        end
+      else
+        it do
+          is_expected.not_to contain_transition("remove puppet-agent")
+          is_expected.to contain_package('puppet-agent').with_ensure(package_version)
+        end
       end
     end
 
@@ -89,10 +204,10 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with_ensure('present')
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with_source("puppet:///pe_packages/4.0.0/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz")
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with_source("puppet:///pe_packages/#{pe_version}/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz")
       end
 
-      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source('puppet:///pe_packages/4.0.0/solaris-10-i386/solaris-noask') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///pe_packages/#{pe_version}/solaris-10-i386/solaris-noask") }
       it do
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.i386.pkg.gz").with_command("gzip -d /opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz")
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.i386.pkg.gz").with_creates("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
@@ -147,7 +262,7 @@ describe 'puppet_agent' do
       before(:each) do
         # Need to mock the PE functions
         Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-          "4.0.0"
+          pe_version
         end
 
         Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
@@ -169,10 +284,10 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz").with_ensure('present')
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz").with_source("puppet:///pe_packages/4.0.0/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz")
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz").with_source("puppet:///pe_packages/#{pe_version}/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz")
       end
 
-      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source('puppet:///pe_packages/4.0.0/solaris-10-sparc/solaris-noask') }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///pe_packages/#{pe_version}/solaris-10-sparc/solaris-noask") }
       it do
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.sparc.pkg.gz").with_command("gzip -d /opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz")
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.sparc.pkg.gz").with_creates("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")

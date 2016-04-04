@@ -21,10 +21,13 @@ class puppet_agent::params {
     }
   }
 
+  $package_name = 'puppet-agent'
+
   case $::osfamily {
     'RedHat', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {
-      $package_name = 'puppet-agent'
-      $service_names = ['puppet', 'mcollective']
+      if !($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
+        $service_names = ['puppet', 'mcollective']
+      }
 
       $local_puppet_dir = '/opt/puppetlabs'
       $local_packages_dir = "${local_puppet_dir}/packages"
@@ -46,7 +49,6 @@ class puppet_agent::params {
       $group = 0
     }
     'windows' : {
-      $package_name = 'puppet-agent'
       $service_names = ['puppet', 'mcollective']
 
       $local_puppet_dir = windows_native_path("${::common_appdata}/Puppetlabs")
@@ -78,6 +80,12 @@ class puppet_agent::params {
   $master_agent_version = $_is_pe ? {
     true    => pe_compiling_server_aio_build(),
     default => undef,
+  }
+
+  if ($master_agent_version != undef and versioncmp("${::clientversion}", '4.0.0') < 0) {
+    $package_version = $master_agent_version
+  } else {
+    $package_version = undef
   }
 
   $ssldir = "${confdir}/ssl"
