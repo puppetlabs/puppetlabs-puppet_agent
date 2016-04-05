@@ -19,11 +19,15 @@
 
 ## Overview
 
-A module for upgrading Puppet 3 agents to puppet-agent in Puppet Collection 1 (i.e., Puppet 4).
+A module for upgrading Puppet agents. Supports upgrading from Puppet 3 packages and puppet-agent packages, to puppet-agent packages (i.e. Puppet 4).
 
 ## Module Description
 
-The puppet_agent module installs the Puppet Collection 1 repo (on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation. This module expects Puppet to be installed from packages.
+The puppet_agent module installs the Puppet Collection 1 repo (as a default, and on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation. When starting from Puppet 3, it will upgrade to the latest Puppet open-source release, or to the latest puppet-agent package supported by your PE installation.
+
+If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent (Puppet 4) package.
+
+This module expects Puppet to be installed from packages.
 
 ## Setup
 
@@ -37,15 +41,17 @@ The puppet_agent module installs the Puppet Collection 1 repo (on systems that s
 
 ### Setup Requirements
 
-Your agents must be running Puppet 3 with `stringify_facts` set to 'false'. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+Your agents must be running Puppet 3 with `stringify_facts` set to 'false', or Puppet 4+. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
-Puppet 3.7 with future parser is required to compile this module, meaning it can be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
+Puppet 3.7 with future parser is required to compile this module, meaning it may be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
 
 ### Beginning with puppet_agent
 
 Install the puppet_agent module with `puppet module install puppetlabs-puppet_agent`.
 
 ## Usage
+
+### Puppet 3 Upgrades
 
 Add the class to agents you want to upgrade:
 
@@ -63,6 +69,18 @@ As part of preparing the agent for Puppet 4, the module performs several signifi
 * Resets logfile in MCollective's server.cfg and client.cfg.
 * Adds new libdir and plugin.yaml locations to MCollective's server.cfg and client.cfg.
 
+### Puppet 4 Upgrades
+
+Add the class to agents you want to upgrade, specifying the desired puppet-agent version:
+
+~~~puppet
+class {'::puppet_agent':
+  package_version => '1.4.0',
+}
+~~~
+
+This will ensure the version `1.4.0` of the puppet-agent package is installed. For version `1.4.0` and later, it will also remove the deprecated `pluginsync` setting from `puppet.conf`, unless explicitly managed elsewhere.
+
 ##Reference
 
 ###Public classes
@@ -70,8 +88,14 @@ As part of preparing the agent for Puppet 4, the module performs several signifi
 
 ###Private classes
 * `puppet_agent::install`: Installs packages.
+* `puppet_agent::install::remove_packages`: For platforms that can't perform in-place upgrades, removes the old packages.
+* `puppet_agent::install::remove_packages_osx`: Removes the old packages on Mac OS X.
+* `puppet_agent::osfamily::*`: Platform-specific preparation performed before upgrades.
 * `puppet_agent::prepare`: Prepares the agent for upgrade.
+* `puppet_agent::prepare::package`: Stages packages locally for install, on platforms that can't install from remote packages.
+* `puppet_agent::prepare::*`: Prepare various file and ssl configuration.
 * `puppet_agent::service`: Ensures the services are running.
+* `puppet_agent::windows::install`: Handles Windows package installation.
 
 ###Parameters
 
@@ -81,9 +105,23 @@ As part of preparing the agent for Puppet 4, the module performs several signifi
 
 The architecture version you wish to install. Defaults to `$::architecture`. This parameter is [ignored](#known-issues) in Windows Server 2003.
 
+#####`collection`
+
+The Puppet Collection to track. Defaults to `PC1`.
+
+#####`is_pe`
+
+Install from Puppet Enterprise rpos. Enabled if communicating with a PE master.
+
 #####`package_name`
 
 The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only accepted value is `puppet-agent`.
+
+#####`package_version`
+
+The package version to upgrade to. When upgrading from Puppet < 4.0, defaults to the puppet master's latest supported version
+if compiled with A PE master or undef otherwise (meaning get the latest Open Source release). Explicitly specify a version to
+upgrade from puppet-agent packages (implying Puppet >= 4.0).
 
 #####`service_names`
 
@@ -95,7 +133,7 @@ Alternate source from which you wish to download the latest version of Puppet.
 
 ## Limitations
 
-This module supports [all PE-supported platforms](https://forge.puppetlabs.com/supported#compat-matrix) except Solaris 11.
+Mac OS X Open Source packages are currently not supported.
 
 ###Known issues
 
@@ -108,10 +146,8 @@ In addition, there are several known issues with Windows:
 * On Windows Server 2003, only x86 is supported, and the `arch` parameter is ignored. If you try to force an upgrade to x64, Puppet installs the x86 version with no error message.
 * On Windows Server 2003 with Puppet Enterprise, the default download location is unreachable. You can work around this issue by specifying an alternate download URL in the `source` parameter.
  
-Specifically in the 1.1.0 Release:
+Specifically in the 1.2.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
-* Upgrading from 2015.2.x to 2015.3.x is not yet supported.
-* Solaris 11 is not yet supported.
 * AIX package names are based on PowerPC architecture version. PowerPC 8 is not yet supported.
 
 ##Development
