@@ -27,13 +27,6 @@ class puppet_agent::prepare::package(
       $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
     }
 
-    # Manage /opt/puppetlabs for platforms
-    if !defined(File[$::puppet_agent::params::local_puppet_dir]) {
-      file { $::puppet_agent::params::local_puppet_dir:
-        ensure => directory,
-      }
-    }
-
     file { $::puppet_agent::params::local_packages_dir:
       ensure => directory,
     }
