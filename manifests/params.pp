@@ -77,9 +77,10 @@ class puppet_agent::params {
 
   # The aio puppet-agent version currently installed on the compiling master
   # (only used in PE)
-  $master_agent_version = $_is_pe ? {
-    true    => pe_compiling_server_aio_build(),
-    default => undef,
+  if ($_is_pe and is_function_available('pe_compiling_server_aio_build')) {
+    $master_agent_version = pe_compiling_server_aio_build()
+  } else {
+    $master_agent_version = undef
   }
 
   if ($master_agent_version != undef and versioncmp("${::clientversion}", '4.0.0') < 0) {

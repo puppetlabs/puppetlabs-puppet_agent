@@ -5,23 +5,77 @@ describe 'puppet_agent' do
   global_params = {
     :package_version => package_version
   }
+  def global_facts(facts, os)
+    facts.merge(
+      if os =~ /sles/
+        {
+          :is_pe => true,
+          :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[0],
+        }
+      elsif os =~ /solaris/
+        {
+          :is_pe => true,
+        }
+      else
+        {}
+      end).merge({:servername   => 'master.example.vm'})
+  end
+
+  context 'supported_operating systems' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) do
+          global_facts(facts, os)
+        end
+
+        if os !~ /sles/ and os !~ /sles/
+          context 'package_version is undef by default' do
+            let(:facts) do
+              global_facts(facts, os).merge({:is_pe => false})
+            end
+            it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
+          end
+        end
+
+        context 'package_version is undef if pe_compiling_server_aio_build is not defined' do
+          let(:facts) do
+            global_facts(facts, os).merge({:is_pe => true})
+          end
+          it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
+        end
+      end
+    end
+  end
+
+  context 'supported_operating systems' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) do
+          global_facts(facts, os).merge({:is_pe => true})
+        end
+
+        before(:each) do
+          Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) {|args| '4.0.0'}
+          Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) {|args| '1.2.5'}
+          Puppet::Parser::Functions.newfunction(:pe_compiling_server_version, :type => :rvalue) {|args| '2.2.0'}
+        end
+
+        context 'package_version is initialized automatically' do
+          if Puppet.version < '4.0.0'
+            it { is_expected.to contain_class('puppet_agent').with_package_version('1.2.5') }
+          else
+            it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
+          end
+        end
+      end
+    end
+  end
 
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
-          if os =~ /sles/
-            facts.merge({
-              :is_pe => true,
-              :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[0],
-            })
-          elsif os =~ /solaris/
-            facts.merge({
-              :is_pe => true,
-            })
-          else
-            facts
-          end
+          global_facts(facts, os)
         end
 
         before(:each) do
