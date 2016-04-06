@@ -28,7 +28,7 @@ describe 'puppet_agent' do
           global_facts(facts, os)
         end
 
-        if os !~ /sles/ and os !~ /sles/
+        if os !~ /sles/ and os !~ /solaris/
           context 'package_version is undef by default' do
             let(:facts) do
               global_facts(facts, os).merge({:is_pe => false})
