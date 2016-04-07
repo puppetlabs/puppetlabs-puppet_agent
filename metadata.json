@@ -115,10 +115,6 @@
   ],
   "requirements": [
     {
-      "name": "pe",
-      "version_requirement": ">= 3.8.1 < 2016.2.0"
-    },
-    {
       "name": "puppet",
       "version_requirement": ">= 3.8.0 < 5.0.0"
     }
