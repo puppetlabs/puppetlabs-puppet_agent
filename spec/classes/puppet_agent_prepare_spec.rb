@@ -152,80 +152,100 @@ describe 'puppet_agent::prepare' do
             'source' => '/dev/null/ssl/crl.pem',
             'backup' => 'false',
           }) }
+        end
 
-          ['', 'agent', 'main', 'master'].each do |section|
-            ['allow_variables_with_dashes',
-             'async_storeconfigs',
-             'binder',
-             'catalog_format',
-             'certdnsnames',
-             'certificate_expire_warning',
-             'couchdb_url',
-             'dbadapter',
-             'dbconnections',
-             'dblocation',
-             'dbmigrate',
-             'dbname',
-             'dbpassword',
-             'dbport',
-             'dbserver',
-             'dbsocket',
-             'dbuser',
-             'dynamicfacts',
-             'http_compression',
-             'httplog',
-             'ignoreimport',
-             'immutable_node_data',
-             'inventory_port',
-             'inventory_server',
-             'inventory_terminus',
-             'legacy_query_parameter_serialization',
-             'listen',
-             'localconfig',
-             'manifestdir',
-             'masterlog',
-             'parser',
-             'preview_outputdir',
-             'puppetport',
-             'queue_source',
-             'queue_type',
-             'rails_loglevel',
-             'railslog',
-             'report_serialization_format',
-             'reportfrom',
-             'rrddir',
-             'rrdinterval',
-             'sendmail',
-             'smtphelo',
-             'smtpport',
-             'smtpserver',
-             'ssldir',
-             'stringify_facts',
-             'tagmap',
-             'templatedir',
-             'thin_storeconfigs',
-             'trusted_node_data',
-             'zlib',
-             'config_version',
-             'manifest',
-             'modulepath',
-             'disable_warnings',
-             'vardir',
-             'rundir',
-             'libdir',
-             'confdir',
-             'classfile'].each do |setting|
-               it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
-             end
+        ['', 'agent', 'main', 'master'].each do |section|
+          ['allow_variables_with_dashes',
+           'async_storeconfigs',
+           'binder',
+           'catalog_format',
+           'certdnsnames',
+           'certificate_expire_warning',
+           'couchdb_url',
+           'dbadapter',
+           'dbconnections',
+           'dblocation',
+           'dbmigrate',
+           'dbname',
+           'dbpassword',
+           'dbport',
+           'dbserver',
+           'dbsocket',
+           'dbuser',
+           'dynamicfacts',
+           'http_compression',
+           'httplog',
+           'ignoreimport',
+           'immutable_node_data',
+           'inventory_port',
+           'inventory_server',
+           'inventory_terminus',
+           'legacy_query_parameter_serialization',
+           'listen',
+           'localconfig',
+           'manifestdir',
+           'masterlog',
+           'parser',
+           'preview_outputdir',
+           'puppetport',
+           'queue_source',
+           'queue_type',
+           'rails_loglevel',
+           'railslog',
+           'report_serialization_format',
+           'reportfrom',
+           'rrddir',
+           'rrdinterval',
+           'sendmail',
+           'smtphelo',
+           'smtpport',
+           'smtpserver',
+           'ssldir',
+           'stringify_facts',
+           'tagmap',
+           'templatedir',
+           'thin_storeconfigs',
+           'trusted_node_data',
+           'zlib',
+           'config_version',
+           'manifest',
+           'modulepath',
+           'disable_warnings',
+           'vardir',
+           'rundir',
+           'libdir',
+           'confdir',
+           'classfile'].each do |setting|
+            if Puppet.version >= '4.0.0'
+              it { is_expected.not_to contain_ini_setting("#{section}/#{setting}") }
+            else
+              it { is_expected.to contain_ini_setting("#{section}/#{setting}").with_ensure('absent') }
+            end
+          end
+
+          if Puppet.version < '4.0.0'
+            it { is_expected.to contain_ini_setting("#{section}/pluginsync").with_ensure('absent') }
+          else
+            context 'upgrading to puppet-agent < 1.4.0' do
+              let(:params) {{ :package_version => '1.3.0' }}
+
+              it { is_expected.not_to contain_ini_setting("#{section}/pluginsync") }
+            end
+
+            context 'upgrading to puppet-agent >= 1.4.0' do
+              let(:params) {{ :package_version => '1.4.0' }}
+
+              it { is_expected.to contain_ini_setting("#{section}/pluginsync").with_ensure('absent') }
+            end
           end
         end
 
         if Puppet.version >= "4.0.0"
-          it { is_expected.not_to contain_class("puppet_agent::prepare::puppet_config") }
           it { is_expected.not_to contain_class("puppet_agent::prepare::ssl") }
           it { is_expected.not_to contain_class("puppet_agent::prepare::mco_client_config") }
         end
 
+        it { is_expected.to contain_class("puppet_agent::prepare::puppet_config") }
         it { is_expected.to contain_class("puppet_agent::osfamily::#{facts[:osfamily]}") }
       end
     end

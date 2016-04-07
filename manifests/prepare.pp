@@ -13,6 +13,7 @@
 #
 class puppet_agent::prepare(
   $package_file_name = undef,
+  $package_version = undef,
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'
@@ -39,6 +40,13 @@ class puppet_agent::prepare(
 
   $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
 
+  # Manage deprecating configuration settings.
+  class { 'puppet_agent::prepare::puppet_config':
+    package_version => $package_version,
+    before          => Class[$_osfamily_class],
+  }
+  contain puppet_agent::prepare::puppet_config
+
   if versioncmp("${::clientversion}", '4.0.0') < 0 {
     # Migrate old files; assumes user Puppet runs under won't change during upgrade
     # We assume the current Puppet settings are authoritative; if anything exists
@@ -46,10 +54,6 @@ class puppet_agent::prepare(
     file { $::puppet_agent::params::puppetdirs:
       ensure => directory,
     }
-    class { 'puppet_agent::prepare::puppet_config':
-      before => Class[$_osfamily_class],
-    }
-    contain puppet_agent::prepare::puppet_config
 
     if !$_windows_client { #Windows didn't change only nix systems
       class { 'puppet_agent::prepare::ssl':
