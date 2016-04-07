@@ -1,8 +1,8 @@
 {
   "name": "puppetlabs-puppet_agent",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "puppetlabs",
-  "summary": "Upgrades Puppet 3.8 to the All-In-One Puppet 4 Agent",
+  "summary": "Upgrades Puppet 3.8 and All-In-One Puppet Agents",
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "project_page": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
@@ -116,7 +116,7 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": ">= 3.8.1 < 2016.1.0"
+      "version_requirement": ">= 3.8.1 < 2016.2.0"
     },
     {
       "name": "puppet",

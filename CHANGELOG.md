@@ -2,6 +2,37 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0]
+
+### Summary
+Supports upgrades from puppet-agent packages! Applies to both PE and FOSS, for example upgrades from
+PE 2015.3.2 to 2015.3.3 and puppet-agent 1.3.0 to 1.4.0 are supported. Upgrading from older Puppet 3
+versions is also no longer explicitly prevented. Adds support for Solaris 11.
+
+### Known issues
+Carried-over from prior releases:
+- For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
+
+Newly identified issues:
+- Mac OS X Open Source package upgrades are not yet implemented.
+- AIX package names are based on PowerPC architecture version. PowerPC 8 is not yet supported.
+
+### Features
+- Upgrades between puppet-agent packages, such as 2015.2.x to 2015.3.x.
+- Adds support for Solaris 11.
+- The `pluginsync` setting was deprecated in `puppet-agent 1.4.0`. This module removes it when upgrading to
+that version or later unless otherwise managed.
+- Remove the lower-version requirement. All Puppet 3 versions potentially can be upgraded, although
+testing is only performed starting with Puppet/PE 3.8. Earlier versions likely work back to 3.5, as long as
+the manifest is compiled using 3.7+ with future parser enabled.
+
+### Bugfixes
+- Fixes the release identification for Amazon Linux distributions to use EL 6 packages.
+- Fix Debian upgrades for PE.
+- Support upgrades of 32-bit Windows packages for PE (via pe_repo).
+- Fixed an issue that would cause compilation to fail with `Unknown function: 'pe_compiling_server_aio_build'`
+in some environments.
+
 ## [1.1.0]
 
 ### Summary
@@ -9,7 +40,7 @@ The addition of several OS support features and a considerable amount of compati
 
 ### Known issues
 While this release adds considerable features and bug fixes the following areas are known issues and require more work:
-- For Windows, trigger an agent run after upgrade to get Puppet to create the nessesary directory structures.
+- For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
 - There is currently ongoing work to allow for upgrading from 2015.2.x to 2015.3.x.
 - Solaris 11 support work is in progess, but currently still buggy.
 
