@@ -135,7 +135,7 @@ class puppet_agent::install::remove_packages(
           'pe-ruby-ldap',
         ]
       }
-    } elsif versioncmp("${::aio_agent_version}", "${::puppet_agent::package_version}") < 0 {
+    } elsif $puppet_agent::package_version != undef and versioncmp("${::aio_agent_version}", "${::puppet_agent::package_version}") < 0 {
       $packages = [ 'puppet-agent' ]
     } else {
       $packages = []
