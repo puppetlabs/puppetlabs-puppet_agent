@@ -50,6 +50,10 @@ describe 'puppet_agent' do
       Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
         package_version
       end
+
+      # Ensure we get a versionable package provider
+      pkg = Puppet::Type.type(:package)
+      pkg.stubs(:defaultprovider).returns(pkg.provider(:pkg))
     end
 
     context "when Solaris 11 i386" do
@@ -242,12 +246,36 @@ describe 'puppet_agent' do
           end
         end
       else
-        it do
-          is_expected.to contain_transition("remove puppet-agent").with(
-            :attributes => {
-              'ensure' => 'absent',
-              'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
+        context 'with older aio_agent_version' do
+          let(:facts) do
+            facts.merge({
+              :is_pe                     => true,
+              :platform_tag              => "solaris-10-i386",
+              :operatingsystemmajrelease => '10',
+              :aio_agent_version         => '1.0.0',
             })
+          end
+
+          it do
+            is_expected.to contain_transition("remove puppet-agent").with(
+              :attributes => {
+                'ensure' => 'absent',
+                'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
+              })
+          end
+        end
+
+        context 'with up-to-date aio_agent_version' do
+          let(:facts) do
+            facts.merge({
+              :is_pe                     => true,
+              :platform_tag              => "solaris-10-i386",
+              :operatingsystemmajrelease => '10',
+              :aio_agent_version         => package_version,
+            })
+          end
+
+          it { is_expected.not_to contain_transition("remove puppet-agent") }
         end
       end
 
@@ -322,13 +350,27 @@ describe 'puppet_agent' do
           end
         end
       else
-        it do
-          is_expected.to contain_transition("remove puppet-agent").with(
-            :attributes => {
-              'ensure' => 'absent',
-              'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
+        context 'aio_agent_version is out of date' do
+          let(:facts) do
+            facts.merge({
+              :is_pe                     => true,
+              :platform_tag              => "solaris-10-sparc",
+              :operatingsystemmajrelease => '10',
+              :architecture              => 'sun4u',
+              :aio_agent_version         => '1.0.0'
             })
+          end
+
+          it do
+            is_expected.to contain_transition("remove puppet-agent").with(
+              :attributes => {
+                'ensure' => 'absent',
+                'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
+              })
+          end
         end
+
+        it { is_expected.not_to contain_transition("remove puppet-agent") }
       end
 
       it do

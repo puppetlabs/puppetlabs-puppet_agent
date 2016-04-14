@@ -77,7 +77,7 @@ class puppet_agent::install(
 
   if $::osfamily == 'windows' {
     # Prevent re-running the batch install
-    if $package_version != undef and versioncmp("${::aio_agent_version}", "${package_version}") < 0 {
+    if $old_packages or $puppet_agent::aio_upgrade_required {
       if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) and defined(File["${::puppet_agent::params::local_packages_dir}/${package_file_name}"]) {
         class { 'puppet_agent::windows::install':
           package_file_name => $package_file_name,

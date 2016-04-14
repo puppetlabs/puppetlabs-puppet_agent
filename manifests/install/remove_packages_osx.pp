@@ -57,7 +57,7 @@ class puppet_agent::install::remove_packages_osx {
           require => File['/opt/puppet'],
         }
       }
-    } elsif $puppet_agent::package_version != undef and versioncmp("${::aio_agent_version}", "${puppet_agent::package_version}") < 0 {
+    } elsif $puppet_agent::aio_upgrade_required {
       exec { 'forget puppet-agent':
         command => '/usr/sbin/pkgutil --forget com.puppetlabs.puppet-agent',
       }
