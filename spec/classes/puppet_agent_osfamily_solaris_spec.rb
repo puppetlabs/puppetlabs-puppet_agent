@@ -10,7 +10,11 @@ describe 'puppet_agent' do
     :clientcert                => 'foo.example.vm',
   }
 
-  package_version = '1.2.5'
+  package_version = '1.2.5.90.g93a35da'
+  # Strips out strings in the version string on Solaris 11,
+  # because pkg doesn't accept strings in version numbers. This
+  # is how developer builds are labelled.
+  sol11_package_version = '1.2.5.90.9335'
   pe_version = '2000.0.0'
   if Puppet.version >= "4.0.0"
     let(:params) do
@@ -50,6 +54,10 @@ describe 'puppet_agent' do
       Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
         package_version
       end
+
+      # Ensure we get a versionable package provider
+      pkg = Puppet::Type.type(:package)
+      pkg.stubs(:defaultprovider).returns(pkg.provider(:pkg))
     end
 
     context "when Solaris 11 i386" do
@@ -65,9 +73,9 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{package_version},5.11-1.i386.p5p").with_ensure('present')
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{package_version},5.11-1.i386.p5p").with({
-          'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-i386/puppet-agent@#{package_version},5.11-1.i386.p5p",
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p").with({
+          'ensure' => 'present',
+          'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
         })
       end
 
@@ -75,7 +83,7 @@ describe 'puppet_agent' do
         is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
         is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
         is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
-        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
         is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
       end
 
@@ -115,7 +123,7 @@ describe 'puppet_agent' do
       else
         it do
           is_expected.not_to contain_transition("remove puppet-agent")
-          is_expected.to contain_package('puppet-agent').with_ensure(package_version)
+          is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
         end
       end
     end
@@ -134,9 +142,9 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
-        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p').with_ensure('present')
-        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p').with({
-          'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-sparc/puppet-agent@#{package_version},5.11-1.sparc.p5p",
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p").with({
+          'ensure' => 'present',
+          'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-sparc/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p",
         })
       end
 
@@ -144,7 +152,7 @@ describe 'puppet_agent' do
         is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
         is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
         is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
-        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@1.2.5,5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
         is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
 
       end
@@ -185,7 +193,7 @@ describe 'puppet_agent' do
       else
         it do
           is_expected.not_to contain_transition("remove puppet-agent")
-          is_expected.to contain_package('puppet-agent').with_ensure(package_version)
+          is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
         end
       end
     end
@@ -203,8 +211,10 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with_ensure('present')
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with_source("puppet:///pe_packages/#{pe_version}/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz")
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with({
+          'ensure' => 'present',
+          'source' => "puppet:///pe_packages/#{pe_version}/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz"
+        })
       end
 
       it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///pe_packages/#{pe_version}/solaris-10-i386/solaris-noask") }
@@ -283,8 +293,10 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz").with_ensure('present')
-        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz").with_source("puppet:///pe_packages/#{pe_version}/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz")
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz").with({
+          'ensure' => 'present',
+          'source' => "puppet:///pe_packages/#{pe_version}/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz"
+        })
       end
 
       it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///pe_packages/#{pe_version}/solaris-10-sparc/solaris-noask") }

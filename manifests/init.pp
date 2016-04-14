@@ -63,10 +63,11 @@ class puppet_agent (
         $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.${pkg_arch}.pkg.gz"
       } elsif $::operatingsystemmajrelease == '11' {
         # Strip letters from development builds. Unique to Solaris 11 packaging.
-        $_version_without_letters = regsubst($package_version, /[a-zA-Z]/, '', 'G')
-        $_solaris_version = regsubst($_version_without_letters, /(^-|-$)/, '', 'G')
+        # Need to pass the regex as strings for Puppet 3 compatibility.
+        $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
+        $_package_version = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
 
-        $_package_file_name = "${puppet_agent::package_name}@${_solaris_version},5.11-1.${pkg_arch}.p5p"
+        $_package_file_name = "${puppet_agent::package_name}@${_package_version},5.11-1.${pkg_arch}.p5p"
       }
     } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
@@ -90,13 +91,20 @@ class puppet_agent (
       $_package_file_name = undef
     }
 
+    # Allow for normalizing package_version for the package provider via _package_version.
+    # This only needs to be passed through to install, as elsewhere we want to
+    # use the full version string for comparisons.
+    if $_package_version == undef {
+      $_package_version = $package_version
+    }
+
     class { '::puppet_agent::prepare':
       package_file_name => $_package_file_name,
       package_version   => $package_version,
     } ->
     class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
-      package_version   => $package_version,
+      package_version   => $_package_version,
     }
 
     contain '::puppet_agent::prepare'
