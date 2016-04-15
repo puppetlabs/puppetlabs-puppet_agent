@@ -47,6 +47,10 @@ class puppet_agent (
       fail("invalid version ${package_version} requested")
     }
 
+    $aio_upgrade_required = ($is_pe == false and $package_version != undef) or
+      ($::aio_agent_version != undef and $package_version != undef and
+        versioncmp("${::aio_agent_version}", "${package_version}") < 0)
+
     if $::architecture == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')
     }

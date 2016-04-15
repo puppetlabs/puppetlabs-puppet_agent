@@ -107,12 +107,26 @@ describe 'puppet_agent' do
           end
         end
       else
-        it do
-          is_expected.to contain_transition('remove puppet-agent').with_attributes(
-            'ensure' => 'absent',
-            'uninstall_options' => '--nodeps',
-            'provider' => 'rpm')
+        context 'aio_agent_version is out of date' do
+          let(:facts) do
+            facts.merge({
+              :operatingsystemmajrelease => '10',
+              :platform_tag              => "sles-10-x86_64",
+              :architecture              => "x86_64",
+              :aio_agent_version         => '1.0.0'
+            })
+          end
+
+          it { is_expected.to contain_class("puppet_agent::install::remove_packages") }
+          it do
+            is_expected.to contain_transition('remove puppet-agent').with_attributes(
+              'ensure' => 'absent',
+              'uninstall_options' => '--nodeps',
+              'provider' => 'rpm')
+          end
         end
+
+        it { is_expected.not_to contain_transition("remove puppet-agent") }
       end
 
       it do

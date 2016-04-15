@@ -44,27 +44,39 @@ RSpec.describe 'puppet_agent' do
 
         let(:facts) { facts.merge({:is_pe => true}) }
 
-        it {
-          is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-            %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
-        }
+        if Puppet.version < '4.0.0'
+          context 'with aio_agent_version unset' do
+            let(:facts) { facts.merge({:is_pe => true}) }
 
-        context 'with up to date aio_agent_version matching server' do
-          let(:facts) { facts.merge({
-            :is_pe => true,
-            :aio_agent_version => package_version
-          })}
-
-          it { is_expected.not_to contain_class('puppet_agent::windows::install') }
+            it { is_expected.to contain_class('puppet_agent::windows::install') }
+            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
+                %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
+            }
+          end
         end
 
-        context 'with out of date aio_agent_version' do
-          let(:facts) { facts.merge({
-            :is_pe => true,
-            :aio_agent_version => '1.2.0'
-          })}
+        if Puppet.version >= '4.0.0'
+          context 'with up to date aio_agent_version matching server' do
+            let(:facts) { facts.merge({
+              :is_pe => true,
+              :aio_agent_version => package_version
+            })}
 
-          it { is_expected.to contain_class('puppet_agent::windows::install') }
+            it { is_expected.not_to contain_class('puppet_agent::windows::install') }
+            it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
+          end
+
+          context 'with out of date aio_agent_version' do
+            let(:facts) { facts.merge({
+              :is_pe => true,
+              :aio_agent_version => '1.2.0'
+            })}
+
+            it { is_expected.to contain_class('puppet_agent::windows::install') }
+            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
+                %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
+            }
+          end
         end
       end
 

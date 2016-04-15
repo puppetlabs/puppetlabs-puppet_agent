@@ -135,7 +135,7 @@ class puppet_agent::install::remove_packages(
           'pe-ruby-ldap',
         ]
       }
-    } elsif $puppet_agent::package_version != undef and versioncmp("${::aio_agent_version}", "${::puppet_agent::package_version}") < 0 {
+    } elsif $puppet_agent::aio_upgrade_required {
       $packages = [ 'puppet-agent' ]
     } else {
       $packages = []
@@ -145,7 +145,7 @@ class puppet_agent::install::remove_packages(
         package { $old_package:
           * => $package_options,
         }
-      } else {
+      } elsif $puppet_agent::aio_upgrade_required {
         # We must use transition here because we would have a duplicate package
         # declaration if we used a Package.
         notify { "using puppetlabs-transition to remove ${old_package}: ${::operatingsystem} does not support versionable": }
