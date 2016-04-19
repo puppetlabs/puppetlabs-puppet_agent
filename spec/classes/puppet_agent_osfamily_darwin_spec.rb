@@ -101,7 +101,7 @@ describe 'puppet_agent' do
                 })
               end
 
-              it { is_expected.to contain_exec('forget puppet-agent').with_command("/usr/sbin/pkgutil --forget com.puppetlabs.puppet-agent") }
+              it { is_expected.not_to contain_exec('forget puppet-agent') }
             end
 
             it { is_expected.not_to contain_exec('forget puppet-agent') }
