@@ -56,4 +56,11 @@ class puppet_agent::windows::install(
     command => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${_installbat}\" ${::puppet_agent_pid}",
     path    => $::path,
   }
+
+  # PUP-5480/PE-15037 Cache dir loses inheritable SYSTEM perms
+  exec { 'fix inheritable SYSTEM perms':
+    command => "${::system32}\\icacls.exe \"${::puppet_client_datadir}\" /grant \"SYSTEM:(OI)(CI)(F)\"",
+    unless  => "${::system32}\\icacls.exe \"${::puppet_client_datadir}\" | findstr \"SYSTEM:(OI)(CI)(F)\"",
+    require => Exec['install_puppet.bat'],
+  }
 }
