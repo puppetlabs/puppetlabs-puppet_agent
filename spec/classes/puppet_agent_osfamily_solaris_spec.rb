@@ -283,6 +283,19 @@ describe 'puppet_agent' do
 
           it { is_expected.not_to contain_transition("remove puppet-agent") }
         end
+
+        context 'with up-to-date aio_agent_version missing git sha' do
+          let(:facts) do
+            facts.merge({
+              :is_pe                     => true,
+              :platform_tag              => "solaris-10-i386",
+              :operatingsystemmajrelease => '10',
+              :aio_agent_version         => '1.2.5.90',
+            })
+          end
+
+          it { is_expected.not_to contain_transition("remove puppet-agent") }
+        end
       end
 
       it do

@@ -47,9 +47,16 @@ class puppet_agent (
       fail("invalid version ${package_version} requested")
     }
 
-    $aio_upgrade_required = ($is_pe == false and $package_version != undef) or
-      ($::aio_agent_version != undef and $package_version != undef and
-        versioncmp("${::aio_agent_version}", "${package_version}") < 0)
+    # Strip git sha from dev builds
+    if $package_version != undef and $package_version =~ /g/ {
+      $_expected_package_version = split($package_version, /[.-]g.*/)[0]
+    } else {
+      $_expected_package_version = $package_version
+    }
+
+    $aio_upgrade_required = ($is_pe == false and $_expected_package_version != undef) or
+      ($::aio_agent_version != undef and $_expected_package_version != undef and
+        versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0)
 
     if $::architecture == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')
