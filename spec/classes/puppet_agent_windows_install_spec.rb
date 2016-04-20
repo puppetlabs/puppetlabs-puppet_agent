@@ -63,9 +63,22 @@ RSpec.describe 'puppet_agent' do
               :aio_agent_version => package_version
             })}
 
-            it { is_expected.not_to contain_class('puppet_agent::windows::install') }
             it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
             it { is_expected.not_to contain_exec('fix inheritable SYSTEM perms') }
+          end
+
+          context 'with equal package_version containing git sha' do
+            let(:facts) { facts.merge({
+              :is_pe => true,
+              :aio_agent_version => package_version
+            })}
+
+            let(:params) {
+              global_params.merge(:package_version => "#{package_version}.g886c5ab")
+            }
+
+            it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
+            it { is_expected.not_to contain_exec('install_puppet.bat') }
           end
 
           context 'with out of date aio_agent_version' do
