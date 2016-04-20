@@ -40,6 +40,12 @@ Facter.add('puppet_confdir') do
   end
 end
 
+Facter.add('puppet_client_datadir') do
+  setcode do
+    Puppet.settings['client_datadir']
+  end
+end
+
 Facter.add('mco_confdir') do
   setcode do
     File.expand_path(File.join(Puppet.settings['confdir'],'../../mcollective/etc'))
