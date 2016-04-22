@@ -158,3 +158,8 @@ We want to keep it as easy as possible to contribute changes so that our modules
 
 To contribute to the puppet_agent module, see [Contributing.md](https://github.com/puppetlabs/puppetlabs-puppet_agent/blob/master/CONTRIBUTING.md). You can also read the complete module contribution guide [on the Puppet Labs wiki.](http://projects.puppetlabs.com/projects/module-site/wiki/Module_contributing)
 
+## Maintenance
+
+Maintainers: Michael Smith <michael.smith@puppet.com>, Brandon High <brandon.high@puppet.com>
+
+Tickets: https://tickets.puppetlabs.com/browse/MODULES.
