@@ -38,7 +38,7 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file("#{appdata}\\Puppetlabs") }
       it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
       it {
-        is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages/puppet-agent-#{arch}.msi").with(
+        is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
           'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi"
         )
       }

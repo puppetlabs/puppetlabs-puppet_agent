@@ -78,10 +78,12 @@ class puppet_agent::install(
   if $::osfamily == 'windows' {
     # Prevent re-running the batch install
     if $old_packages or $puppet_agent::aio_upgrade_required {
-      if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) and defined(File["${::puppet_agent::params::local_packages_dir}/${package_file_name}"]) {
+      if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
+        $local_package_file_path = windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}")
         class { 'puppet_agent::windows::install':
           package_file_name => $package_file_name,
-          source            => windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}"),
+          source            => $local_package_file_path,
+          require           => File[$local_package_file_path],
         }
       } else {
         class { 'puppet_agent::windows::install':
