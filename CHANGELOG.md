@@ -12,6 +12,8 @@ versions is also no longer explicitly prevented. Adds support for Solaris 11.
 ### Known issues
 Carried-over from prior releases:
 - For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
+- Upgrades on EL4-based systems are not supported.
+- Upgrades on Fedora systems are not supported.
 
 Newly identified issues:
 - Mac OS X Open Source package upgrades are not yet implemented.
