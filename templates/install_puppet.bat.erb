@@ -26,7 +26,7 @@ REM This may fail on agents without pxp-agent, but since this is not
 REM run interactively and the next command sets ERRORLEVEL, it's OK.
 net stop pxp-agent
 
-start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*vx "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" PUPPET_AGENT_ENVIRONMENT="%environment%"
+start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*vx "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" PUPPET_AGENT_ENVIRONMENT="%environment%" <% unless @install_dir.to_s.empty? -%>INSTALLDIR="<%= @install_dir %>"<% end -%>
 
 if exist %pid_path% del %pid_path%
 
