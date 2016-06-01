@@ -1,4 +1,13 @@
 set AGENT_PID=%1
+set windowTitle=Puppet Agent Upgrade
+title %windowTitle%
+
+set pid=
+for /f "tokens=2" %%a in ('tasklist /v ^| findstr /c:"%windowTitle%"') do set pid=%%a
+set pid_path=%TEMP%\puppet_agent_upgrade.pid
+
+if exist %pid_path% del %pid_path%
+@echo %pid%> %pid_path%
 
 :wait_for_pid
 timeout /t 5 /nobreak > NUL
@@ -7,6 +16,8 @@ echo %_task% | findstr "No tasks are running" >nul
 IF NOT %errorlevel% == 0 ( GOTO wait_for_pid )
 
 start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*v "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>"
+
+if exist %pid_path% del %pid_path%
 
 :End
 ENDLOCAL
