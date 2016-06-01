@@ -6,7 +6,7 @@ FOR /F "tokens=*" %%A IN ('tasklist /FI "PID eq %AGENT_PID%" /NH') DO set _task=
 echo %_task% | findstr "No tasks are running" >nul
 IF NOT %errorlevel% == 0 ( GOTO wait_for_pid )
 
-start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*v "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>"
+start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*v "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" <% if !@install_dir.nil? -%>INSTALDIR="<%= @install_dir %>"<% end  -%>
 
 :End
 ENDLOCAL

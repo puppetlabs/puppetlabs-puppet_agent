@@ -5,6 +5,7 @@
 # Manage the install process for windows specifically
 #
 class puppet_agent::windows::install(
+  $install_dir,
   $package_file_name,
   $source = $::puppet_agent::source,
   ) {
