@@ -15,6 +15,14 @@ FOR /F "tokens=*" %%A IN ('tasklist /FI "PID eq %AGENT_PID%" /NH') DO set _task=
 echo %_task% | findstr "No tasks are running" >nul
 IF NOT %errorlevel% == 0 ( GOTO wait_for_pid )
 
+REM This *must* occur after Puppet Agent has finished applying its
+REM prior catalog which manages the pxp-agent service state. If not,
+REM the catalog includes the PE module which starts the service and
+REM sets its startup type, which prevents installs from proceeding.
+REM This may fail on agents without pxp-agent, but since this is not
+REM run interactively and the next command sets ERRORLEVEL, it's OK.
+net stop pxp-agent
+
 start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*v "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>"
 
 if exist %pid_path% del %pid_path%
