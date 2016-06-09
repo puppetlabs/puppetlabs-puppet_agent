@@ -104,7 +104,7 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                              /msiexec.exe \/qn \/norestart \/i "https:\/\/alternate.com\/puppet-agent.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -115,7 +115,7 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                              /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -126,7 +126,7 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                              /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -137,7 +137,7 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                              /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -148,7 +148,7 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                              /msiexec.exe \/qn \/norestart \/i "\\\\garded\\c\$\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -156,7 +156,7 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
                              /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{values[:expect_arch]}-#{package_version}\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*v "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer\.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer\.log"/)
           }
           it {
             should contain_exec('install_puppet.bat').with { {
