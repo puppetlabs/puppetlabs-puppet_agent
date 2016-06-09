@@ -25,7 +25,7 @@ net stop pxp-agent
 
 start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*vx "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" <% unless @install_dir.empty? -%>INSTALDIR="<%= @install_dir %>"<% end -%>
 
-REM start /wait sc start puppet
+start /wait sc start puppet
 
 if exist %pid_path% del %pid_path%
 
