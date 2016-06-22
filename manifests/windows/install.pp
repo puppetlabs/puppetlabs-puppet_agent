@@ -7,13 +7,9 @@
 class puppet_agent::windows::install(
   $package_file_name,
   $source            = $::puppet_agent::source,
-  $install_dir       = '',
+  $install_dir       = undef,
   ) {
   assert_private()
-
-  if !empty($install_dir) {
-    validate_absolute_path($install_dir)
-  }
 
   if $::puppet_agent::is_pe {
     $_agent_version = $puppet_agent::params::master_agent_version

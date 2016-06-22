@@ -131,6 +131,12 @@ An array of services to start, normally `puppet` and `mcollective`. If the array
 
 Alternate source from which you wish to download the latest version of Puppet.
 
+####`install_dir`
+
+The directory the puppet agent should be installed to. This is only applicable for windows operating systems.
+This only applies to an agent upgrade and will not change an already installed agent.
+
+
 ## Limitations
 
 Mac OS X Open Source packages are currently not supported.

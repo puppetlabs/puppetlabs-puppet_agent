@@ -13,6 +13,7 @@
 class puppet_agent::install(
   $package_file_name = undef,
   $package_version   = 'present',
+  $install_dir       = undef,
 ) {
   assert_private()
 
@@ -83,12 +84,14 @@ class puppet_agent::install(
         class { 'puppet_agent::windows::install':
           package_file_name => $package_file_name,
           source            => $local_package_file_path,
+          install_dir       => $install_dir,
           require           => File[$local_package_file_path],
         }
       } else {
         class { 'puppet_agent::windows::install':
           package_file_name => $package_file_name,
           source            => $::puppet_agent::source,
+          install_dir       => $install_dir,
         }
       }
     }
