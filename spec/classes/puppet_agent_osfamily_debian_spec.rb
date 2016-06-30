@@ -54,6 +54,26 @@ describe 'puppet_agent' do
       'ensure'   => 'absent',
     }) }
 
+    context "xenial" do
+      let(:facts) {
+        facts.merge({
+          :is_pe        => true,
+          :platform_tag => 'ubuntu-1604-x86_64',
+          :operatingsystem => 'Ubuntu',
+          :lsbdistcodename => 'xenial',
+        })
+      }
+
+      apt_settings = [
+        "Acquire::https::master.example.vm::CaInfo \"/etc/puppetlabs/puppet/ssl/certs/ca.pem\";",
+        "Acquire::http::proxy::master.example.vm DIRECT;",
+      ]
+      it { is_expected.to contain_apt__setting('conf-pc_repo').with({
+        'priority' => 90,
+        'content'  => apt_settings.join(''),
+      }) }
+    end
+
     apt_settings = [
       "Acquire::https::master.example.vm::CaInfo \"/etc/puppetlabs/puppet/ssl/certs/ca.pem\";",
       "Acquire::https::master.example.vm::SslCert \"/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem\";",
