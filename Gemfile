@@ -6,6 +6,8 @@ group :test do
   gem 'rspec', '< 3.2.0' # https://github.com/rspec/rspec-core/issues/1864
   gem 'rspec-puppet', '~> 2.2'
   gem 'puppetlabs_spec_helper', '~> 0.10'
+  gem 'json_pure', '~> 1.8.3' # avoid version incompatible with Puppet 3.8
+  gem 'json', '~> 1.8.3' # avoid trying to pull a newer version with Ruby 1.8.7
   gem 'metadata-json-lint', '~> 0.0'
   gem 'rspec-puppet-facts', '~> 1.3'
 end

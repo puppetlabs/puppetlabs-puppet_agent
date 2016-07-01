@@ -18,7 +18,8 @@ class puppet_agent::install(
 
   $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
 
-  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or ($::operatingsystem == 'AIX' and  $::architecture =~ /PowerPC_POWER[5,6,7]/) {
+  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or
+        ($::operatingsystem == 'AIX' and  $::architecture =~ /PowerPC_POWER[5,6,7]/) {
     contain puppet_agent::install::remove_packages
 
     exec { 'replace puppet.conf removed by package removal':
@@ -92,7 +93,9 @@ class puppet_agent::install(
         }
       }
     }
-  } elsif ($::osfamily == 'Solaris' and ($::operatingsystemmajrelease == '10' or $old_packages)) or $::osfamily == 'Darwin' or $::osfamily == 'AIX' or ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
+  } elsif ($::osfamily == 'Solaris' and ($::operatingsystemmajrelease == '10' or $old_packages)) or
+      $::osfamily == 'Darwin' or $::osfamily == 'AIX' or
+      ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
     # Solaris 10/OSX/AIX/SLES 10 package provider does not provide 'versionable'
     # Package is removed above, then re-added as the new version here.
     package { $::puppet_agent::package_name:
