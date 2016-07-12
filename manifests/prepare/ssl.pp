@@ -46,7 +46,7 @@ class puppet_agent::prepare::ssl {
       }
     }
     default: {
-      fail('$::puppet-sslpaths must be a Hash. Is it possible stringify_facts is not set to false in the main section of the agent puppet.conf?')
+      fail('$::puppet-sslpaths is not a Hash. Is stringify_facts not set to false in the main section of the agent puppet.conf?')
     }
   }
 }
