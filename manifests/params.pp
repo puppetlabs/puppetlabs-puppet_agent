@@ -22,6 +22,7 @@ class puppet_agent::params {
   }
 
   $package_name = 'puppet-agent'
+  $install_dir = undef
 
   case $::osfamily {
     'RedHat', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {

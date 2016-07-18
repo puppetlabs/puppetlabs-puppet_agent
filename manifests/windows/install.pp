@@ -6,7 +6,8 @@
 #
 class puppet_agent::windows::install(
   $package_file_name,
-  $source = $::puppet_agent::source,
+  $source            = $::puppet_agent::source,
+  $install_dir       = undef,
   ) {
   assert_private()
 

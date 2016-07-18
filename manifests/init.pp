@@ -25,6 +25,10 @@
 #   None will be started if the array is empty.
 # [source]
 #   The location to find packages.
+# [install_dir]
+#   The directory the puppet agent should be installed to. This is only applicable for
+#   windows operating systems. This only applies when upgrading the agent to a new
+#   version; it will not cause re-installation of the same version to a new location.
 #
 class puppet_agent (
   $arch            = $::architecture,
@@ -34,9 +38,14 @@ class puppet_agent (
   $package_version = $::puppet_agent::params::package_version,
   $service_names   = $::puppet_agent::params::service_names,
   $source          = $::puppet_agent::params::_source,
+  $install_dir     = $::puppet_agent::params::install_dir,
 ) inherits ::puppet_agent::params {
 
   validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$','PowerPC_POWER'])
+
+  if $::osfamily == 'windows' and $install_dir != undef {
+    validate_absolute_path($install_dir)
+  }
 
   if $package_version == undef and versioncmp("${::clientversion}", '4.0.0') >= 0 {
     info('puppet_agent performs no actions if a package_version is not specified on Puppet 4')
@@ -116,6 +125,7 @@ class puppet_agent (
     class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
       package_version   => $_package_version,
+      install_dir       => $install_dir,
     }
 
     contain '::puppet_agent::prepare'
