@@ -2,6 +2,9 @@ set AGENT_PID=%1
 set windowTitle=Puppet Agent Upgrade
 title %windowTitle%
 
+REM set code page to US (English) to adjust non-US English systems if required
+chcp 437
+
 set pid=
 for /f "tokens=2" %%a in ('tasklist /v ^| findstr /c:"%windowTitle%"') do set pid=%%a
 set pid_path=%TEMP%\puppet_agent_upgrade.pid
