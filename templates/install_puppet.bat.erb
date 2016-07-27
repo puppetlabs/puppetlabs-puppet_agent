@@ -12,9 +12,21 @@ for /f "delims=" %%i in ('puppet config print --section agent environment') do s
 if exist %pid_path% del %pid_path%
 @echo %pid%> %pid_path%
 
+SET /A pid_checks_performed=0
+
 :wait_for_pid
 timeout /t 5 /nobreak > NUL
 wmic path Win32_Process where handle=%AGENT_PID% get handle /format:textvaluelist | findstr /I "Handle=%AGENT_PID%"
+
+SET /A pid_checks_performed+=1
+REM Wait for a max of 120 seconds (or 24 iterations) before aborting the upgrade
+IF %errorlevel% == 0 IF %pid_checks_performed% == 24 (
+  REM Adding CustomSource allows EventCreate to work properly
+  reg add HKLM\SYSTEM\CurrentControlSet\services\eventlog\Application\Puppet /v CustomSource /t REG_DWORD /d 1 /f
+  EVENTCREATE /T ERROR /L APPLICATION /SO Puppet /ID 101 /D "Puppet agent upgrade failed while waiting for Puppet process [ID: %AGENT_PID%] to exit."
+  GOTO End
+)
+
 IF %errorlevel% == 0 ( GOTO wait_for_pid )
 
 REM This *must* occur after Puppet Agent has finished applying its
@@ -27,7 +39,8 @@ net stop pxp-agent
 
 start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*vx "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" PUPPET_AGENT_ENVIRONMENT="%environment%" <% unless @install_dir.to_s.empty? -%>INSTALLDIR="<%= @install_dir %>"<% end -%>
 
+:End
+
 if exist %pid_path% del %pid_path%
 
-:End
 ENDLOCAL
