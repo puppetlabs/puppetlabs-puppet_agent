@@ -1,10 +1,12 @@
+SET
+
 set AGENT_PID=%1
 set windowTitle=Puppet Agent Upgrade
 title %windowTitle%
 
 set pid=
 for /f "tokens=2" %%a in ('tasklist /v ^| findstr /c:"%windowTitle%"') do set pid=%%a
-set pid_path=%TEMP%\puppet_agent_upgrade.pid
+set pid_path=%~dp0puppet_agent_upgrade.pid
 
 set environment=
 for /f "delims=" %%i in ('puppet config print --section agent environment') do set environment=%%i
@@ -15,7 +17,8 @@ if exist %pid_path% del %pid_path%
 SET /A pid_checks_performed=0
 
 :wait_for_pid
-timeout /t 5 /nobreak > NUL
+REM Wait 5 seconds
+ping 127.0.0.1 -n 6 > NUL
 wmic path Win32_Process where handle=%AGENT_PID% get handle /format:textvaluelist | findstr /I "Handle=%AGENT_PID%"
 
 SET /A pid_checks_performed+=1
