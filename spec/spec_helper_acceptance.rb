@@ -23,7 +23,7 @@ TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'f
 
 # Helper for setting the activemq host in erb templates.
 def activemq_host
-  master
+  'activemq'
 end
 
 def install_modules_on(host)
@@ -123,6 +123,9 @@ def setup_puppet_on(host, opts = {})
     scp_to host, "#{TEST_FILES}/client.crt", '/etc/mcollective/ssl-clients/client.pem'
     on host, 'mkdir -p /usr/libexec/mcollective/plugins'
 
+    # Ensure the domain used to find activemq_host resolves to an ip address.
+    # The domain is set based on the certificate used for testing.
+    on host, puppet('resource', 'host', activemq_host, "ip=#{master['ip']}")
     on host, puppet('resource', 'service', 'mcollective', 'ensure=stopped')
     on host, puppet('resource', 'service', 'mcollective', 'ensure=running')
   end
