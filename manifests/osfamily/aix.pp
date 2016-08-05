@@ -8,9 +8,4 @@ class puppet_agent::osfamily::aix(
   }
 
   contain puppet_agent::prepare::package
-
-  file { '/usr/local/bin/puppet':
-    ensure => 'link',
-    target => '/opt/puppetlabs/bin/puppet',
-  }
 }
