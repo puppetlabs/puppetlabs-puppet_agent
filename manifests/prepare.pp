@@ -10,10 +10,16 @@
 #   us to manually download the puppet-agent package.
 # [version]
 #   The puppet-agent version to install.
+# [service_names]
+#   A list of services we expect to manage after upgrade.
+# [old_service_names]
+#   A list of services that should be halted before upgrade.
 #
 class puppet_agent::prepare(
   $package_file_name = undef,
   $package_version = undef,
+  $service_names = [],
+  $old_service_names = [],
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'
@@ -78,6 +84,33 @@ class puppet_agent::prepare(
           before => Class[$_osfamily_class],
         }
         contain puppet_agent::prepare::mco_client_config
+      }
+    }
+  }
+
+  # Ensure services are stopped before upgrading. In some systems, the old service is not stopped before upgrading, and
+  # when the new service is configured differently this can leave an orphaned service running.
+  # Upgrades from 4.0 should cleanly restart services. Only ensure services are stopped when upgrading from 3.x.
+  if (versioncmp("${::clientversion}", '4.0.0') < 0) {
+    $stop_params = {
+      ensure => 'stopped',
+      enable => false,
+    }
+    $old_service_names.each |$service| {
+      if member($service_names, $service) {
+        # Service will be managed after install, use puppetlabs-transition.
+        notify { "disable ${service} notice":
+          message => "using puppetlabs-transition to stop/disable ${service} prior to upgrade",
+        }
+        transition { "stop ${service}":
+          resource   => Service[$service],
+          attributes => $stop_params,
+          prior_to   => Notify["disable ${service} notice"],
+        }
+      } else {
+        service { "stop ${service}":
+          * => $stop_params,
+        }
       }
     }
   }

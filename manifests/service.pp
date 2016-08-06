@@ -6,9 +6,19 @@
 class puppet_agent::service {
   assert_private()
 
-
   if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
-    contain '::puppet_agent::service::solaris'
+    file { '/tmp/solaris_start_puppet.sh':
+      ensure => file,
+      source => 'puppet:///modules/puppet_agent/solaris_start_puppet.sh',
+      mode   => '0755',
+    } ->
+    exec { 'solaris_start_puppet.sh':
+      command => "/tmp/solaris_start_puppet.sh ${::puppet_agent_pid} &",
+      path    => '/usr/bin:/bin:/usr/sbin',
+    }
+    file { ['/var/opt/lib', '/var/opt/lib/pe-puppet', '/var/opt/lib/pe-puppet/state']:
+      ensure => directory,
+    }
   } else {
 
     $::puppet_agent::service_names.each |$service| {
@@ -19,12 +29,6 @@ class puppet_agent::service {
         hasrestart => true,
       }
     }
-
-    if $::operatingsystem == 'Solaris' {
-      contain '::puppet_agent::service::solaris'
-      Service[$::puppet_agent::service_names] -> Class['::puppet_agent::service::solaris']
-    }
-
   }
 
 }

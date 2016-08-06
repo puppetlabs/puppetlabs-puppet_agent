@@ -247,6 +247,30 @@ describe 'puppet_agent::prepare' do
 
         it { is_expected.to contain_class("puppet_agent::prepare::puppet_config") }
         it { is_expected.to contain_class("puppet_agent::osfamily::#{facts[:osfamily]}") }
+
+        context 'stopping old services' do
+          let(:params) {{
+            :old_service_names => ['foo1', 'foo2'],
+            :service_names => ['foo1'],
+          }}
+
+          if Puppet.version >= "4.0.0"
+            it { is_expected.not_to contain_service('stop foo1') }
+            it { is_expected.not_to contain_transition('stop foo1') }
+            it { is_expected.not_to contain_service('stop foo2') }
+          else
+            it { is_expected.to contain_transition('stop foo1').with({
+              'attributes' => {
+                'ensure' => 'stopped',
+                'enable' => false,
+              }
+            }) }
+            it { is_expected.to contain_service('stop foo2').with({
+              'ensure' => 'stopped',
+              'enable' => false,
+            }) }
+          end
+        end
       end
     end
   end

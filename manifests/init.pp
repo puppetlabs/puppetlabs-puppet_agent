@@ -29,6 +29,9 @@
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
+# [old_service_names]
+#   An array of services to stop before upgrade. Set to `pe-puppet` and `pe-mcollective`
+#   when upgrading from Puppet < 4.0.
 # [source]
 #   The location to find packages.
 # [install_dir]
@@ -37,15 +40,16 @@
 #   version; it will not cause re-installation of the same version to a new location.
 #
 class puppet_agent (
-  $arch            = $::architecture,
-  $collection      = 'PC1',
-  $is_pe           = $::puppet_agent::params::_is_pe,
-  $manage_repo     = true,
-  $package_name    = $::puppet_agent::params::package_name,
-  $package_version = $::puppet_agent::params::package_version,
-  $service_names   = $::puppet_agent::params::service_names,
-  $source          = $::puppet_agent::params::_source,
-  $install_dir     = $::puppet_agent::params::install_dir,
+  $arch              = $::architecture,
+  $collection        = 'PC1',
+  $is_pe             = $::puppet_agent::params::_is_pe,
+  $manage_repo       = true,
+  $package_name      = $::puppet_agent::params::package_name,
+  $package_version   = $::puppet_agent::params::package_version,
+  $service_names     = $::puppet_agent::params::service_names,
+  $old_service_names = $::puppet_agent::params::old_service_names,
+  $source            = $::puppet_agent::params::_source,
+  $install_dir       = $::puppet_agent::params::install_dir,
 ) inherits ::puppet_agent::params {
 
   validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$','PowerPC_POWER'])
@@ -128,6 +132,8 @@ class puppet_agent (
     class { '::puppet_agent::prepare':
       package_file_name => $_package_file_name,
       package_version   => $package_version,
+      service_names     => $service_names,
+      old_service_names => $old_service_names,
     } ->
     class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
