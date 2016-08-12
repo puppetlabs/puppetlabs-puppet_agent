@@ -125,7 +125,7 @@ def setup_puppet_on(host, opts = {})
 
     # Ensure the domain used to find activemq_host resolves to an ip address.
     # The domain is set based on the certificate used for testing.
-    on host, puppet('resource', 'host', activemq_host, "ip=#{master['ip']}")
+    on host, puppet('resource', 'host', activemq_host, "ip=#{master['ip'] || master.ip}")
     on host, puppet('resource', 'service', 'mcollective', 'ensure=stopped')
     on host, puppet('resource', 'service', 'mcollective', 'ensure=running')
   end
