@@ -87,11 +87,19 @@ class puppet_agent::prepare(
   # the osfamily of the client being configured.
 
   case $::osfamily {
-    'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
+    'redhat', 'debian', 'windows', 'aix', 'suse', 'darwin': {
       class { $_osfamily_class:
         package_file_name => $package_file_name,
       }
       contain $_osfamily_class
+    }
+    'solaris': {
+      if $::aio_agent_version != $package_version {
+        class { $_osfamily_class:
+          package_file_name => $package_file_name,
+        }
+        contain $_osfamily_class
+      }
     }
     default: {
       fail("puppet_agent not supported on ${::osfamily}")
