@@ -20,7 +20,7 @@ class puppet_agent::install(
   $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
 
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or
-        ($::operatingsystem == 'AIX' and  $::architecture =~ /PowerPC_POWER[5,6,7]/) {
+        ($::operatingsystem == 'AIX' and  $::architecture =~ /PowerPC_POWER[5,6,7,8]/) {
     contain puppet_agent::install::remove_packages
 
     exec { 'replace puppet.conf removed by package removal':
