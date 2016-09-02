@@ -43,11 +43,32 @@ class puppet_agent::osfamily::redhat(
     }
   }
 
-  $keyname = 'RPM-GPG-KEY-puppetlabs'
+  $legacy_keyname = 'RPM-GPG-KEY-puppetlabs'
+  $legacy_gpg_path = "/etc/pki/rpm-gpg/${legacy_keyname}"
+  $keyname = 'RPM-GPG-KEY-puppet'
   $gpg_path = "/etc/pki/rpm-gpg/${keyname}"
+  $gpg_keys = "file://${legacy_gpg_path}
+  file://${gpg_path}"
 
   file { ['/etc/pki', '/etc/pki/rpm-gpg']:
     ensure => directory,
+  }
+
+  file { $legacy_gpg_path:
+    ensure => present,
+    owner  => 0,
+    group  => 0,
+    mode   => '0644',
+    source => "puppet:///modules/puppet_agent/${legacy_keyname}",
+  }
+
+  # Given the path to a key, see if it is imported, if not, import it
+  exec {  "import-${legacy_keyname}":
+    path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+    command   => "rpm --import ${legacy_gpg_path}",
+    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${legacy_gpg_path}) | cut --characters=11-18 | tr [A-Z] [a-z]`",
+    require   => File[$legacy_gpg_path],
+    logoutput => 'on_failure',
   }
 
   file { $gpg_path:
@@ -72,7 +93,7 @@ class puppet_agent::osfamily::redhat(
     descr         => "Puppet Labs ${::puppet_agent::collection} Repository",
     enabled       => true,
     gpgcheck      => '1',
-    gpgkey        => "file://${gpg_path}",
+    gpgkey        => "${gpg_keys}",
     sslcacert     => $_sslcacert_path,
     sslclientcert => $_sslclientcert_path,
     sslclientkey  => $_sslclientkey_path,
