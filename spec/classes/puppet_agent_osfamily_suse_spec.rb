@@ -170,6 +170,14 @@ describe 'puppet_agent' do
             'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppetlabs',
           }) }
 
+          it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet').with({
+            'ensure' => 'present',
+            'owner'  => '0',
+            'group'  => '0',
+            'mode'   => '0644',
+            'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppet',
+          }) }
+
           {
             'name'        => 'pc_repo',
             'enabled'      => '1',

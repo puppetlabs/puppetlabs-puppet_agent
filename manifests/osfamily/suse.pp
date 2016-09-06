@@ -16,9 +16,11 @@ class puppet_agent::osfamily::suse(
     }
     '11', '12': {
       # Import the GPG key
-      $keyname     = 'RPM-GPG-KEY-puppetlabs'
-      $gpg_path    = "/etc/pki/rpm-gpg/${keyname}"
-      $gpg_homedir = '/root/.gnupg'
+      $legacy_keyname  = 'RPM-GPG-KEY-puppetlabs'
+      $legacy_gpg_path = "/etc/pki/rpm-gpg/${legacy_keyname}"
+      $keyname         = 'RPM-GPG-KEY-puppet'
+      $gpg_path        = "/etc/pki/rpm-gpg/${keyname}"
+      $gpg_homedir     = '/root/.gnupg'
 
       file { ['/etc/pki', '/etc/pki/rpm-gpg']:
         ensure => directory,
@@ -32,16 +34,33 @@ class puppet_agent::osfamily::suse(
         source => "puppet:///modules/puppet_agent/${keyname}",
       }
 
+      file { $legacy_gpg_path:
+        ensure => present,
+        owner  => 0,
+        group  => 0,
+        mode   => '0644',
+        source => "puppet:///modules/puppet_agent/${legacy_keyname}",
+      }
+
       # Given the path to a key, see if it is imported, if not, import it
+      $legacy_gpg_pubkey = "gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --throw-keyids < ${legacy_gpg_path})"
       $gpg_pubkey = "gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --throw-keyids < ${gpg_path})"
-      exec {  "import-${keyname}":
+
+      exec { "import-${legacy_keyname}":
+        path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+        command   => "rpm --import ${legacy_gpg_path}",
+        unless    => "rpm -q ${legacy_gpg_pubkey} | cut --characters=11-18 | tr [A-Z] [a-z])",
+        require   => File[$legacy_gpg_path],
+        logoutput => 'on_failure',
+      }
+
+      exec { "import-${keyname}":
         path      => '/bin:/usr/bin:/sbin:/usr/sbin',
         command   => "rpm --import ${gpg_path}",
         unless    => "rpm -q ${gpg_pubkey} | cut --characters=11-18 | tr [A-Z] [a-z])",
         require   => File[$gpg_path],
         logoutput => 'on_failure',
       }
-
 
       # Set up a zypper repository by creating a .repo file which mimics a ini file
       $pe_server_version = pe_build_version()
