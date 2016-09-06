@@ -85,11 +85,16 @@ describe 'puppet_agent' do
       'content'  => apt_settings.join(''),
     }) }
 
+    it { is_expected.to contain_apt__key('legacy key').with({
+      'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+      'server' => 'pgp.mit.edu',
+    }) }
+
     it { is_expected.to contain_apt__source('pc_repo').with({
       'location' => 'https://master.example.vm:8140/packages/4.0.0/debian-7-x86_64',
       'repos'    => 'PC1',
       'key'      => {
-        'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+        'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
         'server' => 'pgp.mit.edu',
       },
     }) }
@@ -102,11 +107,16 @@ describe 'puppet_agent' do
     it { is_expected.not_to contain_apt__setting('conf-pe-repo') }
     it { is_expected.not_to contain_apt__setting('list-puppet-enterprise-installer') }
 
+    it { is_expected.to contain_apt__key('legacy key').with({
+      'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+      'server' => 'pgp.mit.edu',
+    }) }
+
     it { is_expected.to contain_apt__source('pc_repo').with({
       'location' => 'http://apt.puppetlabs.com',
       'repos'    => 'PC1',
       'key'      => {
-        'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
+        'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
         'server' => 'pgp.mit.edu',
       },
     }) }
