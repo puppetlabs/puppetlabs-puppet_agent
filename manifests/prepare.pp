@@ -94,7 +94,7 @@ class puppet_agent::prepare(
       contain $_osfamily_class
     }
     'solaris': {
-      if $::aio_agent_version != $package_version {
+      if $::puppet_agent::aio_upgrade_required {
         class { $_osfamily_class:
           package_file_name => $package_file_name,
         }

@@ -24,24 +24,6 @@ describe 'puppet_agent' do
     end
   end
 
-  describe 'agent version is the same as the master' do
-    context 'does not attempt to upgrade' do
-      let(:facts) do
-        facts.merge({
-          :aio_agent_version => '2000.0.0',
-          :is_pe => true,
-        })
-      end
-
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-        '2000.0.0'
-      end
-      it { should compile.with_all_deps }
-      it { is_expected.to_not contain_exec('unzip puppet-agent-2000.0.0.sparc.pkg.gz') }
-
-    end
-  end
-
   describe 'unsupported environment' do
     context 'when not PE' do
       let(:facts) do
@@ -77,6 +59,22 @@ describe 'puppet_agent' do
       pkg = Puppet::Type.type(:package)
       pkg.stubs(:defaultprovider).returns(pkg.provider(:pkg))
     end
+
+    context 'does not attempt to upgrade when master and agent version match' do
+      let(:facts) do
+        puts sol11_package_version
+        facts.merge({
+          :aio_agent_version         => sol11_package_version,
+          :is_pe                     => true,
+          :platform_tag              => "solaris-11-i386",
+          :operatingsystemmajrelease => '11',
+        })
+      end
+
+      it { should compile.with_all_deps }
+      it { is_expected.to_not contain_class("puppet_agent::osfamily::solaris") }
+    end
+
 
     context "when Solaris 11 i386" do
       let(:facts) do
