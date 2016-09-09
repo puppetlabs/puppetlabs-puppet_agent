@@ -178,19 +178,47 @@ describe 'puppet_agent' do
             'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppet',
           }) }
 
-          {
-            'name'        => 'pc_repo',
-            'enabled'      => '1',
-            'autorefresh' => '0',
-            'baseurl'     => "https://master.example.vm:8140/packages/4.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
-            'type'        => 'rpm-md',
-          }.each do |setting, value|
+          context "with manage_repo enabled" do
+            let(:params) {
+              {
+                :manage_repo => true,
+                :package_version => package_version
+              }
+            }
+
+            {
+              'name'        => 'pc_repo',
+              'enabled'     => '1',
+              'autorefresh' => '0',
+              'baseurl'     => "https://master.example.vm:8140/packages/4.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
+              'type'        => 'rpm-md',
+            }.each do |setting, value|
               it { is_expected.to contain_ini_setting("zypper pc_repo #{setting}").with({
                 'path'    => '/etc/zypp/repos.d/pc_repo.repo',
                 'section' => 'pc_repo',
                 'setting' => setting,
                 'value'   => value,
               }) }
+            end
+          end
+
+          context "with manage_repo disabled" do
+            let(:params) {
+              {
+                :manage_repo => false,
+                :package_version => package_version
+              }
+            }
+
+            [
+              'name',
+              'enabled',
+              'autorefresh',
+              'baseurl',
+              'type',
+            ].each do |setting|
+              it { is_expected.not_to contain_ini_setting("zypper pc_repo #{setting}") }
+            end
           end
 
           it do

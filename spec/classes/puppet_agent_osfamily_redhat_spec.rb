@@ -58,8 +58,13 @@ describe 'puppet_agent' do
         'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppet',
       }) }
 
-
-      context 'when FOSS' do
+      context 'when FOSS and manage_repo enabled' do
+        let(:params)  {
+          {
+            :manage_repo => true,
+            :package_version => package_version
+          }
+        }
         it { is_expected.not_to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
         it { is_expected.to contain_yumrepo('pc_repo').with({
           'baseurl' => "https://yum.puppetlabs.com/#{urlbit}/PC1/x64",
@@ -70,6 +75,20 @@ describe 'puppet_agent' do
 
         it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
       end
+
+      context 'when FOSS and manage_repo disabled' do
+        let(:params)  {
+          {
+            :manage_repo => false,
+            :package_version => package_version
+          }
+        }
+        it { is_expected.not_to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
+        it { is_expected.not_to contain_yumrepo('pc_repo')}
+
+        it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
+      end
+
     end
   end
 
@@ -98,17 +117,39 @@ describe 'puppet_agent' do
         :operatingsystemmajrelease => osmajor,
       }}
 
-      it { is_expected.to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
+      context 'with manage_repo enabled' do
+        let(:params)  {
+          {
+            :manage_repo => true,
+            :package_version => package_version
+          }
+        }
 
-      it { is_expected.to contain_yumrepo('pc_repo').with({
-        'baseurl' => "https://master.example.vm:8140/packages/4.0.0/#{repodir}",
-        'enabled' => 'true',
-        'gpgcheck' => '1',
-        'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
-        'sslcacert' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
-        'sslclientcert' => '/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem',
-        'sslclientkey' => '/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem',
-      }) }
+        it { is_expected.to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
+
+        it { is_expected.to contain_yumrepo('pc_repo').with({
+          'baseurl' => "https://master.example.vm:8140/packages/4.0.0/#{repodir}",
+          'enabled' => 'true',
+          'gpgcheck' => '1',
+          'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
+          'sslcacert' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
+          'sslclientcert' => '/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem',
+          'sslclientkey' => '/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem',
+        }) }
+      end
+
+      context 'with manage_repo disabled' do
+        let(:params)  {
+          {
+            :manage_repo => false,
+            :package_version => package_version
+          }
+        }
+
+        it { is_expected.to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
+
+        it { is_expected.not_to contain_yumrepo('pc_repo')}
+      end
 
       it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
     end

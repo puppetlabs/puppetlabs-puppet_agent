@@ -88,14 +88,16 @@ class puppet_agent::osfamily::redhat(
     logoutput => 'on_failure',
   }
 
-  yumrepo { 'pc_repo':
-    baseurl       => $source,
-    descr         => "Puppet Labs ${::puppet_agent::collection} Repository",
-    enabled       => true,
-    gpgcheck      => '1',
-    gpgkey        => "${gpg_keys}",
-    sslcacert     => $_sslcacert_path,
-    sslclientcert => $_sslclientcert_path,
-    sslclientkey  => $_sslclientkey_path,
+  if $::puppet_agent::manage_repo {
+    yumrepo { 'pc_repo':
+      baseurl       => $source,
+      descr         => "Puppet Labs ${::puppet_agent::collection} Repository",
+      enabled       => true,
+      gpgcheck      => '1',
+      gpgkey        => "${gpg_keys}",
+      sslcacert     => $_sslcacert_path,
+      sslclientcert => $_sslclientcert_path,
+      sslclientkey  => $_sslclientkey_path,
+    }
   }
 }

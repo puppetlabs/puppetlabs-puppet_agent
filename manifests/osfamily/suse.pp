@@ -62,31 +62,33 @@ class puppet_agent::osfamily::suse(
         logoutput => 'on_failure',
       }
 
-      # Set up a zypper repository by creating a .repo file which mimics a ini file
-      $pe_server_version = pe_build_version()
-      $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
+      if $::puppet_agent::manage_repo {
+        # Set up a zypper repository by creating a .repo file which mimics a ini file
+        $pe_server_version = pe_build_version()
+        $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
 
-      $repo_file = '/etc/zypp/repos.d/pc_repo.repo'
-      $repo_name = 'pc_repo'
+        $repo_file = '/etc/zypp/repos.d/pc_repo.repo'
+        $repo_name = 'pc_repo'
 
-      # In Puppet Enterprise, agent packages are served by the same server
-      # as the master, which can be using either a self signed CA, or an external CA.
-      # Zypper has issues with validating a self signed CA, so for now disable ssl verification.
-      $repo_settings = {
-        'name'        => $repo_name,
-        'enabled'     => '1',
-        'autorefresh' => '0',
-        'baseurl'     => "${source}?ssl_verify=no",
-        'type'        => 'rpm-md',
-      }
+        # In Puppet Enterprise, agent packages are served by the same server
+        # as the master, which can be using either a self signed CA, or an external CA.
+        # Zypper has issues with validating a self signed CA, so for now disable ssl verification.
+        $repo_settings = {
+          'name'        => $repo_name,
+          'enabled'     => '1',
+          'autorefresh' => '0',
+          'baseurl'     => "${source}?ssl_verify=no",
+          'type'        => 'rpm-md',
+        }
 
-      $repo_settings.each |String $setting, String $value| {
-        ini_setting { "zypper ${repo_name} ${setting}":
-          ensure  => present,
-          path    => $repo_file,
-          section => $repo_name,
-          setting => $setting,
-          value   => $value,
+        $repo_settings.each |String $setting, String $value| {
+          ini_setting { "zypper ${repo_name} ${setting}":
+            ensure  => present,
+            path    => $repo_file,
+            section => $repo_name,
+            setting => $setting,
+            value   => $value,
+          }
         }
       }
     }
