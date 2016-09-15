@@ -136,6 +136,18 @@ describe 'puppet_agent' do
           'sslclientcert' => '/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem',
           'sslclientkey' => '/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem',
         }) }
+        describe 'disable proxy' do
+          let(:params) {
+            {
+              :manage_repo => true,
+              :package_version => package_version,
+              :disable_proxy   => true,
+            }
+          }
+          it {
+            is_expected.to contain_yumrepo('pc_repo').with_proxy('_none_')
+          }
+        end
       end
 
       context 'with manage_repo disabled' do
