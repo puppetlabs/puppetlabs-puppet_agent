@@ -121,9 +121,14 @@ describe 'puppet_agent' do
             it { is_expected.to contain_class('puppet_agent::install').that_requires('puppet_agent::prepare') }
 
             if facts[:osfamily] == 'RedHat'
-              # Workaround PUP-5802/PUP-5025
-              yum_package_version = package_version + '-1.el' + facts[:operatingsystemmajrelease]
-              it { is_expected.to contain_package('puppet-agent').with_ensure(yum_package_version) }
+              if facts[:operatingsystem] == 'Fedora'
+                # Workaround PUP-5802/PUP-5025
+                yum_package_version = package_version + '-1.fedoraf' + facts[:operatingsystemmajrelease]
+                it { is_expected.to contain_package('puppet-agent').with_ensure(yum_package_version) }
+              else
+                yum_package_version = package_version + '-1.el' + facts[:operatingsystemmajrelease]
+                it { is_expected.to contain_package('puppet-agent').with_ensure(yum_package_version) }
+              end
             elsif facts[:osfamily] == 'Debian'
               # Workaround PUP-5802/PUP-5025
               deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
