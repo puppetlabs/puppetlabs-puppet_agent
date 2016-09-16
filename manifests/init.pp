@@ -13,6 +13,12 @@
 #   The Puppet Collection to track. Defaults to 'PC1'.
 # [is_pe]
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
+# [manage_repo]
+#   Boolean to determine whether to configure repositories
+#   This is intended to provide the ability to disable configuring a local repo
+#   in support of systems that manage external repositories (i.e. spacewalk/satellite)
+#   to enable users to add the proper packages to their internal repos
+#   and to utilize default package providers for the install
 # [package_name]
 #   The package to upgrade to, i.e. `puppet-agent`.
 # [package_version]
@@ -34,6 +40,7 @@ class puppet_agent (
   $arch            = $::architecture,
   $collection      = 'PC1',
   $is_pe           = $::puppet_agent::params::_is_pe,
+  $manage_repo     = true,
   $package_name    = $::puppet_agent::params::package_name,
   $package_version = $::puppet_agent::params::package_version,
   $service_names   = $::puppet_agent::params::service_names,

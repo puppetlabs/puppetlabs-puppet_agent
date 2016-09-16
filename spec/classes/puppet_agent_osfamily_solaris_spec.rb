@@ -79,12 +79,38 @@ describe 'puppet_agent' do
         })
       end
 
-      it do
-        is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
-        is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
-        is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
-        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
-        is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
+      context "when managing Solaris 11 i386 repo" do
+        let(:params) {
+          {
+            :manage_repo => true,
+            :package_version => package_version
+          }
+        }
+
+        it do
+          is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
+          is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
+          is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
+          is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+          is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
+        end
+      end
+
+      context "when not managing Solaris 11 i386 repo" do
+        let(:params) {
+          {
+            :manage_repo => false,
+            :package_version => package_version
+          }
+        }
+
+        it do
+          is_expected.not_to contain_exec('puppet_agent remove existing repo')
+          is_expected.not_to contain_exec('puppet_agent create repo')
+          is_expected.not_to contain_exec('puppet_agent set publisher')
+          is_expected.not_to contain_exec('puppet_agent copy packages')
+          is_expected.not_to contain_exec('puppet_agent ensure pkgrepo is up-to-date')
+        end
       end
 
       if Puppet.version < "4.0.0"
@@ -148,12 +174,37 @@ describe 'puppet_agent' do
         })
       end
 
-      it do
-        is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
-        is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
-        is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
-        is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
-        is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
+      context "when managing Solaris 11 sparc sun4u repo" do
+        let(:params) {
+          {
+            :manage_repo => true,
+            :package_version => package_version
+          }
+        }
+        it do
+          is_expected.to contain_exec('puppet_agent remove existing repo').with_command("rm -rf '/etc/puppetlabs/installer/solaris.repo'")
+          is_expected.to contain_exec('puppet_agent create repo').with_command('pkgrepo create /etc/puppetlabs/installer/solaris.repo')
+          is_expected.to contain_exec('puppet_agent set publisher').with_command('pkgrepo set -s /etc/puppetlabs/installer/solaris.repo publisher/prefix=puppetlabs.com')
+          is_expected.to contain_exec('puppet_agent copy packages').with_command("pkgrecv -s file:///opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p -d /etc/puppetlabs/installer/solaris.repo '*'")
+          is_expected.to contain_exec('puppet_agent ensure pkgrepo is up-to-date').with_command('pkgrepo refresh -s /etc/puppetlabs/installer/solaris.repo')
+        end
+      end
+
+      context "when not managing Solaris 11 sparc sun4u repo" do
+        let(:params) {
+          {
+            :manage_repo => false,
+            :package_version => package_version
+          }
+        }
+
+        it do
+          is_expected.not_to contain_exec('puppet_agent remove existing repo')
+          is_expected.not_to contain_exec('puppet_agent create repo')
+          is_expected.not_to contain_exec('puppet_agent set publisher')
+          is_expected.not_to contain_exec('puppet_agent copy packages')
+          is_expected.not_to contain_exec('puppet_agent ensure pkgrepo is up-to-date')
+        end
 
       end
 

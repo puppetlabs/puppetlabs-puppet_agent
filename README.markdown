@@ -113,6 +113,12 @@ The Puppet Collection to track. Defaults to `PC1`.
 
 Install from Puppet Enterprise rpos. Enabled if communicating with a PE master.
 
+#####`manage_repo`
+
+Boolean to determine whether to configure zypper/yum/apt/solaris repositories - Defaults to `true`
+If set to false, it is assumed an internally hosted repository will be used for the installation
+and the native package providers will be used to query pre-configured repos on the host being upgraded
+
 #####`package_name`
 
 The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only accepted value is `puppet-agent`.
