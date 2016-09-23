@@ -71,9 +71,14 @@ class puppet_agent::params {
   }
 
   # Treat Amazon Linux just like Enterprise Linux 6
+  if $_is_pe {
+    $_platform_tag = $::platform_tag
+  } else {
+    $_platform_tag = undef
+  }
   $pe_repo_dir = ($::operatingsystem == 'Amazon') ? {
     true    => "el-6-${::architecture}",
-    default =>  $::platform_tag,
+    default =>  $_platform_tag,
   }
 
   # The aio puppet-agent version currently installed on the compiling master
