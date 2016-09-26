@@ -69,6 +69,10 @@ As part of preparing the agent for Puppet 4, the module performs several signifi
 * Resets logfile in MCollective's server.cfg and client.cfg.
 * Adds new libdir and plugin.yaml locations to MCollective's server.cfg and client.cfg.
 
+Note that the upgrade does not change several config options. Anything else that's been explicitly configured will not be changed to reflect new default locations in Puppet 4. Some of these options are:
+* Puppet's logdir
+* MCollective's logfile
+
 ### Puppet 4 Upgrades
 
 Add the class to agents you want to upgrade, specifying the desired puppet-agent version:
