@@ -78,6 +78,18 @@ class puppet_agent (
       fail('Unable to install x64 on a x86 system')
     }
 
+    # Allow for normalizing package_version for the package provider via _package_version.
+    # This only needs to be passed through to install, as elsewhere we want to
+    # use the full version string for comparisons.
+    if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+      # Strip letters from development builds. Unique to Solaris 11 packaging.
+      # Need to pass the regex as strings for Puppet 3 compatibility.
+      $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
+      $_package_version = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
+    } else {
+      $_package_version = $package_version
+    }
+
     if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.sles10.${::architecture}.rpm"
     } elsif $::operatingsystem == 'Solaris' {
@@ -89,11 +101,6 @@ class puppet_agent (
       if $::operatingsystemmajrelease == '10' {
         $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.${pkg_arch}.pkg.gz"
       } elsif $::operatingsystemmajrelease == '11' {
-        # Strip letters from development builds. Unique to Solaris 11 packaging.
-        # Need to pass the regex as strings for Puppet 3 compatibility.
-        $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
-        $_package_version = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
-
         $_package_file_name = "${puppet_agent::package_name}@${_package_version},5.11-1.${pkg_arch}.p5p"
       }
     } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
@@ -116,13 +123,6 @@ class puppet_agent (
       }
     } else {
       $_package_file_name = undef
-    }
-
-    # Allow for normalizing package_version for the package provider via _package_version.
-    # This only needs to be passed through to install, as elsewhere we want to
-    # use the full version string for comparisons.
-    if $_package_version == undef {
-      $_package_version = $package_version
     }
 
     class { '::puppet_agent::prepare':

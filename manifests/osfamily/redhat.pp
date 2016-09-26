@@ -37,6 +37,9 @@ class puppet_agent::osfamily::redhat(
     }
   }
   else {
+    $_sslcacert_path = undef
+    $_sslclientcert_path = undef
+    $_sslclientkey_path = undef
     $source = $::puppet_agent::source ? {
       undef   => "https://yum.puppetlabs.com/${urlbit}/${::puppet_agent::collection}/${::architecture}",
       default => $::puppet_agent::source,
