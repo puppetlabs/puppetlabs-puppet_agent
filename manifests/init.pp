@@ -85,7 +85,8 @@ class puppet_agent (
       # Strip letters from development builds. Unique to Solaris 11 packaging.
       # Need to pass the regex as strings for Puppet 3 compatibility.
       $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
-      $_package_version = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
+      $_version_without_orphan_dashes = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
+      $_package_version = regsubst($_version_without_orphan_dashes, '\b(?:0*?)([1-9]\d*|0)\b', '\1', 'G')
     } else {
       $_package_version = $package_version
     }
