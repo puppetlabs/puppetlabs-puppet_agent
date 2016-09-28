@@ -28,17 +28,17 @@ describe 'puppet_agent' do
     :clientcert      => 'foo.example.vm',
   }
 
-  ['7', '6', '5'].each do |aixver|
+  [['7.2', '8'], ['7.1', '7'], ['6.1', '7'], ['5.3', '7']].each do |aixver, powerver|
     context "aix #{aixver}" do
 
       let(:facts) do
         facts.merge({
-          :architecture    => "PowerPC_POWER#{aixver}",
-          :platform_tag    => "aix-#{aixver}.1-power"
+          :architecture    => "PowerPC_POWER#{powerver}",
+          :platform_tag    => "aix-#{aixver}-power"
         })
       end
 
-      rpmname = "puppet-agent-#{package_version}-1.aix#{aixver}.1.ppc.rpm"
+      rpmname = "puppet-agent-#{package_version}-1.aix#{aixver}.ppc.rpm"
 
       if Puppet.version < "4.0.0"
         it { is_expected.to contain_file('/etc/puppetlabs/puppet') }
@@ -103,22 +103,6 @@ describe 'puppet_agent' do
           end
         end
       end
-    end
-  end
-
-  ['4', '8'].each do |aixver|
-    context "aix #{aixver}" do
-      let(:facts) do
-        facts.merge({
-          :architecture    => "PowerPC_POWER#{aixver}",
-          :platform_tag    => "aix-#{aixver}.1-power"
-        })
-      end
-
-      rpmname = "puppet-agent-#{package_version}-1.aix#{aixver}.1.ppc.rpm"
-
-      it {
-        is_expected.to_not contain_file("/opt/puppetlabs/packages/#{rpmname}") }
     end
   end
 end
