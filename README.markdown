@@ -85,12 +85,12 @@ class {'::puppet_agent':
 
 This will ensure the version `1.4.0` of the puppet-agent package is installed. For version `1.4.0` and later, it will also remove the deprecated `pluginsync` setting from `puppet.conf`, unless explicitly managed elsewhere.
 
-##Reference
+## Reference
 
-###Public classes
+### Public classes
 * [`puppet_agent`](#class-puppetagent)
 
-###Private classes
+### Private classes
 * `puppet_agent::install`: Installs packages.
 * `puppet_agent::install::remove_packages`: For platforms that can't perform in-place upgrades, removes the old packages.
 * `puppet_agent::install::remove_packages_osx`: Removes the old packages on Mac OS X.
@@ -101,57 +101,62 @@ This will ensure the version `1.4.0` of the puppet-agent package is installed. F
 * `puppet_agent::service`: Ensures the services are running.
 * `puppet_agent::windows::install`: Handles Windows package installation.
 
-###Parameters
+### Parameters
 
-####Class: puppet_agent
+#### Class: puppet_agent
 
-#####`arch`
+##### `arch`
 
 The architecture version you wish to install. Defaults to `$::architecture`. This parameter is [ignored](#known-issues) in Windows Server 2003.
 
-#####`collection`
+##### `collection`
 
 The Puppet Collection to track. Defaults to `PC1`.
 
-#####`is_pe`
+##### `is_pe`
 
 Install from Puppet Enterprise rpos. Enabled if communicating with a PE master.
 
-#####`manage_repo`
+##### `manage_repo`
 
 Boolean to determine whether to configure zypper/yum/apt/solaris repositories - Defaults to `true`
 If set to false, it is assumed an internally hosted repository will be used for the installation
 and the native package providers will be used to query pre-configured repos on the host being upgraded
 
-#####`package_name`
+##### `package_name`
 
 The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only accepted value is `puppet-agent`.
 
-#####`package_version`
+##### `package_version`
 
 The package version to upgrade to. When upgrading from Puppet < 4.0, defaults to the puppet master's latest supported version
 if compiled with A PE master or undef otherwise (meaning get the latest Open Source release). Explicitly specify a version to
 upgrade from puppet-agent packages (implying Puppet >= 4.0).
 
-#####`service_names`
+##### `service_names`
 
 An array of services to start, normally `puppet` and `mcollective`. If the array is empty, no services are started.
 
-#####`source`
+##### `source`
 
-Alternate source from which you wish to download the latest version of Puppet.
+Alternate source from which you wish to download the latest version of Puppet.  On the Windows operating system this is the absolute path to the MSI file to install, for example:
+``` puppet
+  source => 'C:/packages/puppet-agent-1.7.0-x64.msi'
+```
 
-####`install_dir`
+##### `install_dir`
 
-The directory the puppet agent should be installed to. This is only applicable for windows operating systems.
-This only applies when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location.
+The directory the puppet agent should be installed to. This is only applicable for Windows operating systems and when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location.  This  must use backslashes for the path separator, and be an absolute path, for example:
+``` puppet
+  install_dir => 'D:\Program Files\Puppet Labs'
+```
 
 
 ## Limitations
 
 Mac OS X Open Source packages are currently not supported.
 
-###Known issues
+### Known issues
 
 * In masterless environments, modules installed manually on individual agents cannot be found after upgrading to Puppet 4.x. You should reinstall these modules on the agents with `puppet module install`.
 
@@ -166,7 +171,7 @@ Specifically in the 1.2.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
 * AIX package names are based on PowerPC architecture version. PowerPC 8 is not yet supported.
 
-##Development
+## Development
 
 Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
 
