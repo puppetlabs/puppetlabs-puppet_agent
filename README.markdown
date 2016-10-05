@@ -115,7 +115,7 @@ The Puppet Collection to track. Defaults to `PC1`.
 
 #####`is_pe`
 
-Install from Puppet Enterprise rpos. Enabled if communicating with a PE master.
+Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 
 #####`manage_repo`
 
