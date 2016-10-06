@@ -15,4 +15,5 @@ end
 group :system_tests do
   gem 'beaker', '~> 2.16'
   gem 'beaker-rspec', '~> 5.1'
+  gem 'beaker-hostgenerator'
 end
