@@ -12,6 +12,12 @@ Facter.add('puppet_config') do
   end
 end
 
+Facter.add('puppet_stringify_facts') do
+  setcode do
+    Puppet.settings['stringify_facts'] || false
+  end
+end
+
 Facter.add('puppet_sslpaths') do
   setcode do
     result = {}

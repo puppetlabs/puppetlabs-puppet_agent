@@ -5,6 +5,10 @@
 #
 class puppet_agent::params {
 
+  if $::puppet_stringify_facts {
+    fail('The puppet_agent class requires stringify_facts to be disabled')
+  }
+
   # The `is_pe` fact currently works by echoing out the puppet version
   # and greping for "puppet enterprise". With Puppet 4 and PE 2015.2, there
   # is no longer a "PE Puppet", and so that fact will no longer work.
