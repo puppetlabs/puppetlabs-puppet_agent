@@ -18,6 +18,48 @@ describe 'puppet_config fact' do
   end
 end
 
+describe "puppet_stringify_facts fact for Puppet 4.x+", :unless => /3\./ =~ Puppet.version do
+  subject { Facter.fact("puppet_stringify_facts".to_sym).value }  
+  after(:each) { Facter.clear }
+
+  describe 'should always be false' do
+    it { is_expected.to eq(false) }
+  end
+end
+
+describe "puppet_stringify_facts fact for Puppet 3.x", :if => /3\./ =~ Puppet.version do
+  subject { Facter.fact("puppet_stringify_facts".to_sym).value }  
+  after(:each) { Facter.clear }
+
+  describe 'when not set in Puppet' do
+    before(:each) {
+      mocked_settings = Puppet::Settings.new
+      Puppet.stubs(:settings).returns(mocked_settings)
+    }
+    it { is_expected.to eq(false) }
+  end
+
+  describe 'when set false in Puppet' do
+    before(:each) {
+      mocked_settings = Puppet::Settings.new
+      mocked_settings.define_settings :main, :stringify_facts => { :default => false, :type => :boolean, :desc => 'mocked stringify_facts setting' }
+      Puppet.stubs(:settings).returns(mocked_settings)
+    }
+
+    it { is_expected.to eq(false) }
+  end
+
+  describe 'when set true in Puppet' do
+    before(:each) {
+      mocked_settings = Puppet::Settings.new
+      mocked_settings.define_settings :main, :stringify_facts => { :default => true, :type => :boolean, :desc => 'mocked stringify_facts setting' }
+      Puppet.stubs(:settings).returns(mocked_settings)
+    }
+
+    it { is_expected.to eq(true) }
+  end
+end
+
 describe "puppet_sslpaths fact" do
   subject { Facter.fact("puppet_sslpaths".to_sym).value }
   after(:each) { Facter.clear }
