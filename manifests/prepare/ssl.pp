@@ -23,30 +23,23 @@ class puppet_agent::prepare::ssl {
     'requestdir'    => 'certificate_requests',
   }
 
-  case $::puppet_sslpaths {
-    Hash: {
-      $sslpaths.each |String $setting, String $subdir| {
-        if $::puppet_sslpaths[$setting]['path_exists'] {
-          file { "${ssl_dir}/${subdir}":
-            ensure  => directory,
-            source  => $::puppet_sslpaths[$setting]['path'],
-            backup  => false,
-            recurse => true,
-          }
-        }
-      }
-
-      # The only one that's a file, not a directory.
-      if $::puppet_sslpaths['hostcrl']['path_exists'] {
-        file { "${ssl_dir}/crl.pem":
-          ensure => file,
-          source => $::puppet_sslpaths['hostcrl']['path'],
-          backup => false
-        }
+  $sslpaths.each |String $setting, String $subdir| {
+    if $::puppet_sslpaths[$setting]['path_exists'] {
+      file { "${ssl_dir}/${subdir}":
+        ensure  => directory,
+        source  => $::puppet_sslpaths[$setting]['path'],
+        backup  => false,
+        recurse => true,
       }
     }
-    default: {
-      fail('$::puppet-sslpaths is not a Hash. Is stringify_facts not set to false in the main section of the agent puppet.conf?')
+  }
+
+  # The only one that's a file, not a directory.
+  if $::puppet_sslpaths['hostcrl']['path_exists'] {
+    file { "${ssl_dir}/crl.pem":
+      ensure => file,
+      source => $::puppet_sslpaths['hostcrl']['path'],
+      backup => false
     }
   }
 }
