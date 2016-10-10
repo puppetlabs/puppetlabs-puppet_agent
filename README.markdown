@@ -169,7 +169,6 @@ In addition, there are several known issues with Windows:
  
 Specifically in the 1.2.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
-* AIX package names are based on PowerPC architecture version. PowerPC 8 is not yet supported.
 
 ## Development
 
