@@ -28,7 +28,7 @@ describe 'puppet_agent' do
     :clientcert      => 'foo.example.vm',
   }
 
-  [['7.2', '8'], ['7.1', '7'], ['6.1', '7'], ['5.3', '7']].each do |aixver, powerver|
+  [['7.1', '8'], ['7.1', '7'], ['6.1', '7'], ['5.3', '7']].each do |aixver, powerver|
     context "aix #{aixver}" do
 
       let(:facts) do
