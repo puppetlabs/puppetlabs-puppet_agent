@@ -118,7 +118,7 @@ class puppet_agent (
       if $is_pe {
         $_package_file_name = "${package_name}-${_arch}.msi"
       } elsif $package_version != undef {
-        $_package_file_name = "${package_name}-${_arch}-${package_version}.msi"
+        $_package_file_name = "${package_name}-${package_version}-${_arch}.msi"
       } else {
         $_package_file_name = "${package_name}-${_arch}-latest.msi"
       }
