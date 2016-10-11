@@ -39,6 +39,45 @@ describe 'puppet_agent class' do
         is_expected.to_not match /parser[ ]*=[ ]*future/
       }
     end
+
+    describe 'manage_repo parameter' do
+      context 'when true (default)' do
+        it 'should create repo config' do
+          pp = "class { 'puppet_agent': }"
+          apply_manifest(pp, :catch_failures => true)
+          case default['platform']
+          when /debian|ubuntu/
+            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'http://apt.puppetlabs.com', repos => 'PC1' }"
+          when /fedora|el|centos/
+            pp = "yumrepo { 'pc_repo': ensure => present }"
+          else
+            logger.notify("Cannot manage repo on #{default['platform']}, skipping test 'should create repo config'")
+            next
+          end
+          apply_manifest(pp, :catch_changes => true)
+        end
+      end
+
+      context 'when false' do
+        it 'should cease to manage repo config' do
+          pp = "class { 'puppet_agent': }"
+          apply_manifest(pp, :catch_failures => true)
+          case default['platform']
+          when /debian|ubuntu/
+            pp = "include apt\napt::source { 'pc_repo': ensure => absent }"
+          when /fedora|el|centos/
+            pp = "yumrepo { 'pc_repo': ensure => absent }"
+          else
+            logger.notify("Cannot manage repo on #{default['platform']}, skipping test 'should cease to manage repo config'")
+            next
+          end
+          apply_manifest(pp, :catch_failures => true)
+          pp = "class { 'puppet_agent': manage_repo => false }"
+          # expect no changes now that repo is unmanaged
+          apply_manifest(pp, :catch_changes => true)
+        end
+      end
+    end
   end
 
   context 'no services enabled on install' do
