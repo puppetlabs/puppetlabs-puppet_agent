@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "file_format": "This MAINTAINERS file format is described at http://pup.pt/maintainers",
+  "issues": "https://github.com/puppetlabs/puppetlabs-puppet_agent/issues",
+  "people": [
+    {
+      "github": "MikaelSmith",
+      "email": "michael.smith@puppet.com",
+      "name": "Michael Smith"
+    },
+    {
+      "github": "highb",
+      "email": "brandon.high@puppet.com",
+      "name": "Brandon High"
+    }
+  ]
+}
