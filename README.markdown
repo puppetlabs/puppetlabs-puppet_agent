@@ -181,6 +181,6 @@ To contribute to the puppet_agent module, see [Contributing.md](https://github.c
 
 ## Maintenance
 
-Maintainers: Michael Smith <michael.smith@puppet.com>, Brandon High <brandon.high@puppet.com>
+See [MAINTAINERS](MAINTAINERS)
 
 Tickets: https://tickets.puppetlabs.com/browse/MODULES.
