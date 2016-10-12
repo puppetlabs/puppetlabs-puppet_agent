@@ -155,7 +155,7 @@ RSpec.describe 'puppet_agent' do
         describe 'default source' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{values[:expect_arch]}-#{package_version}\.msi"/)
+                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-#{values[:expect_arch]}\.msi"/)
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer\.log"/)
           }
           it {
@@ -188,7 +188,7 @@ RSpec.describe 'puppet_agent' do
           }
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-x86-#{package_version}\.msi"/
+                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-x86.msi"/
                            )
           }
         end
