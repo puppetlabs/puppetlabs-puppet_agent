@@ -64,13 +64,15 @@
         "12.04",
         "14.04",
         "15.04",
-        "15.10"
+        "15.10",
+        "16.04"
       ]
     },
     {
       "operatingsystem": "Fedora",
       "operatingsystemrelease": [
-        "22"
+        "22",
+        "23"
       ]
     },
     {
