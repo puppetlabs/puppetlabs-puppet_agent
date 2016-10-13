@@ -2,7 +2,49 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.2.0]
+## [1.3.0] - 2016-10-19
+
+### Summary
+The addition of several OS support features and a considerable amount of compatibility and bug fixes. 
+
+### Known issues
+Carried-over from prior releases:
+- For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
+- Upgrades on EL4-based systems are not supported.
+- Mac OS X Open Source package upgrades are not yet implemented.
+
+### Features
+- Add support for Ubuntu 16.04 and Fedora 23
+- Allow MSI install path to be defined on Windows ([MODULES-3571](https://tickets.puppetlabs.com/browse/MODULES-3571))
+- Allow agent upgrade on Non-English versions for Windows ([MODULES-3636](https://tickets.puppetlabs.com/browse/MODULES-3636))
+- Allow the use of a hosted repository for packages ([MODULES-3872](https://tickets.puppetlabs.com/browse/MODULES-3872))
+- Remove POWER8 restriction for AIX ([MODULES-3912](https://tickets.puppetlabs.com/browse/MODULES-3912))
+
+### Bugfixes
+- Fix upgrade process on Windows using a PID file ([MODULES-3433](https://tickets.puppetlabs.com/browse/MODULES-3433))
+- Fix metadata to indicate support for Puppet 3.7
+- Fix upgrade process on Windows by stopping PXP service ([MODULES-3449](https://tickets.puppetlabs.com/browse/MODULES-3449))
+- Add extra logging during upgrade process on Windows
+- Disable SSL verification on Xenial ([PE-16317](https://tickets.puppetlabs.com/browse/PE-16317))
+- Fix preserving the environment name when upgrading on Windows ([MODULES-3517](https://tickets.puppetlabs.com/browse/MODULES-3517))
+- Puppet run will fail if `stringify_facts` is set to `true` ([MODULES-3591](https://tickets.puppetlabs.com/browse/MODULES-3591) [MODULES-3951](https://tickets.puppetlabs.com/browse/MODULES-3951))
+- Fix infinite loop scenario on Windows during upgrade ([MODULES-3434](https://tickets.puppetlabs.com/browse/MODULES-3434))
+- Fix the waiting process on Windows during an upgrade ([MODULES-3657](https://tickets.puppetlabs.com/browse/MODULES-3657))
+- Fix duplicate resource error on AIX with PE ([MODULES-3893](https://tickets.puppetlabs.com/browse/MODULES-3893))
+- Fix minor errors in `RakeFile` and `spec_helper_acceptance`
+- Fix setting permissions on Windows package
+- Update GPG Keys ([RE-7976](https://tickets.puppetlabs.com/browse/RE-7976))
+- Fix puppet-agent suffix on Fedora ([PE-16317](https://tickets.puppetlabs.com/browse/PE-16317))
+- Fix `unless` condition on SUSE and RedHat GPG key imports ([MODULES-3894](https://tickets.puppetlabs.com/browse/MODULES-3894))
+- Avoid `Unknown variable` errors in Puppet 4 ([MODULES-3896](https://tickets.puppetlabs.com/browse/MODULES-3896))
+- Fix logic for detecting Solaris 11 package name ([PE-17663](https://tickets.puppetlabs.com/browse/PE-17663))
+- Fix spec test fixtures to use the Forge
+- Add Windows examples to README
+- Fix acceptance tests ignoring resource errors ([MODULES-3953](https://tickets.puppetlabs.com/browse/MODULES-3953))
+- Add acceptance tests for `manage_repo` param ([MODULES-3872](https://tickets.puppetlabs.com/browse/MODULES-3872))
+- Fix Windows package download URL ([MODULES-3970](https://tickets.puppetlabs.com/browse/MODULES-3970))
+
+## [1.2.0] - 2016-05-04
 
 ### Summary
 Supports upgrades from puppet-agent packages! Applies to both PE and FOSS, for example upgrades from
@@ -35,7 +77,7 @@ the manifest is compiled using 3.7+ with future parser enabled.
 - Fixed an issue that would cause compilation to fail with `Unknown function: 'pe_compiling_server_aio_build'`
 in some environments.
 
-## [1.1.0]
+## [1.1.0] - 2016-03-01
 
 ### Summary
 The addition of several OS support features and a considerable amount of compatibility and bug fixes. 
