@@ -69,7 +69,7 @@ As part of preparing the agent for Puppet 4, the module performs several signifi
 * Resets logfile in MCollective's server.cfg and client.cfg.
 * Adds new libdir and plugin.yaml locations to MCollective's server.cfg and client.cfg.
 
-Note that the upgrade does not change several config options. Anything else that's been explicitly configured will not be changed to reflect new default locations in Puppet 4. Some of these options are:
+> **Note:** The upgrade does not change several config options. Anything else that's been explicitly configured will not be changed to reflect new default locations in Puppet 4. Some of these options are:
 * Puppet's logdir
 * MCollective's logfile
 
@@ -119,9 +119,9 @@ Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 
 ##### `manage_repo`
 
-Boolean to determine whether to configure zypper/yum/apt/solaris repositories - Defaults to `true`
-If set to false, it is assumed an internally hosted repository will be used for the installation
-and the native package providers will be used to query pre-configured repos on the host being upgraded
+Boolean to determine whether to configure zypper/yum/apt/solaris repositories. Defaults to `true`.
+If set to false, it is assumed an internally hosted repository will be used for the installation,
+and the native package providers will be used to query pre-configured repos on the host being upgraded.
 
 ##### `package_name`
 
@@ -139,14 +139,14 @@ An array of services to start, normally `puppet` and `mcollective`. If the array
 
 ##### `source`
 
-Alternate source from which you wish to download the latest version of Puppet.  On the Windows operating system this is the absolute path to the MSI file to install, for example:
+Alternate source from which you wish to download the latest version of Puppet. On the Windows operating system this is the absolute path to the MSI file to install, for example:
 ``` puppet
   source => 'C:/packages/puppet-agent-1.7.0-x64.msi'
 ```
 
 ##### `install_dir`
 
-The directory the puppet agent should be installed to. This is only applicable for Windows operating systems and when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location.  This  must use backslashes for the path separator, and be an absolute path, for example:
+The directory the puppet agent should be installed to. This is only applicable for Windows operating systems and when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location. This must use backslashes for the path separator, and be an absolute path, for example:
 ``` puppet
   install_dir => 'D:\Program Files\Puppet Labs'
 ```
@@ -172,14 +172,10 @@ Specifically in the 1.2.0 Release:
 
 ## Development
 
-Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can't access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
-
-We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
-
-To contribute to the puppet_agent module, see [Contributing.md](https://github.com/puppetlabs/puppetlabs-puppet_agent/blob/master/CONTRIBUTING.md). You can also read the complete module contribution guide [on the Puppet Labs wiki.](http://projects.puppetlabs.com/projects/module-site/wiki/Module_contributing)
+Puppet, Inc. modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can’t access the huge number of platforms and myriad hardware, software, and deployment configurations that Puppet is intended to serve. We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things. For more information, see our [module contribution guide.](https://docs.puppet.com/forge/contributing.html)
 
 ## Maintenance
 
 See [MAINTAINERS](MAINTAINERS)
 
-Tickets: https://tickets.puppetlabs.com/browse/MODULES.
+Tickets: https://tickets.puppetlabs.com/browse/MODULES
