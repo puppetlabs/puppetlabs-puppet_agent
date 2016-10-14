@@ -16,11 +16,11 @@ Carried-over from prior releases:
 ### Features
 - Add support for Ubuntu 16.04 and Fedora 23
 - Allow MSI install path to be defined on Windows ([MODULES-3571](https://tickets.puppetlabs.com/browse/MODULES-3571))
-- Allow agent upgrade on Non-English versions for Windows ([MODULES-3636](https://tickets.puppetlabs.com/browse/MODULES-3636))
+- Allow agent upgrade on non-English versions for Windows ([MODULES-3636](https://tickets.puppetlabs.com/browse/MODULES-3636))
 - Allow the use of a hosted repository for packages ([MODULES-3872](https://tickets.puppetlabs.com/browse/MODULES-3872))
 - Remove POWER8 restriction for AIX ([MODULES-3912](https://tickets.puppetlabs.com/browse/MODULES-3912))
 
-### Bugfixes
+### Bug fixes
 - Fix upgrade process on Windows using a PID file ([MODULES-3433](https://tickets.puppetlabs.com/browse/MODULES-3433))
 - Fix metadata to indicate support for Puppet 3.7
 - Fix upgrade process on Windows by stopping PXP service ([MODULES-3449](https://tickets.puppetlabs.com/browse/MODULES-3449))
@@ -41,7 +41,7 @@ Carried-over from prior releases:
 - Fix spec test fixtures to use the Forge
 - Add Windows examples to README
 - Fix acceptance tests ignoring resource errors ([MODULES-3953](https://tickets.puppetlabs.com/browse/MODULES-3953))
-- Add acceptance tests for `manage_repo` param ([MODULES-3872](https://tickets.puppetlabs.com/browse/MODULES-3872))
+- Add acceptance tests for `manage_repo` parameter ([MODULES-3872](https://tickets.puppetlabs.com/browse/MODULES-3872))
 - Fix Windows package download URL ([MODULES-3970](https://tickets.puppetlabs.com/browse/MODULES-3970))
 
 ## [1.2.0] - 2016-05-04
@@ -70,7 +70,7 @@ that version or later unless otherwise managed.
 testing is only performed starting with Puppet/PE 3.8. Earlier versions likely work back to 3.5, as long as
 the manifest is compiled using 3.7+ with future parser enabled.
 
-### Bugfixes
+### Bug fixes
 - Fixes the release identification for Amazon Linux distributions to use EL 6 packages.
 - Fix Debian upgrades for PE.
 - Support upgrades of 32-bit Windows packages for PE (via pe_repo).
@@ -96,7 +96,7 @@ While this release adds considerable features and bug fixes the following areas 
 - Adds `/opt/puppetlabs` to the managed directories.
 - Additional test checks for /opt/puppetlabs.
 
-### Bugfixes
+### Bug fixes
 - Use rspec expect syntax for catching errors.
 - Base master_agent_version on pe_compiling_server_aio_build().
 - Update in metadata to include support for SLES 10 and 11.
@@ -128,7 +128,7 @@ Fixed minor bugs and improved documentation. Now a Puppet Supported module.
 ### Features
 - Improved documentation of upgrade process.
 
-### Bugfixes
+### Bug fixes
 - For Windows PE upgrades, by default install the agent version corresponding to the PE master.
 - Reset puppet.conf's classfile setting.
 
@@ -141,7 +141,7 @@ Added support for most systems with both Puppet 3.8 and Puppet-Agent packages re
 ### Features
 - Support for Debian 6/7, Ubuntu 12.04/14.04, SLES 12, and Windows 2003 through 2012R2.
 
-### Bugfixes
+### Bug fixes
 - Fix puppet_agent module doesn't touch puppet.conf settings outside an INI section (PUP-4886)
 - Made internal classes private, using stdlib's assert_private helper
 - Migrate SSL cert directories individually to account for individual settings (PUP-4690)
