@@ -145,7 +145,7 @@ describe 'puppet_agent' do
 
             if params[:service_names].nil? &&
               !(facts[:osfamily] == 'Solaris' and facts[:operatingsystemmajrelease] == '11') &&
-              Puppet.version < "4.0.0" && !params[:is_pe]
+              Puppet.version < "4.0.0" or !params[:is_pe]
               it { is_expected.to contain_service('puppet') }
               it { is_expected.to contain_service('mcollective') }
             else
