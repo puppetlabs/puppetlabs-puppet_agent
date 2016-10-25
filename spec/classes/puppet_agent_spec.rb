@@ -109,7 +109,7 @@ describe 'puppet_agent' do
           end
         end
 
-        [{}, {}].each do |params|
+        [{}, {:service_names => []}].each do |params|
           context "puppet_agent class without any parameters" do
             let(:params) { params.merge(global_params) }
 
