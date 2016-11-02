@@ -12,9 +12,9 @@ class puppet_agent::prepare::package(
 ) {
   assert_private()
 
-  # Guard this so that we do not perform expensive checksum logic on the master
-  # for the large puppet-agent file if we have already upgraded.
-  if $puppet_agent::params::master_agent_version != $::aio_agent_version {
+  # As it is currently written, this will only work if the `pe_build_version()` function
+  # is available.
+  if $puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
 
     if $::osfamily == 'windows' {
@@ -40,12 +40,13 @@ class puppet_agent::prepare::package(
     }
 
     file { $local_package_file_path:
-      ensure  => present,
-      owner   => $::puppet_agent::params::user,
-      group   => $::puppet_agent::params::group,
-      mode    => $mode,
-      source  => $source,
-      require => File[$::puppet_agent::params::local_packages_dir],
+      ensure   => present,
+      owner    => $::puppet_agent::params::user,
+      group    => $::puppet_agent::params::group,
+      mode     => $mode,
+      source   => $source,
+      require  => File[$::puppet_agent::params::local_packages_dir],
+      checksum => sha256lite,
     }
   }
 }
