@@ -10,6 +10,7 @@ group :test do
   gem 'json', '~> 1.8.3' # avoid trying to pull a newer version with Ruby 1.8.7
   gem 'metadata-json-lint', '~> 0.0'
   gem 'rspec-puppet-facts', '~> 1.3'
+  gem 'semantic_puppet', '0.1.3'
 end
 
 group :system_tests do
