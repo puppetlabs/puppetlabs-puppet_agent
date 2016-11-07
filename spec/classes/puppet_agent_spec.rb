@@ -5,42 +5,28 @@ describe 'puppet_agent' do
   global_params = {
     :package_version => package_version
   }
-  def global_facts(facts, os)
-    facts.merge(
-      if os =~ /sles/
-        {
-          :is_pe => true,
-          :operatingsystemmajrelease => facts[:operatingsystemrelease].split('.')[0],
-        }
-      elsif os =~ /solaris/
-        {
-          :is_pe => true,
-        }
-      else
-        {}
-      end).merge({:servername   => 'master.example.vm'})
+  def global_facts(os)
+    {:servername => 'master.example.vm'}.merge(
+      os =~ /sles/ || os =~ /solaris/ ? {:is_pe => true} : {})
   end
 
   context 'supported_operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
-          global_facts(facts, os)
+          facts.merge global_facts(os)
         end
 
         if os !~ /sles/ and os !~ /solaris/
           context 'package_version is undef by default' do
             let(:facts) do
-              global_facts(facts, os).merge({:is_pe => false})
+              facts.merge(global_facts(os)).merge({:is_pe => false})
             end
             it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
           end
         end
 
         context 'package_version is undef if pe_compiling_server_aio_build is not defined' do
-          let(:facts) do
-            global_facts(facts, os).merge({:is_pe => true})
-          end
           it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
         end
       end
@@ -51,7 +37,7 @@ describe 'puppet_agent' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
-          global_facts(facts, os).merge({:is_pe => true})
+          facts.merge(global_facts(os)).merge({:is_pe => false})
         end
 
         before(:each) do
@@ -75,7 +61,7 @@ describe 'puppet_agent' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
-          global_facts(facts, os)
+          facts.merge global_facts(os)
         end
 
         before(:each) do
@@ -109,15 +95,34 @@ describe 'puppet_agent' do
           end
         end
 
-        [{}, {:service_names => []}].each do |params|
+        [{}, {:service_names => []}].each do |mod_params|
           context "puppet_agent class without any parameters" do
-            let(:params) { params.merge(global_params) }
+            let(:params) { mod_params.merge(global_params) }
+            let(:service_params) {
+              if facts[:osfamily] == 'windows'
+                {
+                  'service_names'     => (params[:service_names] || []),
+                  'old_service_names' => ['puppet', 'mcollective'],
+                }
+              elsif facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11'
+                {
+                  'service_names'     => [],
+                  'old_service_names' => [],
+                }
+              else
+                {
+                  'service_names'     => (params[:service_names] || ['puppet', 'mcollective']),
+                  'old_service_names' => (global_facts(os)[:is_pe] ? ['pe-puppet', 'pe-mcollective'] : ['puppet', 'mcollective']),
+                }
+              end
+            }
+
 
             it { is_expected.to compile.with_all_deps }
 
             it { is_expected.to contain_class('puppet_agent') }
             it { is_expected.to contain_class('puppet_agent::params') }
-            it { is_expected.to contain_class('puppet_agent::prepare') }
+            it { is_expected.to contain_class('puppet_agent::prepare').with(service_params) }
             it { is_expected.to contain_class('puppet_agent::install').that_requires('puppet_agent::prepare') }
 
             if facts[:osfamily] == 'RedHat'
@@ -139,19 +144,23 @@ describe 'puppet_agent' do
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }
             end
 
-            if Puppet.version < "4.0.0" && !params[:is_pe]
-              it { is_expected.to contain_class('puppet_agent::service').that_requires('puppet_agent::install') }
-            end
+            it {
+              if Puppet.version < "4.0.0" && !facts[:is_pe]
+                is_expected.to contain_class('puppet_agent::service').that_requires('puppet_agent::install')
+              end
+            }
 
-            if params[:service_names].nil? &&
-              !(facts[:osfamily] == 'Solaris' and facts[:operatingsystemmajrelease] == '11') &&
-              Puppet.version < "4.0.0" && !params[:is_pe]
-              it { is_expected.to contain_service('puppet') }
-              it { is_expected.to contain_service('mcollective') }
-            else
-              it { is_expected.to_not contain_service('puppet') }
-              it { is_expected.to_not contain_service('mcollective') }
-            end
+            it {
+              if mod_params[:service_names].nil? &&
+                !(facts[:osfamily] == 'Solaris' and facts[:operatingsystemmajrelease] == '11') &&
+                Puppet.version < "4.0.0" && !facts[:is_pe]
+                is_expected.to contain_service('puppet')
+                is_expected.to contain_service('mcollective')
+              else
+                is_expected.to_not contain_service('puppet')
+                is_expected.to_not contain_service('mcollective')
+              end
+            }
           end
         end
       end

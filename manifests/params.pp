@@ -32,6 +32,10 @@ class puppet_agent::params {
     'RedHat', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {
       if !($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
         $service_names = ['puppet', 'mcollective']
+        $old_service_names = $_is_pe ? {
+          true    => ['pe-puppet', 'pe-mcollective'],
+          default => $service_names,
+        }
       }
 
       $local_puppet_dir = '/opt/puppetlabs'
@@ -54,7 +58,10 @@ class puppet_agent::params {
       $group = 0
     }
     'windows' : {
-      $service_names = ['puppet', 'mcollective']
+      # On Windows we leave it up to the MSI to manage services.
+      # TODO: support MSI parameters to enable/disable services after upgrade.
+      $service_names = []
+      $old_service_names = ['puppet', 'mcollective']
 
       $local_puppet_dir = windows_native_path("${::common_appdata}/Puppetlabs")
       $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")

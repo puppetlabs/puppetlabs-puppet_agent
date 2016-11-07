@@ -278,9 +278,6 @@ describe 'puppet_agent' do
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
       if Puppet.version < "4.0.0"
-        it { is_expected.to contain_service('pe-puppet').with_ensure('stopped') }
-        it { is_expected.to contain_service('pe-mcollective').with_ensure('stopped') }
-
         [
           'PUPpuppet',
           'PUPaugeas',
@@ -397,9 +394,6 @@ describe 'puppet_agent' do
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
       if Puppet.version < "4.0.0"
-        it { is_expected.to contain_service('pe-puppet').with_ensure('stopped') }
-        it { is_expected.to contain_service('pe-mcollective').with_ensure('stopped') }
-
         [
           'PUPpuppet',
           'PUPaugeas',
