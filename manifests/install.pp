@@ -41,9 +41,10 @@ class puppet_agent::install(
 
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
     $_package_options = {
-      adminfile => '/opt/puppetlabs/packages/solaris-noask',
-      source    => "/opt/puppetlabs/packages/${_unzipped_package_name}",
-      require   => Class['puppet_agent::install::remove_packages'],
+      adminfile       => '/opt/puppetlabs/packages/solaris-noask',
+      source          => "/opt/puppetlabs/packages/${_unzipped_package_name}",
+      require         => Class['puppet_agent::install::remove_packages'],
+      install_options => '-G',
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $old_packages {
     # Updating from PE 3.x requires removing all the old packages before installing the puppet-agent package.
