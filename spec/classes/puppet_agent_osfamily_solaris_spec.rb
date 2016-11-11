@@ -353,6 +353,7 @@ describe 'puppet_agent' do
         is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
         is_expected.to contain_package('puppet-agent').with_ensure('present')
         is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
+        is_expected.to contain_package('puppet-agent').with_install_options('-G')
       end
     end
 
@@ -449,6 +450,7 @@ describe 'puppet_agent' do
         is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
         is_expected.to contain_package('puppet-agent').with_ensure('present')
         is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")
+        is_expected.to contain_package('puppet-agent').with_install_options('-G')
       end
     end
   end
