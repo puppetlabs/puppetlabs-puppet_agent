@@ -118,7 +118,7 @@ describe 'puppet_agent' do
             it { is_expected.to contain_class('puppet_agent') }
             it { is_expected.to contain_class('puppet_agent::params') }
             it { is_expected.to contain_class('puppet_agent::prepare') }
-            it { is_expected.to contain_class('puppet_agent::install').that_requires('puppet_agent::prepare') }
+            it { is_expected.to contain_class('puppet_agent::install').that_requires('Class[puppet_agent::prepare]') }
 
             if facts[:osfamily] == 'RedHat'
               if facts[:operatingsystem] == 'Fedora'
