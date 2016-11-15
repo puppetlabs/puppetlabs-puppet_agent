@@ -2,6 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.1] - 2016-11-16
+
+### Summary
+This is a bug-fix release
+
+### Known issues
+Carried-over from prior releases:
+- For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
+- Upgrades on EL4-based systems are not supported.
+- Mac OS X Open Source package upgrades are not yet implemented.
+
+### Bug fixes
+- Fix upgrading a global Solaris zone would break upgrading other zones ([MODULES-4092](https://tickets.puppetlabs.com/browse/MODULES-4092))
+- Fix line endings of `install_puppet.bat`
+- Fix upgrading between releases of the same package version ([MODULES-4030](https://tickets.puppetlabs.com/browse/MODULES-4030))
+
 ## [1.3.0] - 2016-10-19
 
 ### Summary
