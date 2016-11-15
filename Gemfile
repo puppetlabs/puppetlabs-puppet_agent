@@ -1,6 +1,6 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
-group :test do
+group :development, :test do
   gem 'rake', '~> 10.4'
   gem 'puppet', ENV['PUPPET_GEM_VERSION'] || '~> 4'
   gem 'rspec', '< 3.2.0' # https://github.com/rspec/rspec-core/issues/1864
@@ -11,6 +11,7 @@ group :test do
   gem 'metadata-json-lint', '~> 0.0'
   gem 'rspec-puppet-facts', '~> 1.3'
   gem 'semantic_puppet', '0.1.3'
+  gem 'puppet-blacksmith', '>= 3.4.0',      :require => false, :platforms => 'ruby'
 end
 
 group :system_tests do
