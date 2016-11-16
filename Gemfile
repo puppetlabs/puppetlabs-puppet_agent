@@ -11,7 +11,7 @@ group :development, :test do
   gem 'metadata-json-lint', '~> 0.0'
   gem 'rspec-puppet-facts', '~> 1.3'
   gem 'semantic_puppet', '0.1.3'
-  gem 'puppet-blacksmith', '>= 3.4.0',      :require => false, :platforms => 'ruby'
+  gem 'puppet-blacksmith', '>= 3.4.0', :require => false, :platforms => 'ruby' if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('1.9.3')
 end
 
 group :system_tests do
