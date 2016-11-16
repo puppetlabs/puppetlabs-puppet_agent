@@ -39,6 +39,15 @@ class puppet_agent::prepare::package(
       $mode = '0644'
     }
 
+    # When running against a puppet 3 agent, we want to use the
+    # default checksum method, due to old bugs when specifying custom
+    # checksums. For puppet 4, we can use sha256lite and avoid some
+    # extra processing time.
+    $checksum = $::aio_agent_version ? {
+      undef   => undef,
+      default => sha256lite,
+    }
+
     file { $local_package_file_path:
       ensure   => present,
       owner    => $::puppet_agent::params::user,
@@ -46,7 +55,7 @@ class puppet_agent::prepare::package(
       mode     => $mode,
       source   => $source,
       require  => File[$::puppet_agent::params::local_packages_dir],
-      checksum => sha256lite,
+      checksum => $checksum
     }
   }
 }
