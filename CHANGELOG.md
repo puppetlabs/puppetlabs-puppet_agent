@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.3.1] - 2016-11-16
+## [1.3.1] - 2016-11-17
 
 ### Summary
 This is a bug-fix release
