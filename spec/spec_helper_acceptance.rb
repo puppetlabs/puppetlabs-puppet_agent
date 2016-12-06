@@ -82,11 +82,11 @@ unless ENV['MODULE_provision'] == 'no'
   end
 end
 
-def parser_opts
+def parser_opts(master_fqdn)
   # Configuration only needed on 3.x master
   {
     :main => {:stringify_facts => false, :parser => 'future', :color => 'ansi'},
-    :agent => {:stringify_facts => false, :cfacter => true, :ssldir => '$vardir/ssl'},
+    :agent => {:stringify_facts => false, :cfacter => true, :ssldir => '$vardir/ssl', :server => master_fqdn},
   }
 end
 
@@ -103,7 +103,7 @@ def setup_puppet_on(host, opts = {})
   configure_defaults_on host, 'foss'
   install_puppet_on host, :version => ENV['PUPPET_CLIENT_VERSION'] || '3.8.6'
 
-  configure_puppet_on(host, parser_opts)
+  configure_puppet_on(host, parser_opts(master.to_s))
 
   if opts[:mcollective]
     install_package host, 'mcollective'

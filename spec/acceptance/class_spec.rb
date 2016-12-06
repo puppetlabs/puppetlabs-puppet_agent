@@ -123,10 +123,10 @@ describe 'puppet_agent class' do
     it 'should work idempotently with no errors' do
       with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
         # Run it twice and test for idempotency
-        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+        on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
         configure_agent_on default, true
         # We're after idempotency so allow exit code 0 only
-        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0] }
+        on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
       end
     end
 
@@ -162,10 +162,10 @@ describe 'puppet_agent class' do
     it 'should work idempotently with no errors' do
       with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
         # Run it twice and test for idempotency
-        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0,2] }
+        on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
         configure_agent_on default, true
         # We're after idempotency so allow exit code 0 only
-        on default, puppet("agent --test --server #{master}"), { :acceptable_exit_codes => [0] }
+        on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
       end
     end
 
