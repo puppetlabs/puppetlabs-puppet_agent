@@ -35,18 +35,23 @@
 #   The directory the puppet agent should be installed to. This is only applicable for
 #   windows operating systems. This only applies when upgrading the agent to a new
 #   version; it will not cause re-installation of the same version to a new location.
+# [msi_move_locked_files]
+#   This is only applicable for Windows operating systems. There may be instances where
+#   file locks cause unncessary service restarts.  By setting to true, the module
+#   will move files prior to installation that are known to cause file locks.
 #
 class puppet_agent (
-  $arch            = $::architecture,
-  $collection      = 'PC1',
-  $is_pe           = $::puppet_agent::params::_is_pe,
-  $manage_repo     = true,
-  $package_name    = $::puppet_agent::params::package_name,
-  $package_version = $::puppet_agent::params::package_version,
-  $service_names   = $::puppet_agent::params::service_names,
-  $source          = $::puppet_agent::params::_source,
-  $install_dir     = $::puppet_agent::params::install_dir,
-  $disable_proxy   = false,
+  $arch                  = $::architecture,
+  $collection            = 'PC1',
+  $is_pe                 = $::puppet_agent::params::_is_pe,
+  $manage_repo           = true,
+  $package_name          = $::puppet_agent::params::package_name,
+  $package_version       = $::puppet_agent::params::package_version,
+  $service_names         = $::puppet_agent::params::service_names,
+  $source                = $::puppet_agent::params::_source,
+  $install_dir           = $::puppet_agent::params::install_dir,
+  $disable_proxy         = false,
+  $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
   validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$','PowerPC_POWER'])

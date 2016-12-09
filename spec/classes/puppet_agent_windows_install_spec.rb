@@ -211,6 +211,29 @@ RSpec.describe 'puppet_agent' do
           }
         end
       end
+      context 'msi_move_locked_files =>' do
+        describe 'default' do
+          it {
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').without_content(/Move puppetres\.dll/)
+          }          
+        end
+        describe 'specify false' do
+          let(:params) { global_params.merge(
+            {:msi_move_locked_files => false,})
+          }
+          it {
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').without_content(/Move puppetres\.dll/)
+          }          
+        end
+        describe 'specify true' do
+          let(:params) { global_params.merge(
+            {:msi_move_locked_files => true,})
+          }
+          it {
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/Move puppetres\.dll/)
+          }          
+        end
+      end
     end
     context 'rubyplatform' do
       facts = {

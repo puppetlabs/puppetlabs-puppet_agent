@@ -151,6 +151,13 @@ The directory the puppet agent should be installed to. This is only applicable f
   install_dir => 'D:\Program Files\Puppet Labs'
 ```
 
+##### `msi_move_locked_files`
+
+This is only applicable for Windows operating systems. There may be instances where file locks cause unncessary service restarts.  By setting to true, the module will move files prior to installation that are known to cause file locks. By default this is set to false.
+
+``` puppet
+  msi_move_locked_files => true
+```
 
 ## Limitations
 
