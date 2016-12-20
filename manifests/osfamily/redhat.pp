@@ -92,12 +92,17 @@ class puppet_agent::osfamily::redhat(
   }
 
   if $::puppet_agent::manage_repo {
+    $_proxy = $puppet_agent::disable_proxy ? {
+      true    => '_none_',
+      default => undef,
+    }
     yumrepo { 'pc_repo':
       baseurl       => $source,
       descr         => "Puppet Labs ${::puppet_agent::collection} Repository",
       enabled       => true,
       gpgcheck      => '1',
       gpgkey        => "${gpg_keys}",
+      proxy         => $_proxy,
       sslcacert     => $_sslcacert_path,
       sslclientcert => $_sslclientcert_path,
       sslclientkey  => $_sslclientkey_path,

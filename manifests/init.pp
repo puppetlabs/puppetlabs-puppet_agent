@@ -46,6 +46,7 @@ class puppet_agent (
   $service_names   = $::puppet_agent::params::service_names,
   $source          = $::puppet_agent::params::_source,
   $install_dir     = $::puppet_agent::params::install_dir,
+  $disable_proxy   = false,
 ) inherits ::puppet_agent::params {
 
   validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$','PowerPC_POWER'])
@@ -64,7 +65,7 @@ class puppet_agent (
     }
 
     # Strip git sha from dev builds
-    if $package_version != undef and $package_version =~ /g/ {
+    if ($package_version != undef and $package_version =~ /g/){
       $_expected_package_version = split($package_version, /[.-]g.*/)[0]
     } else {
       $_expected_package_version = $package_version
