@@ -67,13 +67,13 @@ class puppet_agent::prepare(
       }
 
       # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
-      if $::mco_server_config {
+      if getvar('::mco_server_config') {
         class { 'puppet_agent::prepare::mco_server_config':
           before => Class[$_osfamily_class],
         }
         contain puppet_agent::prepare::mco_server_config
       }
-      if $::mco_client_config {
+      if getvar('::mco_client_config') {
         class { 'puppet_agent::prepare::mco_client_config':
           before => Class[$_osfamily_class],
         }
