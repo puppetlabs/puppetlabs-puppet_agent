@@ -77,7 +77,7 @@ class puppet_agent (
     }
 
     $aio_upgrade_required = ($is_pe == false and $_expected_package_version != undef) or
-    (getvar('::aio_agent_version') != undef and $_expected_package_version != undef and
+      (getvar('::aio_agent_version') != undef and $_expected_package_version != undef and
         versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0)
 
     if $::architecture == 'x86' and $arch == 'x64' {
