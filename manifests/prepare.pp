@@ -73,7 +73,7 @@ class puppet_agent::prepare(
         }
         contain puppet_agent::prepare::mco_server_config
       }
-      if getvar('::mco_server_config') {
+      if getvar('::mco_client_config') {
         class { 'puppet_agent::prepare::mco_client_config':
           before => Class[$_osfamily_class],
         }
