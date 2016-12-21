@@ -19,7 +19,7 @@ RSpec.describe 'puppet_agent' do
         :mco_confdir => "#{values[:appdata]}\\Puppetlabs\\mcollective\\etc",
         :puppet_agent_pid => 42,
         :system32 => 'C:\windows\sysnative',
-        :common_appdata => values[:appdata],
+        :puppet_agent_appdata => values[:appdata],
       }
 
       let(:facts) { facts }

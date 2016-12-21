@@ -56,7 +56,7 @@ class puppet_agent::params {
     'windows' : {
       $service_names = ['puppet', 'mcollective']
 
-      $local_puppet_dir = windows_native_path("${::common_appdata}/Puppetlabs")
+      $local_puppet_dir = windows_native_path("${::puppet_agent_appdata}/Puppetlabs")
       $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
       $confdir = $::puppet_confdir

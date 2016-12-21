@@ -25,14 +25,14 @@ describe 'puppet_agent' do
     describe "supported Windows #{arch} environment" do
       let(:appdata) { 'C:\ProgramData' }
       let(:facts) {{
-        :is_pe          => true,
-        :osfamily       => 'windows',
-        :architecture   => arch,
-        :servername     => 'master.example.vm',
-        :clientcert     => 'foo.example.vm',
-        :puppet_confdir => "#{appdata}\\Puppetlabs\\puppet\\etc",
-        :mco_confdir    => "#{appdata}\\Puppetlabs\\mcollective\\etc",
-        :common_appdata => appdata,
+        :is_pe                => true,
+        :osfamily             => 'windows',
+        :architecture         => arch,
+        :servername           => 'master.example.vm',
+        :clientcert           => 'foo.example.vm',
+        :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
+        :mco_confdir          => "#{appdata}\\Puppetlabs\\mcollective\\etc",
+        :puppet_agent_appdata => appdata,
       }}
 
       it { is_expected.to contain_file("#{appdata}\\Puppetlabs") }
