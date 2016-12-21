@@ -7,3 +7,5 @@ spec/fixtures
 vendor
 log
 tmp
+Gemfile.local
+Gemfile.lock
