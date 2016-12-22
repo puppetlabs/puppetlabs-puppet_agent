@@ -1,15 +1,15 @@
 main_collective = mcollective
 collectives = mcollective
-libdir = /usr/libexec/mcollective/plugins
-libdir = /opt/puppetlabs/mcollective/plugins
-logfile = /var/log/mcollective.log
+libdir = <%= mco_paths[:libexec] %>/plugins
+libdir = <%= mco_paths[:server_plugins] %>
+logfile = <%= mco_paths[:log] %>/mcollective.log
 loglevel = info
 daemonize = 1
 
 securityprovider = ssl
-plugin.ssl_server_private = /etc/mcollective/server.key
-plugin.ssl_server_public = /etc/mcollective/server.crt
-plugin.ssl_client_cert_dir = /etc/mcollective/ssl-clients/
+plugin.ssl_server_private = <%= mco_paths[:etc] %>/server.key
+plugin.ssl_server_public = <%= mco_paths[:etc] %>/server.crt
+plugin.ssl_client_cert_dir = <%= mco_paths[:etc] %>/ssl-clients/
 
 connector = activemq
 plugin.activemq.pool.size = 1
@@ -18,10 +18,10 @@ plugin.activemq.pool.1.port = 61613
 plugin.activemq.pool.1.user = mcollective
 plugin.activemq.pool.1.password = marionette
 plugin.activemq.pool.1.ssl = true
-plugin.activemq.pool.1.ssl.ca = /etc/mcollective/ca_crt.pem
-plugin.activemq.pool.1.ssl.cert = /etc/mcollective/server.crt
-plugin.activemq.pool.1.ssl.key = /etc/mcollective/server.key
+plugin.activemq.pool.1.ssl.ca = <%= mco_paths[:etc] %>/ca_crt.pem
+plugin.activemq.pool.1.ssl.cert = <%= mco_paths[:etc] %>/server.crt
+plugin.activemq.pool.1.ssl.key = <%= mco_paths[:etc] %>/server.key
 
 # Facts
 factsource = yaml
-plugin.yaml = /etc/mcollective/facts.yaml
+plugin.yaml = <%= mco_paths[:etc] %>/facts.yaml

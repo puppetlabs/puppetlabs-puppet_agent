@@ -13,11 +13,13 @@ describe 'puppet_agent class' do
 
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
+      wait_for_finish_on default
       configure_agent_on default
       apply_manifest(pp, :catch_changes  => true)
+      wait_for_finish_on default
     end
 
-    describe package('puppet-agent') do
+    describe package(package_name(default)) do
       it { is_expected.to be_installed }
     end
 
@@ -26,12 +28,20 @@ describe 'puppet_agent class' do
       it { is_expected.to be_running }
     end
 
-    describe service('mcollective') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
+    if default['platform'] =~ /windows/i
+      # MODULES-4244: MCollective not started after upgrade
+      describe service('mcollective') do
+        it { is_expected.to_not be_enabled }
+        it { is_expected.to_not be_running }
+      end
+    else
+      describe service('mcollective') do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
     end
 
-    describe file('/etc/puppetlabs/puppet/puppet.conf') do
+    describe file(puppet_conf(default)) do
       it { is_expected.to exist }
       its(:content) {
         is_expected.to match /cfacter[ ]*=[ ]*true/
@@ -45,6 +55,7 @@ describe 'puppet_agent class' do
         it 'should create repo config' do
           pp = "class { 'puppet_agent': }"
           apply_manifest(pp, :catch_failures => true)
+          wait_for_finish_on default
           case default['platform']
           when /debian|ubuntu/
             pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'http://apt.puppetlabs.com', repos => 'PC1' }"
@@ -55,6 +66,7 @@ describe 'puppet_agent class' do
             next
           end
           apply_manifest(pp, :catch_changes => true)
+          wait_for_finish_on default
         end
       end
 
@@ -62,6 +74,7 @@ describe 'puppet_agent class' do
         it 'should cease to manage repo config' do
           pp = "class { 'puppet_agent': }"
           apply_manifest(pp, :catch_failures => true)
+          wait_for_finish_on default
           case default['platform']
           when /debian|ubuntu/
             pp = "include apt\napt::source { 'pc_repo': ensure => absent }"
@@ -72,9 +85,11 @@ describe 'puppet_agent class' do
             next
           end
           apply_manifest(pp, :catch_failures => true)
+          wait_for_finish_on default
           pp = "class { 'puppet_agent': manage_repo => false }"
           # expect no changes now that repo is unmanaged
           apply_manifest(pp, :catch_changes => true)
+          wait_for_finish_on default
         end
       end
     end
@@ -91,11 +106,13 @@ describe 'puppet_agent class' do
 
       # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
+      wait_for_finish_on default
       configure_agent_on default
       apply_manifest(pp, :catch_changes  => true)
+      wait_for_finish_on default
     end
 
-    describe package('puppet-agent') do
+    describe package(package_name(default)) do
       it { is_expected.to be_installed }
     end
 
@@ -124,84 +141,94 @@ describe 'puppet_agent class' do
       with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
         # Run it twice and test for idempotency
         on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
+        wait_for_finish_on default
         configure_agent_on default, true
         # We're after idempotency so allow exit code 0 only
         on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
+        wait_for_finish_on default
       end
     end
 
-    describe package('puppet-agent') do
+    describe package(package_name(default)) do
       it { is_expected.to be_installed }
     end
 
-    describe service('mcollective') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
+    unless default['platform'] =~ /windows/i
+      # MODULES-4244: MCollective not started after upgrade
+      describe service('mcollective') do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
     end
   end
 
-  context 'with mcollective configured' do
-    before(:all) {
-      setup_puppet_on default, :mcollective => true, :agent => true
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": service_names => [\"mcollective\"] }' }"
-      apply_manifest_on(master, pp, :catch_failures => true)
-    }
-    after (:all) {
-      teardown_puppet_on default
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
-      apply_manifest_on(master, pp, :catch_failures => true)
-    }
-
-    it 'mco should be running' do
-      on default, 'mco ping' do
-        hostname = default.hostname.split('.', 2).first
-        assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
-      end
-    end
-
-    it 'should work idempotently with no errors' do
-      with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-        # Run it twice and test for idempotency
-        on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
-        configure_agent_on default, true
-        # We're after idempotency so allow exit code 0 only
-        on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
-      end
-    end
-
-    describe package('puppet-agent') do
-      it { is_expected.to be_installed }
-    end
-
-    describe service('mcollective') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
-    end
-
-    it 'should have mcollective correctly configured' do
-      on default, 'mco ping' do
-        hostname = default.hostname.split('.', 2).first
-        assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
-      end
-    end
-
-    describe file('/etc/puppetlabs/mcollective/server.cfg') do
-      it { is_expected.to exist }
-      its(:content) {
-        is_expected.to include 'libdir = /opt/puppetlabs/mcollective/plugins'
-        is_expected.to include 'libdir = /usr/libexec/mcollective/plugins'
-        is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
-        is_expected.to include 'plugin.yaml = /etc/mcollective/facts.yaml:/etc/puppetlabs/mcollective/facts.yaml'
+  unless default['platform'] =~ /windows/i
+    # MODULES-4244: MCollective not started after upgrade
+    context 'with mcollective configured' do
+      before(:all) {
+        setup_puppet_on default, :mcollective => true, :agent => true
+        pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": service_names => [\"mcollective\"] }' }"
+        apply_manifest_on(master, pp, :catch_failures => true)
       }
-    end
-
-    describe file('/etc/puppetlabs/mcollective/client.cfg') do
-      it { is_expected.to exist }
-      its(:content) {
-        is_expected.to include 'libdir = /opt/puppetlabs/mcollective/plugins:/usr/share/mcollective/plugins:/usr/libexec/mcollective'
-        is_expected.to include 'logfile = /var/log/puppetlabs/mcollective.log'
-        is_expected.to_not match /plugin.yaml[ ]*=/
+      after (:all) {
+        teardown_puppet_on default
+        pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
+        apply_manifest_on(master, pp, :catch_failures => true)
       }
+
+      it 'mco should be running' do
+        on default, 'mco ping' do
+          hostname = default.hostname.split('.', 2).first
+          assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
+        end
+      end
+
+      it 'should work idempotently with no errors' do
+        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
+          # Run it twice and test for idempotency
+          on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
+          wait_for_finish_on default
+          configure_agent_on default, true
+          # We're after idempotency so allow exit code 0 only
+          on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
+          wait_for_finish_on default
+        end
+      end
+
+      describe package(package_name(default)) do
+        it { is_expected.to be_installed }
+      end
+
+      describe service('mcollective') do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
+
+      it 'should have mcollective correctly configured' do
+        on default, 'mco ping' do
+          hostname = default.hostname.split('.', 2).first
+          assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
+        end
+      end
+
+      describe file("#{mcollective_new_paths(default)[:etc]}/server.cfg") do
+        it { is_expected.to exist }
+        its(:content) {
+          is_expected.to include "libdir = #{mcollective_new_paths(default)[:server_plugins]}"
+          is_expected.to include "libdir = #{mcollective_new_paths(default)[:libexec]}/plugins"
+          is_expected.to include "logfile = #{mcollective_new_paths(default)[:logs]}/mcollective.log"
+          is_expected.to include "plugin.yaml = #{mcollective_new_paths(default)[:facts]}"
+        }
+      end
+
+      describe file("#{mcollective_new_paths(default)[:etc]}/client.cfg") do
+        it { is_expected.to exist }
+        its(:content) {
+          is_expected.to include "libdir = #{mcollective_new_paths(default)[:server_plugins]}:#{mcollective_new_paths(default)[:client_plugins]}:#{mcollective_new_paths(default)[:libexec]}"
+          is_expected.to include "logfile = #{mcollective_new_paths(default)[:logs]}/mcollective.log"
+          is_expected.to_not match /plugin.yaml[ ]*=/
+        }
+      end
     end
   end
 end
