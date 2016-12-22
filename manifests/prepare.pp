@@ -61,7 +61,7 @@ class puppet_agent::prepare(
       }
       contain puppet_agent::prepare::ssl
 
-    # manage client.cfg and server.cfg contents
+      # manage client.cfg and server.cfg contents
       file { $::puppet_agent::params::mcodirs:
         ensure => directory,
       }
