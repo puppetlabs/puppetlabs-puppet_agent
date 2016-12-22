@@ -45,6 +45,12 @@ class puppet_agent::windows::install(
     default => "${::system32}\\cmd.exe"
   }
 
+  if (member($::puppet_agent::service_names, 'puppet')) {
+    $_agent_startup_mode = 'Automatic'
+  } else {
+    $_agent_startup_mode = undef
+  }
+
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
   $_logfile = windows_native_path("${::env_temp_variable}/puppet-${_timestamp}-installer.log")
   $_puppet_master = $::puppet_master_server

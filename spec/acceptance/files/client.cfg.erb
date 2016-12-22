@@ -1,15 +1,15 @@
 main_collective = mcollective
 collectives = mcollective
-libdir = /usr/share/mcollective/plugins
-libdir = /usr/libexec/mcollective
+libdir = <%= mco_paths[:client_plugins] %>
+libdir = <%= mco_paths[:libexec] %>
 logger_type = console
 loglevel = warn
 
 # Plugins
 securityprovider = ssl
-plugin.ssl_server_public = /etc/mcollective/server.crt
-plugin.ssl_client_private = /etc/mcollective/client.key
-plugin.ssl_client_public = /etc/mcollective/client.pem
+plugin.ssl_server_public = <%= mco_paths[:etc] %>/server.crt
+plugin.ssl_client_private = <%= mco_paths[:etc] %>/client.key
+plugin.ssl_client_public = <%= mco_paths[:etc] %>/client.pem
 
 connector = activemq
 plugin.activemq.pool.size = 1
@@ -18,8 +18,8 @@ plugin.activemq.pool.1.port = 61613
 plugin.activemq.pool.1.user = mcollective
 plugin.activemq.pool.1.password = marionette
 plugin.activemq.pool.1.ssl = true
-plugin.activemq.pool.1.ssl.ca = /etc/mcollective/ca_crt.pem
-plugin.activemq.pool.1.ssl.cert = /etc/mcollective/client.crt
-plugin.activemq.pool.1.ssl.key = /etc/mcollective/client.key
+plugin.activemq.pool.1.ssl.ca = <%= mco_paths[:etc] %>/ca_crt.pem
+plugin.activemq.pool.1.ssl.cert = <%= mco_paths[:etc] %>/client.crt
+plugin.activemq.pool.1.ssl.key = <%= mco_paths[:etc] %>/client.key
 
 connection_timeout = 3
