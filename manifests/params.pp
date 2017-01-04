@@ -23,6 +23,8 @@ class puppet_agent::params {
       true    => "https://${::servername}:8140/packages",
       default => undef,
     }
+  } else {
+    $_source = undef
   }
 
   $package_name = 'puppet-agent'
@@ -61,6 +63,9 @@ class puppet_agent::params {
 
       $confdir = $::puppet_confdir
       $mco_dir = $::mco_confdir
+
+      $mco_install = $mco_dir
+      $logdir = 'C:\ProgramData\PuppetLabs\mcollective\var\log'
 
       $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
