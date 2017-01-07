@@ -8,6 +8,7 @@ class puppet_agent::windows::install(
   $package_file_name,
   $source                = $::puppet_agent::source,
   $install_dir           = undef,
+  $install_options       = [],
   $msi_move_locked_files = $::puppet_agent::msi_move_locked_files,
   ) {
   assert_private()

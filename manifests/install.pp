@@ -14,6 +14,7 @@ class puppet_agent::install(
   $package_file_name = undef,
   $package_version   = 'present',
   $install_dir       = undef,
+  $install_options   = [],
 ) {
   assert_private()
 
@@ -35,6 +36,7 @@ class puppet_agent::install(
     $_package_options = {
       provider        => 'rpm',
       source          => "/opt/puppetlabs/packages/${package_file_name}",
+      install_options => $install_options,
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
     contain puppet_agent::install::remove_packages
@@ -44,7 +46,7 @@ class puppet_agent::install(
       adminfile       => '/opt/puppetlabs/packages/solaris-noask',
       source          => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require         => Class['puppet_agent::install::remove_packages'],
-      install_options => '-G',
+      install_options => concat(['-G'],$install_options),
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $old_packages {
     # Updating from PE 3.x requires removing all the old packages before installing the puppet-agent package.
@@ -66,6 +68,7 @@ class puppet_agent::install(
     $_package_options = {
       require => Exec['puppet_agent restore /etc/puppetlabs'],
       notify  => Exec['puppet_agent post-install restore /etc/puppetlabs'],
+      install_options => $install_options,
     }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
     contain puppet_agent::install::remove_packages
@@ -73,9 +76,12 @@ class puppet_agent::install(
     $_package_options = {
       source    => "/opt/puppetlabs/packages/${package_file_name}",
       require   => Class['puppet_agent::install::remove_packages'],
+      install_options => $install_options,
     }
   } else {
-    $_package_options = {}
+    $_package_options = {
+      install_options => $install_options,
+    }
   }
 
   if $::osfamily == 'windows' {
@@ -88,12 +94,14 @@ class puppet_agent::install(
           source            => $local_package_file_path,
           install_dir       => $install_dir,
           require           => File[$local_package_file_path],
+          install_options   => $install_options,
         }
       } else {
         class { 'puppet_agent::windows::install':
           package_file_name => $package_file_name,
           source            => $::puppet_agent::source,
           install_dir       => $install_dir,
+          install_options   => $install_options,
         }
       }
     }
