@@ -135,6 +135,7 @@ describe 'puppet_agent' do
           'sslcacert' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
           'sslclientcert' => '/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem',
           'sslclientkey' => '/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem',
+          'skip_if_unavailable' => 'absent',
         }) }
         describe 'disable proxy' do
           let(:params) {
@@ -146,6 +147,18 @@ describe 'puppet_agent' do
           }
           it {
             is_expected.to contain_yumrepo('pc_repo').with_proxy('_none_')
+          }
+        end
+        describe 'skip repo if unavailable' do
+          let(:params) {
+            {
+              :manage_repo => true,
+              :package_version => package_version,
+              :skip_if_unavailable => true,
+            }
+          }
+          it {
+            is_expected.to contain_yumrepo('pc_repo').with_skip_if_unavailable(true)
           }
         end
       end

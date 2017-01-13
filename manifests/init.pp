@@ -60,6 +60,7 @@ class puppet_agent (
   $install_dir           = $::puppet_agent::params::install_dir,
   $disable_proxy         = false,
   $install_options       = $::puppet_agent::params::install_options,
+  $skip_if_unavailable   = 'absent',
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
