@@ -14,7 +14,7 @@ class puppet_agent::prepare::package(
 
   # As it is currently written, this will only work if the `pe_build_version()` function
   # is available.
-  if $puppet_agent::is_pe {
+  if getvar('puppet_agent::is_pe') == true {
     $pe_server_version = pe_build_version()
 
     if $::osfamily == 'windows' {

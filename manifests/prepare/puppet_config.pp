@@ -43,7 +43,8 @@ class puppet_agent::prepare::puppet_config (
     }
 
     # When upgrading to 1.4.x or later remove pluginsync
-    if (($package_version == undef and $old_packages) or (versioncmp("${package_version}", '1.4.0') >= 0))
+    $_pkg_version = getvar('package_version')
+    if (($_pkg_version == undef and $old_packages) or (versioncmp("${_pkg_version}", '1.4.0') >= 0))
         and !defined(Ini_setting["${section}/pluginsync"]) {
       $removed_settings = $_removed_settings + ['pluginsync']
     } else {

@@ -35,6 +35,9 @@ class puppet_agent::params {
       if !($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
         $service_names = ['puppet', 'mcollective']
       }
+      else {
+        $service_names = []
+      }
 
       $local_puppet_dir = '/opt/puppetlabs'
       $local_packages_dir = "${local_puppet_dir}/packages"

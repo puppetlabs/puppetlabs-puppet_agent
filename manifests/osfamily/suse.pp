@@ -3,7 +3,7 @@ class puppet_agent::osfamily::suse(
 ) {
   assert_private()
 
-  if $::operatingsystem != 'SLES' or $::puppet_agent::is_pe == false {
+  if $::operatingsystem != 'SLES' or getvar('::puppet_agent::is_pe') == false {
     fail("${::operatingsystem} not supported")
   }
 
@@ -62,7 +62,7 @@ class puppet_agent::osfamily::suse(
         logoutput => 'on_failure',
       }
 
-      if $::puppet_agent::manage_repo {
+      if getvar('::puppet_agent::manage_repo') == true {
         # Set up a zypper repository by creating a .repo file which mimics a ini file
         $pe_server_version = pe_build_version()
         $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"

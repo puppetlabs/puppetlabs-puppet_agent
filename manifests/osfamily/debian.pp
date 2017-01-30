@@ -3,11 +3,11 @@ class puppet_agent::osfamily::debian(
 ) {
   assert_private()
 
-  if $::puppet_agent::manage_repo {
+  if getvar('::puppet_agent::manage_repo') == true {
 
     include ::apt
 
-    if $::puppet_agent::is_pe {
+    if getvar('::puppet_agent::is_pe') == true {
       $pe_server_version = pe_build_version()
       $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
 
