@@ -29,6 +29,8 @@ If a package_version parameter is provided, it will ensure that puppet-agent ver
 
 This module expects Puppet to be installed from packages.
 
+Note: this is the last release that will support Puppet 3 and Ruby <2.1.
+
 ## Setup
 
 ### What puppet_agent affects
