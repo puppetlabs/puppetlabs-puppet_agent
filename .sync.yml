@@ -1,0 +1,75 @@
+---
+.gitignore:
+  paths:
+    - '.*.sw?'
+
+# The Travis and Appveyor configurations for puppet_agent don't fit
+# in the module_sync model yet
+.travis.yml:
+  unmanaged: true
+
+appveyor.yml:
+  unmanaged: true
+
+# The default.yml file should not be updated yet as it doesn't fit
+# in the module_sync model yet
+'spec/acceptance/nodesets/default.yml':
+  unmanaged: true
+
+# Unfortunately module_sync assumes a modern ruby however,
+# this module is about upgrading from older puppet versions
+# so we need an ancient Gemfile.  In this case the versions etc.
+# specified below match up to the previosuly, unmanaged Gemfile
+Gemfile:
+  required:
+    ':development':
+      - gem: rake
+        version: '~> 10.4' # Older version required due to old version of rspec
+      - gem: rspec
+        version:  '< 3.2.0' # https://github.com/rspec/rspec-core/issues/1864
+      - gem: rspec-puppet
+        version: '>= 2.3.2' # newer version required to PUP-5743
+      - gem: puppetlabs_spec_helper
+        version: '>= 1.2.1'
+      - gem: json_pure
+        version:  '~> 1.8.3' # avoid version incompatible with Puppet 3.8
+      - gem: json
+        version:  '~> 1.8.3' # avoid trying to pull a newer version with Ruby 1.8.7
+      - gem: metadata-json-lint
+        version: '~> 0.0' # Unknown why this is pinned
+        platforms: 'ruby' # Only non-windows because it needs json
+      - gem: rspec-puppet-facts
+        version: '~> 1.3' # Unknown why this is pinned
+        platforms: 'ruby' # Only non-windows because it needs json
+      - gem: semantic_puppet
+        version: '0.1.3' # Unknown why this is pinned
+      - gem: puppet-blacksmith
+        version: '>= 3.4.0' # newer version required for ruby 1.9 compat
+        platforms: 'ruby'
+
+    ':system_tests':
+      - gem: beaker
+        version: '~> 2.16' # Unknown why this is pinned
+      - gem: beaker-rspec
+        version: '~> 5.1' # Unknown why this is pinned
+      - gem: beaker-hostgenerator
+
+Rakefile:
+  extra_disabled_lint_checks:
+  - 'disable_140chars'
+  - 'disable_puppet_url_without_modules'
+  - 'disable_class_inherits_from_params_class'
+  - 'disable_documentation'
+  - 'disable_single_quote_string_with_variables'
+  - 'disable_only_variable_string'
+
+.gitattributes:
+  # Currently the only ERB template is for the Windows install
+  # batch file and should always be CRLF
+  exclude:
+  - "*.erb"
+
+NOTICE:
+  copyright_holders:
+    - name: 'Puppet, Inc.'
+      begin: 2015
