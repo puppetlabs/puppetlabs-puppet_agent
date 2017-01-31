@@ -6,10 +6,11 @@ before_install: rm Gemfile.lock || true
 script: bundle exec rake validate lint spec
 matrix:
   include:
-    - rvm: 1.8.7
-      env: PUPPET_GEM_VERSION="~> 3.7.5"
-    - rvm: 1.8.7
-      env: PUPPET_GEM_VERSION="~> 3.8.1"
+# Disabling 1.8.7 as it no longer plays nice
+#     - rvm: 1.8.7
+#       env: PUPPET_GEM_VERSION="~> 3.7.5"
+#     - rvm: 1.8.7
+#       env: PUPPET_GEM_VERSION="~> 3.8.1"
     - rvm: 1.9.3
       env: PUPPET_GEM_VERSION="~> 3.8.1"
     - rvm: 2.0.0
