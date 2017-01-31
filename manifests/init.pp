@@ -147,7 +147,7 @@ class puppet_agent (
 
     # On windows, our MSI handles the services
     # On PE AIO nodes, PE Agent nodegroup is managing the services
-    if $::osfamily != 'windows' and (!is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
+    if $::osfamily != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
       class { '::puppet_agent::service':
         require => Class['::puppet_agent::install'],
       }

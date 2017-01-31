@@ -139,13 +139,12 @@ describe 'puppet_agent' do
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }
             end
 
-            if Puppet.version < "4.0.0" && !params[:is_pe]
+            if Puppet.version < "4.0.0" || !params[:is_pe]
               it { is_expected.to contain_class('puppet_agent::service').that_requires('puppet_agent::install') }
             end
 
-            if params[:service_names].nil? &&
-              !(facts[:osfamily] == 'Solaris' and facts[:operatingsystemmajrelease] == '11') &&
-              Puppet.version < "4.0.0" && !params[:is_pe]
+            if !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
+              (Puppet.version < "4.0.0" || !params[:is_pe])
               it { is_expected.to contain_service('puppet') }
               it { is_expected.to contain_service('mcollective') }
             else
