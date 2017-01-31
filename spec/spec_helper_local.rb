@@ -4,6 +4,24 @@ include RspecPuppetFacts
 
 RSpec.configure do |c|
   c.default_facts = {
+    :puppet_stringify_facts      => false,
+    :aio_agent_version           => nil,
+    :puppetversion               => nil,
+    :lsbdistrelease              => nil,
+    :is_pe                       => false,
+    :platform_tag                => nil,
+    :operatingsystem             => nil,
+    :operatingsystemmajrelease   => nil,
+    :kernelmajversion            => nil,
+    :macosx_productname          => nil,
+    :maxosx_productversion_major => nil,
+    :rubyplatform                => nil,
+    :puppet_master_server        => nil,
+    :puppet_client_datadir       => nil,
+    :path                        => nil,
+    :puppet_agent_appdata        => nil,
+    :system32                    => nil,
+
     :puppet_ssldir   => '/dev/null/ssl',
     :puppet_config   => '/dev/null/puppet.conf',
     :puppet_sslpaths => {
