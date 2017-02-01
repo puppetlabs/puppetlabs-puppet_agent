@@ -13,7 +13,9 @@ class puppet_agent::osfamily::redhat(
     $urlbit = 'el/$releasever'
   }
 
-  if $::puppet_agent::is_pe {
+  $pa_collection = getvar('::puppet_agent::collection')
+
+  if getvar('::puppet_agent::is_pe') == true {
     # In Puppet Enterprise, agent packages are served by the same server
     # as the master, which can be using either a self signed CA, or an external CA.
     # In order for yum to authenticate to the yumrepo on the PE Master, it will need
@@ -40,9 +42,9 @@ class puppet_agent::osfamily::redhat(
     $_sslcacert_path = undef
     $_sslclientcert_path = undef
     $_sslclientkey_path = undef
-    $source = $::puppet_agent::source ? {
-      undef   => "https://yum.puppetlabs.com/${urlbit}/${::puppet_agent::collection}/${::architecture}",
-      default => $::puppet_agent::source,
+    $source = getvar('::puppet_agent::source') ? {
+      undef   => "https://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}",
+      default => getvar('::puppet_agent::source'),
     }
   }
 
@@ -91,14 +93,14 @@ class puppet_agent::osfamily::redhat(
     logoutput => 'on_failure',
   }
 
-  if $::puppet_agent::manage_repo {
-    $_proxy = $puppet_agent::disable_proxy ? {
+  if getvar('::puppet_agent::manage_repo') == true {
+    $_proxy = getvar('puppet_agent::disable_proxy') ? {
       true    => '_none_',
       default => undef,
     }
     yumrepo { 'pc_repo':
       baseurl       => $source,
-      descr         => "Puppet Labs ${::puppet_agent::collection} Repository",
+      descr         => "Puppet Labs ${pa_collection} Repository",
       enabled       => true,
       gpgcheck      => '1',
       gpgkey        => "${gpg_keys}",

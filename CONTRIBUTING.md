@@ -1,100 +1,217 @@
-This module has grown over time based on a range of contributions from
-people using it. If you follow these contributing guidelines your patch
-will likely make it into a release a little quicker.
+Checklist (and a short version for the impatient)
+=================================================
+
+  * Commits:
+
+    - Make commits of logical units.
+
+    - Check for unnecessary whitespace with "git diff --check" before
+      committing.
+
+    - Commit using Unix line endings (check the settings around "crlf" in
+      git-config(1)).
+
+    - Do not check in commented out code or unneeded files.
+
+    - The first line of the commit message should be a short
+      description (50 characters is the soft limit, excluding ticket
+      number(s)), and should skip the full stop.
+
+    - Associate the issue in the message. The first line should include
+      the issue number in the form "(#XXXX) Rest of message".
+
+    - The body should provide a meaningful commit message, which:
+
+      - uses the imperative, present tense: "change", not "changed" or
+        "changes".
+
+      - includes motivation for the change, and contrasts its
+        implementation with the previous behavior.
+
+    - Make sure that you have tests for the bug you are fixing, or
+      feature you are adding.
+
+    - Make sure the test suites passes after your commit:
+      `bundle exec rspec spec/acceptance` More information on [testing](#Testing) below
+
+    - When introducing a new feature, make sure it is properly
+      documented in the README.md
+
+  * Submission:
+
+    * Pre-requisites:
+
+      - Make sure you have a [GitHub account](https://github.com/join)
+
+      - [Create a ticket](https://tickets.puppet.com/secure/CreateIssue!default.jspa), or [watch the ticket](https://tickets.puppet.com/browse/) you are patching for.
+
+    * Preferred method:
+
+      - Fork the repository on GitHub.
+
+      - Push your changes to a topic branch in your fork of the
+        repository. (the format ticket/1234-short_description_of_change is
+        usually preferred for this project).
+
+      - Submit a pull request to the repository in the puppetlabs
+        organization.
+
+The long version
+================
+
+  1.  Make separate commits for logically separate changes.
+
+      Please break your commits down into logically consistent units
+      which include new or changed tests relevant to the rest of the
+      change.  The goal of doing this is to make the diff easier to
+      read for whoever is reviewing your code.  In general, the easier
+      your diff is to read, the more likely someone will be happy to
+      review it and get it into the code base.
+
+      If you are going to refactor a piece of code, please do so as a
+      separate commit from your feature or bug fix changes.
+
+      We also really appreciate changes that include tests to make
+      sure the bug is not re-introduced, and that the feature is not
+      accidentally broken.
+
+      Describe the technical detail of the change(s).  If your
+      description starts to get too long, that is a good sign that you
+      probably need to split up your commit into more finely grained
+      pieces.
+
+      Commits which plainly describe the things which help
+      reviewers check the patch and future developers understand the
+      code are much more likely to be merged in with a minimum of
+      bike-shedding or requested changes.  Ideally, the commit message
+      would include information, and be in a form suitable for
+      inclusion in the release notes for the version of Puppet that
+      includes them.
+
+      Please also check that you are not introducing any trailing
+      whitespace or other "whitespace errors".  You can do this by
+      running "git diff --check" on your changes before you commit.
+
+  2.  Sending your patches
+
+      To submit your changes via a GitHub pull request, we _highly_
+      recommend that you have them on a topic branch, instead of
+      directly on "master".
+      It makes things much easier to keep track of, especially if
+      you decide to work on another thing before your first change
+      is merged in.
+
+      GitHub has some pretty good
+      [general documentation](http://help.github.com/) on using
+      their site.  They also have documentation on
+      [creating pull requests](http://help.github.com/send-pull-requests/).
+
+      In general, after pushing your topic branch up to your
+      repository on GitHub, you can switch to the branch in the
+      GitHub UI and click "Pull Request" towards the top of the page
+      in order to open a pull request.
 
 
-## Contributing
+  3.  Update the related GitHub issue.
 
-1. Fork the repo.
+      If there is a GitHub issue associated with the change you
+      submitted, then you should update the ticket to include the
+      location of your branch, along with any other commentary you
+      may wish to make.
 
-2. Run the tests. We only take pull requests with passing tests, and
-   it's great to know that you have a clean slate.
+Testing
+=======
 
-3. Add a test for your change. Only refactoring and documentation
-   changes require no new tests. If you are adding functionality
-   or fixing a bug, please add a test.
+Getting Started
+---------------
 
-4. Make the test pass.
+Our puppet modules provide [`Gemfile`](./Gemfile)s which can tell a ruby
+package manager such as [bundler](http://bundler.io/) what Ruby packages,
+or Gems, are required to build, develop, and test this software.
 
-5. Push to your fork and submit a pull request.
+Please make sure you have [bundler installed](http://bundler.io/#getting-started)
+on your system, then use it to install all dependencies needed for this project,
+by running
+
+```shell
+% bundle install
+Fetching gem metadata from https://rubygems.org/........
+Fetching gem metadata from https://rubygems.org/..
+Using rake (10.1.0)
+Using builder (3.2.2)
+-- 8><-- many more --><8 --
+Using rspec-system-puppet (2.2.0)
+Using serverspec (0.6.3)
+Using rspec-system-serverspec (1.0.0)
+Using bundler (1.3.5)
+Your bundle is complete!
+Use `bundle show [gemname]` to see where a bundled gem is installed.
+```
+
+NOTE some systems may require you to run this command with sudo.
+
+If you already have those gems installed, make sure they are up-to-date:
+
+```shell
+% bundle update
+```
+
+With all dependencies in place and up-to-date we can now run the tests:
+
+```shell
+% bundle exec rake spec
+```
+
+This will execute all the [rspec tests](http://rspec-puppet.com/) tests
+under [spec/defines](./spec/defines), [spec/classes](./spec/classes),
+and so on. rspec tests may have the same kind of dependencies as the
+module they are testing. While the module defines in its [Modulefile](./Modulefile),
+rspec tests define them in [.fixtures.yml](./fixtures.yml).
+
+Some puppet modules also come with [beaker](https://github.com/puppetlabs/beaker)
+tests. These tests spin up a virtual machine under
+[VirtualBox](https://www.virtualbox.org/)) with, controlling it with
+[Vagrant](http://www.vagrantup.com/) to actually simulate scripted test
+scenarios. In order to run these, you will need both of those tools
+installed on your system.
+
+You can run them by issuing the following command
+
+```shell
+% bundle exec rake spec_clean
+% bundle exec rspec spec/acceptance
+```
+
+This will now download a pre-fabricated image configured in the [default node-set](./spec/acceptance/nodesets/default.yml),
+install puppet, copy this module and install its dependencies per [spec/spec_helper_acceptance.rb](./spec/spec_helper_acceptance.rb)
+and then run all the tests under [spec/acceptance](./spec/acceptance).
+
+Writing Tests
+-------------
+
+XXX getting started writing tests.
+
+If you have commit access to the repository
+===========================================
+
+Even if you have commit access to the repository, you will still need to
+go through the process above, and have someone else review and merge
+in your changes.  The rule is that all changes must be reviewed by a
+developer on the project (that did not write the code) to ensure that
+all changes go through a code review process.
+
+Having someone other than the author of the topic branch recorded as
+performing the merge is the record that they performed the code
+review.
 
 
-## Dependencies
+Additional Resources
+====================
 
-The testing and development tools have a bunch of dependencies,
-all managed by [Bundler](http://bundler.io/) according to the
-[Puppet support matrix](http://docs.puppetlabs.com/guides/platforms.html#ruby-versions).
+* [Getting additional help](http://puppet.com/community/get-help)
 
-By default the tests use a baseline version of Puppet.
+* [Writing tests](https://docs.puppet.com/guides/module_guides/bgtm.html#step-three-module-testing)
 
-If you have Ruby 2.x or want a specific version of Puppet,
-you must set an environment variable such as:
+* [General GitHub documentation](http://help.github.com/)
 
-    export PUPPET_GEM_VERSION="~> 3.2.0"
-
-Install the dependencies like so...
-
-    bundle install
-
-## Syntax and style
-
-The test suite will run [Puppet Lint](http://puppet-lint.com/) and
-[Puppet Syntax](https://github.com/gds-operations/puppet-syntax) to
-check various syntax and style things. You can run these locally with:
-
-    bundle exec rake lint
-    bundle exec rake syntax
-
-## Running the unit tests
-
-The unit test suite covers most of the code, as mentioned above please
-add tests if you're adding new functionality. If you've not used
-[rspec-puppet](http://rspec-puppet.com/) before then feel free to ask
-about how best to test your new feature. Running the test suite is done
-with:
-
-    bundle exec rake spec
-
-Note also you can run the syntax, style and unit tests in one go with:
-
-    bundle exec rake test
-
-### Automatically run the tests
-
-During development of your puppet module you might want to run your unit
-tests a couple of times. You can use the following command to automate
-running the unit tests on every change made in the manifests folder.
-
-    bundle exec guard
-
-## Integration tests
-
-The unit tests just check the code runs, not that it does exactly what
-we want on a real machine. For that we're using
-[Beaker](https://github.com/puppetlabs/beaker).
-
-Beaker fires up a new virtual machine (using Vagrant) and runs a series of
-simple tests against it after applying the module. You can run our
-Beaker tests with:
-
-    bundle exec rake acceptance
-
-This will use the host described in `spec/acceptance/nodeset/default.yml`
-and start from Puppet 3.8.6 by default.
-
-To run against another host, set the `BEAKER_set` environment variable to
-the name of a host described by a `.yml` file in the `nodeset` directory.
-For example, to run against CentOS 6.4:
-
-    BEAKER_set=centos-64-x64 bundle exec rake acceptance
-
-To run starting from a different Puppet version, set the
-`PUPPET_CLIENT_VERSION` environment variable to a full version string. For
-example, to start with Puppet 3.7.1:
-
-    PUPPET_CLIENT_VERSION=3.7.1 bundle exec rake acceptance
-
-If you don't want to have to recreate the virtual machine every time you
-can use `BEAKER_destroy=no` and `BEAKER_provision=no`. On the first run you will
-at least need `BEAKER_provision` set to yes (the default). The Vagrantfile
-for the created virtual machines will be in `.vagrant/beaker_vagrant_files`.
+* [GitHub pull request documentation](http://help.github.com/send-pull-requests/)

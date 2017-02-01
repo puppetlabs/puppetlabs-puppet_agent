@@ -1,0 +1,37 @@
+---
+.gitignore:
+  paths:
+    - '.*.sw?'
+
+# The Travis and Appveyor configurations for puppet_agent don't fit
+# in the module_sync model yet
+.travis.yml:
+  unmanaged: true
+
+appveyor.yml:
+  unmanaged: true
+
+# The default.yml file should not be updated yet as it doesn't fit
+# in the module_sync model yet
+'spec/acceptance/nodesets/default.yml':
+  unmanaged: true
+
+Rakefile:
+  extra_disabled_lint_checks:
+  - 'disable_140chars'
+  - 'disable_puppet_url_without_modules'
+  - 'disable_class_inherits_from_params_class'
+  - 'disable_documentation'
+  - 'disable_single_quote_string_with_variables'
+  - 'disable_only_variable_string'
+
+.gitattributes:
+  # Currently the only ERB template is for the Windows install
+  # batch file and should always be CRLF
+  exclude:
+  - "*.erb"
+
+NOTICE:
+  copyright_holders:
+    - name: 'Puppet, Inc.'
+      begin: 2015
