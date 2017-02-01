@@ -6,7 +6,6 @@ if Puppet.version.to_f < 4.0
 end
 
 require 'puppetlabs_spec_helper/rake_tasks'
-require 'puppet/vendor/semantic/lib/semantic' unless Puppet.version.to_f < 3.6
 require 'puppet-lint/tasks/puppet-lint'
 require 'puppet-syntax/tasks/puppet-syntax'
 
