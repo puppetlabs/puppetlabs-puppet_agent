@@ -226,9 +226,9 @@ def teardown_puppet_on(host)
 #{clean_repo}
 file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
 package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
-    EOS
+EOS
+    on host, puppet('apply', '-e', "\"#{pp}\"", '--no-report')
   end
-  on host, puppet('apply', '-e', "\"#{pp}\"", '--no-report')
 end
 
 RSpec.configure do |c|
