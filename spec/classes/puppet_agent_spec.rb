@@ -110,6 +110,21 @@ describe 'puppet_agent' do
         end
 
         [{}, {:service_names => []}].each do |params|
+          context "puppet_agent class with install_options" do
+            let(:params) { global_params.merge(
+              {:install_options => ['OPTION1=value1','OPTION2=value2'],})
+            }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to contain_class('puppet_agent::install').with_install_options(['OPTION1=value1','OPTION2=value2']) }
+
+            # Note this should fail on Windows, but it doesn't get tested due to https://github.com/mcanevet/rspec-puppet-facts/issues/42
+            # Windows is not seen as a supported OS when `on_supported_os` is used :-(
+            it { is_expected.to contain_package('puppet-agent').with_install_options(['OPTION1=value1','OPTION2=value2']) }
+          end
+        end
+
+        [{}, {:service_names => []}].each do |params|
           context "puppet_agent class without any parameters" do
             let(:params) { params.merge(global_params) }
 

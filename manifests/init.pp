@@ -35,6 +35,14 @@
 #   The directory the puppet agent should be installed to. This is only applicable for
 #   windows operating systems. This only applies when upgrading the agent to a new
 #   version; it will not cause re-installation of the same version to a new location.
+# [install_options]
+#   An array of additional options to pass when installing puppet-agent. Each option in
+#   the array can either be a string or a hash. Each option will automatically be quoted
+#   when passed to the install command. With Windows packages, note that file paths in an
+#   install option must use backslashes. (Since install options are passed directly to
+#   the installation command, forward slashes won't be automatically converted like they
+#   are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+#   be escaped and backslashes in single-quoted strings _can_ be escaped.
 # [msi_move_locked_files]
 #   This is only applicable for Windows operating systems. There may be instances where
 #   file locks cause unncessary service restarts.  By setting to true, the module
@@ -51,6 +59,7 @@ class puppet_agent (
   $source                = $::puppet_agent::params::_source,
   $install_dir           = $::puppet_agent::params::install_dir,
   $disable_proxy         = false,
+  $install_options       = $::puppet_agent::params::install_options,
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
@@ -140,6 +149,7 @@ class puppet_agent (
       package_file_name => $_package_file_name,
       package_version   => $_package_version,
       install_dir       => $install_dir,
+      install_options   => $install_options,
     }
 
     contain '::puppet_agent::prepare'

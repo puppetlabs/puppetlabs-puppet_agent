@@ -96,6 +96,17 @@ RSpec.describe 'puppet_agent' do
         end
       end
 
+      context 'install_options =>' do
+        describe 'OPTION1=value1 OPTION2=value2' do
+          let(:params) { global_params.merge(
+            {:install_options => ['OPTION1=value1','OPTION2=value2'],})
+          }
+          it {
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ OPTION1=value1 OPTION2=value2/)
+          }
+        end
+      end
+
       context 'source =>' do
         describe 'https://alterernate.com/puppet-agent.msi' do
           let(:params) { global_params.merge(
