@@ -14,7 +14,7 @@ class puppet_agent::params {
   # is no longer a "PE Puppet", and so that fact will no longer work.
   # Instead check both the `is_pe` fact as well as if a PE provided
   # function is available
-  $_is_pe = ($::is_pe or is_function_available('pe_compiling_server_version'))
+  $_is_pe = (getvar('::is_pe') or is_function_available('pe_compiling_server_version'))
 
   # In Puppet Enterprise, agent packages are provided by the master
   # with a default prefix of `/packages`.
