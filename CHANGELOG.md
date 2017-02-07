@@ -2,6 +2,28 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - 2017-02-09
+
+### Summary
+This is a bug-fix release
+
+### Known issues
+Carried-over from prior releases:
+- For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
+- Upgrades on EL4-based systems are not supported.
+- Mac OS X Open Source package upgrades are not yet implemented.
+
+### Bug fixes
+- Service management wasn't always applied when intended ([MODULES-3994](https://tickets.puppetlabs.com/browse/MODULES-3994))
+- Allow setting MSI installation parameters on Windows ([MODULES-4214](https://tickets.puppetlabs.com/browse/MODULES-4214))
+- Ensure all variables are populated to prevent failures when STRICT_VARIABLES='yes'
+- Only update server.cfg if not already managed by PE
+- Enable the puppet service on Windows if service param includes it ([MODULES-4243](https://tickets.puppetlabs.com/browse/MODULES-4243))
+- Add custom fact puppet_agent_appdata, as common_appdata was only defined in PE ([MODULES-4241](https://tickets.puppetlabs.com/browse/MODULES-4241))
+- Use getvar to fix facts to work with the strict_variables setting ([MODULES-3710](https://tickets.puppetlabs.com/browse/MODULES-3710))
+- Optionally move puppetres.dll on Windows upgrade ([MODULES-4207](https://tickets.puppetlabs.com/browse/MODULES-4207))
+- Allow disabling proxy settings for yum repo ([MODULES-4236](https://tickets.puppetlabs.com/browse/MODULES-4236))
+
 ## [1.3.1] - 2016-11-17
 
 ### Summary
