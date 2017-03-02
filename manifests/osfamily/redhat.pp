@@ -71,7 +71,7 @@ class puppet_agent::osfamily::redhat(
   exec {  "import-${legacy_keyname}":
     path      => '/bin:/usr/bin:/sbin:/usr/sbin',
     command   => "rpm --import ${legacy_gpg_path}",
-    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${legacy_gpg_path}) | cut --characters=11-18 | tr [:upper:] [:lower:]`",
+    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${legacy_gpg_path}) | cut --characters=11-18 | tr '[:upper:]' '[:lower:]'`",
     require   => File[$legacy_gpg_path],
     logoutput => 'on_failure',
   }
@@ -88,7 +88,7 @@ class puppet_agent::osfamily::redhat(
   exec {  "import-${keyname}":
     path      => '/bin:/usr/bin:/sbin:/usr/sbin',
     command   => "rpm --import ${gpg_path}",
-    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${gpg_path}) | cut --characters=11-18 | tr [:upper:] [:lower:]`",
+    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${gpg_path}) | cut --characters=11-18 | tr '[:upper:]' '[:lower:]'`",
     require   => File[$gpg_path],
     logoutput => 'on_failure',
   }
