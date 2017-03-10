@@ -146,9 +146,25 @@ describe 'puppet_agent' do
         'content'  => apt_settings.join(''),
       }) }
 
+      it { is_expected.to contain_file('/etc/pki/deb-gpg/GPG-KEY-puppetlabs').with({
+        'ensure' => 'present',
+        'owner'  => '0',
+        'group'  => '0',
+        'mode'   => '0644',
+        'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppetlabs',
+      }) }
+
+      it { is_expected.to contain_file('/etc/pki/deb-gpg/GPG-KEY-puppet').with({
+        'ensure' => 'present',
+        'owner'  => '0',
+        'group'  => '0',
+        'mode'   => '0644',
+        'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet',
+      }) }
+
       it { is_expected.to contain_apt__key('legacy key').with({
         'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
-        'server' => 'pgp.mit.edu',
+        'source' => '/etc/pki/deb-gpg/GPG-KEY-puppetlabs',
       }) }
 
       it { is_expected.to contain_apt__source('pc_repo').with({
@@ -156,7 +172,7 @@ describe 'puppet_agent' do
         'repos'    => 'PC1',
         'key'      => {
           'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
-          'server' => 'pgp.mit.edu',
+          'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet',
         },
       }) }
     end
@@ -193,7 +209,7 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_apt__key('legacy key').with({
         'id'     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
-        'server' => 'pgp.mit.edu',
+        'source' => '/etc/pki/deb-gpg/GPG-KEY-puppetlabs',
       }) }
 
       it { is_expected.to contain_apt__source('pc_repo').with({
@@ -201,7 +217,7 @@ describe 'puppet_agent' do
         'repos'    => 'PC1',
         'key'      => {
           'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
-          'server' => 'pgp.mit.edu',
+          'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet',
         },
       }) }
     end
