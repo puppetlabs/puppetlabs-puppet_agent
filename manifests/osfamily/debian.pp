@@ -97,7 +97,7 @@ class puppet_agent::osfamily::debian(
     # apt_update doesn't inherit the future class dependency, so it
     # can wait until the end of the run to exec. Force it to happen now.
     exec { 'pc_repo_force':
-      command     => "echo 'forcing apt update for pc_repo ${::puppet_agent::collection}'",
+      command     => "/bin/echo 'forcing apt update for pc_repo ${::puppet_agent::collection}'",
       refreshonly => true,
       logoutput   => true,
       subscribe   => Exec['apt_update'],
