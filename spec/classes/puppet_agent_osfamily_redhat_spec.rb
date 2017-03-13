@@ -23,7 +23,7 @@ describe 'puppet_agent' do
       it { is_expected.to contain_exec('import-GPG-KEY-puppetlabs').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
         'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs',
-        'unless'    => 'rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs) | cut --characters=11-18 | tr [:upper:] [:lower:]`',
+        'unless'    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs) | cut --characters=11-18 | tr '[:upper:]' '[:lower:]'`",
         'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs]',
         'logoutput' => 'on_failure',
       }) }
@@ -31,7 +31,7 @@ describe 'puppet_agent' do
       it { is_expected.to contain_exec('import-GPG-KEY-puppet').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
         'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
-        'unless'    => 'rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet) | cut --characters=11-18 | tr [:upper:] [:lower:]`',
+        'unless'    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet) | cut --characters=11-18 | tr '[:upper:]' '[:lower:]'`",
         'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet]',
         'logoutput' => 'on_failure',
       }) }
