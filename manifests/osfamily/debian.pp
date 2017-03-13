@@ -79,9 +79,34 @@ class puppet_agent::osfamily::debian(
       }
     }
 
+    $legacy_keyname = 'GPG-KEY-puppetlabs'
+    $legacy_gpg_path = "/etc/pki/deb-gpg/${legacy_keyname}"
+    $keyname = 'GPG-KEY-puppet'
+    $gpg_path = "/etc/pki/deb-gpg/${keyname}"
+
+    file { ['/etc/pki', '/etc/pki/deb-gpg']:
+      ensure => directory,
+    }
+
+    file { $legacy_gpg_path:
+      ensure => present,
+      owner  => 0,
+      group  => 0,
+      mode   => '0644',
+      source => "puppet:///modules/puppet_agent/${legacy_keyname}",
+    }
+
     apt::key { 'legacy key':
       id     => '47B320EB4C7C375AA9DAE1A01054B7A24BD6EC30',
-      server => 'pgp.mit.edu',
+      source => $legacy_gpg_path,
+    }
+
+    file { $gpg_path:
+      ensure => present,
+      owner  => 0,
+      group  => 0,
+      mode   => '0644',
+      source => "puppet:///modules/puppet_agent/${keyname}",
     }
 
     apt::source { 'pc_repo':
@@ -89,7 +114,7 @@ class puppet_agent::osfamily::debian(
       repos    => $::puppet_agent::collection,
       key      => {
         'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
-        'server' => 'pgp.mit.edu',
+        'source' => $gpg_path,
       },
       notify   => Notify['pc_repo_force'],
     }

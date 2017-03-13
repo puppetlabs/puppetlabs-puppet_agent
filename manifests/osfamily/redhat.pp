@@ -48,10 +48,10 @@ class puppet_agent::osfamily::redhat(
     }
   }
 
-  $legacy_keyname = 'RPM-GPG-KEY-puppetlabs'
-  $legacy_gpg_path = "/etc/pki/rpm-gpg/${legacy_keyname}"
-  $keyname = 'RPM-GPG-KEY-puppet'
-  $gpg_path = "/etc/pki/rpm-gpg/${keyname}"
+  $legacy_keyname = 'GPG-KEY-puppetlabs'
+  $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
+  $keyname = 'GPG-KEY-puppet'
+  $gpg_path = "/etc/pki/rpm-gpg/RPM-${keyname}"
   $gpg_keys = "file://${legacy_gpg_path}
   file://${gpg_path}"
 

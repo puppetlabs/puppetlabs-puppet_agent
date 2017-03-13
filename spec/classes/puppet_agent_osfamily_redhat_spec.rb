@@ -20,7 +20,7 @@ describe 'puppet_agent' do
         :operatingsystemmajrelease => osmajor,
       }}
 
-      it { is_expected.to contain_exec('import-RPM-GPG-KEY-puppetlabs').with({
+      it { is_expected.to contain_exec('import-GPG-KEY-puppetlabs').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
         'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs',
         'unless'    => 'rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs) | cut --characters=11-18 | tr [:upper:] [:lower:]`',
@@ -28,7 +28,7 @@ describe 'puppet_agent' do
         'logoutput' => 'on_failure',
       }) }
 
-      it { is_expected.to contain_exec('import-RPM-GPG-KEY-puppet').with({
+      it { is_expected.to contain_exec('import-GPG-KEY-puppet').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
         'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
         'unless'    => 'rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet) | cut --characters=11-18 | tr [:upper:] [:lower:]`',
@@ -47,7 +47,7 @@ describe 'puppet_agent' do
         'owner'  => '0',
         'group'  => '0',
         'mode'   => '0644',
-        'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppetlabs',
+        'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppetlabs',
       }) }
 
       it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet').with({
@@ -55,7 +55,7 @@ describe 'puppet_agent' do
         'owner'  => '0',
         'group'  => '0',
         'mode'   => '0644',
-        'source' => 'puppet:///modules/puppet_agent/RPM-GPG-KEY-puppet',
+        'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet',
       }) }
 
       context 'when FOSS and manage_repo enabled' do
