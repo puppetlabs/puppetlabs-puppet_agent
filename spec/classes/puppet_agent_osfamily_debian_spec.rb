@@ -21,7 +21,7 @@ describe 'puppet_agent' do
   let(:facts) { facts }
 
   it { is_expected.to contain_class('apt') }
-  it { is_expected.to contain_notify('pc_repo_force') }
+  it { is_expected.to contain_exec('pc_repo_force') }
 
   context 'when PE' do
     before(:each) do
@@ -52,7 +52,7 @@ describe 'puppet_agent' do
       }
 
       it { is_expected.to contain_class('apt') }
-      it { is_expected.to contain_notify('pc_repo_force') }
+      it { is_expected.to contain_exec('pc_repo_force') }
       it { is_expected.to contain_apt__setting('conf-pe-repo').with({
         'priority' => 90,
         'content'  => '',
@@ -74,7 +74,7 @@ describe 'puppet_agent' do
       }
 
       it { is_expected.not_to contain_class('apt') }
-      it { is_expected.not_to contain_notify('pc_repo_force') }
+      it { is_expected.not_to contain_exec('pc_repo_force') }
       it { is_expected.not_to contain_apt__setting('conf-pe-repo') }
 
       it { is_expected.not_to contain_apt__setting('list-puppet-enterprise-installer') }
@@ -99,7 +99,7 @@ describe 'puppet_agent' do
         }
 
         it { is_expected.to contain_class('apt') }
-        it { is_expected.to contain_notify('pc_repo_force') }
+        it { is_expected.to contain_exec('pc_repo_force') }
 
         apt_settings = [
           "Acquire::https::master.example.vm::CaInfo \"/etc/puppetlabs/puppet/ssl/certs/ca.pem\";",
@@ -120,7 +120,7 @@ describe 'puppet_agent' do
         }
 
         it { is_expected.not_to contain_class('apt') }
-        it { is_expected.not_to contain_notify('pc_repo_force') }
+        it { is_expected.not_to contain_exec('pc_repo_force') }
 
         it { is_expected.not_to contain_apt__setting('conf-pc_repo') }
       end
