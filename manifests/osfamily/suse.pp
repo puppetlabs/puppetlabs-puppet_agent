@@ -16,10 +16,10 @@ class puppet_agent::osfamily::suse(
     }
     '11', '12': {
       # Import the GPG key
-      $legacy_keyname  = 'RPM-GPG-KEY-puppetlabs'
-      $legacy_gpg_path = "/etc/pki/rpm-gpg/${legacy_keyname}"
-      $keyname         = 'RPM-GPG-KEY-puppet'
-      $gpg_path        = "/etc/pki/rpm-gpg/${keyname}"
+      $legacy_keyname  = 'GPG-KEY-puppetlabs'
+      $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
+      $keyname         = 'GPG-KEY-puppet'
+      $gpg_path        = "/etc/pki/rpm-gpg/RPM-${keyname}"
       $gpg_homedir     = '/root/.gnupg'
 
       file { ['/etc/pki', '/etc/pki/rpm-gpg']:
