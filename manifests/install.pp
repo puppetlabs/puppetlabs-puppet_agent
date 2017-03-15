@@ -43,6 +43,7 @@ class puppet_agent::install(
 
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
     $_package_options = {
+      provider        => 'sun',
       adminfile       => '/opt/puppetlabs/packages/solaris-noask',
       source          => "/opt/puppetlabs/packages/${_unzipped_package_name}",
       require         => Class['puppet_agent::install::remove_packages'],
