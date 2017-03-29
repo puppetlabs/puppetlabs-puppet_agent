@@ -20,8 +20,8 @@ task :gen_nodeset do
   agent_target = ENV['TEST_TARGET']
   if ! agent_target
     STDERR.puts 'TEST_TARGET environment variable is not set'
-    STDERR.puts 'setting to default value of "redhat7-64default.a"'
-    agent_target = 'redhat7-64default.a'
+    STDERR.puts 'setting to default value of "redhat-64default."'
+    agent_target = 'redhat-64default.'
   end
 
   master_target = ENV['MASTER_TEST_TARGET']
