@@ -11,21 +11,21 @@ class puppet_agent::install::remove_packages_osx {
       # shutdown services
       service { 'pe-puppet':
         ensure => stopped,
-      }->
-      service { 'pe-mcollective':
+      }
+      -> service { 'pe-mcollective':
         ensure => stopped,
-      }->
+      }
 
       # remove old users and groups
-      user { 'pe-puppet':
+      -> user { 'pe-puppet':
         ensure => absent,
-      }->
-      user { 'pe-mcollective':
+      }
+      -> user { 'pe-mcollective':
         ensure => absent,
-      }->
+      }
 
       # remove old /opt/puppet files
-      file { '/opt/puppet':
+      -> file { '/opt/puppet':
         ensure => absent,
         force  => true,
         backup => false,

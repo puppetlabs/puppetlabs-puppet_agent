@@ -18,8 +18,8 @@ class puppet_agent::service::solaris {
       ensure => file,
       source => 'puppet:///modules/puppet_agent/solaris_start_puppet.sh',
       mode   => '0755',
-    } ->
-    exec { 'solaris_start_puppet.sh':
+    }
+    -> exec { 'solaris_start_puppet.sh':
       command => "/tmp/solaris_start_puppet.sh ${::puppet_agent_pid} &",
       path    => '/usr/bin:/bin:/usr/sbin',
     }

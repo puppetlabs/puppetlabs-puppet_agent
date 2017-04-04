@@ -60,8 +60,8 @@ class puppet_agent::windows::install(
   file { "${_installbat}":
     ensure  => file,
     content => template('puppet_agent/install_puppet.bat.erb')
-  }->
-  exec { 'install_puppet.bat':
+  }
+  -> exec { 'install_puppet.bat':
     command => "${::system32}\\cmd.exe /c start /b ${_cmd_location} /c \"${_installbat}\" ${::puppet_agent_pid}",
     path    => $::path,
   }
