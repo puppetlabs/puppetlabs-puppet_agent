@@ -52,4 +52,8 @@ class puppet_agent::prepare::mco_client_config {
     value   => $::puppet_agent::params::mco_log,
     require => File[$mco_client],
   }
+
+  cron { 'pe-mcollective-metadata':
+    ensure => absent,
+  }
 }
