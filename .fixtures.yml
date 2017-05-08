@@ -5,6 +5,8 @@ fixtures:
       ref: "4.12.0"
     transition: "puppetlabs/transition"
     inifile: "puppetlabs/inifile"
-    apt: "puppetlabs/apt"
+    apt:
+      repo: "puppetlabs/apt"
+      ref: "2.4.0"
   symlinks:
     puppet_agent: "#{source_dir}"
