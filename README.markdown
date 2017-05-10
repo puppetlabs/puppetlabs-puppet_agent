@@ -47,6 +47,8 @@ Your agents must be running Puppet 3 with `stringify_facts` set to 'false', or P
 
 Puppet 3.7 with future parser is required to compile this module, meaning it may be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
 
+This module uses puppetlabs-stdlib and puppetlabs-inifile. It has soft dependencies on puppetlabs-apt (for Debian-based systems) and puppetlabs-transition (for Solaris).
+
 ### Beginning with puppet_agent
 
 Install the puppet_agent module with `puppet module install puppetlabs-puppet_agent`.
