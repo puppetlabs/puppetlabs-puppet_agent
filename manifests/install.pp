@@ -33,10 +33,14 @@ class puppet_agent::install(
       logoutput => 'on_failure',
     }
 
+    $_install_options = $::operatingsystem ? {
+      'AIX'   => concat(['--ignoreos'],$install_options),
+      default => $install_options
+    }
     $_package_options = {
       provider        => 'rpm',
       source          => "/opt/puppetlabs/packages/${package_file_name}",
-      install_options => $install_options,
+      install_options => $_install_options,
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
     contain puppet_agent::install::remove_packages

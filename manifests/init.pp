@@ -122,7 +122,11 @@ class puppet_agent (
     } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
     } elsif $::operatingsystem == 'AIX' {
-      $aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
+      $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
+      $aix_ver_number = $_aix_ver_number ? {
+        /^7\.2$/ => '7.1',
+        default  => $_aix_ver_number,
+      }
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.aix${aix_ver_number}.ppc.rpm"
     } elsif $::osfamily == 'windows' {
       $_arch = $::kernelmajversion ?{

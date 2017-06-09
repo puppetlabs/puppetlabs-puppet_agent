@@ -23,6 +23,12 @@ class puppet_agent::prepare::package(
         'x86' => 'windows-i386',
       }
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
+    } elsif $::operatingsystem == 'AIX' {
+      $tag = $::platform_tag ? {
+        'aix-7.2-power' => 'aix-7.1-power',
+        default         => $::platform_tag,
+      }
+      $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
     } else {
       $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
     }

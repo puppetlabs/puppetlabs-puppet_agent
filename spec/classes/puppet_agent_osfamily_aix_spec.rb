@@ -28,7 +28,7 @@ describe 'puppet_agent' do
     :clientcert      => 'foo.example.vm',
   }
 
-  [['7.1', '8'], ['7.1', '7'], ['6.1', '7'], ['5.3', '7']].each do |aixver, powerver|
+  [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7'], ['5.3', '5.3', '7']].each do |aixver, pkgver, powerver|
     context "aix #{aixver}" do
 
       let(:facts) do
@@ -38,7 +38,9 @@ describe 'puppet_agent' do
         })
       end
 
-      rpmname = "puppet-agent-#{package_version}-1.aix#{aixver}.ppc.rpm"
+      rpmname = "puppet-agent-#{package_version}-1.aix#{pkgver}.ppc.rpm"
+      tag = "aix-#{pkgver}-power"
+      source = "puppet:///pe_packages/4.0.0/#{tag}/#{rpmname}"
 
       if Puppet.version < "4.0.0"
         it { is_expected.to contain_file('/etc/puppetlabs/puppet') }
@@ -52,7 +54,10 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
-      it { is_expected.to contain_file("/opt/puppetlabs/packages/#{rpmname}")}
+      it { is_expected.to contain_file("/opt/puppetlabs/packages/#{rpmname}").with({
+          'source' => source
+          })
+      }
 
       it { is_expected.to contain_class("puppet_agent::osfamily::aix") }
 
