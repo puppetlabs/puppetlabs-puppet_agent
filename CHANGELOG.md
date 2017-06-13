@@ -2,6 +2,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.0] - 2017-06-12
+
+### Summary
+This is a feature and bug-fix release
+
+## Known issues
+Carried-over from prior releases:
+- For Windows, trigger an agent run after upgrade to get Puppet to create the necessary directory structures.
+- Upgrades on EL4-based systems are not supported.
+- Mac OS X Open Source package upgrades are not yet implemented.
+
+### Features
+- AIX 7.2 agents can now be upgraded ([PA-1160](https://tickets.puppetlabs.com/browse/PA-1160))
+
+### Bug fixes
+- Fix a race condition when upgrading agents on certain platforms ([MODULES-4732](https://tickets.puppetlabs.com/browse/MODULES-4732))
+- Avoid duplicate GPG imports on RPM-based systems ([MODULE-4478](https://tickets.puppetlabs.com/browse/MODULES-4478))
+- Silence some redundant notices on Debian-based systems ([MODULES-4171](https://tickets.puppetlabs.com/browse/MODULES-4171))
+- Avoid the new to fetch GPG keys from the internet ([MODULES-4521](https://tickets.puppetlabs.com/browse/MODULES-4521))
+
 ## [1.3.2] - 2017-02-09
 
 ### Summary
