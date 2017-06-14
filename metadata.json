@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-puppet_agent",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "author": "puppetlabs",
   "summary": "Upgrades Puppet 3.7+ and All-In-One Puppet Agents",
   "license": "Apache-2.0",
@@ -103,7 +103,8 @@
       "operatingsystemmajrelease": [
         "5.3",
         "6.1",
-        "7.1"
+        "7.1",
+        "7.2"
       ]
     },
     {
