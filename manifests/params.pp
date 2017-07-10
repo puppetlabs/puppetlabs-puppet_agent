@@ -4,8 +4,7 @@
 # It sets variables according to platform.
 #
 class puppet_agent::params {
-
-  if $::puppet_stringify_facts {
+  if (versioncmp("${::clientversion}", '4.0.0') < 0 and $::puppet_stringify_facts == true) {
     fail('The puppet_agent class requires stringify_facts to be disabled')
   }
 
