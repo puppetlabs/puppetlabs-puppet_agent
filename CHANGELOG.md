@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.1] - 2017-07-18
+
+### Summary
+This is a bug-fix release
+
+### Bug fixes
+- The system package provider is explicitly selected on Solaris 10 for installing puppet-agent ([MODULES-4547](https://tickets.puppetlabs.com/browse/MODULES-4547))
+- `puppet lookup` and other operations with `strict_variables` enabled will now work with this module ([MODULES-5168](https://tickets.puppetlabs.com/browse/MODULES-5168))
+
 ## [1.4.0] - 2017-06-12
 
 ### Summary
