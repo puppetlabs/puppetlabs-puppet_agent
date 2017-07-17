@@ -67,7 +67,7 @@ describe 'puppet_agent' do
         }
         it { is_expected.not_to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
         it { is_expected.to contain_yumrepo('pc_repo').with({
-          'baseurl' => "https://yum.puppetlabs.com/#{urlbit}/PC1/x64",
+          'baseurl' => "http://yum.puppetlabs.com/#{urlbit}/PC1/x64",
           'enabled' => 'true',
             'gpgcheck' => '1',
             'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",

@@ -43,7 +43,7 @@ class puppet_agent::osfamily::redhat(
     $_sslclientcert_path = undef
     $_sslclientkey_path = undef
     $source = getvar('::puppet_agent::source') ? {
-      undef   => "https://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}",
+      undef   => "http://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}",
       default => getvar('::puppet_agent::source'),
     }
   }
