@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Wait for Puppet to exit
+puppet_pid=$1
+while $(kill -0 ${puppet_pid:?}); do
+  sleep 5
+done
+
+function start_service() {
+  service="${1:?}"
+  /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running enable=true
+}
+
+function remove_package() {
+  package="${1:?}"
+  /opt/puppetlabs/bin/puppet resource package "${package:?}" ensure=absent adminfile=<%= $adminfile %>
+}
+
+# Remove old packages
+<% $old_package_names.each |$package| { %>
+remove_package <%= $package %>
+<% } %>
+
+# Install package
+pkgadd -a <%= $adminfile %> -d <%= $sourcefile %> -G <%= $install_options %> -n puppet-agent
+
+# Ensure services are running
+start_service puppet
+start_service mcollective
