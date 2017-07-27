@@ -8,6 +8,8 @@ describe 'puppet_agent' do
     :architecture              => 'i86pc',
     :servername                => 'master.example.vm',
     :clientcert                => 'foo.example.vm',
+    :env_temp_variable         => '/tmp',
+    :puppet_agent_pid          => 42,
   }
 
   package_version = '1.2.5.90.g93a35da'
