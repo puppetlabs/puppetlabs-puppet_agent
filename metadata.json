@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "project_page": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
-  "issues_url": "http://tickets.puppetlabs.com/browse/PUP",
+  "issues_url": "http://tickets.puppetlabs.com/browse/MODULES",
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
