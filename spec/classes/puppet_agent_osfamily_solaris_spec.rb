@@ -8,6 +8,8 @@ describe 'puppet_agent' do
     :architecture              => 'i86pc',
     :servername                => 'master.example.vm',
     :clientcert                => 'foo.example.vm',
+    :env_temp_variable         => '/tmp',
+    :puppet_agent_pid          => 42,
   }
 
   package_version = '1.2.5.90.g93a35da'
@@ -274,35 +276,11 @@ describe 'puppet_agent' do
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.i386.pkg.gz").with_creates("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
       end
 
-      it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
-      if Puppet.version < "4.0.0"
-        it { is_expected.to contain_service('pe-puppet').with_ensure('stopped') }
-        it { is_expected.to contain_service('pe-mcollective').with_ensure('stopped') }
+      if Puppet.version >= "5.0.0"
+        it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
 
-        [
-          'PUPpuppet',
-          'PUPaugeas',
-          'PUPdeep-merge',
-          'PUPfacter',
-          'PUPhiera',
-          'PUPlibyaml',
-          'PUPmcollective',
-          'PUPopenssl',
-          'PUPpuppet-enterprise-release',
-          'PUPruby',
-          'PUPruby-augeas',
-          'PUPruby-rgen',
-          'PUPruby-shadow',
-          'PUPstomp',
-        ].each do |package|
-          it do
-            is_expected.to contain_package(package).with_ensure('absent')
-            is_expected.to contain_package(package).with_adminfile('/opt/puppetlabs/packages/solaris-noask')
-          end
-        end
-      else
         context 'with older aio_agent_version' do
           let(:facts) do
             facts.merge({
@@ -347,13 +325,39 @@ describe 'puppet_agent' do
 
           it { is_expected.not_to contain_transition("remove puppet-agent") }
         end
-      end
 
-      it do
-        is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
-        is_expected.to contain_package('puppet-agent').with_ensure('present')
-        is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
-        is_expected.to contain_package('puppet-agent').with_install_options( ['-G'] )
+        it do
+          is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
+          is_expected.to contain_package('puppet-agent').with_ensure('present')
+          is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
+          is_expected.to contain_package('puppet-agent').with_install_options( ['-G'] )
+        end
+      elsif Puppet.version < "4.0.0"
+        it do
+          is_expected.to contain_file('/tmp/solaris_install.sh')
+          is_expected.to contain_exec('solaris_install script')
+        end
+      else
+        context 'with older aio_agent_version' do
+          let(:facts) do
+            facts.merge({
+              :is_pe                     => true,
+              :platform_tag              => "solaris-10-i386",
+              :operatingsystemmajrelease => '10',
+              :aio_agent_version         => '1.0.0',
+            })
+          end
+
+          it do
+            is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
+            is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
+          end
+        end
+
+        it do
+          is_expected.not_to contain_file('/tmp/solaris_install.sh')
+          is_expected.not_to contain_exec('solaris_install script')
+        end
       end
     end
 
@@ -394,35 +398,11 @@ describe 'puppet_agent' do
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.sparc.pkg.gz").with_creates("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")
       end
 
-      it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
-      if Puppet.version < "4.0.0"
-        it { is_expected.to contain_service('pe-puppet').with_ensure('stopped') }
-        it { is_expected.to contain_service('pe-mcollective').with_ensure('stopped') }
+      if Puppet.version >= "5.0.0"
+        it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
 
-        [
-          'PUPpuppet',
-          'PUPaugeas',
-          'PUPdeep-merge',
-          'PUPfacter',
-          'PUPhiera',
-          'PUPlibyaml',
-          'PUPmcollective',
-          'PUPopenssl',
-          'PUPpuppet-enterprise-release',
-          'PUPruby',
-          'PUPruby-augeas',
-          'PUPruby-rgen',
-          'PUPruby-shadow',
-          'PUPstomp',
-        ].each do |package|
-          it do
-            is_expected.to contain_package(package).with_ensure('absent')
-            is_expected.to contain_package(package).with_adminfile('/opt/puppetlabs/packages/solaris-noask')
-          end
-        end
-      else
         context 'aio_agent_version is out of date' do
           let(:facts) do
             facts.merge({
@@ -444,13 +424,39 @@ describe 'puppet_agent' do
         end
 
         it { is_expected.not_to contain_transition("remove puppet-agent") }
-      end
 
-      it do
-        is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
-        is_expected.to contain_package('puppet-agent').with_ensure('present')
-        is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")
-        is_expected.to contain_package('puppet-agent').with_install_options( ['-G'] )
+        it do
+          is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
+          is_expected.to contain_package('puppet-agent').with_ensure('present')
+          is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")
+          is_expected.to contain_package('puppet-agent').with_install_options( ['-G'] )
+        end
+      elsif Puppet.version < "4.0.0"
+        it do
+          is_expected.to contain_file('/tmp/solaris_install.sh')
+          is_expected.to contain_exec('solaris_install script')
+        end
+      else
+        context 'with older aio_agent_version' do
+          let(:facts) do
+            facts.merge({
+              :is_pe                     => true,
+              :platform_tag              => "solaris-10-sparc",
+              :operatingsystemmajrelease => '10',
+              :aio_agent_version         => '1.0.0',
+            })
+          end
+
+          it do
+            is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
+            is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
+          end
+        end
+
+        it do
+          is_expected.not_to contain_file('/tmp/solaris_install.sh')
+          is_expected.not_to contain_exec('solaris_install script')
+        end
       end
     end
   end

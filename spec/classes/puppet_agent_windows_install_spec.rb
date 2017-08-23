@@ -11,7 +11,7 @@ RSpec.describe 'puppet_agent' do
     context "Windows Kernelmajversion #{kernelmajversion}" do
       facts = {
         :architecture => 'x64',
-        :env_temp_variable => 'C:\tmp',
+        :env_temp_variable => 'C:/tmp',
         :kernelmajversion => kernelmajversion,
         :osfamily => 'windows',
         :puppetversion => '3.8.0',
@@ -249,7 +249,7 @@ RSpec.describe 'puppet_agent' do
     context 'rubyplatform' do
       facts = {
         :architecture => 'x64',
-        :env_temp_variable => 'C:\tmp',
+        :env_temp_variable => 'C:/tmp',
         :kernelmajversion => kernelmajversion,
         :osfamily => 'windows',
         :puppetversion => '3.8.0',

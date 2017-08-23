@@ -36,6 +36,15 @@ class puppet_agent::install::remove_packages(
       # We only need to remove these packages if we are transitioning from PE
       # versions that are pre AIO.
       if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
+        # Tidy up pe-puppet and pe-mcollective services that would be left running
+        # after package removal.
+        service { 'pe-mcollective':
+          ensure  => stopped,
+        }
+        service { 'pe-puppet':
+          ensure => stopped,
+        }
+
         $packages = [
           'PUPpuppet',
           'PUPaugeas',

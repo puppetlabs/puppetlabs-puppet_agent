@@ -20,8 +20,7 @@ class puppet_agent::install(
 
   $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
 
-  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or
-        $::operatingsystem == 'AIX' {
+  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or $::operatingsystem == 'AIX' {
     contain puppet_agent::install::remove_packages
 
     exec { 'replace puppet.conf removed by package removal':
@@ -37,21 +36,73 @@ class puppet_agent::install(
       'AIX'   => concat(['--ignoreos'],$install_options),
       default => $install_options
     }
-    $_package_options = {
+
+    # package provider does not provide 'versionable'
+    package { $::puppet_agent::package_name:
+      ensure          => 'present',
       provider        => 'rpm',
       source          => "/opt/puppetlabs/packages/${package_file_name}",
       install_options => $_install_options,
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
-    contain puppet_agent::install::remove_packages
-
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
-    $_package_options = {
-      provider        => 'sun',
-      adminfile       => '/opt/puppetlabs/packages/solaris-noask',
-      source          => "/opt/puppetlabs/packages/${_unzipped_package_name}",
-      require         => Class['puppet_agent::install::remove_packages'],
-      install_options => concat(['-G'],$install_options),
+    $adminfile = '/opt/puppetlabs/packages/solaris-noask'
+    $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
+
+    if versioncmp("${::clientversion}", '5.0.0') < 0 {
+      # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
+      # service. That resulted in service-initiated upgrades failing because trying to remove or
+      # upgrade the package would stop the service, thereby killing the Puppet run. Use a script
+      # to perform the upgrade after Puppet is done running.
+      if $old_packages or $puppet_agent::aio_upgrade_required {
+        $old_package_names = $old_packages ? {
+          true    => [
+            'PUPpuppet',
+            'PUPaugeas',
+            'PUPdeep-merge',
+            'PUPfacter',
+            'PUPhiera',
+            'PUPlibyaml',
+            'PUPmcollective',
+            'PUPopenssl',
+            'PUPpuppet-enterprise-release',
+            'PUPruby',
+            'PUPruby-augeas',
+            'PUPruby-rgen',
+            'PUPruby-shadow',
+            'PUPstomp',
+          ],
+          default => ['puppet-agent'],
+        }
+
+        $_logfile = "${::env_temp_variable}/solaris_install.log"
+        notice ("Puppet install log file at ${_logfile}")
+
+        $_installsh = "${::env_temp_variable}/solaris_install.sh"
+        file { "${_installsh}":
+          ensure  => file,
+          mode    => '0755',
+          content => epp('puppet_agent/solaris_install.sh.epp', {
+                          'old_package_names' => $old_package_names,
+                          'adminfile'         => $adminfile,
+                          'sourcefile'        => $sourcefile,
+                          'install_options'   => $install_options})
+        }
+        -> exec { 'solaris_install script':
+          command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
+        }
+      }
+    } else {
+      contain puppet_agent::install::remove_packages
+
+      package { $::puppet_agent::package_name:
+        ensure          => 'present',
+        provider        => 'sun',
+        adminfile       => $adminfile,
+        source          => $sourcefile,
+        require         => Class['puppet_agent::install::remove_packages'],
+        install_options => concat(['-G'],$install_options),
+      }
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $old_packages {
     # Updating from PE 3.x requires removing all the old packages before installing the puppet-agent package.
@@ -64,32 +115,30 @@ class puppet_agent::install(
       require => Class['puppet_agent::install::remove_packages'],
     }
 
+    package { $::puppet_agent::package_name:
+      ensure          => 'present',
+      require         => Exec['puppet_agent restore /etc/puppetlabs'],
+      notify          => Exec['puppet_agent post-install restore /etc/puppetlabs'],
+      install_options => $install_options,
+    }
+
     exec { 'puppet_agent post-install restore /etc/puppetlabs':
       command     => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
       path        => '/bin:/usr/bin:/sbin:/usr/sbin',
       refreshonly => true,
     }
-
-    $_package_options = {
-      require => Exec['puppet_agent restore /etc/puppetlabs'],
-      notify  => Exec['puppet_agent post-install restore /etc/puppetlabs'],
-      install_options => $install_options,
-    }
-  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /10\.[9,10,11]/ {
+  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12)/ {
     contain puppet_agent::install::remove_packages
 
-    $_package_options = {
-      source    => "/opt/puppetlabs/packages/${package_file_name}",
-      require   => Class['puppet_agent::install::remove_packages'],
+    # package provider does not provide 'versionable'
+    package { $::puppet_agent::package_name:
+      ensure          => 'present',
+      provider        => 'pkgdmg',
+      source          => "/opt/puppetlabs/packages/${package_file_name}",
+      require         => Class['puppet_agent::install::remove_packages'],
       install_options => $install_options,
     }
-  } else {
-    $_package_options = {
-      install_options => $install_options,
-    }
-  }
-
-  if $::osfamily == 'windows' {
+  } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
     if $old_packages or $puppet_agent::aio_upgrade_required {
       if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
@@ -110,15 +159,6 @@ class puppet_agent::install(
         }
       }
     }
-  } elsif ($::osfamily == 'Solaris' and ($::operatingsystemmajrelease == '10' or $old_packages)) or
-      $::osfamily == 'Darwin' or $::osfamily == 'AIX' or
-      ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') {
-    # Solaris 10/OSX/AIX/SLES 10 package provider does not provide 'versionable'
-    # Package is removed above, then re-added as the new version here.
-    package { $::puppet_agent::package_name:
-      ensure => 'present',
-      *      => $_package_options,
-    }
   } elsif ($::osfamily == 'RedHat') and ($package_version != 'present') {
     # Workaround PUP-5802/PUP-5025
     if ($::operatingsystem == 'Fedora') {
@@ -127,19 +167,19 @@ class puppet_agent::install(
       $pkg_os_suffix = 'el'
     }
     package { $::puppet_agent::package_name:
-      ensure => "${package_version}-1.${pkg_os_suffix}${::operatingsystemmajrelease}",
-      *      => $_package_options,
+      ensure          => "${package_version}-1.${pkg_os_suffix}${::operatingsystemmajrelease}",
+      install_options => $install_options,
     }
   } elsif ($::osfamily == 'Debian') and ($package_version != 'present') {
     # Workaround PUP-5802/PUP-5025
     package { $::puppet_agent::package_name:
-      ensure => "${package_version}-1${::lsbdistcodename}",
-      *      => $_package_options,
+      ensure          => "${package_version}-1${::lsbdistcodename}",
+      install_options => $install_options,
     }
   } else {
     package { $::puppet_agent::package_name:
-      ensure => $package_version,
-      *      => $_package_options,
+      ensure          => $package_version,
+      install_options => $install_options,
     }
   }
 }
