@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Mark install process starting
+pid_path="$(dirname ${BASH_SOURCE[0]})/puppet_agent_upgrade.pid"
+
+if [[ -f $pid_path ]]; then
+  rm -f $pid_path
+fi
+echo $$ > $pid_path
+
 # Wait for Puppet to exit
 puppet_pid=$1
 while $(kill -0 ${puppet_pid:?}); do
@@ -27,3 +35,8 @@ pkgadd -a <%= $adminfile %> -d <%= $sourcefile %> -G <%= $install_options.join('
 # Ensure services are running
 start_service puppet
 start_service mcollective
+
+# Mark upgrade complete
+if [[ -f $pid_path ]]; then
+  rm -f $pid_path
+fi
