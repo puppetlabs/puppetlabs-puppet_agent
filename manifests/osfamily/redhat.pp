@@ -3,16 +3,30 @@ class puppet_agent::osfamily::redhat(
 ) {
   assert_private()
 
-  if $::operatingsystem == 'Fedora' {
-    $urlbit = 'fedora/f$releasever'
-  }
-  elsif $::operatingsystem == 'Amazon' {
-    $urlbit = 'el/6'
+  $package_version = getvar('::puppet_agent::package_version')
+
+  if versioncmp("${package_version}", '5.0.0') >=0 {
+    if $::operatingsystem == 'Fedora' {
+      $urlbit = 'puppet5/fedora/$releasever'
+    }
+    elsif $::operatingsystem == 'Amazon' {
+      $urlbit = 'puppet5/el/6'
+    }
+    else {
+      $urlbit = 'puppet5/el/$releasever'
+    }
   }
   else {
-    $urlbit = 'el/$releasever'
+    if $::operatingsystem == 'Fedora' {
+      $urlbit = 'fedora/f$releasever'
+    }
+    elsif $::operatingsystem == 'Amazon' {
+      $urlbit = 'el/6'
+    }
+    else {
+      $urlbit = 'el/$releasever'
+    }
   }
-
   $pa_collection = getvar('::puppet_agent::collection')
 
   if getvar('::puppet_agent::is_pe') == true {
@@ -43,7 +57,12 @@ class puppet_agent::osfamily::redhat(
     $_sslclientcert_path = undef
     $_sslclientkey_path = undef
     $source = getvar('::puppet_agent::source') ? {
-      undef   => "http://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}",
+      undef   => if versioncmp("${package_version}", '5.0.0') >=0 {
+        "http://yum.puppetlabs.com/${urlbit}/${::architecture}"
+      }
+      else {
+        "http://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}"
+      },
       default => getvar('::puppet_agent::source'),
     }
   }
