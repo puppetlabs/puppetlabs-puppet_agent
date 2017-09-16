@@ -14,6 +14,7 @@ class puppet_agent::osfamily::redhat(
   }
 
   $pa_collection = getvar('::puppet_agent::collection')
+  $skip_if_unavailable = getvar('::puppet_agent::skip_if_unavailable')
 
   if getvar('::puppet_agent::is_pe') == true {
     # In Puppet Enterprise, agent packages are served by the same server
@@ -99,15 +100,16 @@ class puppet_agent::osfamily::redhat(
       default => undef,
     }
     yumrepo { 'pc_repo':
-      baseurl       => $source,
-      descr         => "Puppet Labs ${pa_collection} Repository",
-      enabled       => true,
-      gpgcheck      => '1',
-      gpgkey        => "${gpg_keys}",
-      proxy         => $_proxy,
-      sslcacert     => $_sslcacert_path,
-      sslclientcert => $_sslclientcert_path,
-      sslclientkey  => $_sslclientkey_path,
+      baseurl             => $source,
+      descr               => "Puppet Labs ${pa_collection} Repository",
+      enabled             => true,
+      gpgcheck            => '1',
+      gpgkey              => "${gpg_keys}",
+      proxy               => $_proxy,
+      sslcacert           => $_sslcacert_path,
+      sslclientcert       => $_sslclientcert_path,
+      sslclientkey        => $_sslclientkey_path,
+      skip_if_unavailable => $skip_if_unavailable,
     }
   }
 }
