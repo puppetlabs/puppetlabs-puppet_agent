@@ -3,8 +3,14 @@ class puppet_agent::osfamily::redhat(
 ) {
   assert_private()
 
+  $pa_collection = getvar('::puppet_agent::collection')
+
   if $::operatingsystem == 'Fedora' {
-    $urlbit = 'fedora/f$releasever'
+    if $pa_collection == 'PC1' {
+      $urlbit = 'fedora/f$releasever'
+    } else {
+      $urlbit = 'fedora/$releasever'
+    }
   }
   elsif $::operatingsystem == 'Amazon' {
     $urlbit = 'el/6'
@@ -12,8 +18,6 @@ class puppet_agent::osfamily::redhat(
   else {
     $urlbit = 'el/$releasever'
   }
-
-  $pa_collection = getvar('::puppet_agent::collection')
 
   if getvar('::puppet_agent::is_pe') == true {
     # In Puppet Enterprise, agent packages are served by the same server
@@ -42,8 +46,14 @@ class puppet_agent::osfamily::redhat(
     $_sslcacert_path = undef
     $_sslclientcert_path = undef
     $_sslclientkey_path = undef
+
+    if $pa_collection == 'PC1' {
+      $_default_source = "http://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}"
+    } else {
+      $_default_source = "http://yum.puppetlabs.com/${pa_collection}/${urlbit}/${::architecture}"
+    }
     $source = getvar('::puppet_agent::source') ? {
-      undef   => "http://yum.puppetlabs.com/${urlbit}/${pa_collection}/${::architecture}",
+      undef   => $_default_source,
       default => getvar('::puppet_agent::source'),
     }
   }
