@@ -89,6 +89,21 @@ describe 'puppet_agent' do
         it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
       end
 
+      context 'when installing a puppet5 project' do
+        let(:params)  {
+          {
+            :package_version => '5.2.0',
+            :collection => 'puppet5'
+          }
+        }
+        it { is_expected.to contain_yumrepo('pc_repo').with({
+          # We no longer expect the 'f' in fedora repos
+          'baseurl' => "http://yum.puppetlabs.com/puppet5/#{urlbit.gsub('/f','/')}/x64",
+          'enabled' => 'true',
+            'gpgcheck' => '1',
+            'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
+        }) }
+      end
     end
   end
 
