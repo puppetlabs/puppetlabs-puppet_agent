@@ -157,12 +157,14 @@ class puppet_agent::install(
   } elsif ($::osfamily == 'RedHat') and ($package_version != 'present') {
     # Workaround PUP-5802/PUP-5025
     if ($::operatingsystem == 'Fedora') {
-      $pkg_os_suffix = 'fedoraf'
+      $dist_tag = "fedoraf${::operatingsystemmajrelease}"
+    } elsif $::operatingsystem == 'Amazon' {
+      $dist_tag = 'el6'
     } else {
-      $pkg_os_suffix = 'el'
+      $dist_tag = "el${::operatingsystemmajrelease}"
     }
     package { $::puppet_agent::package_name:
-      ensure          => "${package_version}-1.${pkg_os_suffix}${::operatingsystemmajrelease}",
+      ensure          => "${package_version}-1.${dist_tag}",
       install_options => $install_options,
     }
   } elsif ($::osfamily == 'Debian') and ($package_version != 'present') {
