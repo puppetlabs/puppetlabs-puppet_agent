@@ -22,8 +22,10 @@ class puppet_agent::osfamily::suse(
       $gpg_path        = "/etc/pki/rpm-gpg/RPM-${keyname}"
       $gpg_homedir     = '/root/.gnupg'
 
-      file { ['/etc/pki', '/etc/pki/rpm-gpg']:
-        ensure => directory,
+      if getvar('::puppet_agent::manage_pki_dir') == true {
+        file { ['/etc/pki', '/etc/pki/rpm-gpg']:
+          ensure => directory,
+        }
       }
 
       file { $gpg_path:
