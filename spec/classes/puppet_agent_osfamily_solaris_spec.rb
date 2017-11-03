@@ -278,61 +278,7 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
-      if Puppet.version >= "5.0.0"
-        it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
-
-        context 'with older aio_agent_version' do
-          let(:facts) do
-            facts.merge({
-              :is_pe                     => true,
-              :platform_tag              => "solaris-10-i386",
-              :operatingsystemmajrelease => '10',
-              :aio_agent_version         => '1.0.0',
-            })
-          end
-
-          it do
-            is_expected.to contain_transition("remove puppet-agent").with(
-              :attributes => {
-                'ensure' => 'absent',
-                'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
-              })
-          end
-        end
-
-        context 'with up-to-date aio_agent_version' do
-          let(:facts) do
-            facts.merge({
-              :is_pe                     => true,
-              :platform_tag              => "solaris-10-i386",
-              :operatingsystemmajrelease => '10',
-              :aio_agent_version         => package_version,
-            })
-          end
-
-          it { is_expected.not_to contain_transition("remove puppet-agent") }
-        end
-
-        context 'with up-to-date aio_agent_version missing git sha' do
-          let(:facts) do
-            facts.merge({
-              :is_pe                     => true,
-              :platform_tag              => "solaris-10-i386",
-              :operatingsystemmajrelease => '10',
-              :aio_agent_version         => '1.2.5.90',
-            })
-          end
-
-          it { is_expected.not_to contain_transition("remove puppet-agent") }
-        end
-
-        it do
-          is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
-          is_expected.to contain_package('puppet-agent').with_ensure('present')
-          is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
-          is_expected.to contain_package('puppet-agent').with_install_options( ['-G'] )
-        end
-      elsif Puppet.version < "4.0.0"
+      if Puppet.version < "4.0.0"
         it do
           is_expected.to contain_file('/tmp/solaris_install.sh')
           is_expected.to contain_exec('solaris_install script')
@@ -400,38 +346,7 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
-      if Puppet.version >= "5.0.0"
-        it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
-
-        context 'aio_agent_version is out of date' do
-          let(:facts) do
-            facts.merge({
-              :is_pe                     => true,
-              :platform_tag              => "solaris-10-sparc",
-              :operatingsystemmajrelease => '10',
-              :architecture              => 'sun4u',
-              :aio_agent_version         => '1.0.0'
-            })
-          end
-
-          it do
-            is_expected.to contain_transition("remove puppet-agent").with(
-              :attributes => {
-                'ensure' => 'absent',
-                'adminfile' => '/opt/puppetlabs/packages/solaris-noask',
-              })
-          end
-        end
-
-        it { is_expected.not_to contain_transition("remove puppet-agent") }
-
-        it do
-          is_expected.to contain_package('puppet-agent').with_adminfile('/opt/puppetlabs/packages/solaris-noask')
-          is_expected.to contain_package('puppet-agent').with_ensure('present')
-          is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")
-          is_expected.to contain_package('puppet-agent').with_install_options( ['-G'] )
-        end
-      elsif Puppet.version < "4.0.0"
+      if Puppet.version < "4.0.0"
         it do
           is_expected.to contain_file('/tmp/solaris_install.sh')
           is_expected.to contain_exec('solaris_install script')

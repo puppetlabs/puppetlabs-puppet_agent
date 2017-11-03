@@ -49,59 +49,48 @@ class puppet_agent::install(
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
 
-    if versioncmp("${::clientversion}", '5.0.0') < 0 {
-      # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
-      # service. That resulted in service-initiated upgrades failing because trying to remove or
-      # upgrade the package would stop the service, thereby killing the Puppet run. Use a script
-      # to perform the upgrade after Puppet is done running.
-      if $old_packages or $puppet_agent::aio_upgrade_required {
-        $old_package_names = $old_packages ? {
-          true    => [
-            'PUPpuppet',
-            'PUPaugeas',
-            'PUPdeep-merge',
-            'PUPfacter',
-            'PUPhiera',
-            'PUPlibyaml',
-            'PUPmcollective',
-            'PUPopenssl',
-            'PUPpuppet-enterprise-release',
-            'PUPruby',
-            'PUPruby-augeas',
-            'PUPruby-rgen',
-            'PUPruby-shadow',
-            'PUPstomp',
+    # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
+    # service. That resulted in service-initiated upgrades failing because trying to remove or
+    # upgrade the package would stop the service, thereby killing the Puppet run. Use a script
+    # to perform the upgrade after Puppet is done running.
+    # Puppet 5.0 adds this, but some i18n implementation is loading code fairly late and appears
+    # to be messing up the upgrade.
+    if $old_packages or $puppet_agent::aio_upgrade_required {
+      $old_package_names = $old_packages ? {
+        true    => [
+          'PUPpuppet',
+          'PUPaugeas',
+          'PUPdeep-merge',
+          'PUPfacter',
+          'PUPhiera',
+          'PUPlibyaml',
+          'PUPmcollective',
+          'PUPopenssl',
+          'PUPpuppet-enterprise-release',
+          'PUPruby',
+          'PUPruby-augeas',
+          'PUPruby-rgen',
+          'PUPruby-shadow',
+          'PUPstomp',
           ],
           default => ['puppet-agent'],
-        }
-
-        $_logfile = "${::env_temp_variable}/solaris_install.log"
-        notice ("Puppet install log file at ${_logfile}")
-
-        $_installsh = "${::env_temp_variable}/solaris_install.sh"
-        file { "${_installsh}":
-          ensure  => file,
-          mode    => '0755',
-          content => epp('puppet_agent/solaris_install.sh.epp', {
-                          'old_package_names' => $old_package_names,
-                          'adminfile'         => $adminfile,
-                          'sourcefile'        => $sourcefile,
-                          'install_options'   => $install_options})
-        }
-        -> exec { 'solaris_install script':
-          command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
-        }
       }
-    } else {
-      contain puppet_agent::install::remove_packages
 
-      package { $::puppet_agent::package_name:
-        ensure          => 'present',
-        provider        => 'sun',
-        adminfile       => $adminfile,
-        source          => $sourcefile,
-        require         => Class['puppet_agent::install::remove_packages'],
-        install_options => concat(['-G'],$install_options),
+      $_logfile = "${::env_temp_variable}/solaris_install.log"
+      notice ("Puppet install log file at ${_logfile}")
+
+      $_installsh = "${::env_temp_variable}/solaris_install.sh"
+      file { "${_installsh}":
+        ensure  => file,
+        mode    => '0755',
+        content => epp('puppet_agent/solaris_install.sh.epp', {
+          'old_package_names' => $old_package_names,
+          'adminfile'         => $adminfile,
+          'sourcefile'        => $sourcefile,
+          'install_options'   => $install_options})
+      }
+      -> exec { 'solaris_install script':
+        command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
       }
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $old_packages {
