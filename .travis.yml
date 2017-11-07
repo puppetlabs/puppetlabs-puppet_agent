@@ -1,6 +1,6 @@
 ---
 language: ruby
-dist: precise
+dist: trusty
 sudo: false
 bundler_args: --without system_tests --full-index
 before_script: cat Gemfile.lock
