@@ -191,18 +191,21 @@ describe 'puppet_agent' do
   context 'stringify_facts is set to true' do
     describe 'when puppet_stringify_facts evaluates as true ' do
       # Mock a supported agent but with puppet_stringify_facts set to true
-      let(:facts) {{
-        :osfamily               => 'RedHat',
-        :operatingsystem        => 'Fedora',
-        :puppet_ssldir          => '/dev/null/ssl',
-        :puppet_config          => '/dev/null/puppet.conf',
-        :architecture           => 'i386',
-        :puppet_stringify_facts => true,
-      }}
-      let(:params) { global_params }
+      # check for both boolean true and string true
+      [ true, 'true' ].each do |truthiness|
+        let(:facts) {{
+          :osfamily               => 'RedHat',
+          :operatingsystem        => 'Fedora',
+          :puppet_ssldir          => '/dev/null/ssl',
+          :puppet_config          => '/dev/null/puppet.conf',
+          :architecture           => 'i386',
+          :puppet_stringify_facts => truthiness,
+        }}
+        let(:params) { global_params }
 
-      if Puppet.version < '4.0.0'
-        it { is_expected.to raise_error(Puppet::Error, /requires stringify_facts to be disabled/) }
+        if Puppet.version < '4.0.0'
+          it { is_expected.to raise_error(Puppet::Error, /requires stringify_facts to be disabled/) }
+        end
       end
     end
   end
