@@ -5,7 +5,9 @@ sudo: false
 bundler_args: --without system_tests --full-index
 before_script: cat Gemfile.lock
 before_install: rm Gemfile.lock || true
-script: bundle exec rake validate lint spec
+script:
+  - bundle exec rake validate lint
+  - bundle exec rake parallel_spec
 matrix:
   include:
 # Disabling 1.8.7 as it no longer plays nice
