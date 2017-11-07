@@ -1,4 +1,6 @@
-#puppet_agent
+# puppet_agent
+
+[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-puppet_agent.svg?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-puppet_agent)
 
 #### Table of Contents
 
