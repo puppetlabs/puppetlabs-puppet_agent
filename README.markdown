@@ -47,6 +47,28 @@ Note: this is the last release that will support Puppet 3 and Ruby <2.1.
 
 Your agents must be running Puppet 3 with `stringify_facts` set to 'false', or Puppet 4+. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
+#### `stringify_facts` configuring
+
+For 3.X machines, configuring the `stringify_facts` config settings can be done either with a dedicated Puppet class:
+
+~~~puppet
+include ::puppet_agent::prepare::stringify_facts
+~~~
+
+Or you can configure this with the [`puppet_conf`](https://forge.puppet.com/puppetlabs/puppet_conf) task module.
+
+With [Puppet Enterprise Tasks](https://puppet.com/docs/pe/2017.3/orchestrator/puppet_tasks_overview.html):
+
+~~~bash
+puppet task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
+~~~
+
+With [bolt](https://puppet.com/docs/bolt/0.x/bolt.html) over SSH/WinRM:
+
+~~~bash
+bolt task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
+~~~
+
 Puppet 3.7 with future parser is required to compile this module, meaning it may be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
 
 ### Beginning with puppet_agent
@@ -185,7 +207,7 @@ In addition, there are several known issues with Windows:
 * MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent. If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
 * On Windows Server 2003, only x86 is supported, and the `arch` parameter is ignored. If you try to force an upgrade to x64, Puppet installs the x86 version with no error message.
 * On Windows Server 2003 with Puppet Enterprise, the default download location is unreachable. You can work around this issue by specifying an alternate download URL in the `source` parameter.
- 
+
 Specifically in the 1.2.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
 
