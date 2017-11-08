@@ -25,10 +25,6 @@ class puppet_agent::osfamily::debian(
       # For debian based platforms, in order to add SSL verification, you need to add a
       # configuration file specific to just the sources host
       $source_host = uri_host_from_string($source)
-      $_client_cert_verification = [
-        "Acquire::https::${source_host}::SslCert \"${_sslclientcert_path}\";",
-        "Acquire::https::${source_host}::SslKey \"${_sslclientkey_path}\";",
-      ]
       $_ca_cert_verification = [
         "Acquire::https::${source_host}::CaInfo \"${_sslcacert_path}\";",
       ]
@@ -47,7 +43,6 @@ class puppet_agent::osfamily::debian(
       } else {
         $_apt_settings = concat(
           $_ca_cert_verification,
-          $_client_cert_verification,
           $_proxy_host)
       }
 
