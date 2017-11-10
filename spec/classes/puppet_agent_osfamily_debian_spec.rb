@@ -137,8 +137,6 @@ describe 'puppet_agent' do
 
       apt_settings = [
         "Acquire::https::master.example.vm::CaInfo \"/etc/puppetlabs/puppet/ssl/certs/ca.pem\";",
-        "Acquire::https::master.example.vm::SslCert \"/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem\";",
-        "Acquire::https::master.example.vm::SslKey \"/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem\";",
         "Acquire::http::proxy::master.example.vm DIRECT;",
       ]
       it { is_expected.to contain_apt__setting('conf-pc_repo').with({
