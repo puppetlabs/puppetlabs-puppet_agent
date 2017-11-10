@@ -21,25 +21,31 @@ class puppet_agent::install(
   $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
 
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or $::operatingsystem == 'AIX' {
-    contain puppet_agent::install::remove_packages
-
-    exec { 'replace puppet.conf removed by package removal':
-      path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command   => "cp ${puppet_agent::params::confdir}/puppet.conf.rpmsave ${puppet_agent::params::config}",
-      creates   => $puppet_agent::params::config,
-      require   => Class['puppet_agent::install::remove_packages'],
-      before    => Package[$puppet_agent::package_name],
-      logoutput => 'on_failure',
-    }
-
     $_install_options = $::operatingsystem ? {
       'AIX'   => concat(['--ignoreos'],$install_options),
       default => $install_options
     }
 
-    # package provider does not provide 'versionable'
+    if $old_packages {
+      contain puppet_agent::install::remove_packages
+
+      exec { 'replace puppet.conf removed by package removal':
+        path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+        command   => "cp ${puppet_agent::params::confdir}/puppet.conf.rpmsave ${puppet_agent::params::config}",
+        creates   => $puppet_agent::params::config,
+        require   => Class['puppet_agent::install::remove_packages'],
+        before    => Package[$puppet_agent::package_name],
+        logoutput => 'on_failure',
+      }
+
+      # package provider does not provide 'versionable'
+      $ensure = 'present'
+    } else {
+      $ensure = $package_version
+    }
+
     package { $::puppet_agent::package_name:
-      ensure          => 'present',
+      ensure          => $ensure,
       provider        => 'rpm',
       source          => "/opt/puppetlabs/packages/${package_file_name}",
       install_options => $_install_options,

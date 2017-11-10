@@ -13,7 +13,7 @@ describe 'puppet_agent' do
   end
 
   package_version = '1.2.5'
-  package_ensure = 'present'
+  package_ensure = Puppet.version < "4.0.0" ? 'present' : package_version
   let(:params) do
     {
       :package_version => package_version
@@ -45,11 +45,11 @@ describe 'puppet_agent' do
       if Puppet.version < "4.0.0"
         it { is_expected.to contain_file('/etc/puppetlabs/puppet') }
         it { is_expected.to contain_file('/etc/puppetlabs/puppet/puppet.conf') }
-      end
 
-      it do
-        is_expected.to contain_exec('replace puppet.conf removed by package removal').with_command('cp /etc/puppetlabs/puppet/puppet.conf.rpmsave /etc/puppetlabs/puppet/puppet.conf')
-        is_expected.to contain_exec('replace puppet.conf removed by package removal').with_creates('/etc/puppetlabs/puppet/puppet.conf')
+        it do
+          is_expected.to contain_exec('replace puppet.conf removed by package removal').with_command('cp /etc/puppetlabs/puppet/puppet.conf.rpmsave /etc/puppetlabs/puppet/puppet.conf')
+          is_expected.to contain_exec('replace puppet.conf removed by package removal').with_creates('/etc/puppetlabs/puppet/puppet.conf')
+        end
       end
 
       it { is_expected.to contain_file('/opt/puppetlabs') }
@@ -96,15 +96,11 @@ describe 'puppet_agent' do
          'pe-ruby-ldap',
         ].each do |package|
           it do
-            if Puppet.version < "4.0.0"
-            else
-              is_expected.to contain_transition("remove #{package}").with(
-                :attributes => {
-                  'ensure' => 'absent',
-                  'uninstall_options' => '--nodeps',
-                  'provider' => 'rpm',
-                })
-            end
+            is_expected.to contain_package(package).with({
+              'ensure' => 'absent',
+              'uninstall_options' => '--nodeps',
+              'provider' => 'rpm',
+            })
           end
         end
       end
