@@ -25,10 +25,6 @@ class puppet_agent::osfamily::debian(
       # For debian based platforms, in order to add SSL verification, you need to add a
       # configuration file specific to just the sources host
       $source_host = uri_host_from_string($source)
-      $_client_cert_verification = [
-        "Acquire::https::${source_host}::SslCert \"${_sslclientcert_path}\";",
-        "Acquire::https::${source_host}::SslKey \"${_sslclientkey_path}\";",
-      ]
       $_ca_cert_verification = [
         "Acquire::https::${source_host}::CaInfo \"${_sslcacert_path}\";",
       ]
@@ -36,20 +32,10 @@ class puppet_agent::osfamily::debian(
         "Acquire::http::proxy::${source_host} DIRECT;",
       ]
 
-      # Xenial has some sort of change that seems to have broke client cert
-      # verification in APT. While it is nice to have client cert verification,
-      # it is not strictly necessary since really all that we want to verify is
-      # that there isn't a MITM on the route to the master.
-      if ($::operatingsystem == 'Ubuntu' and $::lsbdistcodename == 'xenial') {
-        $_apt_settings = concat(
-          $_ca_cert_verification,
-          $_proxy_host)
-      } else {
-        $_apt_settings = concat(
-          $_ca_cert_verification,
-          $_client_cert_verification,
-          $_proxy_host)
-      }
+      $_apt_settings = concat(
+        $_ca_cert_verification,
+        $_proxy_host)
+
 
       apt::setting { 'conf-pc_repo':
         content  => $_apt_settings.join(''),
