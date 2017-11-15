@@ -22,6 +22,11 @@ class puppet_agent::windows::install(
     $_https_source = "https://downloads.puppetlabs.com/windows/${package_file_name}"
   }
 
+  $_install_options = $install_options ? {
+    []      => ['REINSTALLMODE="amus"'],
+    default => $install_options
+  }
+
   $_source = $source ? {
     undef          => $_https_source,
     /^[a-zA-Z]:/ => windows_native_path($source),

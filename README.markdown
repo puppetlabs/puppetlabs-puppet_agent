@@ -179,7 +179,9 @@ The directory the puppet agent should be installed to. This is only applicable f
 
 ##### `install_options`
 
-An array of additional options to pass when installing puppet-agent. Each option in the array can either be a string or a hash. Each option will automatically be quoted when passed to the install command. With Windows packages, note that file paths in an install option must use backslashes. (Since install options are passed directly to the installation command, forward slashes won't be automatically converted like they are in `file` resources.) Note also that backslashes in double-quoted strings _must_ be escaped and backslashes in single-quoted strings _can_ be escaped.
+An array of additional options to pass when installing puppet-agent. Each option in the array can either be a string or a hash. Each option will automatically be quoted when passed to the install command. 
+
+With Windows packages, note that file paths in an install option must use backslashes. (Since install options are passed directly to the installation command, forward slashes won't be automatically converted like they are in `file` resources.) Note also that backslashes in double-quoted strings _must_ be escaped and backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="maus"`.
 
 ``` puppet
   install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp','PUPPET_AGENT_ACCOUNT_USER=bob','PUPPET_AGENT_ACCOUNT_PASSWORD=password']

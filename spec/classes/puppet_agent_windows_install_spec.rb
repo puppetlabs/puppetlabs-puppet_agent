@@ -104,6 +104,17 @@ RSpec.describe 'puppet_agent' do
           it {
             is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ OPTION1=value1 OPTION2=value2/)
           }
+          it {
+            is_expected.not_to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ REINSTALLMODE="amus"/)
+          }
+        end
+      end
+
+      context 'Default INSTALLMODE Option' do
+        describe 'REINSTALLMODE=amus' do
+          it {
+            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ REINSTALLMODE="amus"/)
+          }
         end
       end
 
