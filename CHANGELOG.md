@@ -2,6 +2,21 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.5.0] - 2017-11-16
+
+### Summary
+This is a feature and bug-fix release
+
+### Features
+- Add ability to manage the `stringify_facts` setting ([MODULES-5953](https://tickets.puppetlabs.com/browse/MODULES-5953))
+- Upgrades to Puppet 5 are now supported on RPM-based platform ([MODULES-5633](https://tickets.puppetlabs.com/browse/MODULES-5633))
+- Debian 9 is now supported
+
+### Bug fixes
+- Solaris 10 upgrades now work for Puppet Enterprise 2017.3 ([MODULES-5942](https://tickets.puppetlabs.com/browse/MODULES-5942)) and ([MODULES-3787](https://tickets.puppetlabs.com/browse/MODULES-3787))
+- AIX upgrades now work for Puppet Enterprise 2017.3 ([MODULES-5979](https://tickets.puppetlabs.com/browse/MODULES-5979))
+- Downgrading the agent on Windows no longer breaks the installation ([MODULES-5622](https://tickets.puppetlabs.com/browse/MODULES-5622))
+
 ## [1.4.1] - 2017-07-27
 
 ### Summary
