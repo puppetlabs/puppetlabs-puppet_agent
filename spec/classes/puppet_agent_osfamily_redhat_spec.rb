@@ -187,6 +187,17 @@ describe 'puppet_agent' do
         it { is_expected.not_to contain_yumrepo('pc_repo')}
       end
 
+      context 'with explicit package version' do
+        let(:params)  {
+          {
+            :manage_repo => false,
+            :package_version => package_version
+          }
+        }
+        it { is_expected.to contain_package('puppet-agent').with_ensure("1.2.5-1.el#{osmajor}") }
+
+      end
+
       it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
     end
   end
