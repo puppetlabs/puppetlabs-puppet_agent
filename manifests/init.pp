@@ -13,6 +13,10 @@
 #   The Puppet Collection to track. Defaults to 'PC1'.
 # [is_pe]
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
+# [manage_pki_dir]
+#   Whether or not to manage the /etc/pki directory.  Defaults to true.
+#   Managing the /etc/pki directory inside the puppet_agent module can be problematic for 
+#   organizations that manage gpg keys and settings in other modules.
 # [manage_repo]
 #   Boolean to determine whether to configure repositories
 #   This is intended to provide the ability to disable configuring a local repo
@@ -52,6 +56,7 @@ class puppet_agent (
   $arch                  = $::architecture,
   $collection            = 'PC1',
   $is_pe                 = $::puppet_agent::params::_is_pe,
+  $manage_pki_dir        = true,
   $manage_repo           = true,
   $package_name          = $::puppet_agent::params::package_name,
   $package_version       = $::puppet_agent::params::package_version,

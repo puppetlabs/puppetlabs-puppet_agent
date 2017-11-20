@@ -143,10 +143,19 @@ describe 'puppet_agent' do
             'logoutput' => 'on_failure',
           }) }
 
-          ['/etc/pki', '/etc/pki/rpm-gpg'].each do |path|
-            it { is_expected.to contain_file(path).with({
-              'ensure' => 'directory',
-            }) }
+          context 'with manage_pki_dir => true' do
+            ['/etc/pki', '/etc/pki/rpm-gpg'].each do |path|
+              it { is_expected.to contain_file(path).with({
+                'ensure' => 'directory',
+              }) }
+            end
+          end
+
+          context 'with manage_pki_dir => false' do
+            let(:params) {{ :manage_pki_dir => 'false' }}
+            ['/etc/pki', '/etc/pki/rpm-gpg'].each do |path|
+              it { is_expected.not_to contain_file(path) }
+            end
           end
 
           it { is_expected.to contain_class("puppet_agent::osfamily::suse") }

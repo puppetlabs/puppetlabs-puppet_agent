@@ -70,8 +70,10 @@ class puppet_agent::osfamily::debian(
     $keyname = 'GPG-KEY-puppet'
     $gpg_path = "/etc/pki/deb-gpg/${keyname}"
 
-    file { ['/etc/pki', '/etc/pki/deb-gpg']:
-      ensure => directory,
+    if getvar('::puppet_agent::manage_pki_dir') == true {
+      file { ['/etc/pki', '/etc/pki/deb-gpg']:
+        ensure => directory,
+      }
     }
 
     file { $legacy_gpg_path:

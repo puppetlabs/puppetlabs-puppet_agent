@@ -65,8 +65,10 @@ class puppet_agent::osfamily::redhat(
   $gpg_keys = "file://${legacy_gpg_path}
   file://${gpg_path}"
 
-  file { ['/etc/pki', '/etc/pki/rpm-gpg']:
-    ensure => directory,
+  if getvar('::puppet_agent::manage_pki_dir') == true {
+    file { ['/etc/pki', '/etc/pki/rpm-gpg']:
+      ensure => directory,
+    }
   }
 
   file { $legacy_gpg_path:
