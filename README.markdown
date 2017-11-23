@@ -43,33 +43,35 @@ Note: this is the last release that will support Puppet 3 and Ruby <2.1.
 * Removes deprecated settings from puppet.conf.
 * Updates puppet.conf and server.cfg for behavioral changes in puppet-agent (future parser is now the default, and MCollective has a new varlog location).
 
-### Setup Requirements
+### Setup requirements
 
 Your agents must be running Puppet 3 with `stringify_facts` set to 'false', or Puppet 4+. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
-#### `stringify_facts` configuring
+To compile this module, you must use Puppet 3.7 with future parser or newer, meaning it can be applied to masterless Puppet 3.7 or newer, or earlier Puppet 3 agents connecting to a Puppet 3.7 or newer master.
 
-For 3.X machines, configuring the `stringify_facts` config settings can be done either with a dedicated Puppet class:
+#### Configuring `stringify_facts`
 
-~~~puppet
+On systems running Puppet 3.x, you can configure the `stringify_facts` settings with either a dedicated Puppet class or the [`puppet_conf`](https://forge.puppet.com/puppetlabs/puppet_conf) task module.
+
+For example, this class can configure the settings:
+
+```puppet
 include ::puppet_agent::prepare::stringify_facts
-~~~
+```
 
-Or you can configure this with the [`puppet_conf`](https://forge.puppet.com/puppetlabs/puppet_conf) task module.
+This [Puppet Enterprise task](https://puppet.com/docs/pe/2017.3/orchestrator/puppet_tasks_overview.html) can also configure the settings:
 
-With [Puppet Enterprise Tasks](https://puppet.com/docs/pe/2017.3/orchestrator/puppet_tasks_overview.html):
-
-~~~bash
+```bash
 puppet task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
-~~~
+```
 
-With [bolt](https://puppet.com/docs/bolt/0.x/bolt.html) over SSH/WinRM:
+This [bolt task](https://puppet.com/docs/bolt/0.x/bolt.html) can also configure the settings over SSH/WinRM:
 
-~~~bash
+```bash
 bolt task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
-~~~
+```
 
-Puppet 3.7 with future parser is required to compile this module, meaning it may be applied to masterless Puppet 3.7+, or earlier Puppet 3 agents connecting to a Puppet 3.7+ master.
+> *Warning:* `stringify_facts` was [deprecated in Puppet 3.8](https://docs.puppet.com/puppet/3.8/deprecated_settings.html#stringifyfacts--true) and [removed in Puppet 5](https://puppet.com/docs/puppet/5.3/upgrade_major_pre.html#stop-stringifying-facts-and-check-for-breakage).
 
 ### Beginning with puppet_agent
 
@@ -179,9 +181,9 @@ The directory the puppet agent should be installed to. This is only applicable f
 
 ##### `install_options`
 
-An array of additional options to pass when installing puppet-agent. Each option in the array can either be a string or a hash. Each option will automatically be quoted when passed to the install command. 
+An array of additional options to pass when installing puppet-agent. Each option in the array can be either a string or a hash. Each option is automatically quoted when passed to the install command.
 
-With Windows packages, note that file paths in an install option must use backslashes. (Since install options are passed directly to the installation command, forward slashes won't be automatically converted like they are in `file` resources.) Note also that backslashes in double-quoted strings _must_ be escaped and backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="maus"`.
+With Windows packages, note that file paths in `install_options` must use backslashes. (Since install options are passed directly to the installation command, forward slashes aren't automatically converted like they are in `file` resources.) Backslashes in double-quoted strings _must_ be escaped, while backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="maus"`.
 
 ``` puppet
   install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp','PUPPET_AGENT_ACCOUNT_USER=bob','PUPPET_AGENT_ACCOUNT_PASSWORD=password']
