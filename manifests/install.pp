@@ -122,7 +122,7 @@ class puppet_agent::install(
       path        => '/bin:/usr/bin:/sbin:/usr/sbin',
       refreshonly => true,
     }
-  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12)/ {
+  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12|13)/ {
     contain puppet_agent::install::remove_packages
 
     # package provider does not provide 'versionable'
