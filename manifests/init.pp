@@ -68,7 +68,7 @@ class puppet_agent (
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
-  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$', '^ppc64le$', 'PowerPC_POWER'])
+  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$', '^ppc64le$', '^aarch64$', 'PowerPC_POWER'])
 
   if $::osfamily == 'windows' and $install_dir != undef {
     validate_absolute_path($install_dir)
