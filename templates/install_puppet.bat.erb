@@ -43,6 +43,9 @@ REM Same for the Marionette Collective Service and Puppet Agent service
 net stop mcollective
 net stop puppet
 
+REM Log the current user token privileges for debugging
+whoami /all
+
 <% if @msi_move_locked_files %>
 REM Move puppetres.dll to avoid file locks and service restarts (MODULES-4207)
 
