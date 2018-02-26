@@ -16,6 +16,15 @@ describe 'puppet_agent' do
         {
           :is_pe => true,
         }
+      elsif os =~ /windows/
+        {
+          :puppet_agent_appdata => 'C:\\ProgramData',
+          :puppet_confdir    => 'C:\\ProgramData\\Puppetlabs\\puppet\\etc',
+          :mco_confdir       => 'C:\\ProgramData\\Puppetlabs\\mcollective\\etc',
+          :env_temp_variable => 'C:/tmp',
+          :puppet_agent_pid  => 42,
+          :puppet_config     => Puppet.version < "4.0.0" ? "file:///C:\\\\puppet.conf" : "C:\\puppet.conf",
+        }
       else
         {}
       end).merge({:servername   => 'master.example.vm'})
@@ -72,7 +81,14 @@ describe 'puppet_agent' do
   end
 
   context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
+    # Due to https://github.com/mcanevet/rspec-puppet-facts/issues/68
+    # Need to ensure that Windows tests are set last, otherwise puppet tries
+    # to load windows providers on non-windows platforms in error.
+    os_list = on_supported_os.select { |os, _x| !(os =~ /windows/) }
+    windows_list = on_supported_os.select{ |os, _x| os =~ /windows/ }
+    os_list.merge!(windows_list)
+
+    os_list.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
           global_facts(facts, os)
@@ -118,9 +134,9 @@ describe 'puppet_agent' do
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to contain_class('puppet_agent::install').with_install_options(['OPTION1=value1','OPTION2=value2']) }
 
-            # Note this should fail on Windows, but it doesn't get tested due to https://github.com/mcanevet/rspec-puppet-facts/issues/42
-            # Windows is not seen as a supported OS when `on_supported_os` is used :-(
-            it { is_expected.to contain_package('puppet-agent').with_install_options(['OPTION1=value1','OPTION2=value2']) }
+            unless facts[:osfamily] == 'windows'
+              it { is_expected.to contain_package('puppet-agent').with_install_options(['OPTION1=value1','OPTION2=value2']) }
+            end
           end
         end
 
@@ -150,22 +166,29 @@ describe 'puppet_agent' do
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
             elsif facts[:osfamily] == 'Solaris' && (facts[:operatingsystemmajrelease] == '10' || Puppet.version < '4.0.0')
               it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
+            elsif facts[:osfamily] == 'windows'
+              # Windows does not contain any Package resources
             else
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }
             end
 
-            if Puppet.version < "4.0.0" || (os !~ /sles/ && os !~ /solaris/)
-              it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::install]') }
+            unless os =~ /windows/
+              if Puppet.version < "4.0.0" || (os !~ /sles/ && os !~ /solaris/)
+                it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::install]') }
+              end
             end
 
-            if params[:service_names].nil? &&
-              !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
-              (Puppet.version < "4.0.0" || os !~ /sles/)
-              it { is_expected.to contain_service('puppet') }
-              it { is_expected.to contain_service('mcollective') }
-            else
-              it { is_expected.to_not contain_service('puppet') }
-              it { is_expected.to_not contain_service('mcollective') }
+            # Windows platform does not use Service resources
+            unless facts[:osfamily] == 'windows'
+              if params[:service_names].nil? &&
+                !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
+                (Puppet.version < "4.0.0" || os !~ /sles/)
+                it { is_expected.to contain_service('puppet') }
+                it { is_expected.to contain_service('mcollective') }
+              else
+                it { is_expected.to_not contain_service('puppet') }
+                it { is_expected.to_not contain_service('mcollective') }
+              end
             end
           end
         end
