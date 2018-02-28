@@ -79,7 +79,7 @@ class puppet_agent (
   } elsif $package_version == undef and $is_pe {
     info("puppet_agent performs no actions if the master's agent version cannot be determed on PE 3.x")
   } else {
-    if $package_version != undef and $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+    if $package_version != undef and $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$|^present$|^latest$/ {
       fail("invalid version ${package_version} requested")
     }
 
@@ -101,7 +101,7 @@ class puppet_agent (
     # Allow for normalizing package_version for the package provider via _package_version.
     # This only needs to be passed through to install, as elsewhere we want to
     # use the full version string for comparisons.
-    if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+    if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $package_version !~ /^present$|^latest$/ {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
       # Need to pass the regex as strings for Puppet 3 compatibility.
       $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
