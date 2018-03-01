@@ -3,7 +3,7 @@ class puppet_agent::osfamily::darwin(
 ) {
   assert_private()
 
-  if $::macosx_productversion_major !~ '10\.[9,10,11]' {
+  if $::macosx_productversion_major !~ /^10\.(9|10|11|12|13)/ {
     fail("${::macosx_productname} ${::maxosx_productversion_major} not supported")
   }
 
