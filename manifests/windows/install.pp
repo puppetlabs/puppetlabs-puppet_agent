@@ -19,7 +19,12 @@ class puppet_agent::windows::install(
     $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/${package_file_name}"
   }
   else {
-    $_https_source = "https://downloads.puppetlabs.com/windows/${package_file_name}"
+    if $::puppet_agent::collection == 'puppet5' {
+      $_https_source = "https://downloads.puppetlabs.com/windows/puppet5/${package_file_name}"
+    }
+    else {
+      $_https_source = "https://downloads.puppetlabs.com/windows/${package_file_name}"
+    }
   }
 
   $_install_options = $install_options ? {
