@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 RSpec.describe 'puppet_agent' do
-  package_version = '1.2.1.1'
+  package_version = '1.2.3.4'
+  pe_version = '2000.0.0'
   global_params = {
     :package_version => package_version
   }
@@ -18,6 +19,7 @@ RSpec.describe 'puppet_agent' do
         :puppet_confdir => "#{values[:appdata]}\\Puppetlabs\\puppet\\etc",
         :mco_confdir => "#{values[:appdata]}\\Puppetlabs\\mcollective\\etc",
         :puppet_agent_pid => 42,
+        :servername => 'master.example.vm',
         :system32 => 'C:\windows\sysnative',
         :puppet_agent_appdata => values[:appdata],
       }
@@ -34,7 +36,7 @@ RSpec.describe 'puppet_agent' do
           # Need to mock the PE functions
 
           Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-            '4.0.0'
+            pe_version
           end
 
           Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
@@ -49,10 +51,11 @@ RSpec.describe 'puppet_agent' do
             let(:facts) { facts.merge({:is_pe => true}) }
 
             it { is_expected.to contain_class('puppet_agent::windows::install') }
-            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
-            }
-            it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+            it { is_expected.to contain_file('download_puppet-agent.msi').with(
+                'source' => "https://master.example.vm:8140/packages/#{pe_version}/windows-x86_64/puppet-agent-#{package_version}-#{values[:expect_arch]}.msi"
+            ) }
+            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent.msi/) }
+            it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
           end
         end
 
@@ -64,7 +67,7 @@ RSpec.describe 'puppet_agent' do
             })}
 
             it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
-            it { is_expected.not_to contain_exec('fix inheritable SYSTEM perms') }
+            it { is_expected.not_to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
           end
 
           context 'with equal package_version containing git sha' do
@@ -88,10 +91,32 @@ RSpec.describe 'puppet_agent' do
             })}
 
             it { is_expected.to contain_class('puppet_agent::windows::install') }
-            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
+            it { is_expected.to contain_file('download_puppet-agent.msi').with(
+              'source' => "puppet:///pe_packages/#{pe_version}/windows-x86_64-#{package_version}/puppet-agent-#{values[:expect_arch]}.msi"
+            ) }
+            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-#{package_version}-#{values[:expect_arch]}/) }
+            it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
+          end
+
+          context 'with source' do
+            let(:facts) { facts.merge({
+              :is_pe => true,
+              :aio_agent_version => '1.2.0'
+            })}
+            let(:params) { global_params.merge(
+              {:source => 'https://alternate.example.vm/subdirectory/puppet-agent.msi',})
             }
-            it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+
+            it { is_expected.to contain_class('puppet_agent::windows::install') }
+            if Puppet::Util::Package.versioncmp(Puppet.version, '4.4.0') == -1
+              it { is_expected.to contain_exec('download_puppet-agent.msi') }
+            else
+              it { is_expected.to contain_file('download_puppet-agent.msi').with(
+                'source' => 'https://alternate.example.vm/subdirectory/puppet-agent.msi'
+              ) }
+            end
+            it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent.msi/) }
+            it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
           end
         end
       end
@@ -119,88 +144,83 @@ RSpec.describe 'puppet_agent' do
       end
 
       context 'source =>' do
-        describe 'https://alterernate.com/puppet-agent.msi' do
+        describe 'https://alternate.example.vm/subdirectory/puppet-agent.msi' do
           let(:params) { global_params.merge(
-            {:source => 'https://alternate.com/puppet-agent.msi',})
+            {:source => 'https://alternate.example.vm/subdirectory/puppet-agent.msi',})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/alternate.com\/puppet-agent.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          if Puppet::Util::Package.versioncmp(Puppet.version, '4.4.0') == -1
+            it { is_expected.to contain_exec('download_puppet-agent.msi') }
+          else
+            it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => 'https://alternate.example.vm/subdirectory/puppet-agent.msi') }
+          end
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
         end
         describe 'C:/tmp/puppet-agent-x64.msi' do
           let(:params) { global_params.merge(
             {:source => 'C:/tmp/puppet-agent-x64.msi',})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+          it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => "C:\\tmp\\puppet-agent-x64.msi",) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-x64.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
+        end
+        describe 'C:/tmp/subdirectory/puppet-agent-x64.msi' do
+          let(:params) { global_params.merge(
+            {:source => 'C:/tmp/subdirectory/puppet-agent-x64.msi',})
           }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => "C:\\tmp\\subdirectory\\puppet-agent-x64.msi") }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-x64.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
         end
         describe 'C:\Temp/ Folder\puppet-agent-x64.msi' do
           let(:params) { global_params.merge(
             {:source => 'C:\Temp/ Folder\puppet-agent-x64.msi',})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => "C:\\Temp Folder\\puppet-agent-x64.msi") }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-x64.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
         end
         describe 'C:/Temp/ Folder/puppet-agent-x64.msi' do
           let(:params) { global_params.merge(
             {:source => 'C:/Temp/ Folder/puppet-agent-x64.msi',})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => "C:\\Temp Folder\\puppet-agent-x64.msi") }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-x64.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
         end
         describe '\\\\garded\c$\puppet-agent-x64.msi' do
           let(:params) { global_params.merge(
             {:source => "\\\\garded\\c$\\puppet-agent-x64.msi",})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "\\\\garded\\c\$\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => "\\\\garded\\c$\\puppet-agent-x64.msi") }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-x64.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
         end
         describe 'default source' do
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-#{values[:expect_arch]}\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer\.log"/)
-          }
-          it {
-            should contain_exec('install_puppet.bat').with { {
-                     'command' => 'C:\windows\sysnative\cmd.exe /c start /b "C:\tmp\install_puppet.bat" 42',
-                   } }
-          }
-          it {
-            is_expected.to_not contain_file('C:\tmp\puppet-agent.msi')
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          if Puppet::Util::Package.versioncmp(Puppet.version, '4.4.0') == -1
+            it { is_expected.to contain_exec('download_puppet-agent.msi') }
+          else
+            it { is_expected.to contain_file('download_puppet-agent.msi').with(
+              'source' => "https://downloads.puppetlabs.com/windows/puppet-agent-#{package_version}-#{values[:expect_arch]}\.msi",
+            ) }
+          end
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-#{package_version}-#{values[:expect_arch]}.msi/) }
+          it { is_expected.to_not contain_file('C:\tmp\puppet-agent.msi') }
         end
-        describe 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi' do
+        describe 'puppet:///puppet_agent/subdirectory/puppet-agent-1.1.0-x86.msi' do
           let(:params) { global_params.merge(
-            {:source => 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi'})
+            {:source => 'puppet:///puppet_agent/subdirectory/puppet-agent-1.1.0-x86.msi'})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\puppet-agent.msi').with_before('File[C:\tmp\install_puppet.bat]')
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent.msi"/
-                           )
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+          it { is_expected.to contain_file('download_puppet-agent.msi').with('source' => 'puppet:///puppet_agent/subdirectory/puppet-agent-1.1.0-x86.msi') }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-1.1.0-x86.msi/) }
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/) }
+          it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
         end
       end
       context 'arch =>' do
@@ -208,11 +228,15 @@ RSpec.describe 'puppet_agent' do
           let(:params) { global_params.merge(
             {:arch => 'x86'})
           }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-x86.msi"/
-                           )
-          }
+          if Puppet::Util::Package.versioncmp(Puppet.version, '4.4.0') == -1
+            it { is_expected.to contain_exec('download_puppet-agent.msi') }
+          else
+            it { is_expected.to contain_file('download_puppet-agent.msi').with { {
+                 'source' => "https://downloads.puppetlabs.com/windows/puppet-agent-#{package_version}-x86.msi",
+               } }
+            }
+          end
+          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/puppet-agent-#{package_version}-x86.msi/) }
         end
 
         describe 'try x64 on x86 system' do
@@ -267,6 +291,7 @@ RSpec.describe 'puppet_agent' do
         :puppet_confdir => "#{values[:appdata]}/PuppetLabs/puppet/etc",
         :mco_confdir => "#{values[:appdata]}/PuppetLabs/mcollective/etc",
         :puppet_agent_pid => 42,
+        :servername => 'master.example.vm',
         :system32 => 'C:\windows\sysnative',
         :tmpdir => 'C:\tmp',
       }
@@ -279,7 +304,7 @@ RSpec.describe 'puppet_agent' do
                          } }
 
         }
-        it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+        it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
       end
       describe 'x86' do
         let(:facts) { facts.merge({:rubyplatform => 'x86_64'}) }
@@ -290,7 +315,7 @@ RSpec.describe 'puppet_agent' do
                          } }
 
         }
-        it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
+        it { is_expected.to contain_exec('Reset inheritable SYSTEM permissions after MSIEXEC') }
       end
     end
   end
