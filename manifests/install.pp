@@ -7,7 +7,7 @@
 # [package_file_name]
 #   The puppet-agent package file name.
 #   (see puppet_agent::prepare::package_file_name)
-# [version]
+# [package_version]
 #   The puppet-agent version to install.
 #
 class puppet_agent::install(
@@ -136,21 +136,19 @@ class puppet_agent::install(
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
     if $old_packages or $puppet_agent::aio_upgrade_required {
-      if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
-        $local_package_file_path = windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}")
+      if versioncmp("${::clientversion}", '4.4.0') == -1 and $::puppet_agent::prepare::package::_source =~ /^https?:/ {
         class { 'puppet_agent::windows::install':
-          package_file_name => $package_file_name,
-          source            => $local_package_file_path,
+          package_file_name => $::puppet_agent::prepare::package::_staged,
           install_dir       => $install_dir,
-          require           => File[$local_package_file_path],
           install_options   => $install_options,
+          require           => Exec['download_puppet-agent.msi'],
         }
       } else {
         class { 'puppet_agent::windows::install':
-          package_file_name => $package_file_name,
-          source            => $::puppet_agent::source,
+          package_file_name => $::puppet_agent::prepare::package::_staged,
           install_dir       => $install_dir,
           install_options   => $install_options,
+          require           => File['download_puppet-agent.msi'],
         }
       }
     }
