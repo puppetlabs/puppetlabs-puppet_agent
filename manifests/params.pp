@@ -15,12 +15,20 @@ class puppet_agent::params {
   # function is available
   $_is_pe = (getvar('::is_pe') or is_function_available('pe_compiling_server_version'))
 
-  # In Puppet Enterprise, agent packages are provided by the master
-  # with a default prefix of `/packages`.
-  if $::osfamily != 'windows' {
-    $_source = $_is_pe ? {
-      true    => "https://${::servername}:8140/packages",
-      default => undef,
+  # In Puppet Enterprise, agent packages are sourced from the master via 'https://'
+  # or via 'puppet://pe_packages' depending upon the agent operating system.
+
+  $pe_repo_puppet = 'puppet:///pe_packages'
+  $packages_https = 'https://downloads.puppetlabs.com'
+
+  if $_is_pe {
+    case $::osfamily {
+      'windows': {
+        $_source = undef
+      }
+      default: {
+        $_source = "https://${::servername}:8140/packages"
+      }
     }
   } else {
     $_source = undef
