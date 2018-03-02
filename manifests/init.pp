@@ -141,7 +141,7 @@ class puppet_agent (
       }
 
       if $is_pe {
-        $_package_file_name = "${package_name}-${_arch}.msi"
+        $_package_file_name = "${package_name}-${package_version}-${_arch}.msi"
       } elsif $package_version != undef {
         $_package_file_name = "${package_name}-${package_version}-${_arch}.msi"
       } else {
@@ -154,6 +154,7 @@ class puppet_agent (
     class { '::puppet_agent::prepare':
       package_file_name => $_package_file_name,
       package_version   => $package_version,
+      source            => $source,
     }
     -> class { '::puppet_agent::install':
       package_file_name => $_package_file_name,
