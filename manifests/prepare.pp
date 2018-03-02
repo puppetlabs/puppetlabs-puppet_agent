@@ -8,12 +8,15 @@
 #   The file name, with platform and version, of the puppet-agent package to be
 #   downloaded and installed.  Older systems and package managers may require
 #   us to manually download the puppet-agent package.
-# [version]
+# [package_version]
 #   The puppet-agent version to install.
+# [source]
+#   The location to find packages.
 #
 class puppet_agent::prepare(
   $package_file_name = undef,
-  $package_version = undef,
+  $package_version   = undef,
+  $source            = undef,
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'
@@ -87,9 +90,16 @@ class puppet_agent::prepare(
   # the osfamily of the client being configured.
 
   case $::osfamily {
-    'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
+    'redhat', 'debian', 'solaris', 'aix', 'suse', 'darwin': {
       class { $_osfamily_class:
         package_file_name => $package_file_name,
+      }
+    }
+    'windows': {
+      class { $_osfamily_class:
+        package_file_name => $package_file_name,
+        package_version   => $package_version,
+        source            => $source,
       }
       contain $_osfamily_class
     }
