@@ -5,12 +5,6 @@ describe 'puppet_agent' do
     :lsbdistid => 'Debian',
     :osfamily => 'Debian',
     :lsbdistcodename => 'wheezy',
-    :os => {
-      'name' => 'Debian',
-      'release' => {
-        'full' => '6.0',
-      },
-    },
     :operatingsystem => 'Debian',
     :architecture => 'x64',
       :servername   => 'master.example.vm',
@@ -93,12 +87,6 @@ describe 'puppet_agent' do
           :platform_tag => 'ubuntu-1604-x86_64',
           :operatingsystem => 'Ubuntu',
           :lsbdistcodename => 'xenial',
-          :os => {
-            'name' => 'Ubuntu',
-            'release' => {
-              'full' => '16.04',
-            },
-          },
         })
       }
 
