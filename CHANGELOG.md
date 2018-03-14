@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.0] - 2018-03-21
+
+### Summary
+This is the last release that will support Puppet 3.x
+
+### Features
+- Make management of /etc/pki directory optional ([MODULES-6068](https://tickets.puppetlabs.com/browse/MODULES-6068))
+- OSX 10.13 is now supported
+- RHEL 7 AArch64 is now supported
+
+### Bug fixes
+- Fix version tag on Amazon Linux ([MODULES-5637](https://tickets.puppetlabs.com/browse/MODULES-5637))
+- Stop all services prior to upgrading on Windows ([PE-23563](https://tickets.puppetlabs.com/browse/PE-23563))
+- Output token privileges for current user on Windows
+- Update testing matrix
+- Pin resources for Puppet 3.x compatibility ([MODULES-6708](https://tickets.puppetlabs.com/browse/MODULES-6708), [MODULES-6717](https://tickets.puppetlabs.com/browse/MODULES-6717))
+- Pin rspec-puppet to 2.6 due to bug in rspec-puppet ([MODULES-6717](https://tickets.puppetlabs.com/browse/MODULES-6717))
+
 ## [1.5.0] - 2017-11-29
 
 ### Summary
@@ -88,7 +106,7 @@ Carried-over from prior releases:
 ## [1.3.0] - 2016-10-19
 
 ### Summary
-The addition of several OS support features and a considerable amount of compatibility and bug fixes. 
+The addition of several OS support features and a considerable amount of compatibility and bug fixes.
 
 ### Known issues
 Carried-over from prior releases:
@@ -163,7 +181,7 @@ in some environments.
 ## [1.1.0] - 2016-03-01
 
 ### Summary
-The addition of several OS support features and a considerable amount of compatibility and bug fixes. 
+The addition of several OS support features and a considerable amount of compatibility and bug fixes.
 
 ### Known issues
 While this release adds considerable features and bug fixes the following areas are known issues and require more work:
