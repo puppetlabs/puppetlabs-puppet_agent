@@ -21,7 +21,7 @@
 
 ## Overview
 
-A module for upgrading Puppet agents. Supports upgrading from Puppet 3 packages and puppet-agent packages, to puppet-agent packages (i.e. Puppet 4).
+A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions.
 
 ## Module Description
 
@@ -30,8 +30,6 @@ The puppet_agent module installs the Puppet Collection 1 repo (as a default, and
 If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent (Puppet 4) package.
 
 This module expects Puppet to be installed from packages.
-
-Note: this is the last release that will support Puppet 3 and Ruby <2.1.
 
 ## Setup
 
