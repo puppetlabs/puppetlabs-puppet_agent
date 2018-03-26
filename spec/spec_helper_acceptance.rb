@@ -1,5 +1,6 @@
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
+require 'beaker/ca_cert_helper'
 require 'erb'
 
 def stop_firewall_on(host)
@@ -27,11 +28,12 @@ def activemq_host
 end
 
 def install_modules_on(host)
+  install_ca_certs_on(host)
   puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
-  on host, puppet('module', 'install', 'puppetlabs-stdlib'), {:acceptable_exit_codes => [0, 1]}
-  on host, puppet('module', 'install', 'puppetlabs-inifile'), {:acceptable_exit_codes => [0, 1]}
-  on host, puppet('module', 'install', 'puppetlabs-apt'), {:acceptable_exit_codes => [0, 1]}
-  on host, puppet('module', 'install', 'puppetlabs-transition'), {:acceptable_exit_codes => [0, 1]}
+  on host, puppet('module', 'install', 'puppetlabs-stdlib', '--version', '4.16.0'), {:acceptable_exit_codes => [0]}
+  on host, puppet('module', 'install', 'puppetlabs-inifile', '--version', '2.1.0'), {:acceptable_exit_codes => [0]}
+  on host, puppet('module', 'install', 'puppetlabs-apt', '--version', '4.4.0'), {:acceptable_exit_codes => [0]}
+  on host, puppet('module', 'install', 'puppetlabs-transition', '--version', '0.1.1'), {:acceptable_exit_codes => [0]}
 end
 
 unless ENV['BEAKER_provision'] == 'no'
@@ -208,7 +210,7 @@ def teardown_puppet_on(host)
   # the machine after each run.
   case host['platform']
     when /debian|ubuntu/
-      on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt', {:acceptable_exit_codes => [0, 1]}
+      on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt --version 4.4.0', {:acceptable_exit_codes => [0, 1]}
       clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     when /fedora|el|centos/
       clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"

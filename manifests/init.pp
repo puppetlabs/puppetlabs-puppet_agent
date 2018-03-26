@@ -15,7 +15,7 @@
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 # [manage_pki_dir]
 #   Whether or not to manage the /etc/pki directory.  Defaults to true.
-#   Managing the /etc/pki directory inside the puppet_agent module can be problematic for 
+#   Managing the /etc/pki directory inside the puppet_agent module can be problematic for
 #   organizations that manage gpg keys and settings in other modules.
 # [manage_repo]
 #   Boolean to determine whether to configure repositories
@@ -53,22 +53,20 @@
 #   will move files prior to installation that are known to cause file locks.
 #
 class puppet_agent (
-  $arch                  = $::architecture,
-  $collection            = 'PC1',
-  $is_pe                 = $::puppet_agent::params::_is_pe,
-  $manage_pki_dir        = true,
-  $manage_repo           = true,
-  $package_name          = $::puppet_agent::params::package_name,
-  $package_version       = $::puppet_agent::params::package_version,
-  $service_names         = $::puppet_agent::params::service_names,
-  $source                = $::puppet_agent::params::_source,
-  $install_dir           = $::puppet_agent::params::install_dir,
-  $disable_proxy         = false,
-  $install_options       = $::puppet_agent::params::install_options,
-  $msi_move_locked_files = false,
+  Puppet_agent::Arch $arch = $::architecture,
+  $collection              = 'PC1',
+  $is_pe                   = $::puppet_agent::params::_is_pe,
+  $manage_pki_dir          = true,
+  $manage_repo             = true,
+  $package_name            = $::puppet_agent::params::package_name,
+  $package_version         = $::puppet_agent::params::package_version,
+  $service_names           = $::puppet_agent::params::service_names,
+  $source                  = $::puppet_agent::params::_source,
+  $install_dir             = $::puppet_agent::params::install_dir,
+  $disable_proxy           = false,
+  $install_options         = $::puppet_agent::params::install_options,
+  $msi_move_locked_files   = false,
 ) inherits ::puppet_agent::params {
-
-  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$', '^ppc64le$', '^aarch64$', 'PowerPC_POWER'])
 
   if $::osfamily == 'windows' and $install_dir != undef {
     validate_absolute_path($install_dir)

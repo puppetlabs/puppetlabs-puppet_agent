@@ -9,6 +9,7 @@ describe 'puppet_agent' do
       'name' => 'Debian',
       'release' => {
         'full' => '6.0',
+        'major' => '6',
       },
     },
     :operatingsystem => 'Debian',
