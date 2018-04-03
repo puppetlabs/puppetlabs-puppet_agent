@@ -76,6 +76,14 @@ describe 'puppet_agent' do
             it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
           end
         end
+
+        context 'On a PE infrastructure node puppet_agent does nothing' do
+          before(:each) do
+            facts['pe_server_version'] = '2016.2.2'
+          end
+          it { is_expected.to_not contain_class('puppet_agent::prepare') }
+          it { is_expected.to_not contain_class('puppet_agent::install') }
+        end
       end
     end
   end
