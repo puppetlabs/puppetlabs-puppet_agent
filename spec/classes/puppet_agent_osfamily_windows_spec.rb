@@ -33,6 +33,9 @@ describe 'puppet_agent' do
         :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
         :mco_confdir          => "#{appdata}\\Puppetlabs\\mcollective\\etc",
         :puppet_agent_appdata => appdata,
+        :env_temp_variable => 'C:/tmp',
+        :puppet_agent_pid     => 42,
+        :aio_agent_version    => '1.0.0',
       }}
 
       it { is_expected.to contain_file("#{appdata}\\Puppetlabs") }
