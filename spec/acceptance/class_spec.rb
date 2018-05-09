@@ -2,13 +2,13 @@ require 'spec_helper_acceptance'
 
 describe 'puppet_agent class' do
 
-  context 'default parameters' do
+  context 'default parameters in apply' do
     before(:all) { setup_puppet_on default }
     after (:all) { teardown_puppet_on default }
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'puppet_agent': }
+      class { 'puppet_agent': package_version => '1.10.0' }
       EOS
 
       # Run it twice and test for idempotency
@@ -44,7 +44,6 @@ describe 'puppet_agent class' do
     describe file(puppet_conf(default)) do
       it { is_expected.to exist }
       its(:content) {
-        is_expected.to match /cfacter[ ]*=[ ]*true/
         is_expected.to_not match /stringify_facts[ ]*=[ ]*false/
         is_expected.to_not match /parser[ ]*=[ ]*future/
       }
@@ -128,7 +127,8 @@ describe 'puppet_agent class' do
   context 'agent run' do
     before(:all) {
       setup_puppet_on default, :agent => true
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": service_names => [\"mcollective\"] }' }"
+      manifest = 'class { "puppet_agent": package_version => "1.10.0", service_names => ["mcollective"] }'
+      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
     after (:all) {
@@ -167,7 +167,8 @@ describe 'puppet_agent class' do
     context 'with mcollective configured' do
       before(:all) {
         setup_puppet_on default, :mcollective => true, :agent => true
-        pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => 'class { \"puppet_agent\": service_names => [\"mcollective\"] }' }"
+        manifest = 'class { "puppet_agent": package_version => "1.10.0", service_names => ["mcollective"] }'
+        pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
       after (:all) {
@@ -209,25 +210,6 @@ describe 'puppet_agent class' do
           hostname = default.hostname.split('.', 2).first
           assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
         end
-      end
-
-      describe file("#{mcollective_new_paths(default)[:etc]}/server.cfg") do
-        it { is_expected.to exist }
-        its(:content) {
-          is_expected.to include "libdir = #{mcollective_new_paths(default)[:server_plugins]}"
-          is_expected.to include "libdir = #{mcollective_new_paths(default)[:libexec]}/plugins"
-          is_expected.to include "logfile = #{mcollective_new_paths(default)[:logs]}/mcollective.log"
-          is_expected.to include "plugin.yaml = #{mcollective_new_paths(default)[:facts]}"
-        }
-      end
-
-      describe file("#{mcollective_new_paths(default)[:etc]}/client.cfg") do
-        it { is_expected.to exist }
-        its(:content) {
-          is_expected.to include "libdir = #{mcollective_new_paths(default)[:server_plugins]}:#{mcollective_new_paths(default)[:client_plugins]}:#{mcollective_new_paths(default)[:libexec]}"
-          is_expected.to include "logfile = #{mcollective_new_paths(default)[:logs]}/mcollective.log"
-          is_expected.to_not match /plugin.yaml[ ]*=/
-        }
       end
     end
   end
