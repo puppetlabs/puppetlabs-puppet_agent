@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
+  package_version = '1.2.5.90.g93a35da'
+
   facts = {
     :osfamily                  => 'Solaris',
     :operatingsystem           => 'Solaris',
@@ -10,9 +12,8 @@ describe 'puppet_agent' do
     :clientcert                => 'foo.example.vm',
     :env_temp_variable         => '/tmp',
     :puppet_agent_pid          => 42,
+    :aio_agent_version         => package_version,
   }
-
-  package_version = '1.2.5.90.g93a35da'
   # Strips out strings in the version string on Solaris 11,
   # because pkg doesn't accept strings in version numbers. This
   # is how developer builds are labelled.
