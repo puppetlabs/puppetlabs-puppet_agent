@@ -21,13 +21,11 @@
 
 ## Overview
 
-A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions.
+A module for upgrading Puppet agents. Supports upgrading from Puppet 4+ puppet-agent packages to later versions.
 
 ## Module Description
 
-The puppet_agent module installs the Puppet Collection 1 repo (as a default, and on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation. When starting from Puppet 3, it will upgrade to the latest Puppet open-source release, or to the latest puppet-agent package supported by your PE installation.
-
-If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent (Puppet 4) package.
+The puppet_agent module installs the Puppet Collection 1 repo (as a default, and on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
 
 This module expects Puppet to be installed from packages.
 
@@ -43,33 +41,7 @@ This module expects Puppet to be installed from packages.
 
 ### Setup requirements
 
-Your agents must be running Puppet 3 with `stringify_facts` set to 'false', or Puppet 4+. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
-
-To compile this module, you must use Puppet 3.7 with future parser or newer, meaning it can be applied to masterless Puppet 3.7 or newer, or earlier Puppet 3 agents connecting to a Puppet 3.7 or newer master.
-
-#### Configuring `stringify_facts`
-
-On systems running Puppet 3.x, you can configure the `stringify_facts` settings with either a dedicated Puppet class or the [`puppet_conf`](https://forge.puppet.com/puppetlabs/puppet_conf) task module.
-
-For example, this class can configure the settings:
-
-```puppet
-include ::puppet_agent::prepare::stringify_facts
-```
-
-This [Puppet Enterprise task](https://puppet.com/docs/pe/2017.3/orchestrator/puppet_tasks_overview.html) can also configure the settings:
-
-```bash
-puppet task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
-```
-
-This [bolt task](https://puppet.com/docs/bolt/0.x/bolt.html) can also configure the settings over SSH/WinRM:
-
-```bash
-bolt task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
-```
-
-> *Warning:* `stringify_facts` was [deprecated in Puppet 3.8](https://docs.puppet.com/puppet/3.8/deprecated_settings.html#stringifyfacts--true) and [removed in Puppet 5](https://puppet.com/docs/puppet/5.3/upgrade_major_pre.html#stop-stringifying-facts-and-check-for-breakage).
+Your agents must be running Puppet 4+. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
 ### Beginning with puppet_agent
 
@@ -77,39 +49,15 @@ Install the puppet_agent module with `puppet module install puppetlabs-puppet_ag
 
 ## Usage
 
-### Puppet 3 Upgrades
-
-Add the class to agents you want to upgrade:
-
-~~~puppet
-include ::puppet_agent
-~~~
-
-This installs the latest released version of Puppet from Puppet Collection 1.
-
-To upgrade with this module, first stand up a Puppet Server 2.1 master---which supports backward compatibility with Puppet 3 agents---and point the agent you want to upgrade at that master. Once you've confirmed the agent runs successfully against the new master, and thus the Puppet 4 language, apply the class to the agent and confirm that it checks back in after a successful upgrade. Further details on upgrading are available [here](http://docs.puppetlabs.com/puppet/4.2/reference/upgrade_major_pre.html).
-
-As part of preparing the agent for Puppet 4, the module performs several significant steps:
-* Copies SSL files (based on their location settings: ssldir, certdir, privatedir, privatekeydir, publickeydir, requestdir) to new Puppet 4 defaults, and restore those settings to default in puppet.conf.
-* Resets non-deprecated settings to defaults: disable_warnings, vardir, rundir, libdir, confdir, ssldir, and classfile.
-* Resets logfile in MCollective's server.cfg and client.cfg.
-* Adds new libdir and plugin.yaml locations to MCollective's server.cfg and client.cfg.
-
-> **Note:** The upgrade does not change several config options. Anything else that's been explicitly configured will not be changed to reflect new default locations in Puppet 4. Some of these options are:
-* Puppet's logdir
-* MCollective's logfile
-
-### Puppet 4 Upgrades
-
 Add the class to agents you want to upgrade, specifying the desired puppet-agent version:
 
 ~~~puppet
 class {'::puppet_agent':
-  package_version => '1.4.0',
+  package_version => '1.7.0',
 }
 ~~~
 
-This will ensure the version `1.4.0` of the puppet-agent package is installed. For version `1.4.0` and later, it will also remove the deprecated `pluginsync` setting from `puppet.conf`, unless explicitly managed elsewhere.
+This will ensure the version `1.7.0` of the puppet-agent package is installed.
 
 ## Reference
 
@@ -155,9 +103,7 @@ The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only
 
 ##### `package_version`
 
-The package version to upgrade to. When upgrading from Puppet < 4.0, defaults to the puppet master's latest supported version
-if compiled with A PE master or undef otherwise (meaning get the latest Open Source release). Explicitly specify a version to
-upgrade from puppet-agent packages (implying Puppet >= 4.0).
+The package version to upgrade to.
 
 ##### `service_names`
 
@@ -201,7 +147,7 @@ Mac OS X Open Source packages are currently not supported.
 
 ### Known issues
 
-* In masterless environments, modules installed manually on individual agents cannot be found after upgrading to Puppet 4.x. You should reinstall these modules on the agents with `puppet module install`.
+* In masterless environments, modules installed manually on individual agents cannot be found after upgrading to Puppet 4+. You should reinstall these modules on the agents with `puppet module install`.
 
 In addition, there are several known issues with Windows:
 
