@@ -89,7 +89,9 @@ The Puppet Collection to track. Defaults to `PC1`.
 
 ##### `is_pe`
 
-Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
+Install from repositories hosted on your Puppet Enterprise master. Defaults to true when using a PE master.
+
+When installing from repositories hosted on your PE master, verify that you have have added `pe_repo::platform` classes for each of your agent platforms to the PE Master group. For more information, review [Upgrading agents](https://puppet.com/docs/pe/latest/upgrading/upgrading_agents.html#upgrade-nix-or-windows-agents-using-the-puppet-agent-module)
 
 ##### `manage_repo`
 
@@ -111,14 +113,18 @@ An array of services to start, normally `puppet` and `mcollective`. If the array
 
 ##### `source`
 
-Alternate source from which you wish to download the latest version of Puppet. On the Windows operating system this is the absolute path to the MSI file to install, for example:
+Alternate source from which to download packages. For Windows agents, this may be a `http`, `https`, or `puppet` url, or an absolute path. 
+For example:
 ``` puppet
   source => 'C:/packages/puppet-agent-1.7.0-x64.msi'
 ```
 
+Note: https sources do not support self-signed certificates.
+
 ##### `install_dir`
 
-The directory the puppet agent should be installed to. This is only applicable for Windows operating systems and when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location. This must use backslashes for the path separator, and be an absolute path, for example:
+The directory the puppet agent should be installed to. This is only applicable for Windows operating systems and when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location. This must use backslashes for the path separator, and be an absolute path. 
+For example:
 ``` puppet
   install_dir => 'D:\Program Files\Puppet Labs'
 ```
@@ -128,15 +134,15 @@ The directory the puppet agent should be installed to. This is only applicable f
 An array of additional options to pass when installing puppet-agent. Each option in the array can be either a string or a hash. Each option is automatically quoted when passed to the install command.
 
 With Windows packages, note that file paths in `install_options` must use backslashes. (Since install options are passed directly to the installation command, forward slashes aren't automatically converted like they are in `file` resources.) Backslashes in double-quoted strings _must_ be escaped, while backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="maus"`.
-
+For example:
 ``` puppet
   install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp','PUPPET_AGENT_ACCOUNT_USER=bob','PUPPET_AGENT_ACCOUNT_PASSWORD=password']
 ```
 
 ##### `msi_move_locked_files`
 
-This is only applicable for Windows operating systems. There may be instances where file locks cause unncessary service restarts.  By setting to true, the module will move files prior to installation that are known to cause file locks. By default this is set to false.
-
+This is only applicable for Windows operating systems. There may be instances where file locks cause unncessary service restarts. By setting to true, the module will move files prior to installation that are known to cause file locks. By default this is set to false.
+For example:
 ``` puppet
   msi_move_locked_files => true
 ```
@@ -152,7 +158,7 @@ Mac OS X Open Source packages are currently not supported.
 In addition, there are several known issues with Windows:
 
 * To upgrade the agent by executing `puppet agent -t` interactively in a console, you must close the console and wait for the upgrade to finish before attempting to use the `puppet` command again.
-* MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent. If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
+* MSI installation failures do not generate Puppet errors. If the install fails, the `puppet_agent` class continues to be applied to the agent. If this happens, you will need to examine the MSI installer log file to determine the failure's cause. You can find the location of the log file in the debug output from either a `puppet apply` or `puppet agent` run; the file name follows the pattern `puppet-<timestamp>-installer.log`.
 * On Windows Server 2003, only x86 is supported, and the `arch` parameter is ignored. If you try to force an upgrade to x64, Puppet installs the x86 version with no error message.
 * On Windows Server 2003 with Puppet Enterprise, the default download location is unreachable. You can work around this issue by specifying an alternate download URL in the `source` parameter.
 
