@@ -19,6 +19,7 @@ class puppet_agent::install(
   assert_private()
 
   $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
+  $pa_collection = getvar('::puppet_agent::collection')
 
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or $::operatingsystem == 'AIX' {
     $_install_options = $::operatingsystem ? {
@@ -157,7 +158,11 @@ class puppet_agent::install(
   } elsif ($::osfamily == 'RedHat') and ($package_version != 'present') {
     # Workaround PUP-5802/PUP-5025
     if ($::operatingsystem == 'Fedora') {
-      $dist_tag = "fedoraf${::operatingsystemmajrelease}"
+      if $pa_collection == 'PC1' or $pa_collection == 'puppet5' {
+        $dist_tag = "fedoraf${::operatingsystemmajrelease}"
+      } else {
+        $dist_tag = "fc${::operatingsystemmajrelease}"
+      }
     } elsif ($::platform_tag != undef and $::platform_tag =~ /redhatfips.*/) {
       # The undef check here is for unit tests that don't supply this fact.
       $dist_tag = 'redhatfips7'
