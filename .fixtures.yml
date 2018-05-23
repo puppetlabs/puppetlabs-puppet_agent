@@ -7,7 +7,7 @@ fixtures:
       repo: "puppetlabs/transition"
     inifile:
       repo: "puppetlabs/inifile"
-      ref: "2.1.0"
+      ref: "2.2.2"
     apt:
       repo: "puppetlabs/apt"
       ref: "4.4.0"
