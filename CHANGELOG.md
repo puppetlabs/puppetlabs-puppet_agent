@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.1] - 2018-05-18
+
+### Summary
+Minor bugfix release
+
+### Bug fixes
+- Do not manage PA version on PE infra nodes ([MODULES-5230](https://tickets.puppetlabs.com/browse/MODULES-5230))
+
 ## [1.6.0] - 2018-03-21
 
 ### Summary
