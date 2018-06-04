@@ -130,9 +130,15 @@ class puppet_agent (
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
     } elsif $::operatingsystem == 'AIX' {
       $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
-      $aix_ver_number = $_aix_ver_number ? {
-        /^7\.2$/ => '7.1',
-        default  => $_aix_ver_number,
+      if $_aix_ver_number {
+        if $collection =~ /(PC1|puppet5)/ {
+          $aix_ver_number = $_aix_ver_number ? {
+            /^7\.2$/ => '7.1',
+            default  => $_aix_ver_number,
+          }
+        } else {
+          $aix_ver_number = '6.1'
+        }
       }
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.aix${aix_ver_number}.ppc.rpm"
     } elsif $::osfamily == 'windows' {
