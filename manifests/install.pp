@@ -158,6 +158,9 @@ class puppet_agent::install(
     # Workaround PUP-5802/PUP-5025
     if ($::operatingsystem == 'Fedora') {
       $dist_tag = "fedoraf${::operatingsystemmajrelease}"
+    } elsif ($::platform_tag != undef and $::platform_tag =~ /redhatfips.*/) {
+      # The undef check here is for unit tests that don't supply this fact.
+      $dist_tag = 'redhatfips7'
     } elsif $::operatingsystem == 'Amazon' {
       $dist_tag = 'el6'
     } else {
