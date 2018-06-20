@@ -41,9 +41,36 @@
   #       env: PUPPET_GEM_VERSION="~> 5.0" CHECK=spec
 
   Gemfile:
-    optional:
+    required:
       ':development':
-        # Ping rspec-puppet 2.6.9 until https://github.com/rodjek/rspec-puppet/issues/663 is fixed
+        # Gems built using puppet-module-gems utility
+        - gem: 'puppet-module-posix-default-r#{minor_version}'
+          platforms: 'ruby'
+        - gem: 'puppet-module-win-default-r#{minor_version}'
+          platforms:
+            - 'mswin'
+            - 'mingw'
+            - 'x64_mingw'
+        - gem: 'puppet-module-posix-dev-r#{minor_version}'
+          platforms: 'ruby'
+          version: '0.3.3'
+        - gem: 'puppet-module-win-dev-r#{minor_version}'
+          platforms:
+            - 'mswin'
+            - 'mingw'
+            - 'x64_mingw'
+          version: '0.0.7'
+        # json_pure 2.0.2 added a requirement on ruby >= 2. We pin to json_pure <= 2.0.1
+        # if using ruby 1.x
+        - gem: json_pure
+          version: '<= 2.0.1'
+          condition: "Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')"
+        - gem: fast_gettext
+          version: '1.1.0'
+          condition: "Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')"
+        - gem: fast_gettext
+          condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.1.0')"
+        # Pin rspec-puppet 2.6.9 until https://github.com/rodjek/rspec-puppet/issues/663 is fixed
         - gem: 'rspec-puppet'
           version: '2.6.9'
 
