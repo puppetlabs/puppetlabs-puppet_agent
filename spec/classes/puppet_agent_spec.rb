@@ -77,7 +77,8 @@ describe 'puppet_agent' do
           end
         end
 
-        context 'On a PE infrastructure node puppet_agent does nothing' do
+        context 'On a PE infrastructure node puppet_agent does nothing', :if => Puppet.version >= '4.0.0' do
+          # The puppet version conditional is only required if the module supports Puppet 3.x
           before(:each) do
             facts['pe_server_version'] = '2016.2.2'
           end
