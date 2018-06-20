@@ -15,7 +15,7 @@
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 # [manage_pki_dir]
 #   Whether or not to manage the /etc/pki directory.  Defaults to true.
-#   Managing the /etc/pki directory inside the puppet_agent module can be problematic for 
+#   Managing the /etc/pki directory inside the puppet_agent module can be problematic for
 #   organizations that manage gpg keys and settings in other modules.
 # [manage_repo]
 #   Boolean to determine whether to configure repositories
@@ -79,7 +79,7 @@ class puppet_agent (
     info('puppet_agent performs no actions if a package_version is not specified on Puppet 4')
   } elsif $package_version == undef and $is_pe {
     info("puppet_agent performs no actions if the master's agent version cannot be determed on PE 3.x")
-  } elsif $facts['pe_server_version'] != undef {
+  } elsif defined('$::pe_server_version') {
     info('puppet_agent performs no actions on PE infrastructure nodes to prevent a mismatch between agent and PE components')
   } else {
     if $package_version != undef and $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
