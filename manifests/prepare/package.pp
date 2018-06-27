@@ -24,10 +24,16 @@ class puppet_agent::prepare::package(
       }
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
     } elsif $::operatingsystem == 'AIX' {
-      $tag = $::platform_tag ? {
-        'aix-7.2-power' => 'aix-7.1-power',
-        default         => $::platform_tag,
+      if $::puppet_agent::collection =~ /(PC1|puppet5)/ {
+        $tag = $::platform_tag ? {
+          'aix-7.2-power' => 'aix-7.1-power',
+          default         => $::platform_tag,
+        }
+      } else {
+        # From puppet6 onward, AIX 6.1 packages are used for all AIX platforms
+        $tag = 'aix-6.1-power'
       }
+
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${package_file_name}"
     } else {
       $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"

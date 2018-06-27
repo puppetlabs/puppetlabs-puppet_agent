@@ -53,19 +53,20 @@
 #   will move files prior to installation that are known to cause file locks.
 #
 class puppet_agent (
-  Puppet_agent::Arch $arch = $::architecture,
-  $collection              = 'PC1',
-  $is_pe                   = $::puppet_agent::params::_is_pe,
-  $manage_pki_dir          = true,
-  $manage_repo             = true,
-  $package_name            = $::puppet_agent::params::package_name,
-  $package_version         = $::puppet_agent::params::package_version,
-  $service_names           = $::puppet_agent::params::service_names,
-  $source                  = $::puppet_agent::params::_source,
-  $install_dir             = $::puppet_agent::params::install_dir,
-  $disable_proxy           = false,
-  $install_options         = $::puppet_agent::params::install_options,
-  $msi_move_locked_files   = false,
+  $arch                  = $::architecture,
+  $collection            = 'PC1',
+  $is_pe                 = $::puppet_agent::params::_is_pe,
+  $manage_pki_dir        = true,
+  $manage_repo           = true,
+  $package_name          = $::puppet_agent::params::package_name,
+  $package_version       = $::puppet_agent::params::package_version,
+  $service_names         = $::puppet_agent::params::service_names,
+  $source                = $::puppet_agent::params::_source,
+  $install_dir           = $::puppet_agent::params::install_dir,
+  $disable_proxy         = false,
+  $install_options       = $::puppet_agent::params::install_options,
+  $skip_if_unavailable   = 'absent',
+  $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
   if $::osfamily == 'windows' and $install_dir != undef {
@@ -76,7 +77,7 @@ class puppet_agent (
     info('puppet_agent performs no actions if a package_version is not specified on Puppet 4')
   } elsif $package_version == undef and $is_pe {
     info("puppet_agent performs no actions if the master's agent version cannot be determed on PE 3.x")
-  } elsif $facts['pe_server_version'] != undef {
+  } elsif defined('$::pe_server_version') {
     info('puppet_agent performs no actions on PE infrastructure nodes to prevent a mismatch between agent and PE components')
   } else {
     if $package_version != undef and $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
@@ -129,9 +130,15 @@ class puppet_agent (
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
     } elsif $::operatingsystem == 'AIX' {
       $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
-      $aix_ver_number = $_aix_ver_number ? {
-        /^7\.2$/ => '7.1',
-        default  => $_aix_ver_number,
+      if $_aix_ver_number {
+        if $collection =~ /(PC1|puppet5)/ {
+          $aix_ver_number = $_aix_ver_number ? {
+            /^7\.2$/ => '7.1',
+            default  => $_aix_ver_number,
+          }
+        } else {
+          $aix_ver_number = '6.1'
+        }
       }
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.aix${aix_ver_number}.ppc.rpm"
     } elsif $::osfamily == 'windows' {
