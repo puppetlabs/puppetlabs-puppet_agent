@@ -54,7 +54,7 @@
 #
 class puppet_agent (
   $arch                  = $::architecture,
-  $collection            = 'PC1',
+  $collection            = $::puppet_agent::params::collection,
   $is_pe                 = $::puppet_agent::params::_is_pe,
   $manage_pki_dir        = true,
   $manage_repo           = true,
