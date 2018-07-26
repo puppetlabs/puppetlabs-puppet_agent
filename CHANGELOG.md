@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.2] - 2018-07-26
+
+### Summary
+Compatibility update for PE packaging changes
+
+### Features
+- Support for new pe_repo tarballs that use repo names matching open source.
+
 ## [1.6.1] - 2018-06-29
 
 ### Summary
