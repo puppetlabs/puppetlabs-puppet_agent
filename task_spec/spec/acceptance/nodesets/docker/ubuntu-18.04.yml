@@ -1,0 +1,11 @@
+HOSTS:
+  ubuntu-1404-x64:
+    roles:
+      - target
+    platform: ubuntu-18.04-amd64
+    hypervisor: docker
+    image: ubuntu:18.04
+    docker_preserve_image: true
+    docker_cmd: '["/sbin/init"]'
+CONFIG:
+  trace_limit: 200
