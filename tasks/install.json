@@ -1,0 +1,12 @@
+{
+  "description": "Install the puppet 5 agent package",
+  "parameters": {
+    "version": {
+      "description": "The version of puppet to install",
+      "type": "Optional[String]"
+    }
+  },
+  "implementations": [
+    {"name": "shell.sh", "requirements": ["shell"]}
+  ]
+}
