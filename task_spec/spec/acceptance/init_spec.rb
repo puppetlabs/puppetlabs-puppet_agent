@@ -162,6 +162,14 @@ describe 'install task' do
     result
   end
 
+  it 'version returns null with no agent present' do
+    results = run_task_on('target', 'puppet_agent::version')
+    results.each do |res|
+      expect(res['status']).to eq('success')
+      expect(res['result']['version']).to eq(nil)
+    end
+  end
+
   it 'runs and installs the agent' do
     results = run_task_on('target', "puppet_agent::install")
     results.each do |res|
@@ -171,6 +179,15 @@ describe 'install task' do
     results = run_command_on('target', '/opt/puppetlabs/bin/puppet --version')
     results.each do |res|
       expect(res["status"]).to eq("success")
+    end
+  end
+
+  it 'vesion returns the version with agent present' do
+    results = run_task_on('target', 'puppet_agent::version')
+    results.each do |res|
+      expect(res['status']).to eq('success')
+      expect(res['result']['version']).to match(/^\d\.\d\.\d/)
+      expect(res['result']['source']).to be
     end
   end
 end
