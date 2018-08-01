@@ -1,0 +1,13 @@
+---
+HOSTS:
+  osx1012-64-1:
+    hypervisor: vmpooler
+    platform: osx-10.12-x86_64
+    packaging_platform: osx-10.12-x86_64
+    template: osx-1012-x86_64
+    roles:
+    - target
+CONFIG:
+  nfs_server: none
+  consoleport: 443
+  pooling_api: http://vmpooler.delivery.puppetlabs.net/

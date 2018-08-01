@@ -27,7 +27,8 @@ describe 'install task' do
     end
 
     nodes = hosts.map do |host|
-      ssh = host.host_hash[:ssh]
+      ssh = host[:ssh]
+
       if ssh
         config = { transport: 'ssh' , ssh: {} }
         [:password, :user, :port].each { |k| config[:ssh][k] = ssh[k] if ssh[k] }
@@ -40,27 +41,27 @@ describe 'install task' do
         key = keys.first if keys
         config[:ssh][:"private-key"] = key if key
 
-        # hostname is unlikely to resolve in beakers world but there may be
-        # many hosts on the same IP. Use a query argument to generate a unique hostname
+        # If the hypevisor stores IP as part of its core config then hostname
+        # is unlikely to resolve in beakers world, but there may be many hosts
+        # on the same IP. Use a query argument to generate a unique hostname.
         # BOLT-510
-        node_name = "ssh://#{host.host_hash[:ip]}?n=#{host.hostname}"
+        hostname = host.host_hash[:ip] ? "#{host.host_hash[:ip]}?n=#{host.hostname}" : host.hostname
+        node_name = "ssh://#{hostname}"
 
         node = {
           name: node_name,
           config: config
         }
       else
-        # This is very unlikely to work
-        node_name, node = host.hostname
+        raise 'non-ssh targets not yet implemented'
       end
 
       # Make alias groups for each role
-      host.host_hash[:roles].each do |role|
+      host[:roles].each do |role|
         add_node(node_name, role, groups)
       end
       node
     end
-
     { nodes: nodes,
       groups: groups,
       config: {
@@ -147,9 +148,10 @@ describe 'install task' do
       File.open(inventory_path, 'w') {|fh| fh.write(inventory.to_json)}
       File.open(config_path, 'w') {|fh| fh.write("---\n")}
       command += ['--inventoryfile', inventory_path]
-      command += ['--configfile', inventory_path]
+      command += ['--configfile', config_path]
       exec(command)
     end
+
     begin
       result = JSON.parse(result)
     rescue JSON::ParserError
