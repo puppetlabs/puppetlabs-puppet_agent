@@ -55,7 +55,6 @@
             - 'x64_mingw'
         - gem: 'puppet-module-posix-dev-r#{minor_version}'
           platforms: 'ruby'
-          version: '0.3.3'
         - gem: 'puppet-module-win-dev-r#{minor_version}'
           platforms:
             - 'mswin'
