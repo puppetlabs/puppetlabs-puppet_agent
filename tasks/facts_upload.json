@@ -1,0 +1,4 @@
+{
+  "description": "Runs puppet facts upload. This uploads the latest facts to PuppetDB, useful for nodes that are running in cached catalog mode",
+  "input_method": "environment"
+}
