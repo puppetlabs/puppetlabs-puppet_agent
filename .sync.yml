@@ -72,9 +72,6 @@
           condition: "Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')"
         - gem: fast_gettext
           condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.1.0')"
-        # Pin rspec-puppet 2.6.9 until https://github.com/rodjek/rspec-puppet/issues/663 is fixed
-        - gem: 'rspec-puppet'
-          version: '2.6.9'
 
   appveyor.yml:
     unmanaged: true
