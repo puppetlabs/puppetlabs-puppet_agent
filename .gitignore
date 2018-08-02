@@ -18,6 +18,8 @@ log/
 pkg/
 spec/fixtures/manifests/
 spec/fixtures/modules/
+task_spec/spec/fixtures/manifests/
+task_spec/spec/fixtures/modules/
 tmp/
 vendor/
 
