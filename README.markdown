@@ -11,10 +11,13 @@
     * [Setup requirements](#setup-requirements)
     * [Beginning with puppet_agent](#beginning-with-puppet_agent)
 4. [Usage - Configuration options and additional functionality](#usage)
+    * [Puppet 3 Upgrades](#puppet-3-upgrades)
+    * [Puppet 4 Upgrades](#puppet-4-upgrades)
 5. [Reference](#reference)
     * [Public classes](#public-classes)
     * [Private classes](#private-classes)
     * [Parameters](#parameters)
+    * [Tasks](#tasks)
 6. [Limitations - OS compatibility, etc.](#limitations)
     * [Known issues](#known-issues)
 7. [Development - Guide for contributing to the module](#development)
@@ -194,6 +197,18 @@ This is only applicable for Windows operating systems. There may be instances wh
 ``` puppet
   msi_move_locked_files => true
 ```
+
+### Tasks
+
+#### `puppet_agent::version`
+
+Checks for the version of puppet-agent package installed. Returns results as `{"version": "<ver>", "source": "<how version was
+detected>"}`. If a version cannot be found, returns `{"version": null}`.
+
+#### `puppet_agent::install`
+
+Installs the puppet-agent package. Currently only supports Linux variants: Debian, Ubuntu, SLES, RHEL/CentOS/Fedora. A specific
+package `version` can be specified; if not, will install or upgrade to the latest Puppet 5 version available.
 
 ## Limitations
 
