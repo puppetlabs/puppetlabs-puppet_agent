@@ -7,6 +7,7 @@
     }
   },
   "implementations": [
-    {"name": "install_shell.sh", "requirements": ["shell"]}
+    {"name": "install_shell.sh", "requirements": ["shell"]},
+    {"name": "install_powershell.ps1", "requirements": ["powershell"]}
   ]
 }
