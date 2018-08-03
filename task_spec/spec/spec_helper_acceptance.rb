@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
-require 'puppet'
+
+# Make sure bolt's puppet is loaded
+require 'bolt/pal'
+Bolt::PAL.load_puppet
+
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 require 'beaker/module_install_helper'
