@@ -230,12 +230,6 @@ if test "x$platform" = "xsolaris2"; then
   export PATH
 fi
 
-checksum_mismatch() {
-  critical "Package checksum mismatch!"
-  report_bug
-  exit 1
-}
-
 unable_to_retrieve_package() {
   critical "Unable to retrieve a valid package!"
   report_bug
@@ -350,40 +344,6 @@ do_perl() {
   fi
 
   return 0
-}
-
-do_checksum() {
-  if exists sha256sum; then
-    checksum=`sha256sum $1 | awk '{ print $1 }'`
-    if test "x$checksum" != "x$2"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with sha256sum succeeded."
-    fi
-  elif exists shasum; then
-    checksum=`shasum -a 256 $1 | awk '{ print $1 }'`
-    if test "x$checksum" != "x$2"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with shasum succeeded."
-    fi
-  elif exists md5sum; then
-    checksum=`md5sum $1 | awk '{ print $1 }'`
-    if test "x$checksum" != "x$3"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with md5sum succeeded."
-    fi
-  elif exists md5; then
-    checksum=`md5 $1 | awk '{ print $4 }'`
-    if test "x$checksum" != "x$3"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with md5 succeeded."
-    fi
-  else
-    warn "Could not find a valid checksum program, pre-install shasum, md5sum or md5 in your O/S image to get valdation..."
-  fi
 }
 
 # do_download URL FILENAME
