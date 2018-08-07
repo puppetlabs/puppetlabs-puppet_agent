@@ -132,8 +132,9 @@ elif test -f "/usr/bin/sw_vers"; then
 
   major_version=`echo $platform_version | cut -d. -f1,2`
   case $major_version in
-    "10.6") platform_version="10.6" ;;
-    "10.7"|"10.8"|"10.9") platform_version="10.7" ;;
+    "10.11") platform_version="10.11";;
+    "10.12") platform_version="10.12";;
+    "10.13") platform_version="10.13";;
     *) echo "No builds for platform: $major_version"
        report_bug
        exit 1
@@ -217,8 +218,6 @@ esac
 
 # Find which version of puppet is currently installed if any
 
-
-
 if test "x$platform_version" = "x"; then
   critical "Unable to determine platform version!"
   report_bug
@@ -230,12 +229,6 @@ if test "x$platform" = "xsolaris2"; then
   PATH=/usr/sfw/bin:$PATH
   export PATH
 fi
-
-checksum_mismatch() {
-  critical "Package checksum mismatch!"
-  report_bug
-  exit 1
-}
 
 unable_to_retrieve_package() {
   critical "Unable to retrieve a valid package!"
@@ -250,12 +243,17 @@ random_hexdump () {
 if test "x$TMPDIR" = "x"; then
   tmp="/tmp"
 else
-  tmp=$TMPDIR
+  tmp=${TMPDIR}
+  # TMPDIR has trailing file sep for OSX test box
+  penultimate=$((${#tmp}-1))
+  if test "${tmp:$penultimate:1}" = "/"; then
+    tmp="${tmp:0:$penultimate}"
+  fi
 fi
 
 # Random function since not all shells have $RANDOM
 if exists hexdump; then
-  random_number=random_hexdump
+  random_number=$(random_hexdump)
 else
   random_number="`date +%N`"
 fi
@@ -348,40 +346,6 @@ do_perl() {
   return 0
 }
 
-do_checksum() {
-  if exists sha256sum; then
-    checksum=`sha256sum $1 | awk '{ print $1 }'`
-    if test "x$checksum" != "x$2"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with sha256sum succeeded."
-    fi
-  elif exists shasum; then
-    checksum=`shasum -a 256 $1 | awk '{ print $1 }'`
-    if test "x$checksum" != "x$2"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with shasum succeeded."
-    fi
-  elif exists md5sum; then
-    checksum=`md5sum $1 | awk '{ print $1 }'`
-    if test "x$checksum" != "x$3"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with md5sum succeeded."
-    fi
-  elif exists md5; then
-    checksum=`md5 $1 | awk '{ print $4 }'`
-    if test "x$checksum" != "x$3"; then
-      checksum_mismatch
-    else
-      info "Checksum compare with md5 succeeded."
-    fi
-  else
-    warn "Could not find a valid checksum program, pre-install shasum, md5sum or md5 in your O/S image to get valdation..."
-  fi
-}
-
 # do_download URL FILENAME
 do_download() {
   info "Downloading $1"
@@ -409,8 +373,16 @@ do_download() {
   unable_to_retrieve_package
 }
 
+latest_macos_version() {
+  local mount="$1"
+  dmg_path=$(find "${mount}" -name '*.pkg' -mindepth 1 -maxdepth 1)
+  if [[ "${dmg_path}" =~ [0-9+].[0-9+].[0-9+]-[0-9+] ]]; then
+    dmg_version="${BASH_REMATCH[0]}"
+  fi
+}
+
 # install_file TYPE FILENAME
-# TYPE is "rpm", "deb", "solaris", or "sh"
+# TYPE is "rpm", "deb", "solaris" or "dmg"
 install_file() {
   case "$1" in
     "rpm")
@@ -444,7 +416,13 @@ install_file() {
       critical "Solaris not supported yet"
       ;;
     "dmg" )
-      critical "Puppet-Agent Not Supported Yet: $1"
+      info "installing puppetlabs dmg with hdiutil and installer"
+      mountpoint="$(mktemp -d -t $(random_hexdump))"
+      /usr/bin/hdiutil attach "${download_filename?}" -nobrowse -readonly -mountpoint "${mountpoint?}"
+      latest_macos_version $mountpoint
+      /usr/sbin/installer -pkg "${mountpoint?}/puppet-agent-${dmg_version?}-installer.pkg" -target /
+      /usr/bin/hdiutil detach "${mountpoint?}"
+      rm -f $download_filename
       ;;
     *)
       critical "Unknown filetype: $1"
@@ -516,7 +494,14 @@ case $platform in
         download_url="http://apt.puppetlabs.com/${filename}"
         ;;
       "mac_os_x")
-        critical "Script doesn't Puppet-agent not supported on OSX yet"
+        info "OSX platform! Lets get you a DMG..."
+        filetype="dmg"
+        if test "$version" = "latest"; then
+          filename="puppet-agent-latest.dmg"
+        else
+          filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
+        fi
+        download_url="http://downloads.puppetlabs.com/mac/puppet5/${platform_version}/x86_64/${filename}"
         ;;
       *)
         critical "Sorry $platform is not supported yet!"
@@ -525,9 +510,9 @@ case $platform in
         ;;
     esac
 
-    download_filename="$tmp_dir/$filename"
+    download_filename="${tmp_dir}/${filename}"
 
-    do_download "$download_url"  "$download_filename"
+    do_download "$download_url" "$download_filename"
 
     install_file $filetype "$download_filename"
     ;;
