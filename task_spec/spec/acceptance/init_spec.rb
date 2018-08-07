@@ -27,38 +27,51 @@ describe 'install task' do
     end
 
     nodes = hosts.map do |host|
-      ssh = host[:ssh]
-
-      if ssh
-        config = { transport: 'ssh' , ssh: {} }
-        [:password, :user, :port].each { |k| config[:ssh][k] = ssh[k] if ssh[k] }
-
-        # This is required to find the key that may be loaded from config
-        # The vagrant provisioner passes the vagrant ssh config instead of
-        # specific options.
-        key = nil
-        keys = host.connection.instance_variable_get(:@ssh).options[:keys]
-        key = keys.first if keys
-        config[:ssh][:"private-key"] = key if key
-
-        # If the hypevisor stores IP as part of its core config then hostname
-        # is unlikely to resolve in beakers world, but there may be many hosts
-        # on the same IP. Use a query argument to generate a unique hostname.
-        # BOLT-510
-        hostname = host.host_hash[:ip] ? "#{host.host_hash[:ip]}?n=#{host.hostname}" : host.hostname
-        node_name = "ssh://#{hostname}"
-
+      if host[:platform] =~ /windows/
+        config = {
+          transport: 'winrm',
+          winrm: {
+            user: host[:user],
+            password: ENV['BEAKER_password'],
+            ssl: false
+          }
+        }
         node = {
-          name: node_name,
+          name: host.hostname,
           config: config
         }
       else
-        raise 'non-ssh targets not yet implemented'
-      end
+        ssh = host[:ssh]
+        if ssh
+          config = { transport: 'ssh' , ssh: {} }
+          [:password, :user, :port].each { |k| config[:ssh][k] = ssh[k] if ssh[k] }
 
+          # This is required to find the key that may be loaded from config
+          # The vagrant provisioner passes the vagrant ssh config instead of
+          # specific options.
+          key = nil
+          keys = host.connection.instance_variable_get(:@ssh).options[:keys]
+          key = keys.first if keys
+          config[:ssh][:"private-key"] = key if key
+
+          # If the hypevisor stores IP as part of its core config then hostname
+          # is unlikely to resolve in beakers world, but there may be many hosts
+          # on the same IP. Use a query argument to generate a unique hostname.
+          # BOLT-510
+          hostname = host.host_hash[:ip] ? "#{host.host_hash[:ip]}?n=#{host.hostname}" : host.hostname
+          node_name = "ssh://#{hostname}"
+
+          node = {
+            name: node_name,
+            config: config
+          }
+        else
+          raise 'non-ssh targets not yet implemented'
+        end
+      end
       # Make alias groups for each role
       host[:roles].each do |role|
-        add_node(node_name, role, groups)
+        add_node(node[:name], role, groups)
       end
       node
     end
@@ -174,11 +187,6 @@ describe 'install task' do
 
   it 'runs and installs the agent' do
     results = run_task_on('target', "puppet_agent::install")
-    results.each do |res|
-      expect(res["status"]).to eq("success")
-    end
-    # Some packages don't add this path
-    results = run_command_on('target', '/opt/puppetlabs/bin/puppet --version')
     results.each do |res|
       expect(res["status"]).to eq("success")
     end
