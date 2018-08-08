@@ -185,19 +185,55 @@ describe 'install task' do
     end
   end
 
-  it 'runs and installs the agent' do
+  it 'runs and installs a specific agent version from puppet 5' do
+    # Note 5.5.3 is the first version that supports Ubuntu 18.04
+    results = run_task_on('target', "puppet_agent::install", params: { collection: 'puppet5', version: '5.5.3' })
+    results.each do |res|
+      expect(res["status"]).to eq("success")
+    end
+  end
+
+  it 'version returns the version with agent present' do
+    results = run_task_on('target', 'puppet_agent::version')
+    results.each do |res|
+      expect(res['status']).to eq('success')
+      expect(res['result']['version']).to eq('5.5.3')
+      expect(res['result']['source']).to be
+    end
+  end
+
+  it 'runs and upgrades the agent to latest puppet5' do
+    results = run_task_on('target', "puppet_agent::install", params: { collection: 'puppet5' })
+    results.each do |res|
+      expect(res["status"]).to eq("success")
+    end
+  end
+
+  it 'version returns a puppet5 version with agent present' do
+    results = run_task_on('target', 'puppet_agent::version')
+    results.each do |res|
+      expect(res['status']).to eq('success')
+      expect(res['result']['version']).not_to eq('5.5.3')
+      expect(res['result']['version']).to match(/^5\.\d+\.\d+/)
+      expect(res['result']['source']).to be
+    end
+  end
+
+  it 'runs and upgrades the agent to puppet by default' do
     results = run_task_on('target', "puppet_agent::install")
     results.each do |res|
       expect(res["status"]).to eq("success")
     end
   end
 
-  it 'vesion returns the version with agent present' do
+  it 'version returns a version with agent present' do
     results = run_task_on('target', 'puppet_agent::version')
     results.each do |res|
       expect(res['status']).to eq('success')
-      expect(res['result']['version']).to match(/^\d\.\d\.\d/)
+      expect(res['result']['version']).not_to eq('5.5.3')
+      expect(res['result']['version']).to match(/^[5-6]\.\d+\.\d+/)
       expect(res['result']['source']).to be
     end
   end
+
 end

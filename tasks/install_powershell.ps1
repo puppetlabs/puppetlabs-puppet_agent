@@ -1,6 +1,7 @@
 [CmdletBinding()]
 Param(
-	[String]$version
+	[String]$version,
+    [String]$collection = 'puppet'
 )
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
@@ -12,11 +13,13 @@ if ((Get-WmiObject Win32_OperatingSystem).OSArchitecture -match '^32') {
 }
 
 if ($version) {
-    $msi_source = "http://downloads.puppetlabs.com/windows/puppet5/puppet-agent-${version}-${arch}.msi"
+    $msi_name = "puppet-agent-${version}-${arch}.msi"
 }
 else {
-    $msi_source = "http://downloads.puppetlabs.com/windows/puppet5/puppet-agent-${arch}-latest.msi"
+    $msi_name = "puppet-agent-${arch}-latest.msi"
 }
+
+$msi_source = "http://downloads.puppetlabs.com/windows/${collection}/${msi_name}"
 
 $date_time_stamp = (Get-Date -format s) -replace ':', '-'
 $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"
