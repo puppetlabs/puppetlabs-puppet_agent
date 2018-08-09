@@ -60,6 +60,12 @@ if [ -n "$PT_version" ]; then
   version=$PT_version
 fi
 
+if [ -n "$PT_collection" ]; then
+  collection=$PT_collection
+else
+  collection='puppet'
+fi
+
 #if [ -n "$PT_filename" ]; then
 #   cmdline_filename=$PT_filename
 #fi
@@ -373,14 +379,6 @@ do_download() {
   unable_to_retrieve_package
 }
 
-latest_macos_version() {
-  local mount="$1"
-  dmg_path=$(find "${mount}" -name '*.pkg' -mindepth 1 -maxdepth 1)
-  if [[ "${dmg_path}" =~ [0-9+].[0-9+].[0-9+]-[0-9+] ]]; then
-    dmg_version="${BASH_REMATCH[0]}"
-  fi
-}
-
 # install_file TYPE FILENAME
 # TYPE is "rpm", "deb", "solaris" or "dmg"
 install_file() {
@@ -419,8 +417,7 @@ install_file() {
       info "installing puppetlabs dmg with hdiutil and installer"
       mountpoint="$(mktemp -d -t $(random_hexdump))"
       /usr/bin/hdiutil attach "${download_filename?}" -nobrowse -readonly -mountpoint "${mountpoint?}"
-      latest_macos_version $mountpoint
-      /usr/sbin/installer -pkg "${mountpoint?}/puppet-agent-${dmg_version?}-installer.pkg" -target /
+      /usr/sbin/installer -pkg ${mountpoint?}/puppet-agent-*-installer.pkg -target /
       /usr/bin/hdiutil detach "${mountpoint?}"
       rm -f $download_filename
       ;;
@@ -451,14 +448,14 @@ case $platform in
       "el")
         info "Red hat like platform! Lets get you an RPM..."
         filetype="rpm"
-        filename="puppet5-release-el-${platform_version}.noarch.rpm"
-        download_url="http://yum.puppetlabs.com/puppet5/${filename}"
+        filename="${collection}-release-el-${platform_version}.noarch.rpm"
+        download_url="http://yum.puppetlabs.com/${collection}/${filename}"
         ;;
       "fedora")
         info "Fedora platform! Lets get the RPM..."
         filetype="rpm"
-        filename="puppet5-release-fedora-${platform_version}.noarch.rpm"
-        download_url="http://yum.puppetlabs.com/puppet5/${filename}"
+        filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
+        download_url="http://yum.puppetlabs.com/${collection}/${filename}"
         ;;
       "debian")
         info "Debian platform! Lets get you a DEB..."
@@ -470,7 +467,7 @@ case $platform in
           "9") deb_codename="stretch";;
         esac
         filetype="deb"
-        filename="puppet5-release-${deb_codename}.deb"
+        filename="${collection}-release-${deb_codename}.deb"
         download_url="http://apt.puppetlabs.com/${filename}"
         ;;
       "ubuntu")
@@ -490,7 +487,7 @@ case $platform in
           "14.10") utopic;;
         esac
         filetype="deb"
-        filename="puppet5-release-${deb_codename}.deb"
+        filename="${collection}-release-${deb_codename}.deb"
         download_url="http://apt.puppetlabs.com/${filename}"
         ;;
       "mac_os_x")
@@ -501,7 +498,7 @@ case $platform in
         else
           filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
         fi
-        download_url="http://downloads.puppetlabs.com/mac/puppet5/${platform_version}/x86_64/${filename}"
+        download_url="http://downloads.puppetlabs.com/mac/${collection}/${platform_version}/x86_64/${filename}"
         ;;
       *)
         critical "Sorry $platform is not supported yet!"
