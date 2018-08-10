@@ -42,7 +42,7 @@ describe 'install task' do
       expect(res['result']['source']).to be
     end
 
-    # Run with no argument upgrades
+    # Run with no argument upgrade
     results = run_task( "puppet_agent::install", 'target', { 'collection' => 'puppet5' }, config: config, inventory: inventory)
     results.each do |res|
       expect(res).to include('status' => 'success')
