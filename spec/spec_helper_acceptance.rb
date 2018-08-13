@@ -1,3 +1,4 @@
+require 'beaker-puppet'
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
 require 'beaker/ca_cert_helper'
