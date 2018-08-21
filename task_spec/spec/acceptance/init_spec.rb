@@ -22,7 +22,7 @@ describe 'install task' do
 
   it 'works with version and install tasks' do
     # test the agent isn't already installed and that the version task works
-    results = run_task('puppet_agent::version', 'default', config: config, inventory: inventory)
+    results = run_task('puppet_agent::version', 'target', config: config, inventory: inventory)
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['result']['version']).to eq(nil)
@@ -35,7 +35,7 @@ describe 'install task' do
     end
 
     # It installed a version older than latest
-    results = run_task('puppet_agent::version', 'default', config: config, inventory: inventory)
+    results = run_task('puppet_agent::version', 'target', config: config, inventory: inventory)
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['result']['version']).to eq('5.5.3')

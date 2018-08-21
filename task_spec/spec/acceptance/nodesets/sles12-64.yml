@@ -1,0 +1,13 @@
+---
+HOSTS:
+  sles12-64-1:
+    hypervisor: vmpooler
+    platform: sles-12-x86_64
+    packaging_platform: sles-12-x86_64
+    template: sles-12-x86_64
+    roles:
+    - target
+CONFIG:
+  nfs_server: none
+  consoleport: 443
+  pooling_api: http://vmpooler.delivery.puppetlabs.net/

@@ -396,6 +396,15 @@ install_file() {
         yum install -y "puppet-agent-${puppet_agent_version}"
       fi
       ;;
+    "noarch.rpm")
+      info "installing puppetlabs yum repo with zypper..."
+      zypper install --no-confirm "$2"
+      if test "$version" = "latest"; then
+        zypper install --no-confirm "puppet-agent"
+      else
+        zypper install --no-confirm --oldpackage --no-recommends --no-confirm "puppet-agent-${puppet_agent_version}"
+      fi
+      ;;
     "deb")
       info "installing puppetlabs apt repo with dpkg..."
       dpkg -i "$2"
@@ -445,6 +454,16 @@ case $platform in
   *)
     info "Downloading Puppet $version for ${platform}..."
     case $platform in
+      "sles")
+        info "SLES platform! Lets get you an RPM..."
+        gpg_key="${tmp_dir}/RPM-GPG-KEY-puppet"
+        do_download "http://yum.puppetlabs.com/RPM-GPG-KEY-puppet" "$gpg_key"
+        rpm --import "$gpg_key"
+        rm -f "$gpg_key"
+        filetype="noarch.rpm"
+        filename="${collection}-release-sles-${platform_version}.noarch.rpm"
+        download_url="http://yum.puppetlabs.com/${collection}/${filename}"
+        ;;
       "el")
         info "Red hat like platform! Lets get you an RPM..."
         filetype="rpm"
