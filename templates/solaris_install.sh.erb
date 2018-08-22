@@ -21,16 +21,16 @@ function start_service() {
 
 function remove_package() {
   package="${1:?}"
-  /opt/puppetlabs/bin/puppet resource package "${package:?}" ensure=absent adminfile=<%= $adminfile %>
+  /opt/puppetlabs/bin/puppet resource package "${package:?}" ensure=absent adminfile=<%= @adminfile %>
 }
 
 # Remove old packages
-<% $old_package_names.each |$package| { %>
-remove_package <%= $package %>
-<% } %>
+<% @old_package_names.each do |package| -%>
+remove_package <%= package %>
+<% end -%>
 
 # Install package
-pkgadd -a <%= $adminfile %> -d <%= $sourcefile %> -G <%= $install_options.join(' ') %> -n puppet-agent
+pkgadd -a <%= @adminfile %> -d <%= @sourcefile %> -G <%= @install_options.join(' ') %> -n puppet-agent
 
 # Ensure services are running
 start_service puppet
