@@ -55,6 +55,7 @@ class puppet_agent::install(
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
+    $install_script = "solaris_install.sh.erb"
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
@@ -90,7 +91,7 @@ class puppet_agent::install(
       file { "${_installsh}":
         ensure  => file,
         mode    => '0755',
-        content => template('puppet_agent/solaris_install.sh.erb')
+        content => template('puppet_agent/do_install.sh.erb')
       }
       -> exec { 'solaris_install script':
         command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
