@@ -55,7 +55,7 @@ class puppet_agent::install(
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
-    $install_script = "solaris_install.sh.erb"
+    $install_script = 'solaris_install.sh.erb'
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
@@ -121,15 +121,24 @@ class puppet_agent::install(
       refreshonly => true,
     }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12|13)/ {
-    contain puppet_agent::install::remove_packages
+    if $old_packages or $puppet_agent::aio_upgrade_required {
+      $install_script = 'osx_install.sh.erb'
 
-    # package provider does not provide 'versionable'
-    package { $::puppet_agent::package_name:
-      ensure          => 'present',
-      provider        => 'pkgdmg',
-      source          => "/opt/puppetlabs/packages/${package_file_name}",
-      require         => Class['puppet_agent::install::remove_packages'],
-      install_options => $install_options,
+      contain puppet_agent::install::remove_packages
+
+      $_logfile = "${::env_temp_variable}/osx_install.log"
+      notice("Puppet install log file at ${_logfile}")
+
+      $_installsh = "${::env_temp_variable}/osx_install.sh"
+      file { "${_installsh}":
+        ensure  => file,
+        mode    => '0755',
+        content => template('puppet_agent/do_install.sh.erb'),
+        require => Class['Puppet_agent::Install::Remove_packages']
+      }
+      -> exec { 'osx_install script':
+        command => "${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
+      }
     }
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
