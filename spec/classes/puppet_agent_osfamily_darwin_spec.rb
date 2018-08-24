@@ -33,6 +33,8 @@ describe 'puppet_agent' do
     :architecture                => 'x86_64',
     :servername                  => 'master.example.vm',
     :clientcert                  => 'foo.example.vm',
+    :env_temp_variable           => '/tmp',
+    :puppet_agent_pid            => 42
   }
 
   describe 'unsupported environment' do
@@ -57,8 +59,9 @@ describe 'puppet_agent' do
           let(:facts) do
             facts.merge({
               :is_pe                       => true,
+              :aio_agent_version           => '1.0.4',
               :platform_tag                => tag,
-              :macosx_productversion_major => osmajor,
+              :macosx_productversion_major => osmajor
             })
           end
 
@@ -66,8 +69,8 @@ describe 'puppet_agent' do
           it { is_expected.to contain_file('/opt/puppetlabs') }
           it { is_expected.to contain_file('/opt/puppetlabs/packages') }
           it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.osx#{osmajor}.dmg") }
-          it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
-          it { is_expected.to contain_package('puppet-agent').with_source("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.osx#{osmajor}.dmg") }
+          it { is_expected.to contain_file('/tmp/osx_install.sh') }
+          it { is_expected.to contain_exec('osx_install script') }
           it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
           it { is_expected.to contain_class('puppet_agent::install::remove_packages_osx') }
           it { is_expected.to contain_class("puppet_agent::osfamily::darwin") }

@@ -1,0 +1,5 @@
+mountpoint="$(mktemp -d)"
+package_file_path="<%= scope.lookupvar('puppet_agent::params::local_packages_dir') %>/<%= @package_file_name %>"
+/usr/bin/hdiutil attach "${package_file_path}" -nobrowse -readonly -mountpoint "${mountpoint?}"
+/usr/sbin/installer -pkg ${mountpoint?}/puppet-agent-*-installer.pkg -target /
+/usr/bin/hdiutil detach "${mountpoint?}"

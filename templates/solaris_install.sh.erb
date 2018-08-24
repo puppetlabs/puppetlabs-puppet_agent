@@ -1,0 +1,23 @@
+function start_service() {
+  service="${1:?}"
+  /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running enable=true
+}
+
+function remove_package() {
+  package="${1:?}"
+  /opt/puppetlabs/bin/puppet resource package "${package:?}" ensure=absent adminfile=<%= @adminfile %>
+}
+
+# Remove old packages
+<% @old_package_names.each do |package| -%>
+remove_package <%= package %>
+<% end -%>
+
+# Install package
+pkgadd -a <%= @adminfile %> -d <%= @sourcefile %> -G <%= @install_options.join(' ') %> -n puppet-agent
+
+# Ensure services are running. We do this on Solaris 10 b/c the installer cannot restart
+# services on its own since that only happens when the service manifests change, which is
+# highly unlikely in most agent upgrade scenarios.
+start_service puppet
+start_service mcollective
