@@ -2,23 +2,27 @@ require 'spec_helper'
 
 describe 'puppet_agent' do
   # All FOSS and all Puppet 4+ upgrades require the package_version
-  package_version = '1.2.5'
+  package_version = '5.5.4'
   let(:params) {
     {
       :package_version => package_version
     }
   }
 
-  [['Fedora', 'fedora/f$releasever', 7], ['CentOS', 'el/$releasever', 7], ['Amazon', 'el/6', 6]].each do |os, urlbit, osmajor|
+  let(:facts) do
+    {
+      :osfamily                  => 'RedHat',
+      :architecture              => 'x64',
+      :servername                => 'master.example.vm',
+      :clientcert                => 'foo.example.vm',
+    }
+  end
+
+  [['Fedora', 'fedora/f$releasever', 27], ['CentOS', 'el/$releasever', 7], ['Amazon', 'el/6', 6]].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
-      let(:facts) {{
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => os,
-        :architecture              => 'x64',
-        :servername                => 'master.example.vm',
-        :clientcert                => 'foo.example.vm',
-        :operatingsystemmajrelease => osmajor,
-      }}
+      let(:facts) do
+        super().merge(:operatingsystem  => os, :operatingsystemmajrelease => osmajor)
+      end
 
       it { is_expected.to contain_exec('import-GPG-KEY-puppetlabs').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
@@ -116,6 +120,87 @@ describe 'puppet_agent' do
     end
   end
 
+  # There are a lot of special cases here, so it is best to have a separate
+  # unit test context for them.
+  context 'distro tag on Fedora platforms' do
+    def sets_distro_tag_to(expected_distro_tag)
+      is_expected.to contain_package('puppet-agent').with_ensure(
+        "#{params[:package_version]}-1.#{expected_distro_tag}"
+      )
+    end
+
+    let(:facts) do
+      super().merge(:operatingsystem => 'Fedora')
+    end
+
+    context 'when the collection is PC1' do
+      let(:params) do
+        # Older agents use the PC1 collection, so set the package_version
+        # to 1.10.9 to simulate this.
+        super().merge(:collection => 'PC1', :package_version => '1.10.9')
+      end
+
+      let(:facts) do
+        # Older agents do not support anything past Fedora 27
+        super().merge(:operatingsystemmajrelease => 27)
+      end
+
+      it { sets_distro_tag_to('fedoraf27') }
+    end
+
+    context 'when the collection is puppet5' do
+      let(:params) do
+        super().merge(:collection => 'puppet5')
+      end
+
+      context 'on newer Fedora versions' do
+        let(:facts) do
+          super().merge(:operatingsystemmajrelease => 28)
+        end
+
+        it { sets_distro_tag_to('fc28') }
+      end
+
+      context 'on older Fedora versions' do
+        let(:facts) do
+          super().merge(:operatingsystemmajrelease => 27)
+        end
+
+        shared_examples 'a package version' do |package_version, distro_tag|
+          let(:params) do
+            super().merge(:package_version => package_version)
+          end
+
+          it { sets_distro_tag_to(distro_tag) }
+        end
+
+        context 'when package_version > 5.5.3' do
+          include_examples 'a package version', '5.5.4', 'fedora27'
+        end
+
+        context 'when package_version == 5.5.3' do
+          include_examples 'a package version', '5.5.3', 'fedoraf27'
+        end
+
+        context 'when package_version < 5.5.3' do
+          include_examples 'a package version', '5.5.1', 'fedoraf27'
+        end
+      end
+    end
+
+    context 'when the collection is newer than PC1 and puppet5' do
+      let(:params) do
+        super().merge(:collection => 'puppet6', :package_version => '6.0.0')
+      end
+
+      let(:facts) do
+        super().merge(:operatingsystemmajrelease => 27)
+      end
+
+      it { sets_distro_tag_to('fc27') }
+    end
+  end
+
   [['RedHat', 'el-7-x86_64', 'el-7-x86_64', 7], ['Amazon', '', 'el-6-x64', 6]].each do |os, tag, repodir, osmajor|
     context "when PE on #{os}" do
       before(:each) do
@@ -126,20 +211,18 @@ describe 'puppet_agent' do
         end
 
         Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-          '1.2.5'
+          '5.5.4'
         end
       end
 
-      let(:facts) {{
-        :osfamily                  => 'RedHat',
-        :operatingsystem           => os,
-        :architecture              => 'x64',
-        :servername                => 'master.example.vm',
-        :clientcert                => 'foo.example.vm',
-        :is_pe                     => true,
-        :platform_tag              => tag,
-        :operatingsystemmajrelease => osmajor,
-      }}
+      let(:facts) do
+        super().merge(
+          :operatingsystem  => os,
+          :operatingsystemmajrelease => osmajor,
+          :platform_tag => tag,
+          is_pe: true
+        )
+      end
 
       context 'with manage_repo enabled' do
         let(:params)  {
@@ -207,7 +290,7 @@ describe 'puppet_agent' do
             :package_version => package_version
           }
         }
-        it { is_expected.to contain_package('puppet-agent').with_ensure("1.2.5-1.el#{osmajor}") }
+        it { is_expected.to contain_package('puppet-agent').with_ensure("#{params[:package_version]}-1.el#{osmajor}") }
 
       end
 
