@@ -19,6 +19,7 @@ class puppet_agent::install(
   assert_private()
 
   $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
+  $pa_collection = getvar('::puppet_agent::collection')
 
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or $::operatingsystem == 'AIX' {
     $_install_options = $::operatingsystem ? {
@@ -54,6 +55,7 @@ class puppet_agent::install(
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
+    $install_script = 'solaris_install.sh.erb'
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
@@ -89,11 +91,7 @@ class puppet_agent::install(
       file { "${_installsh}":
         ensure  => file,
         mode    => '0755',
-        content => epp('puppet_agent/solaris_install.sh.epp', {
-          'old_package_names' => $old_package_names,
-          'adminfile'         => $adminfile,
-          'sourcefile'        => $sourcefile,
-          'install_options'   => $install_options})
+        content => template('puppet_agent/do_install.sh.erb')
       }
       -> exec { 'solaris_install script':
         command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
@@ -123,15 +121,24 @@ class puppet_agent::install(
       refreshonly => true,
     }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12|13)/ {
-    contain puppet_agent::install::remove_packages
+    if $old_packages or $puppet_agent::aio_upgrade_required {
+      $install_script = 'osx_install.sh.erb'
 
-    # package provider does not provide 'versionable'
-    package { $::puppet_agent::package_name:
-      ensure          => 'present',
-      provider        => 'pkgdmg',
-      source          => "/opt/puppetlabs/packages/${package_file_name}",
-      require         => Class['puppet_agent::install::remove_packages'],
-      install_options => $install_options,
+      contain puppet_agent::install::remove_packages
+
+      $_logfile = "${::env_temp_variable}/osx_install.log"
+      notice("Puppet install log file at ${_logfile}")
+
+      $_installsh = "${::env_temp_variable}/osx_install.sh"
+      file { "${_installsh}":
+        ensure  => file,
+        mode    => '0755',
+        content => template('puppet_agent/do_install.sh.erb'),
+        require => Class['Puppet_agent::Install::Remove_packages']
+      }
+      -> exec { 'osx_install script':
+        command => "${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
+      }
     }
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
@@ -157,7 +164,30 @@ class puppet_agent::install(
   } elsif ($::osfamily == 'RedHat') and ($package_version != 'present') {
     # Workaround PUP-5802/PUP-5025
     if ($::operatingsystem == 'Fedora') {
-      $dist_tag = "fedoraf${::operatingsystemmajrelease}"
+      if $pa_collection == 'PC1' or $pa_collection == 'puppet5' {
+        # There's three cases here due to some mistakes with how we
+        # set-up our distro tags for Fedora platforms:
+        #   * For newer Fedora platforms (e.g. Fedora 28), we want
+        #     to use the fc<major> tag
+        #
+        #   * For older Fedora platforms (e.g. Fedora 26 and 27), we
+        #     have two separate cases:
+        #       * If the package version's > 5.5.3, then we use the fedora<major>
+        #         tag, b/c in those versions we removed the 'f' prefix.
+        #
+        #       * If the package version's <= 5.5.3, then we use the fedoraf<major>
+        #         tag b/c the 'f' prefix is still there.
+        #     
+        if (versioncmp("${::operatingsystemmajrelease}", '27') > 0) {
+          $dist_tag = "fc${::operatingsystemmajrelease}"
+        } elsif (versioncmp("${package_version}", '5.5.3') > 0) {
+          $dist_tag = "fedora${::operatingsystemmajrelease}"
+        } else {
+          $dist_tag = "fedoraf${::operatingsystemmajrelease}"
+        }
+      } else {
+        $dist_tag = "fc${::operatingsystemmajrelease}"
+      }
     } elsif ($::platform_tag != undef and $::platform_tag =~ /redhatfips.*/) {
       # The undef check here is for unit tests that don't supply this fact.
       $dist_tag = 'redhatfips7'

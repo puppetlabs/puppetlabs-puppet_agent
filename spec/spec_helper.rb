@@ -9,6 +9,14 @@ if Puppet::Util::Package.versioncmp(Puppet.version, '4.5.0') >= 0
   end
 end
 
+RSpec.configure do |c|
+  c.before :each do
+    Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue, doc: '') do |args|
+      '2018.1.0'
+    end
+  end
+end
+
 # put local configuration and setup into spec_helper_local
 begin
   require 'spec_helper_local'

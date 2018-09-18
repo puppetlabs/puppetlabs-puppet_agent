@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.7.0] - 2018-09-18
+
+### Summary
+Bugfix and compatibility update for Puppet 6
+
+### Features
+- Support for changes to Fedora package naming in Puppet 5 and 6
+- Refactor OSX upgrades to be like Solaris and Windows, using an external script
+
+## [1.6.2] - 2018-07-26
+
+### Summary
+Compatibility update for PE packaging changes
+
+### Features
+- Support for new pe_repo tarballs that use repo names matching open source.
+
 ## [1.6.1] - 2018-06-29
 
 ### Summary
