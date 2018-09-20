@@ -30,9 +30,9 @@ end
 def install_modules_on(host)
   install_ca_certs_on(host)
   puppet_module_install_on(host, :source => PROJ_ROOT, :module_name => 'puppet_agent')
-  on host, puppet('module', 'install', 'puppetlabs-stdlib', '--version', '4.12.0'), {:acceptable_exit_codes => [0]}
+  on host, puppet('module', 'install', 'puppetlabs-stdlib', '--version', '4.16.0'), {:acceptable_exit_codes => [0]}
   on host, puppet('module', 'install', 'puppetlabs-inifile', '--version', '2.1.0'), {:acceptable_exit_codes => [0]}
-  on host, puppet('module', 'install', 'puppetlabs-apt', '--version', '2.3.0'), {:acceptable_exit_codes => [0]}
+  on host, puppet('module', 'install', 'puppetlabs-apt', '--version', '4.4.0'), {:acceptable_exit_codes => [0]}
   on host, puppet('module', 'install', 'puppetlabs-transition', '--version', '0.1.1'), {:acceptable_exit_codes => [0]}
 end
 
@@ -66,11 +66,10 @@ unless ENV['BEAKER_provision'] == 'no'
   sleep 10
 end
 
-def parser_opts(master_fqdn)
-  # Configuration only needed on 3.x master
+def agent_opts(master_fqdn)
   {
-    :main => {:stringify_facts => false, :parser => 'future', :color => 'ansi'},
-    :agent => {:stringify_facts => false, :cfacter => true, :ssldir => '$vardir/ssl', :server => master_fqdn},
+    :main => {:color => 'ansi'},
+    :agent => {:ssldir => '$vardir/ssl', :server => master_fqdn},
   }
 end
 
@@ -135,9 +134,9 @@ def setup_puppet_on(host, opts = {})
 
   puts "Setup foss puppet on #{host}"
   configure_defaults_on host, 'foss'
-  install_puppet_on host, :version => ENV['PUPPET_CLIENT_VERSION'] || '3.8.6'
+  install_puppet_agent_on host, :version => ENV['PUPPET_CLIENT_VERSION'] || '1.7.0'
 
-  puppet_opts = parser_opts(master.to_s)
+  puppet_opts = agent_opts(master.to_s)
   if host['platform'] =~ /windows/i
     # MODULES-4242: ssldir setting is cleared but files not copied on Windows upgrading from Puppet 3
     puppet_opts[:agent].delete(:ssldir)
@@ -145,14 +144,9 @@ def setup_puppet_on(host, opts = {})
   configure_puppet_on(host, puppet_opts)
 
   if opts[:mcollective]
-    # On Windows, mcollective is included in the MSI even for Puppet 3
-    unless host['platform'] =~ /windows/i
-      install_package host, 'mcollective'
-      install_package host, 'mcollective-client'
-    end
     stop_firewall_on host
 
-    mco_paths = mcollective_paths(host)
+    mco_paths = mcollective_new_paths(host)
     on host, "mkdir -p #{mco_paths[:etc]}"
 
     ['ca_crt.pem', 'server.crt', 'server.key', 'client.crt', 'client.key'].each do |file|
@@ -173,10 +167,11 @@ def setup_puppet_on(host, opts = {})
     on host, puppet('resource', 'host', activemq_host, "ip=#{master['ip'] || master.ip}")
     on host, puppet('resource', 'service', 'mcollective', 'ensure=stopped')
     on host, puppet('resource', 'service', 'mcollective', 'ensure=running')
+    on host, puppet('resource', 'service', 'mcollective', 'enable=true')
   end
 
   if opts[:agent]
-    puts "Clear SSL on all hosts and disable firewalls"
+    puts "Clean SSL on all hosts and disable firewalls"
     hosts.each do |host|
       stop_firewall_on host
       on(host, "rm -rf '#{host.puppet['ssldir']}'")
@@ -210,7 +205,7 @@ def teardown_puppet_on(host)
   # the machine after each run.
   case host['platform']
     when /debian|ubuntu/
-      on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt --version 2.3.0', {:acceptable_exit_codes => [0, 1]}
+      on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt --version 4.4.0', {:acceptable_exit_codes => [0, 1]}
       clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     when /fedora|el|centos/
       clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"

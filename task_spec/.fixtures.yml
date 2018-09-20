@@ -1,0 +1,3 @@
+fixtures:
+  symlinks:
+    puppet_agent: "#{File.absolute_path(File.join(source_dir, '..'))}"

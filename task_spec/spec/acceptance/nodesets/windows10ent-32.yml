@@ -1,0 +1,14 @@
+---
+HOSTS:
+  windows10ent-32-2:
+    hypervisor: vmpooler
+    platform: windows-10ent-32
+    packaging_platform: windows-2012-x86
+    ruby_arch: x86
+    template: win-10-ent-i386
+    roles:
+    - target
+CONFIG:
+  nfs_server: none
+  consoleport: 443
+  pooling_api: http://vmpooler.delivery.puppetlabs.net/

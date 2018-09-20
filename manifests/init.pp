@@ -69,8 +69,6 @@ class puppet_agent (
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
-  validate_re($arch, ['^x86$','^x64$','^i386$','^i86pc$','^amd64$','^x86_64$','^power$','^sun4[uv]$', '^ppc64le$', '^aarch64$', 'PowerPC_POWER'])
-
   if $::osfamily == 'windows' and $install_dir != undef {
     validate_absolute_path($install_dir)
   }
@@ -93,9 +91,10 @@ class puppet_agent (
       $_expected_package_version = $package_version
     }
 
-    $aio_upgrade_required = ($is_pe == false and $_expected_package_version != undef) or
-      (getvar('::aio_agent_version') != undef and $_expected_package_version != undef and
-        versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0)
+    $aio_upgrade_required = (getvar('::aio_agent_version') == undef) or
+      (getvar('::aio_agent_version') != undef and
+      $_expected_package_version != undef and
+      versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0)
 
     if $::architecture == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')

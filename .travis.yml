@@ -18,15 +18,26 @@ matrix:
   include:
   - rvm: 2.4.1
     env: CHECK="validate lint"
-  - rvm: 2.1.0
-    env: PUPPET_GEM_VERSION="~> 3.8" FUTURE_PARSER="yes" CHECK=spec BEAKER_VERSION="3.0"
-  - rvm: 2.1.5
-    env: PUPPET_GEM_VERSION="~> 4.0.0" CHECK=spec BEAKER_VERSION="3.0"
   - rvm: 2.1.9
     env: PUPPET_GEM_VERSION="4.7.1" HIERA_GEM_VERSION="3.2.2" CHECK=spec
   - rvm: 2.1.9
     env: PUPPET_GEM_VERSION="~> 4.10" CHECK=spec
   - rvm: 2.4.1
     env: PUPPET_GEM_VERSION="~> 5.0" CHECK=spec
+  # These cells test the task on different platforms
+  - rvm: 2.3.1
+    dist: trusty
+    env: GEM_BOLT=true BEAKER_debug=true BEAKER_set=docker/ubuntu-18.04
+    install: bundle install
+    script: cd task_spec && bundle exec rake task_acceptance
+    services: docker
+    sudo: required
+  - rvm: 2.3.1
+    dist: trusty
+    env: GEM_BOLT=true BEAKER_debug=true BEAKER_set=docker/centos-7
+    install: bundle install
+    script: cd task_spec && bundle exec rake task_acceptance
+    services: docker
+    sudo: required
 notifications:
   email: false
