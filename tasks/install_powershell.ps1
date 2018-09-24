@@ -6,10 +6,19 @@ Param(
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
 
-if ((Get-WmiObject Win32_OperatingSystem).OSArchitecture -match '^32') {
-    $arch = "x86"
-} else {
+try {
+  if ((Get-WmiObject Win32_OperatingSystem).OSArchitecture -match '^32') {
+      $arch = "x86"
+  } else {
+      $arch = "x64"
+  }
+}
+catch [System.Management.Automation.CommandNotFoundException] {
+  if (((Get-CimInstance -ClassName win32_OperatingSystem).OSArchitecture) -eq '64-bit') {
     $arch = "x64"
+  } else {
+    $arch = "x86"
+  }
 }
 
 if ($version) {

@@ -98,7 +98,6 @@ shift `expr $OPTIND - 1`
 machine=`uname -m`
 os=`uname -s`
 
-# CODEREVIEW: What are we doing with this?
 if [ -f /opt/puppetlabs/puppet/VERSION ]; then
   installed_version=`cat /opt/puppetlabs/puppet/VERSION`
 else
@@ -389,6 +388,20 @@ install_file() {
         info "existing puppetlabs yum repo found, moving to old location"
         mv /etc/yum.repos.d/puppetlabs-pc1.repo /etc/yum.repos.d/puppetlabs-pc1.repo.old
       fi
+
+      if test "x$installed_version" != "xuninstalled"; then
+        info "Version ${installed_version} detected..."
+        major=$(echo $installed_version | cut -d. -f1)
+        pkg="puppet${major}-release"
+        
+        if echo $2 | grep $pkg; then
+          info "No collection upgrade detected"
+        else
+          info "Collection upgrade detected, replacing puppet${major}-release"
+          rpm -e "puppet${major}-release"
+        fi
+      fi
+
       rpm -Uvh --oldpackage --replacepkgs "$2"
       if test "$version" = 'latest'; then
         yum install -y puppet-agent
@@ -398,6 +411,20 @@ install_file() {
       ;;
     "noarch.rpm")
       info "installing puppetlabs yum repo with zypper..."
+
+      if test "x$installed_version" != "xuninstalled"; then
+        info "Version ${installed_version} detected..."
+        major=$(echo $installed_version | cut -d. -f1)
+        pkg="puppet${major}-release"
+
+        if echo $2 | grep $pkg; then
+          info "No collection upgrade detected"
+        else
+          info "Collection upgrade detected, replacing puppet${major}-release"
+          zypper remove --no-confirm "puppet${major}-release"
+        fi
+      fi
+
       zypper install --no-confirm "$2"
       if test "$version" = "latest"; then
         zypper install --no-confirm "puppet-agent"
@@ -407,8 +434,23 @@ install_file() {
       ;;
     "deb")
       info "installing puppetlabs apt repo with dpkg..."
+
+      if test "x$installed_version" != "xuninstalled"; then
+        info "Version ${installed_version} detected..."
+        major=$(echo $installed_version | cut -d. -f1)
+        pkg="puppet${major}-release"
+
+        if echo $2 | grep $pkg; then
+          info "No collection upgrade detected"
+        else
+          info "Collection upgrade detected, replacing puppet${major}-release"
+          dpkg --purge "puppet${major}-release"
+        fi
+      fi
+      
       dpkg -i "$2"
       apt-get update -y
+
       if test "$version" = 'latest'; then
         apt-get install -y puppet-agent
       else

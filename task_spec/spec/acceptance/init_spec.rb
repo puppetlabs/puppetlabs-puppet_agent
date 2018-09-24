@@ -56,5 +56,20 @@ describe 'install task' do
       expect(res['result']['version']).to match(/^5\.\d+\.\d+/)
       expect(res['result']['source']).to be
     end
+
+    # Upgrade from puppet5 to puppet6
+    results = run_task( "puppet_agent::install", 'target', { 'collection' => 'puppet6' }, config: config, inventory: inventory)
+    results.each do |res|
+      expect(res).to include('status' => 'success')
+    end
+
+    # Verify that it upgraded
+    results = run_task('puppet_agent::version', 'target', config: config, inventory: inventory)
+    results.each do |res|
+      expect(res).to include('status' => 'success')
+      expect(res['result']['version']).not_to match(/^5\.\d+\.\d+/)
+      expect(res['result']['version']).to match(/^6\.\d+\.\d+/)
+      expect(res['result']['source']).to be
+    end
   end
 end
