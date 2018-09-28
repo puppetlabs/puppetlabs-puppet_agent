@@ -1,5 +1,5 @@
 {
-  "description": "Get the version of the Puppet 5 agent package installed. Returns nothing if none present.",
+  "description": "Get the version of the Puppet agent package installed. Returns nothing if none present.",
   "parameters": {},
   "implementations": [
     {"name": "version_shell.sh", "requirements": ["shell"]},
