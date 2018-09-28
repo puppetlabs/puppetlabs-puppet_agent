@@ -57,19 +57,27 @@ describe 'install task' do
       expect(res['result']['source']).to be
     end
 
+    # puppet platform does not support fedora 26
+    skip_pup_six = select_hosts(platform: [/fedora-26/])
+    skip_hostnames = skip_pup_six.each_with_object([]) { |node, acc| acc.push(node[:vmhostname]) }
+
     # Upgrade from puppet5 to puppet6
     results = run_task( "puppet_agent::install", 'target', { 'collection' => 'puppet6' }, config: config, inventory: inventory)
     results.each do |res|
-      expect(res).to include('status' => 'success')
+      unless skip_hostnames.include?(res['node'])
+        expect(res).to include('status' => 'success')
+      end
     end
 
     # Verify that it upgraded
     results = run_task('puppet_agent::version', 'target', config: config, inventory: inventory)
     results.each do |res|
-      expect(res).to include('status' => 'success')
-      expect(res['result']['version']).not_to match(/^5\.\d+\.\d+/)
-      expect(res['result']['version']).to match(/^6\.\d+\.\d+/)
-      expect(res['result']['source']).to be
+      unless skip_hostnames.include?(res['node'])
+        expect(res).to include('status' => 'success')
+        expect(res['result']['version']).not_to match(/^5\.\d+\.\d+/)
+        expect(res['result']['version']).to match(/^6\.\d+\.\d+/)
+        expect(res['result']['source']).to be
+      end
     end
   end
 end
