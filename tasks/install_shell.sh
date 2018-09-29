@@ -404,7 +404,7 @@ install_file() {
 
       rpm -Uvh --oldpackage --replacepkgs "$2"
       if test "$version" = 'latest'; then
-        yum install -y puppet-agent
+        yum install -y puppet-agent && yum upgrade -y puppet-agent
       else
         yum install -y "puppet-agent-${puppet_agent_version}"
       fi
