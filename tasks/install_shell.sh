@@ -66,37 +66,15 @@ else
   collection='puppet'
 fi
 
-#if [ -n "$PT_filename" ]; then
-#   cmdline_filename=$PT_filename
-#fi
-#
-#if [ -n "$PT_download_dir" ]; then
-#  cmdline_dl_dir==$PT_download_dir
-#fi
-#while getopts v:f:d:h opt
-#do
-#  case "$opt" in
-#    v)  version="$OPTARG";;
-#    f)  cmdline_filename="$OPTARG";;
-#    d)  cmdline_dl_dir="$OPTARG";;
-#    h) echo >&2 \
-#      "install_puppet_agent.sh - A shell script to install Puppet Agent > 5.0.0, assuming no dependencies
-#      usage:
-#      -v   version         version to install, defaults to \$latest_version
-#      -f   filename        filename for downloaded file, defaults to original name
-#      -d   download_dir    filename for downloaded file, defaults to /tmp/(random-number)"
-#      exit 0;;
-#    \?)   # unknown flag
-#      echo >&2 \
-#      "unknown option
-#      usage: $0 [-v version] [-f filename | -d download_dir]"
-#      exit 1;;
-#  esac
-#done
 shift `expr $OPTIND - 1`
 
 machine=`uname -m`
 os=`uname -s`
+
+if [ `id -u` -ne 0 ]; then
+  echo "puppet_agent::install task must be run as root"
+  exit 1
+fi
 
 if [ -f /opt/puppetlabs/puppet/VERSION ]; then
   installed_version=`cat /opt/puppetlabs/puppet/VERSION`
