@@ -41,19 +41,6 @@ exists() {
   fi
 }
 
-# Helper bug-reporting text
-report_bug() {
-  critical "Please file a bug report at https://github.com/puppetlabs/puppetlabs-puppet_agent"
-  critical ""
-  critical "Version: $version"
-  critical "Platform: $platform"
-  critical "Platform Version: $platform_version"
-  critical "Machine: $machine"
-  critical "OS: $os"
-  critical ""
-  critical "Please detail your operating system type, version and any other relevant details"
-}
-
 # Get command line arguments
 
 if [ -n "$PT_version" ]; then
@@ -119,7 +106,6 @@ elif test -f "/usr/bin/sw_vers"; then
     "10.12") platform_version="10.12";;
     "10.13") platform_version="10.13";;
     *) echo "No builds for platform: $major_version"
-       report_bug
        exit 1
        ;;
   esac
@@ -156,7 +142,6 @@ fi
 
 if test "x$platform" = "x"; then
   critical "Unable to determine platform version!"
-  report_bug
   exit 1
 fi
 
@@ -203,7 +188,6 @@ esac
 
 if test "x$platform_version" = "x"; then
   critical "Unable to determine platform version!"
-  report_bug
   exit 1
 fi
 
@@ -215,7 +199,6 @@ fi
 
 unable_to_retrieve_package() {
   critical "Unable to retrieve a valid package!"
-  report_bug
   exit 1
 }
 
@@ -371,7 +354,7 @@ install_file() {
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
         pkg="puppet${major}-release"
-        
+
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
         else
@@ -425,7 +408,7 @@ install_file() {
           dpkg --purge "puppet${major}-release"
         fi
       fi
-      
+
       dpkg -i "$2"
       apt-get update -y
 
@@ -452,13 +435,11 @@ install_file() {
       ;;
     *)
       critical "Unknown filetype: $1"
-      report_bug
       exit 1
       ;;
   esac
   if test $? -ne 0; then
     critical "Installation failed"
-    report_bug
     exit 1
   fi
 }
@@ -541,7 +522,6 @@ case $platform in
         ;;
       *)
         critical "Sorry $platform is not supported yet!"
-        report_bug
         exit 1
         ;;
     esac
