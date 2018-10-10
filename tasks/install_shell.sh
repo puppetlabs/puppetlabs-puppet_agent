@@ -55,7 +55,6 @@ fi
 
 shift `expr $OPTIND - 1`
 
-machine=`uname -m`
 os=`uname -s`
 
 if [ `id -u` -ne 0 ]; then
@@ -110,14 +109,8 @@ elif test -f "/usr/bin/sw_vers"; then
        ;;
   esac
 
-  # x86_64 Apple hardware often runs 32-bit kernels (see OHAI-63)
-  x86_64=`sysctl -n hw.optional.x86_64`
-  if test $x86_64 -eq 1; then
-    machine="x86_64"
-  fi
 elif test -f "/etc/release"; then
   platform="solaris2"
-  machine=`/usr/bin/uname -p`
   platform_version=`/usr/bin/uname -r`
 elif test -f "/etc/SuSE-release"; then
   if grep -q 'Enterprise' /etc/SuSE-release;
@@ -137,7 +130,6 @@ elif test "x$os" = "xFreeBSD"; then
 elif test "x$os" = "xAIX"; then
   platform="aix"
   platform_version=`uname -v`
-  machine="ppc"
 fi
 
 if test "x$platform" = "x"; then
