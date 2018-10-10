@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 # Make sure bolt's puppet is loaded
 require 'bolt/pal'
 Bolt::PAL.load_puppet
@@ -21,8 +20,4 @@ RSpec.configure do |c|
   c.add_setting :module_path
   c.module_path  = File.join(base_dir, 'fixtures', 'modules')
 
-  # Configure all nodes in nodeset
-  c.before :suite do
-    #run_puppet_access_login(user: 'admin') if pe_install?
-  end
 end

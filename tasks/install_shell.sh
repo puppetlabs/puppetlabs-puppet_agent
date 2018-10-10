@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Install puppet-agent as a task
 #
 # From https://github.com/petems/puppet-install-shell/blob/master/install_puppet_5_agent.sh
@@ -25,12 +25,6 @@ critical () {
     log "CRIT: ${1}"
 }
 
-utopic () {
-    warn "There is no utopic release yet, see https://tickets.puppetlabs.com/browse/CPR-92 for progress";
-    warn "We'll use the trusty package for now";
-    deb_codename="trusty";
-}
-
 # Check whether a command exists - returns 0 if it does, 1 if it does not
 exists() {
   if command -v $1 >/dev/null 2>&1
@@ -42,7 +36,6 @@ exists() {
 }
 
 # Get command line arguments
-
 if [ -n "$PT_version" ]; then
   version=$PT_version
 fi
@@ -53,15 +46,13 @@ else
   collection='puppet'
 fi
 
-shift `expr $OPTIND - 1`
-
-os=`uname -s`
-
+# Error if non-root
 if [ `id -u` -ne 0 ]; then
   echo "puppet_agent::install task must be run as root"
   exit 1
 fi
 
+# Track to handle puppet5 to puppet6
 if [ -f /opt/puppetlabs/puppet/VERSION ]; then
   installed_version=`cat /opt/puppetlabs/puppet/VERSION`
 else
@@ -69,67 +60,54 @@ else
 fi
 
 # Retrieve Platform and Platform Version
-if test -f "/etc/lsb-release" && grep -q DISTRIB_ID /etc/lsb-release; then
-  platform=`grep DISTRIB_ID /etc/lsb-release | cut -d "=" -f 2 | tr '[A-Z]' '[a-z]'`
-  platform_version=`grep DISTRIB_RELEASE /etc/lsb-release | cut -d "=" -f 2`
-elif test -f "/etc/debian_version"; then
-  platform="debian"
-  platform_version=`cat /etc/debian_version`
-elif test -f "/etc/redhat-release"; then
-  platform=`sed 's/^\(.\+\) release.*/\1/' /etc/redhat-release | tr '[A-Z]' '[a-z]'`
-  platform_version=`sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/redhat-release`
+# Utilize facts implementation when available
+if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
+  # Use facts module bash.sh implementation
+  platform=$(bash $PT__installdir/facts/tasks/bash.sh "platform")
+  platform_version=$(bash $PT__installdir/facts/tasks/bash.sh "release")
 
-  #If /etc/redhat-release exists, we act like RHEL by default. Except for fedora
-  if test "$platform" = "fedora"; then
-    platform="fedora"
-  else
+  # Handle CentOS
+  if test "x$platform" = "xCentOS"; then
     platform="el"
-  fi
-elif test -f "/etc/system-release"; then
-  platform=`sed 's/^\(.\+\) release.\+/\1/' /etc/system-release | tr '[A-Z]' '[a-z]'`
-  platform_version=`sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/system-release | tr '[A-Z]' '[a-z]'`
-  # amazon is built off of fedora, so act like RHEL
-  if test "$platform" = "amazon linux ami"; then
+
+  # Handle RedHat
+  elif test "x$platform" = "xRedHat"; then
     platform="el"
-    platform_version="6.0"
-  fi
-# Apple OS X
-elif test -f "/usr/bin/sw_vers"; then
-  platform="mac_os_x"
-  # Matching the tab-space with sed is error-prone
-  platform_version=`sw_vers | awk '/^ProductVersion:/ { print $2 }'`
 
-  major_version=`echo $platform_version | cut -d. -f1,2`
-  case $major_version in
-    "10.11") platform_version="10.11";;
-    "10.12") platform_version="10.12";;
-    "10.13") platform_version="10.13";;
-    *) echo "No builds for platform: $major_version"
-       exit 1
-       ;;
-  esac
+  # If facts task return "Linux" for platform, investigate.
+  elif test "x$platform" = "xLinux"; then
+    if test -f "/etc/SuSE-release"; then
+      if grep -q 'Enterprise' /etc/SuSE-release; then
+        platform="SLES"
+        platform_version=`awk '/^VERSION/ {V = $3}; /^PATCHLEVEL/ {P = $3}; END {print V "." P}' /etc/SuSE-release`
+      else
+        echo "No builds for platform: SUSE"
+        exit 1
+      fi
+    elif test -f "/etc/redhat-release"; then
+      platform="el"
+      platform_version=`sed 's/^.\+ release \([.0-9]\+\).*/\1/' /etc/redhat-release`
+    fi
 
-elif test -f "/etc/release"; then
-  platform="solaris2"
-  platform_version=`/usr/bin/uname -r`
-elif test -f "/etc/SuSE-release"; then
-  if grep -q 'Enterprise' /etc/SuSE-release;
-  then
-      platform="sles"
-      platform_version=`awk '/^VERSION/ {V = $3}; /^PATCHLEVEL/ {P = $3}; END {print V "." P}' /etc/SuSE-release`
-  else
-      platform="suse"
-      platform_version=`awk '/^VERSION =/ { print $3 }' /etc/SuSE-release`
+  # Handle OSX
+  elif test "x$platform" = "xDarwin"; then
+    platform="mac_os_x"
+    # Matching the tab-space with sed is error-prone
+    platform_version=`sw_vers | awk '/^ProductVersion:/ { print $2 }'`
+
+    major_version=`echo $platform_version | cut -d. -f1,2`
+    case $major_version in
+      "10.11") platform_version="10.11";;
+      "10.12") platform_version="10.12";;
+      "10.13") platform_version="10.13";;
+      *) echo "No builds for platform: $major_version"
+         exit 1
+         ;;
+    esac
   fi
-elif test -f "/etc/arch-release"; then
-  platform="archlinux"
-  platform_version=`/usr/bin/uname -r`
-elif test "x$os" = "xFreeBSD"; then
-  platform="freebsd"
-  platform_version=`uname -r | sed 's/-.*//'`
-elif test "x$os" = "xAIX"; then
-  platform="aix"
-  platform_version=`uname -v`
+else
+  echo "This module depends on the puppetlabs-facts module"
+  exit 1
 fi
 
 if test "x$platform" = "x"; then
@@ -152,26 +130,20 @@ case $platform in
   "el")
     platform_version=$major_version
     ;;
-  "fedora")
+  "Fedora")
     case $major_version in
       "23") platform_version="22";;
       *) platform_version=$major_version;;
     esac
     ;;
-  "debian")
+  "Debian")
     case $major_version in
       "5") platform_version="6";;
       "6") platform_version="6";;
       "7") platform_version="6";;
     esac
     ;;
-  "freebsd")
-    platform_version=$major_version
-    ;;
-  "sles")
-    platform_version=$major_version
-    ;;
-  "suse")
+  "SLES")
     platform_version=$major_version
     ;;
 esac
@@ -181,12 +153,6 @@ esac
 if test "x$platform_version" = "x"; then
   critical "Unable to determine platform version!"
   exit 1
-fi
-
-if test "x$platform" = "xsolaris2"; then
-  # hack up the path on Solaris to find wget
-  PATH=/usr/sfw/bin:$PATH
-  export PATH
 fi
 
 unable_to_retrieve_package() {
@@ -414,9 +380,6 @@ install_file() {
         fi
       fi
       ;;
-    "solaris")
-      critical "Solaris not supported yet"
-      ;;
     "dmg" )
       info "installing puppetlabs dmg with hdiutil and installer"
       mountpoint="$(mktemp -d -t $(random_hexdump))"
@@ -436,95 +399,84 @@ install_file() {
   fi
 }
 
-#Platforms that do not need downloads are in *, the rest get their own entry.
+info "Downloading Puppet $version for ${platform}..."
 case $platform in
-  "archlinux")
-    critical "Not got Puppet-agent not supported on Arch yet"
+  "SLES")
+    info "SLES platform! Lets get you an RPM..."
+    gpg_key="${tmp_dir}/RPM-GPG-KEY-puppet"
+    do_download "http://yum.puppetlabs.com/RPM-GPG-KEY-puppet" "$gpg_key"
+    rpm --import "$gpg_key"
+    rm -f "$gpg_key"
+    filetype="noarch.rpm"
+    filename="${collection}-release-sles-${platform_version}.noarch.rpm"
+    download_url="http://yum.puppetlabs.com/${collection}/${filename}"
     ;;
-  "freebsd")
-    critical "Not got Puppet-agent not supported on freebsd yet"
+  "el")
+    info "Red hat like platform! Lets get you an RPM..."
+    filetype="rpm"
+    filename="${collection}-release-el-${platform_version}.noarch.rpm"
+    download_url="http://yum.puppetlabs.com/${collection}/${filename}"
+    ;;
+  "Fedora")
+    info "Fedora platform! Lets get the RPM..."
+    filetype="rpm"
+    filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
+    download_url="http://yum.puppetlabs.com/${collection}/${filename}"
+    ;;
+  "Debian")
+    info "Debian platform! Lets get you a DEB..."
+    case $major_version in
+      "5") deb_codename="lenny";;
+      "6") deb_codename="squeeze";;
+      "7") deb_codename="wheezy";;
+      "8") deb_codename="jessie";;
+      "9") deb_codename="stretch";;
+    esac
+    filetype="deb"
+    filename="${collection}-release-${deb_codename}.deb"
+    download_url="http://apt.puppetlabs.com/${filename}"
+    ;;
+  "Ubuntu")
+    info "Ubuntu platform! Lets get you a DEB..."
+    case $platform_version in
+      "12.04") deb_codename="precise";;
+      "12.10") deb_codename="quantal";;
+      "13.04") deb_codename="raring";;
+      "13.10") deb_codename="saucy";;
+      "14.04") deb_codename="trusty";;
+      "14.10") deb_codename="trusty";;
+      "15.04") deb_codename="vivid";;
+      "15.10") deb_codename="wily";;
+      "16.04") deb_codename="xenial";;
+      "16.10") deb_codename="yakkety";;
+      "17.04") deb_codename="zesty";;
+      "18.04") deb_codename="bionic";;
+    esac
+    filetype="deb"
+    filename="${collection}-release-${deb_codename}.deb"
+    download_url="http://apt.puppetlabs.com/${filename}"
+    ;;
+  "mac_os_x")
+    info "OSX platform! Lets get you a DMG..."
+    filetype="dmg"
+    if test "$version" = "latest"; then
+      filename="puppet-agent-latest.dmg"
+    else
+      filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
+    fi
+    download_url="http://downloads.puppetlabs.com/mac/${collection}/${platform_version}/x86_64/${filename}"
     ;;
   *)
-    info "Downloading Puppet $version for ${platform}..."
-    case $platform in
-      "sles")
-        info "SLES platform! Lets get you an RPM..."
-        gpg_key="${tmp_dir}/RPM-GPG-KEY-puppet"
-        do_download "http://yum.puppetlabs.com/RPM-GPG-KEY-puppet" "$gpg_key"
-        rpm --import "$gpg_key"
-        rm -f "$gpg_key"
-        filetype="noarch.rpm"
-        filename="${collection}-release-sles-${platform_version}.noarch.rpm"
-        download_url="http://yum.puppetlabs.com/${collection}/${filename}"
-        ;;
-      "el")
-        info "Red hat like platform! Lets get you an RPM..."
-        filetype="rpm"
-        filename="${collection}-release-el-${platform_version}.noarch.rpm"
-        download_url="http://yum.puppetlabs.com/${collection}/${filename}"
-        ;;
-      "fedora")
-        info "Fedora platform! Lets get the RPM..."
-        filetype="rpm"
-        filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
-        download_url="http://yum.puppetlabs.com/${collection}/${filename}"
-        ;;
-      "debian")
-        info "Debian platform! Lets get you a DEB..."
-        case $major_version in
-          "5") deb_codename="lenny";;
-          "6") deb_codename="squeeze";;
-          "7") deb_codename="wheezy";;
-          "8") deb_codename="jessie";;
-          "9") deb_codename="stretch";;
-        esac
-        filetype="deb"
-        filename="${collection}-release-${deb_codename}.deb"
-        download_url="http://apt.puppetlabs.com/${filename}"
-        ;;
-      "ubuntu")
-        info "Ubuntu platform! Lets get you a DEB..."
-        case $platform_version in
-          "12.04") deb_codename="precise";;
-          "12.10") deb_codename="quantal";;
-          "13.04") deb_codename="raring";;
-          "13.10") deb_codename="saucy";;
-          "14.04") deb_codename="trusty";;
-          "15.04") deb_codename="vivid";;
-          "15.10") deb_codename="wily";;
-          "16.04") deb_codename="xenial";;
-          "16.10") deb_codename="yakkety";;
-          "17.04") deb_codename="zesty";;
-          "18.04") deb_codename="bionic";;
-          "14.10") utopic;;
-        esac
-        filetype="deb"
-        filename="${collection}-release-${deb_codename}.deb"
-        download_url="http://apt.puppetlabs.com/${filename}"
-        ;;
-      "mac_os_x")
-        info "OSX platform! Lets get you a DMG..."
-        filetype="dmg"
-        if test "$version" = "latest"; then
-          filename="puppet-agent-latest.dmg"
-        else
-          filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
-        fi
-        download_url="http://downloads.puppetlabs.com/mac/${collection}/${platform_version}/x86_64/${filename}"
-        ;;
-      *)
-        critical "Sorry $platform is not supported yet!"
-        exit 1
-        ;;
-    esac
-
-    download_filename="${tmp_dir}/${filename}"
-
-    do_download "$download_url" "$download_filename"
-
-    install_file $filetype "$download_filename"
+    critical "Sorry $platform is not supported yet!"
+    exit 1
     ;;
 esac
+
+download_filename="${tmp_dir}/${filename}"
+
+do_download "$download_url" "$download_filename"
+
+install_file $filetype "$download_filename"
 
 #Cleanup
 if test "x$tmp_dir" != "x"; then
