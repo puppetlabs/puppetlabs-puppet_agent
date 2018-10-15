@@ -170,7 +170,6 @@ describe 'puppet_agent' do
                 it { is_expected.to contain_package('puppet-agent').with_ensure(yum_package_version) }
               end
             elsif facts[:osfamily] == 'Debian'
-              # Workaround PUP-5802/PUP-5025
               deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
             elsif facts[:osfamily] == 'Solaris' && (facts[:operatingsystemmajrelease] == '10' || Puppet.version < '4.0.0')
