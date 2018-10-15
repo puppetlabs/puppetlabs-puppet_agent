@@ -160,16 +160,7 @@ describe 'puppet_agent' do
             it { is_expected.to contain_class('puppet_agent::prepare') }
             it { is_expected.to contain_class('puppet_agent::install').that_requires('Class[puppet_agent::prepare]') }
 
-            if facts[:osfamily] == 'RedHat'
-              if facts[:operatingsystem] == 'Fedora'
-                # Workaround PUP-5802/PUP-5025
-                yum_package_version = package_version + '-1.fedoraf' + facts[:operatingsystemmajrelease]
-                it { is_expected.to contain_package('puppet-agent').with_ensure(yum_package_version) }
-              else
-                yum_package_version = package_version + '-1.el' + facts[:operatingsystemmajrelease]
-                it { is_expected.to contain_package('puppet-agent').with_ensure(yum_package_version) }
-              end
-            elsif facts[:osfamily] == 'Debian'
+            if facts[:osfamily] == 'Debian'
               deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
             elsif facts[:osfamily] == 'Solaris' && (facts[:operatingsystemmajrelease] == '10' || Puppet.version < '4.0.0')

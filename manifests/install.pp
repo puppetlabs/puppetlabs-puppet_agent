@@ -161,45 +161,6 @@ class puppet_agent::install(
         }
       }
     }
-  } elsif ($::osfamily == 'RedHat') and ($package_version != 'present') {
-    # Workaround PUP-5802/PUP-5025
-    if ($::operatingsystem == 'Fedora') {
-      if $pa_collection == 'PC1' or $pa_collection == 'puppet5' {
-        # There's three cases here due to some mistakes with how we
-        # set-up our distro tags for Fedora platforms:
-        #   * For newer Fedora platforms (e.g. Fedora 28), we want
-        #     to use the fc<major> tag
-        #
-        #   * For older Fedora platforms (e.g. Fedora 26 and 27), we
-        #     have two separate cases:
-        #       * If the package version's > 5.5.3, then we use the fedora<major>
-        #         tag, b/c in those versions we removed the 'f' prefix.
-        #
-        #       * If the package version's <= 5.5.3, then we use the fedoraf<major>
-        #         tag b/c the 'f' prefix is still there.
-        #     
-        if (versioncmp("${::operatingsystemmajrelease}", '27') > 0) {
-          $dist_tag = "fc${::operatingsystemmajrelease}"
-        } elsif (versioncmp("${package_version}", '5.5.3') > 0) {
-          $dist_tag = "fedora${::operatingsystemmajrelease}"
-        } else {
-          $dist_tag = "fedoraf${::operatingsystemmajrelease}"
-        }
-      } else {
-        $dist_tag = "fc${::operatingsystemmajrelease}"
-      }
-    } elsif ($::platform_tag != undef and $::platform_tag =~ /redhatfips.*/) {
-      # The undef check here is for unit tests that don't supply this fact.
-      $dist_tag = 'redhatfips7'
-    } elsif $::operatingsystem == 'Amazon' {
-      $dist_tag = 'el6'
-    } else {
-      $dist_tag = "el${::operatingsystemmajrelease}"
-    }
-    package { $::puppet_agent::package_name:
-      ensure          => "${package_version}-1.${dist_tag}",
-      install_options => $install_options,
-    }
   } elsif ($::osfamily == 'Debian') and ($package_version != 'present') {
     package { $::puppet_agent::package_name:
       ensure          => "${package_version}-1${::lsbdistcodename}",
