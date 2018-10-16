@@ -11,6 +11,8 @@ class puppet_agent::prepare::mco_server_config {
   if !defined(File[$mco_server]) {
     file { $mco_server:
       ensure => file,
+      owner  => $::puppet_agent::params::user,
+      group  => $::puppet_agent::params::group,
       source => $::mco_server_config,
     }
 

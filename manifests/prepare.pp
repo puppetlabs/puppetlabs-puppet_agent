@@ -17,17 +17,6 @@ class puppet_agent::prepare(
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'
-  if $_windows_client {
-
-    File{
-      source_permissions => ignore,
-    }
-  }
-  else  {
-    File {
-      source_permissions => use,
-    }
-  }
 
   # Manage /opt/puppetlabs for platforms. This is done before both config and prepare because,
   # on Windows, both can be in C:/ProgramData/Puppet Labs; doing it later creates a dependency
@@ -53,6 +42,8 @@ class puppet_agent::prepare(
     # in the destination but not the source, it'll be overwritten.
     file { $::puppet_agent::params::puppetdirs:
       ensure => directory,
+      owner  => $::puppet_agent::params::user,
+      group  => $::puppet_agent::params::group,
     }
 
     if !$_windows_client { #Windows didn't change only nix systems
@@ -64,6 +55,8 @@ class puppet_agent::prepare(
       # manage client.cfg and server.cfg contents
       file { $::puppet_agent::params::mcodirs:
         ensure => directory,
+        owner  => $::puppet_agent::params::user,
+        group  => $::puppet_agent::params::group,
       }
 
       # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.

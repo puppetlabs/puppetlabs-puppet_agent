@@ -15,6 +15,8 @@ class puppet_agent::service {
     notice ("Puppet service start log file at ${_logfile}")
     file { "${::env_temp_variable}/solaris_start_puppet.sh":
       ensure => file,
+      owner  => 0,
+      group  => 0,
       source => 'puppet:///modules/puppet_agent/solaris_start_puppet.sh',
       mode   => '0755',
     }

@@ -12,11 +12,15 @@ class puppet_agent::prepare::puppet_config (
   if $old_packages {
     file { $puppetconf:
       ensure => file,
+      owner  => $::puppet_agent::params::user,
+      group  => $::puppet_agent::params::group,
       source => $::puppet_config,
     }
   } elsif !defined(File[$puppetconf]) {
     file { $puppetconf:
       ensure => file,
+      owner  => $::puppet_agent::params::user,
+      group  => $::puppet_agent::params::group,
     }
   }
 

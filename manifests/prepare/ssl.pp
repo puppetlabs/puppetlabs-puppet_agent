@@ -10,6 +10,8 @@ class puppet_agent::prepare::ssl {
   $ssl_dir = $::puppet_agent::params::ssldir
   file { $ssl_dir:
     ensure  => directory,
+    owner   => $::puppet_agent::params::user,
+    group   => $::puppet_agent::params::group,
     source  => $::puppet_ssldir,
     backup  => false,
     recurse => false,
@@ -27,6 +29,8 @@ class puppet_agent::prepare::ssl {
     if $::puppet_sslpaths[$setting]['path_exists'] {
       file { "${ssl_dir}/${subdir}":
         ensure  => directory,
+        owner   => $::puppet_agent::params::user,
+        group   => $::puppet_agent::params::group,
         source  => $::puppet_sslpaths[$setting]['path'],
         backup  => false,
         recurse => true,
@@ -38,6 +42,8 @@ class puppet_agent::prepare::ssl {
   if $::puppet_sslpaths['hostcrl']['path_exists'] {
     file { "${ssl_dir}/crl.pem":
       ensure => file,
+      owner  => $::puppet_agent::params::user,
+      group  => $::puppet_agent::params::group,
       source => $::puppet_sslpaths['hostcrl']['path'],
       backup => false
     }

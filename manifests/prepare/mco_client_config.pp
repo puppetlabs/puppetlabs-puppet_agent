@@ -10,6 +10,8 @@ class puppet_agent::prepare::mco_client_config {
   $mco_client = $::puppet_agent::params::mco_client
   file { $mco_client:
     ensure => file,
+    owner  => $::puppet_agent::params::user,
+    group  => $::puppet_agent::params::group,
     source => $::mco_client_config,
   }
 
