@@ -20,8 +20,8 @@ class puppet_agent::windows::install(
   }
   else {
     $dir = $package_file_name ? {
-      /.*-5\..*/ => 'puppet5/',
-      /.*-6\..*/ => 'puppet6/',
+      /puppet-agent-5\..*/ => 'puppet5/',
+      /puppet-agent-6\..*/ => 'puppet6/',
       default => ''
     }
     $_https_source = "https://downloads.puppetlabs.com/windows/${dir}${package_file_name}"
