@@ -210,6 +210,8 @@ detected>"}`. If a version cannot be found, returns `{"version": null}`.
 Installs the puppet-agent package. Currently only supports Linux variants: Debian, Ubuntu, SLES, RHEL/CentOS/Fedora. A specific
 package `version` can be specified; if not, will install or upgrade to the latest Puppet 5 version available.
 
+**Note**: The `puppet_agent::install_shell` task requires the `facts::bash` implementation from the [facts](https://forge.puppet.com/puppetlabs/facts) module. Both the `puppet_agent` and `facts` modules are packaged with Bolt. For use outside of Bolt make sure the `facts` module is installed to the same `modules` directory as `puppet_agent`.
+
 ## Limitations
 
 Mac OS X Open Source packages are currently not supported.
