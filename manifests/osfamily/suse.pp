@@ -14,7 +14,7 @@ class puppet_agent::osfamily::suse(
       }
       contain puppet_agent::prepare::package
     }
-    '11', '12': {
+    '11', '12', '15': {
       # Import the GPG key
       $legacy_keyname  = 'GPG-KEY-puppetlabs'
       $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
