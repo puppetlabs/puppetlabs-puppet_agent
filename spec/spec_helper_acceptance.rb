@@ -49,7 +49,7 @@ unless ENV['BEAKER_provision'] == 'no'
   install_modules_on master
 
   # Install activemq on master
-  install_puppetlabs_release_repo master
+  install_puppetlabs_release_repo(master, '')
   install_package master, 'activemq'
 
   ['truststore', 'keystore'].each do |ext|
