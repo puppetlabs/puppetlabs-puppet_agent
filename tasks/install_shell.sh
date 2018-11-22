@@ -73,6 +73,8 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
   # Handle Oracle
   elif test "x$platform" = "xOracle Linux Server"; then
     platform="el"
+  elif test "x$platform" = "xOracleLinux"; then
+    platform="el"
 
   # Handle RedHat
   elif test "x$platform" = "xRedHat"; then
