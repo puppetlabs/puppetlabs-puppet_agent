@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
-  master_package_version = '1.3.5'
+  master_package_version = '1.10.100'
   before(:each) do
     # Need to mock the PE functions
     Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-      "4.0.0"
+      "2000.0.0"
     end
 
     Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
@@ -13,17 +13,8 @@ describe 'puppet_agent' do
     end
   end
 
-  if Puppet.version >= "4.0.0"
-    package_version = '1.2.5'
-    let(:params) do
-      {
-        :package_version => package_version
-      }
-    end
-  else
-    # Default to PE master package version in 3.8
-    package_version = master_package_version
-  end
+  package_version = '1.10.100'
+  let(:params) {{ package_version: package_version }}
 
   facts = {
     :is_pe                       => true,
@@ -59,7 +50,7 @@ describe 'puppet_agent' do
           let(:facts) do
             facts.merge({
               :is_pe                       => true,
-              :aio_agent_version           => '1.0.4',
+              :aio_agent_version           => '1.10.99',
               :platform_tag                => tag,
               :macosx_productversion_major => osmajor
             })
@@ -75,40 +66,17 @@ describe 'puppet_agent' do
           it { is_expected.to contain_class('puppet_agent::install::remove_packages_osx') }
           it { is_expected.to contain_class("puppet_agent::osfamily::darwin") }
 
-          if Puppet.version < "4.0.0"
-            [
-              'pe-augeas',
-              'pe-ruby-augeas',
-              'pe-openssl',
-              'pe-ruby',
-              'pe-cfpropertylist',
-              'pe-facter',
-              'pe-puppet',
-              'pe-mcollective',
-              'pe-hiera',
-              'pe-puppet-enterprise-release',
-              'pe-stomp',
-              'pe-libyaml',
-              'pe-ruby-rgen',
-              'pe-deep-merge',
-              'pe-ruby-shadow',
-            ].each do |package|
-              it { is_expected.to contain_exec("forget #{package}").with_command("/usr/sbin/pkgutil --forget com.puppetlabs.#{package}") }
-              it { is_expected.to contain_exec("forget #{package}").with_require('File[/opt/puppet]') }
-            end
-          else
-            context 'aio_agent_version is out of date' do
-              let(:facts) do
-                facts.merge({
-                  :aio_agent_version => '1.0.0'
-                })
-              end
-
-              it { is_expected.not_to contain_exec('forget puppet-agent') }
+          context 'aio_agent_version is out of date' do
+            let(:facts) do
+              facts.merge({
+                :aio_agent_version => '0.0.1'
+              })
             end
 
             it { is_expected.not_to contain_exec('forget puppet-agent') }
           end
+
+          it { is_expected.not_to contain_exec('forget puppet-agent') }
         end
       end
     end

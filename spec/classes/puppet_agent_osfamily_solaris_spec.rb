@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
-  package_version = '1.2.5.90.g93a35da'
+  package_version = '1.10.100.90.g93a35da'
 
   facts = {
     :osfamily                  => 'Solaris',
@@ -17,15 +17,9 @@ describe 'puppet_agent' do
   # Strips out strings in the version string on Solaris 11,
   # because pkg doesn't accept strings in version numbers. This
   # is how developer builds are labelled.
-  sol11_package_version = '1.2.5.90.9335'
+  sol11_package_version = '1.10.100.90.9335'
   pe_version = '2000.0.0'
-  if Puppet.version >= "4.0.0"
-    let(:params) do
-      {
-        :package_version => package_version
-      }
-    end
-  end
+  let(:params) {{ package_version: package_version }}
 
   describe 'unsupported environment' do
     context 'when not PE' do
@@ -116,44 +110,9 @@ describe 'puppet_agent' do
         end
       end
 
-      if Puppet.version < "4.0.0"
-        [
-          'pe-augeas',
-          'pe-deep-merge',
-          'pe-facter',
-          'pe-hiera',
-          'pe-libldap',
-          'pe-libyaml',
-          'pe-mcollective',
-          'pe-mcollective-common',
-          'pe-openssl',
-          'pe-puppet',
-          'pe-puppet-enterprise-release',
-          'pe-ruby',
-          'pe-ruby-augeas',
-          'pe-ruby-ldap',
-          'pe-ruby-rgen',
-          'pe-ruby-shadow',
-          'pe-stomp',
-          'pe-virt-what',
-        ].each do |package|
-          it do
-            is_expected.to contain_package(package).with_ensure('absent')
-          end
-        end
-
-        it do
-          is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
-            'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
-          })
-
-          is_expected.to contain_package('puppet-agent').with_ensure('present')
-        end
-      else
-        it do
-          is_expected.not_to contain_transition("remove puppet-agent")
-          is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
-        end
+      it do
+        is_expected.not_to contain_transition("remove puppet-agent")
+        is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
       end
     end
 
@@ -211,44 +170,9 @@ describe 'puppet_agent' do
 
       end
 
-      if Puppet.version < "4.0.0"
-        [
-          'pe-augeas',
-          'pe-deep-merge',
-          'pe-facter',
-          'pe-hiera',
-          'pe-libldap',
-          'pe-libyaml',
-          'pe-mcollective',
-          'pe-mcollective-common',
-          'pe-openssl',
-          'pe-puppet',
-          'pe-puppet-enterprise-release',
-          'pe-ruby',
-          'pe-ruby-augeas',
-          'pe-ruby-ldap',
-          'pe-ruby-rgen',
-          'pe-ruby-shadow',
-          'pe-stomp',
-          'pe-virt-what',
-        ].each do |package|
-          it do
-            is_expected.to contain_package(package).with_ensure('absent')
-          end
-        end
-
-        it do
-          is_expected.to contain_exec('puppet_agent backup /etc/puppetlabs/').with({
-            'command' => 'cp -r /etc/puppetlabs/ /tmp/puppet_agent/',
-          })
-
-          is_expected.to contain_package('puppet-agent').with_ensure('present')
-        end
-      else
-        it do
-          is_expected.not_to contain_transition("remove puppet-agent")
-          is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
-        end
+      it do
+        is_expected.not_to contain_transition("remove puppet-agent")
+        is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
       end
     end
 
@@ -279,32 +203,25 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
-      if Puppet.version < "4.0.0"
-        it do
-          is_expected.to contain_file('/tmp/solaris_install.sh')
-          is_expected.to contain_exec('solaris_install script')
-        end
-      else
-        context 'with older aio_agent_version' do
-          let(:facts) do
-            facts.merge({
-              :is_pe                     => true,
-              :platform_tag              => "solaris-10-i386",
-              :operatingsystemmajrelease => '10',
-              :aio_agent_version         => '1.0.0',
-            })
-          end
-
-          it do
-            is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
-            is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
-          end
+      context 'with older aio_agent_version' do
+        let(:facts) do
+          facts.merge({
+            :is_pe                     => true,
+            :platform_tag              => "solaris-10-i386",
+            :operatingsystemmajrelease => '10',
+            :aio_agent_version         => '1.0.0',
+          })
         end
 
         it do
-          is_expected.not_to contain_file('/tmp/solaris_install.sh')
-          is_expected.not_to contain_exec('solaris_install script')
+          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
+          is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
         end
+      end
+
+      it do
+        is_expected.not_to contain_file('/tmp/solaris_install.sh')
+        is_expected.not_to contain_exec('solaris_install script')
       end
     end
 
@@ -347,32 +264,25 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_class("puppet_agent::osfamily::solaris") }
 
-      if Puppet.version < "4.0.0"
-        it do
-          is_expected.to contain_file('/tmp/solaris_install.sh')
-          is_expected.to contain_exec('solaris_install script')
-        end
-      else
-        context 'with older aio_agent_version' do
-          let(:facts) do
-            facts.merge({
-              :is_pe                     => true,
-              :platform_tag              => "solaris-10-sparc",
-              :operatingsystemmajrelease => '10',
-              :aio_agent_version         => '1.0.0',
-            })
-          end
-
-          it do
-            is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
-            is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
-          end
+      context 'with older aio_agent_version' do
+        let(:facts) do
+          facts.merge({
+            :is_pe                     => true,
+            :platform_tag              => "solaris-10-sparc",
+            :operatingsystemmajrelease => '10',
+            :aio_agent_version         => '1.0.0',
+          })
         end
 
         it do
-          is_expected.not_to contain_file('/tmp/solaris_install.sh')
-          is_expected.not_to contain_exec('solaris_install script')
+          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
+          is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
         end
+      end
+
+      it do
+        is_expected.not_to contain_file('/tmp/solaris_install.sh')
+        is_expected.not_to contain_exec('solaris_install script')
       end
     end
   end

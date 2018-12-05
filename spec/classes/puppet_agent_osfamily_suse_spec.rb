@@ -1,15 +1,15 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
-  package_version = '1.2.5'
+  package_version = '1.10.100'
   before(:each) do
     # Need to mock the PE functions
     Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-      "4.0.0"
+      "2000.0.0"
     end
 
     Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-      '1.2.5'
+      package_version
     end
   end
 
@@ -65,55 +65,16 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
       it do
-        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.2.5-1.sles10.x86_64.rpm').with_ensure('present')
-        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.2.5-1.sles10.x86_64.rpm').with_source('puppet:///pe_packages/4.0.0/sles-10-x86_64/puppet-agent-1.2.5-1.sles10.x86_64.rpm')
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles10.x86_64.rpm').with_ensure('present')
+        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles10.x86_64.rpm').with_source('puppet:///pe_packages/2000.0.0/sles-10-x86_64/puppet-agent-1.10.100-1.sles10.x86_64.rpm')
       end
 
       it { is_expected.to contain_class("puppet_agent::osfamily::suse") }
-
-      if Puppet.version < "4.0.0"
-        it { is_expected.to contain_class("puppet_agent::prepare::package") }
-
-        it do
-          is_expected.to contain_exec('replace puppet.conf removed by package removal').with_command('cp /etc/puppetlabs/puppet/puppet.conf.rpmsave /etc/puppetlabs/puppet/puppet.conf')
-          is_expected.to contain_exec('replace puppet.conf removed by package removal').with_creates('/etc/puppetlabs/puppet/puppet.conf')
-        end
-
-        it { is_expected.to contain_class("puppet_agent::install::remove_packages") }
-        [
-          'pe-augeas',
-          'pe-mcollective-common',
-          'pe-rubygem-deep-merge',
-          'pe-mcollective',
-          'pe-puppet-enterprise-release',
-          'pe-libldap',
-          'pe-libyaml',
-          'pe-ruby-stomp',
-          'pe-ruby-augeas',
-          'pe-ruby-shadow',
-          'pe-hiera',
-          'pe-facter',
-          'pe-puppet',
-          'pe-openssl',
-          'pe-ruby',
-          'pe-ruby-rgen',
-          'pe-virt-what',
-          'pe-ruby-ldap',
-        ].each do |package|
-          it do
-            is_expected.to contain_package(package).with_ensure('absent')
-            is_expected.to contain_package(package).with_uninstall_options('--nodeps')
-            is_expected.to contain_package(package).with_provider('rpm')
-          end
-        end
-        it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
-      else
-        it { is_expected.to contain_package('puppet-agent').with_ensure('1.2.5') }
-      end
+      it { is_expected.to contain_package('puppet-agent').with_ensure('1.10.100') }
 
       it do
         is_expected.to contain_package('puppet-agent').with_provider('rpm')
-        is_expected.to contain_package('puppet-agent').with_source('/opt/puppetlabs/packages/puppet-agent-1.2.5-1.sles10.x86_64.rpm')
+        is_expected.to contain_package('puppet-agent').with_source('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles10.x86_64.rpm')
       end
     end
 
@@ -188,7 +149,7 @@ describe 'puppet_agent' do
               'name'        => 'pc_repo',
               'enabled'     => '1',
               'autorefresh' => '0',
-              'baseurl'     => "https://master.example.vm:8140/packages/4.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
+              'baseurl'     => "https://master.example.vm:8140/packages/2000.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
               'type'        => 'rpm-md',
             }.each do |setting, value|
               it { is_expected.to contain_ini_setting("zypper pc_repo #{setting}").with({

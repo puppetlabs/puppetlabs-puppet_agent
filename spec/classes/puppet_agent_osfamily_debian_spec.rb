@@ -19,7 +19,7 @@ describe 'puppet_agent' do
   }
 
   # All FOSS and all Puppet 4+ upgrades require the package_version
-  package_version = '1.2.5'
+  package_version = '1.10.100'
   let(:params) {
     {
       :package_version => package_version
@@ -35,7 +35,7 @@ describe 'puppet_agent' do
       # Need to mock the PE functions
 
       Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-        '4.0.0'
+        '2000.0.0'
       end
 
       Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
@@ -179,7 +179,7 @@ describe 'puppet_agent' do
       }) }
 
       it { is_expected.to contain_apt__source('pc_repo').with({
-        'location' => 'https://master.example.vm:8140/packages/4.0.0/debian-7-x86_64',
+        'location' => 'https://master.example.vm:8140/packages/2000.0.0/debian-7-x86_64',
         'repos'    => 'PC1',
         'key'      => {
           'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',

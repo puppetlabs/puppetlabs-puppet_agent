@@ -14,7 +14,7 @@ describe 'puppet_agent' do
   shared_examples 'aix' do |aixver, pkg_aixver, powerver|
     let(:rpmname) {"puppet-agent-#{params[:package_version]}-1.aix#{pkg_aixver}.ppc.rpm"}
     let(:tag) { "aix-#{pkg_aixver}-power" }
-    let(:source) { "puppet:///pe_packages/4.0.0/#{tag}/#{rpmname}" }
+    let(:source) { "puppet:///pe_packages/2000.0.0/#{tag}/#{rpmname}" }
     let(:facts) {
       common_facts.merge({
         architecture: "PowerPC_POWER#{powerver}",
@@ -23,18 +23,8 @@ describe 'puppet_agent' do
     }
 
     before(:each) do
-      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '4.0.0' }
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| 'x.y.z' }
-    end
-
-    if Puppet.version < "4.0.0"
-      it { is_expected.to contain_file('/etc/puppetlabs/puppet') }
-      it { is_expected.to contain_file('/etc/puppetlabs/puppet/puppet.conf') }
-
-      it do
-        is_expected.to contain_exec('replace puppet.conf removed by package removal').with_command('cp /etc/puppetlabs/puppet/puppet.conf.rpmsave /etc/puppetlabs/puppet/puppet.conf')
-        is_expected.to contain_exec('replace puppet.conf removed by package removal').with_creates('/etc/puppetlabs/puppet/puppet.conf')
-      end
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
+      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| '1.10.100' }
     end
 
     it { is_expected.to contain_file('/opt/puppetlabs') }
@@ -49,47 +39,16 @@ describe 'puppet_agent' do
     it {
       is_expected.to contain_package('puppet-agent').with({
         'source'    => "/opt/puppetlabs/packages/#{rpmname}",
-        'ensure'    => Puppet.version < '4.0.0' ? 'present' : params[:package_version],
+        'ensure'    => params[:package_version],
         'provider'  => 'rpm',
       })
     }
-
-    if Puppet.version < "4.0.0"
-      [
-          'pe-augeas',
-          'pe-mcollective-common',
-          'pe-rubygem-deep-merge',
-          'pe-mcollective',
-          'pe-puppet-enterprise-release',
-          'pe-libldap',
-          'pe-libyaml',
-          'pe-ruby-stomp',
-          'pe-ruby-augeas',
-          'pe-ruby-shadow',
-          'pe-hiera',
-          'pe-facter',
-          'pe-puppet',
-          'pe-openssl',
-          'pe-ruby',
-          'pe-ruby-rgen',
-          'pe-virt-what',
-          'pe-ruby-ldap',
-      ].each do |package|
-        it do
-          is_expected.to contain_package(package).with({
-           'ensure' => 'absent',
-           'uninstall_options' => '--nodeps',
-           'provider' => 'rpm',
-          })
-        end
-      end
-    end
   end
 
   context 'with a PC1 collection' do
     let(:params) {
       {
-        package_version: '1.2.3',
+        package_version: '1.10.100',
         collection: 'PC1',
       }
     }

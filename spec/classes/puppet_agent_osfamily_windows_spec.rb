@@ -1,14 +1,10 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
-  package_version = '1.2.5'
+  package_version = '1.10.100'
   pe_version = '2000.0.0'
 
-  if Puppet.version >= '4.0.0'
-    let(:params) {{
-      :package_version => package_version
-    }}
-  end
+  let(:params) {{ package_version: package_version }}
 
   before(:each) do
     # Need to mock the PE functions
@@ -27,6 +23,7 @@ describe 'puppet_agent' do
       let(:facts) {{
         :is_pe                => true,
         :osfamily             => 'windows',
+        :operatingsystem      => 'windows',
         :architecture         => arch,
         :servername           => 'master.example.vm',
         :clientcert           => 'foo.example.vm',
