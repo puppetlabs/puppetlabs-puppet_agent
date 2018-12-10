@@ -17,17 +17,6 @@ class puppet_agent::prepare(
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'
-  if $_windows_client {
-
-    File{
-      source_permissions => ignore,
-    }
-  }
-  else  {
-    File {
-      source_permissions => use,
-    }
-  }
 
   # Manage /opt/puppetlabs for platforms. This is done before both config and prepare because,
   # on Windows, both can be in C:/ProgramData/Puppet Labs; doing it later creates a dependency
