@@ -11,5 +11,7 @@ fixtures:
     apt:
       repo: "puppetlabs/apt"
       ref: "4.4.0"
+    yumrepo_core:
+      repo: "puppetlabs/yumrepo_core"
   symlinks:
     puppet_agent: "#{source_dir}"
