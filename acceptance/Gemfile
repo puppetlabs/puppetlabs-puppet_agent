@@ -1,0 +1,26 @@
+source ENV['GEM_SOURCE'] || "https://rubygems.org"
+
+# Find a location or specific version before installing a gem
+#
+# @param place_or_version can be one of:
+#   - A specific version,
+#   - A git branch, as `git://<your-repo>.git#<branch-name>`
+#   - A file URI, as `file:///absolute/file/path`
+def location_for(place, fake_version = nil)
+  if place =~ /^(git[:@][^#]*)#(.*)/
+    [fake_version, { git: $1, branch: $2, require: false }].compact
+  elsif place =~ /^file:\/\/(.*)/
+    ['>= 0', { path: File.expand_path($1), require: false }]
+  else
+    [place, { require: false }]
+  end
+end
+
+gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 4')
+gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 1')
+
+gem "beaker-docker", *location_for(ENV['BEAKER_DOCKER_VERSION'] || '~> 0')
+gem "beaker-vagrant", *location_for(ENV['BEAKER_VAGRANT_VERSION'] || '~> 0')
+gem "beaker-vmpooler", *location_for(ENV['BEAKER_VMPOOLER_VERSION'] || '~> 1')
+gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'] || '~> 1')
+gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0')

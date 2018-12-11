@@ -2,6 +2,7 @@
 *.iml
 .*.sw[op]
 .DS_Store
+.beaker/
 .bundle/
 .idea/
 .metadata
@@ -13,6 +14,8 @@ Gemfile.lock
 bin/
 coverage/
 doc/
+hosts.yaml
+hosts.yml
 junit/
 log/
 pkg/
