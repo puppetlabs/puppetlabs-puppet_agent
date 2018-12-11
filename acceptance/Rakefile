@@ -1,0 +1,60 @@
+def beaker(command)
+  debug_flag = ''
+  if ENV['BEAKER_debug'] || ENV['DEBUG']
+    debug_flag = '--debug'
+  end
+
+  sh(%(beaker #{command} #{debug_flag}))
+end
+
+desc 'Prepare for running tests: Run beaker init, provision, and pre-suite all at once.'
+task :prepare do
+  errors = []
+
+  if !ENV['MASTER_PACKAGE_VERSION'] && !ENV['MASTER_COLLECTION']
+    errors << 'You must set a starting version of puppet-agent using ' +
+              '$MASTER_PACKAGE_VERSION or $MASTER_COLLECTION'
+  end
+
+  if ENV['HOSTS']
+    hosts_file = File.expand_path(ENV['HOSTS'])
+    errors << "Couldn't find $HOSTS file at #{hosts_file}" unless File.exist?(hosts_file)
+  elsif File.exist?('hosts.yml')
+    hosts_file = './hosts.yml'
+  elsif File.exist?('hosts.yaml')
+    hosts_file = './hosts.yaml'
+  else
+    errors << 'Unable to find a hosts file in $HOSTS or at ./hosts.yml or at ./hosts.yaml'
+  end
+
+  unless errors.empty?
+    raise errors.join("\n")
+  end
+
+  puts "Using beaker hosts file #{hosts_file}"
+
+  # Log the contents of the host file if running in Jenkins
+  if ENV['JENKINS_HOME']
+    pp File.read(hosts_file)
+  end
+
+  beaker("init -h #{hosts_file} -o options.rb")
+  beaker("provision")
+  beaker("exec ./pre_suite")
+
+  # Don't print these human instructions if running in Jenkins
+  unless ENV['JENKINS_HOME']
+    puts 'You can run individual test(s) with `bundle exec beaker exec <path-to-test(s)>`'
+    puts "You can destroy your provisioned hosts with `bundle exec beaker destroy` when you're ready"
+  end
+end
+
+desc 'Run all the tests and destroy the hosts afterward'
+task :ci do
+  begin
+    Rake.application['prepare'].invoke
+    beaker('exec ./tests')
+  ensure
+    beaker('destroy')
+  end
+end
