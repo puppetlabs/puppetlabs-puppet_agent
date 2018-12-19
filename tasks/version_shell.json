@@ -1,0 +1,6 @@
+{
+  "description": "Get the version of the Puppet agent package installed. Returns nothing if none present.",
+  "private": true,
+  "input_method": "environment",
+  "parameters": {}
+}

@@ -1,5 +1,6 @@
 {
   "description": "Install the Puppet agent package",
+  "private": true,
   "parameters": {
     "version": {
       "description": "The version of puppet-agent to install",
@@ -9,9 +10,5 @@
       "description": "The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)",
       "type": "Optional[Enum[puppet5, puppet6, puppet]]"
     }
-  },
-  "implementations": [
-    {"name": "install_shell.sh", "requirements": ["shell"], "files": ["facts/tasks/bash.sh"], "input_method": "environment"},
-    {"name": "install_powershell.ps1", "requirements": ["powershell"]}
-  ]
+  }
 }
