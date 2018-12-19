@@ -2,7 +2,7 @@
   "description": "Get the version of the Puppet agent package installed. Returns nothing if none present.",
   "parameters": {},
   "implementations": [
-    {"name": "version_shell.sh", "requirements": ["shell"]},
+    {"name": "version_shell.sh", "requirements": ["shell"], "input_method": "environment"},
     {"name": "version_powershell.ps1", "requirements": ["powershell"]}
   ]
 }
