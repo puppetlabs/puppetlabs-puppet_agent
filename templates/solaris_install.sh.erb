@@ -3,15 +3,8 @@ function start_service() {
   /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running enable=true
 }
 
-function remove_package() {
-  package="${1:?}"
-  /opt/puppetlabs/bin/puppet resource package "${package:?}" ensure=absent adminfile=<%= @adminfile %>
-}
-
-# Remove old packages
-<% @old_package_names.each do |package| -%>
-remove_package <%= package %>
-<% end -%>
+# Remove old package
+/opt/puppetlabs/bin/puppet resource package puppet-agent ensure=absent adminfile=<%= @adminfile %>
 
 # Install package
 pkgadd -a <%= @adminfile %> -d <%= @sourcefile %> -G <%= @install_options.join(' ') %> -n puppet-agent

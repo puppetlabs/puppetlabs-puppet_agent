@@ -71,8 +71,6 @@ describe 'puppet_agent' do
           it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.osx#{osmajor}.dmg") }
           it { is_expected.to contain_file('/tmp/osx_install.sh') }
           it { is_expected.to contain_exec('osx_install script') }
-          it { is_expected.to contain_class('puppet_agent::install::remove_packages') }
-          it { is_expected.to contain_class('puppet_agent::install::remove_packages_osx') }
           it { is_expected.to contain_class("puppet_agent::osfamily::darwin") }
 
           if Puppet.version < "4.0.0"
