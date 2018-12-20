@@ -112,6 +112,7 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
       "10.11") platform_version="10.11";;
       "10.12") platform_version="10.12";;
       "10.13") platform_version="10.13";;
+      "10.14") platform_version="10.14";;
       *) echo "No builds for platform: $major_version"
          exit 1
          ;;
