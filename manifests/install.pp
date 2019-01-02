@@ -18,7 +18,6 @@ class puppet_agent::install(
 ) {
   assert_private()
 
-  $old_packages = (versioncmp("${::clientversion}", '4.0.0') < 0)
   $pa_collection = getvar('::puppet_agent::collection')
 
   if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or $::operatingsystem == 'AIX' {
@@ -27,35 +26,20 @@ class puppet_agent::install(
       default => $install_options
     }
 
-    if $old_packages {
-      contain puppet_agent::install::remove_packages
-
-      exec { 'replace puppet.conf removed by package removal':
-        path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-        command   => "cp ${puppet_agent::params::confdir}/puppet.conf.rpmsave ${puppet_agent::params::config}",
-        creates   => $puppet_agent::params::config,
-        require   => Class['puppet_agent::install::remove_packages'],
-        before    => Package[$puppet_agent::package_name],
-        logoutput => 'on_failure',
-      }
-
-      # package provider does not provide 'versionable'
-      $ensure = 'present'
-    } else {
-      $ensure = $package_version
-    }
 
     package { $::puppet_agent::package_name:
-      ensure          => $ensure,
+      ensure          => $package_version,
       provider        => 'rpm',
       source          => "/opt/puppetlabs/packages/${package_file_name}",
       install_options => $_install_options,
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
     $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
+    $install_script = 'solaris_install.sh.erb'
+
+    # The following are expected to be available in the solaris_install.sh.erb template:
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
-    $install_script = 'solaris_install.sh.erb'
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
@@ -63,27 +47,8 @@ class puppet_agent::install(
     # to perform the upgrade after Puppet is done running.
     # Puppet 5.0 adds this, but some i18n implementation is loading code fairly late and appears
     # to be messing up the upgrade.
-    if $old_packages or $puppet_agent::aio_upgrade_required {
-      $old_package_names = $old_packages ? {
-        true    => [
-          'PUPpuppet',
-          'PUPaugeas',
-          'PUPdeep-merge',
-          'PUPfacter',
-          'PUPhiera',
-          'PUPlibyaml',
-          'PUPmcollective',
-          'PUPopenssl',
-          'PUPpuppet-enterprise-release',
-          'PUPruby',
-          'PUPruby-augeas',
-          'PUPruby-rgen',
-          'PUPruby-shadow',
-          'PUPstomp',
-          ],
-          default => ['puppet-agent'],
-      }
 
+    if $puppet_agent::aio_upgrade_required {
       $_logfile = "${::env_temp_variable}/solaris_install.log"
       notice ("Puppet install log file at ${_logfile}")
 
@@ -97,34 +62,9 @@ class puppet_agent::install(
         command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
       }
     }
-  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $old_packages {
-    # Updating from PE 3.x requires removing all the old packages before installing the puppet-agent package.
-    # After puppet-agent is installed, we can use 'pkg update' for future upgrades.
-    contain puppet_agent::install::remove_packages
-
-    exec { 'puppet_agent restore /etc/puppetlabs':
-      command => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
-      path    => '/bin:/usr/bin:/sbin:/usr/sbin',
-      require => Class['puppet_agent::install::remove_packages'],
-    }
-
-    package { $::puppet_agent::package_name:
-      ensure          => 'present',
-      require         => Exec['puppet_agent restore /etc/puppetlabs'],
-      notify          => Exec['puppet_agent post-install restore /etc/puppetlabs'],
-      install_options => $install_options,
-    }
-
-    exec { 'puppet_agent post-install restore /etc/puppetlabs':
-      command     => 'cp -r /tmp/puppet_agent/puppetlabs /etc',
-      path        => '/bin:/usr/bin:/sbin:/usr/sbin',
-      refreshonly => true,
-    }
   } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12|13)/ {
-    if $old_packages or $puppet_agent::aio_upgrade_required {
+    if $puppet_agent::aio_upgrade_required {
       $install_script = 'osx_install.sh.erb'
-
-      contain puppet_agent::install::remove_packages
 
       $_logfile = "${::env_temp_variable}/osx_install.log"
       notice("Puppet install log file at ${_logfile}")
@@ -133,8 +73,7 @@ class puppet_agent::install(
       file { "${_installsh}":
         ensure  => file,
         mode    => '0755',
-        content => template('puppet_agent/do_install.sh.erb'),
-        require => Class['Puppet_agent::Install::Remove_packages']
+        content => template('puppet_agent/do_install.sh.erb')
       }
       -> exec { 'osx_install script':
         command => "${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
@@ -142,7 +81,7 @@ class puppet_agent::install(
     }
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
-    if $old_packages or $puppet_agent::aio_upgrade_required {
+    if $puppet_agent::aio_upgrade_required {
       if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
         $local_package_file_path = windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}")
         class { 'puppet_agent::windows::install':
