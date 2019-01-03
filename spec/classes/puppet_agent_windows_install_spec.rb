@@ -3,7 +3,7 @@ require 'spec_helper'
 RSpec.describe 'puppet_agent', tag: 'win' do
   package_version = '1.10.100.1'
   global_params = {
-    :package_version => package_version
+    :package_version => package_version,
   }
 
   {'5.1'  => {:expect_arch => 'x86', :appdata => 'C:\Documents and Settings\All Users\Application Data'},
@@ -70,8 +70,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           })}
 
           it { is_expected.to contain_class('puppet_agent::windows::install') }
-          it { is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-              %r[#{Regexp.escape("msiexec.exe /qn /norestart /i \"#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\"")}])
+          it { is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(
+              %r[#{Regexp.escape("\$Source=\'#{values[:appdata]}\\Puppetlabs\\packages\\puppet-agent-#{values[:expect_arch]}.msi\'")}])
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -83,10 +83,10 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:install_options => ['OPTION1=value1','OPTION2=value2'],})
           }
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ OPTION1=value1 OPTION2=value2/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$InstallArgs='OPTION1=value1 OPTION2=value2'/)
           }
           it {
-            is_expected.not_to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ REINSTALLMODE="amus"/)
+            is_expected.not_to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$InstallArgs='REINSTALLMODE="amus"'/)
           }
         end
       end
@@ -94,7 +94,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
       context 'Default INSTALLMODE Option' do
         describe 'REINSTALLMODE=amus' do
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/msiexec.exe .+ REINSTALLMODE="amus"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$InstallArgs='REINSTALLMODE="amus"'/)
           }
         end
       end
@@ -105,9 +105,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:source => 'https://alternate.com/puppet-agent.msi',})
           }
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/alternate.com\/puppet-agent.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='https:\/\/alternate.com\/puppet-agent.msi'/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Logfile='C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -117,9 +116,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:source => 'C:/tmp/puppet-agent-x64.msi',})
           }
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='C:\\tmp\\puppet-agent-x64\.msi'/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Logfile='C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -129,21 +127,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:source => 'C:\Temp/ Folder\puppet-agent-x64.msi',})
           }
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
-          }
-          it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
-        end
-
-        describe 'C:/Temp/ Folder/puppet-agent-x64.msi' do
-          let(:params) { global_params.merge(
-            {:source => 'C:/Temp/ Folder/puppet-agent-x64.msi',})
-          }
-          it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\Temp Folder\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='C:\\Temp Folder\\puppet-agent-x64\.msi'/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Logfile='C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -153,22 +138,20 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:source => "\\\\garded\\c$\\puppet-agent-x64.msi",})
           }
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "\\\\garded\\c\$\\puppet-agent-x64\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='\\\\garded\\c\$\\puppet-agent-x64\.msi'/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Logfile='C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
 
         describe 'default source' do
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-#{values[:expect_arch]}\.msi"/)
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/\/l\*vx "C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer\.log"/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-#{values[:expect_arch]}\.msi'/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Logfile='C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it {
-            should contain_exec('install_puppet.bat').with { {
-                     'command' => 'C:\windows\sysnative\cmd.exe /c start /b "C:\tmp\install_puppet.bat" 42',
+            should contain_exec('install_puppet.ps1').with { {
+                     'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\sysnative\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -Command C:\tmp\install_puppet.ps1 42',
                    } }
           }
           it {
@@ -182,10 +165,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:source => 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi'})
           }
           it {
-            is_expected.to contain_file('C:\tmp\puppet-agent.msi').with_before('File[C:\tmp\install_puppet.bat]')
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "C:\\tmp\\puppet-agent.msi"/
-                           )
+            is_expected.to contain_file('C:\tmp\puppet-agent.msi').with_before('File[C:\tmp\install_puppet.ps1]')
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='C:\\tmp\\puppet-agent.msi'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -197,8 +178,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:arch => 'x86'})
           }
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(
-                             /msiexec.exe \/qn \/norestart \/i "https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-x86.msi"/
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$Source='https:\/\/downloads.puppetlabs.com\/windows\/puppet-agent-#{package_version}-x86.msi'/
                            )
           }
         end
@@ -227,7 +207,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
       context 'msi_move_locked_files =>' do
         describe 'default' do
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').without_content(/Move puppetres\.dll/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$UseLockedFilesWorkaround=\$false/)
           }
         end
 
@@ -237,7 +217,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           }
 
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').without_content(/Move puppetres\.dll/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$UseLockedFilesWorkaround=\$false/)
           }
         end
 
@@ -247,7 +227,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           }
 
           it {
-            is_expected.to contain_file('C:\tmp\install_puppet.bat').with_content(/Move puppetres\.dll/)
+            is_expected.to contain_file('C:\tmp\install_puppet.ps1').with_content(/\$UseLockedFilesWorkaround=\$true/)
           }
         end
       end
@@ -272,8 +252,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         let(:params) { global_params }
 
         it {
-          is_expected.to contain_exec('install_puppet.bat').with { {
-                           'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\system32\cmd.exe /c "C:\tmp\install_puppet.bat" 42',
+          is_expected.to contain_exec('install_puppet.ps1').with { {
+                           'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\system32\cmd.exe /c "C:\tmp\install_puppet.ps1" 42',
                          } }
         }
 
@@ -285,8 +265,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         let(:params) { global_params }
 
         it {
-          is_expected.to contain_exec('install_puppet.bat').with { {
-                           'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\sysnative\cmd.exe /c "C:\tmp\install_puppet.bat" 42',
+          is_expected.to contain_exec('install_puppet.ps1').with { {
+                           'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\sysnative\cmd.exe /c "C:\tmp\install_puppet.ps1" 42',
                          } }
         }
 
