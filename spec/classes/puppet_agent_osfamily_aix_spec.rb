@@ -3,11 +3,13 @@ require 'spec_helper'
 describe 'puppet_agent' do
   let(:common_facts) {
     {
-      is_pe:           true,
-      osfamily:        'AIX',
-      operatingsystem: 'AIX',
-      servername:      'master.example.vm',
-      clientcert:      'foo.example.vm',
+      architecture:               'PowerPC_POWER7',
+      clientcert:                 'foo.example.vm',
+      is_pe:                      true,
+      operatingsystem:            'AIX',
+      osfamily:                   'AIX',
+      platform_tag:               'aix-7.2-power',
+      servername:                 'master.example.vm',
     }
   }
 
@@ -87,6 +89,25 @@ describe 'puppet_agent' do
       context "aix #{aixver}" do
         include_examples 'aix', aixver, pkg_aixver, powerver
       end
+    end
+  end
+
+  context 'unsupported environments' do
+    let(:params) {
+      {
+          package_version: '6.0.0',
+          collection: 'puppet6'
+      }
+    }
+
+    context 'outside PE' do
+      let(:facts) { common_facts.merge({ is_pe: false }) }
+      it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
+    end
+
+    context 'not AIX' do
+      let(:facts) { common_facts.merge({ operatingsystem: 'not-AIX' })}
+      it { expect { catalogue }.to raise_error(/not supported/)}
     end
   end
 end

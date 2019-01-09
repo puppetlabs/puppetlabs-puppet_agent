@@ -7,20 +7,10 @@ MCO_LOGFILE = '/var/log/puppetlabs/mcollective.log'
 
 describe 'puppet_agent::prepare' do
   context 'supported operating system families' do
-    ['Debian', 'RedHat', 'SuSE'].each do |osfamily|
-      case osfamily
-      when 'SuSE'
-        os = 'SLES'
-        osmajor = '10'
-      else
-        os = 'foo'
-        osmajor = '42'
-      end
-
-
+    ['Debian', 'RedHat'].each do |osfamily|
       facts = {
-        :operatingsystem => os,
-        :operatingsystemmajrelease => osmajor,
+        :operatingsystem => 'foo',
+        :operatingsystemmajrelease => '42',
         :architecture => 'bar',
         :osfamily => osfamily,
         :lsbdistid => osfamily,

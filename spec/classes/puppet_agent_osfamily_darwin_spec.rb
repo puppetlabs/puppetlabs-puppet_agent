@@ -29,6 +29,14 @@ describe 'puppet_agent' do
   }
 
   describe 'unsupported environment' do
+    context 'when not PE' do
+      let(:facts) do
+        facts.merge(is_pe: false)
+      end
+
+      it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
+    end
+
     context "when OSX 10.8" do
       let(:facts) do
         facts.merge({
