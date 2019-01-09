@@ -1,30 +1,31 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
+  # All FOSS and all Puppet 4+ upgrades require the package_version
+  package_version = '1.10.14'
+
   facts = {
+    :aio_agent_verison => '1.10.13',
     :lsbdistid => 'Debian',
     :osfamily => 'Debian',
     :lsbdistcodename => 'wheezy',
     :os => {
-      'name' => 'Debian',
-      'release' => {
-        'full' => '6.0',
-        'major' => '6',
-      },
+        'name' => 'Debian',
+        'release' => {
+            'full' => '8.0',
+            'major' => '8',
+        },
     },
     :operatingsystem => 'Debian',
     :architecture => 'x64',
-      :servername   => 'master.example.vm',
-      :clientcert   => 'foo.example.vm',
+    :servername   => 'master.example.vm',
+    :clientcert   => 'foo.example.vm',
   }
 
-  # All FOSS and all Puppet 4+ upgrades require the package_version
-  package_version = '1.10.100'
   let(:params) {
-    {
-      :package_version => package_version
-    }
+    { :package_version => package_version }
   }
+
   let(:facts) { facts }
 
   it { is_expected.to contain_class('apt') }

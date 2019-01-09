@@ -112,17 +112,26 @@ class puppet_agent::params {
     true    => pe_build_version(),
     default => undef
   }
-  # Not PE or pe_version < 2018.1.3, use PC1
-  if ($_pe_version == undef or versioncmp("${_pe_version}", '2018.1.3') < 0) {
+
+  # The default behavior is to install the most recent version of the package
+  # that's compatible with the agent on the master. Find the puppet collection
+  # that matches it:
+  if versioncmp("${::aio_agent_version}", '5.0.0') < 0 {
+    # PE versions before 2018.1.3 use the Puppet 4 series of puppet agent
+    # releases. Outside of PE, we refer to this series of releases as 'PC1'. Note
+    # that although they include Puppet 4, the puppet-agent packages in this
+    # series are numbered '1.y.z' (later series _do_ match the version of puppet
+    # to that of the puppet-agent package, though).
     $collection = 'PC1'
-  }
-  # 2018.1.3 <= pe_version < 2018.2, use puppet5
-  elsif versioncmp("${_pe_version}", '2018.2') < 0 {
+  } elsif versioncmp("${::aio_agent_version}", '5.99.0') < 0 { # (5.99.z indicates pre-release puppet6)
+    # PE versions between 2018.1.3 and 2018.2 contain Puppet 5:
     $collection = 'puppet5'
-  }
-  # pe_version >= 2018.2, use puppet6
-  else {
+  } elsif versioncmp("${::aio_agent_version}", '6.99.0') < 0 {
+    # PE versions 2018.2 and later contain Puppet 6:
     $collection = 'puppet6'
+  } else {
+    # The 'puppet' collection always installs the latest release:
+    $collection = 'puppet'
   }
 
   $ssldir = "${confdir}/ssl"

@@ -1,77 +1,47 @@
 require 'spec_helper'
 
 describe 'puppet_agent::params' do
-  let(:facts) do
-    {
-      is_pe:           true,
-      clientversion:   '5.5.3',
-      osfamily:        'Debian',
-      operatingsystem: 'Debian',
-      servername:      'server',
-      # custom fact meant to be used only for tests in this file
-      custom_fact__pe_version: '2018.1.3'
-    }
-  end
+  facts = {
+    osfamily: 'Debian'
+  }
 
-  before(:each) do
-    Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue, doc: '') do |args|
-      lookupvar('::custom_fact__pe_version')
-    end
-  end
-
-  context 'collection' do
-    # rspec-puppet lets us query the compiled catalog only, so we can only check if any specific resources
-    # have been declared. We cannot query for a class' variables, so we cannot query for the collection
-    # variable's value. But we can use a workaround by creating a notify resource whose message contains
-    # the value and query that instead since it will be added as part of the catalog. post_condition tells
-    # rspec-puppet to include this resource only after our class has been compiled, which is what we want.
-    let(:notify_title) { "check puppet_agent::params::collection's value" }
-    let(:post_condition) do
-      <<-NOTIFY_RESOURCE
+  # rspec-puppet lets us query the compiled catalog only, so we can only check
+  # if any specific resources have been declared. We cannot query for class
+  # variables, so we cannot query for the collection variable's value. But we
+  # can use a workaround by creating a notify resource whose message contains
+  # the value and query that instead since it will be added as part of the
+  # catalog. notify_resource tells rspec-puppet to include this resource only
+  # after our class has been compiled, which is what we want.
+  let(:notify_title) { "check puppet_agent::params::collection's value" }
+  let(:post_condition) do
+    <<-NOTIFY_RESOURCE
 notify { "#{notify_title}":
   message => "${::puppet_agent::params::collection}"
 }
-      NOTIFY_RESOURCE
-    end
+    NOTIFY_RESOURCE
+  end
 
-    def sets_collection_to(collection)
-      is_expected.to contain_notify(notify_title).with_message(collection)
-    end
+  def sets_collection_to(collection)
+    is_expected.to contain_notify(notify_title).with_message(collection)
+  end
 
-    context 'not in PE' do
-      let(:facts) { super().merge(is_pe: false, custom_fact__pe_version: '') }
-
-      it { sets_collection_to('PC1') }
-    end
-
-    context 'pe_version < 2018.1.3' do
-      let(:facts) { super().merge(custom_fact__pe_version: '2018.1.2') }
-
-      it { sets_collection_to('PC1') }
-    end
-
-    context 'pe_version == 2018.1.3' do
-      let(:facts) { super().merge(custom_fact__pe_version: '2018.1.3') }
-
-      it { sets_collection_to('puppet5') }
-    end
-
-    context '2018.1.3 < pe_version < 2018.2' do
-      let(:facts) { super().merge(custom_fact__pe_version: '2018.1.5') }
-
-      it { sets_collection_to('puppet5') }
-    end
-
-    context 'pe_version == 2018.2' do
-      let(:facts) { super().merge(custom_fact__pe_version: '2018.2') }
-
-      it { sets_collection_to('puppet6') }
-    end
-
-    context 'pe_version > 2018.2' do
-      let(:facts) { super().merge(custom_fact__pe_version: '2018.3') }
-
-      it { sets_collection_to('puppet6') }
+  context 'default puppet_collection value' do
+    {
+      '0.0.0'   => 'PC1',
+      '1.10.14' => 'PC1',
+      '3.2.1'   => 'PC1',
+      '5.5.4'   => 'puppet5',
+      '6.0.2'   => 'puppet6',
+      '5.99.0'  => 'puppet6',
+      '100.0.0' => 'puppet',
+      ''        => 'PC1',
+    }.each do |agent_version, default_collection|
+      context "when puppet-agent version is '#{agent_version}'" do
+        let(:facts) { facts.merge(aio_agent_version: agent_version) }
+        it "the default collection is '#{default_collection}'" do
+          sets_collection_to(default_collection)
+        end
+      end
     end
   end
 end
