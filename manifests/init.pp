@@ -172,14 +172,16 @@ class puppet_agent (
     contain '::puppet_agent::prepare'
     contain '::puppet_agent::install'
 
-    # On windows, our MSI handles the services
-    # On PE AIO nodes, PE Agent nodegroup is managing the services
+    # Service management:
+    # - Under Puppet Enterprise, the agent nodegroup is managed by PE, and we don't need to manage services here.
+    # - On Windows, services are handled by the puppet-agent MSI packages themselves.
+    # ...but outside of PE, on other platforms, we must make sure the services are restarted. We do that with the
+    # ::puppet_agent::service class. Make sure it's applied after the install process finishes if needed:
     if $::osfamily != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
       class { '::puppet_agent::service':
         require => Class['::puppet_agent::install'],
       }
       contain '::puppet_agent::service'
     }
-
   }
 }

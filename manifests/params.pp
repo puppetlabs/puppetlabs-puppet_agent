@@ -8,6 +8,18 @@ class puppet_agent::params {
     fail('The puppet_agent class requires stringify_facts to be disabled')
   }
 
+  # Which services should be started after the upgrade process?
+  if ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
+    # Solaris 11 is a special case; it uses a custom script.
+    $service_names = []
+  } elsif (versioncmp("${::clientversion}", '5.99.0') < 0) { # (5.99.z indicates pre-release puppet6)
+    # Earlier versions Puppet (4 and 5) rely on mcollective:
+    $service_names = ['puppet', 'mcollective']
+  } else {
+    # Puppet 6+ only needs to manage the puppet service:
+    $service_names = ['puppet']
+  }
+
   # The `is_pe` fact currently works by echoing out the puppet version
   # and greping for "puppet enterprise". With Puppet 4 and PE 2015.2, there
   # is no longer a "PE Puppet", and so that fact will no longer work.
@@ -32,13 +44,6 @@ class puppet_agent::params {
 
   case $::osfamily {
     'RedHat', 'Debian', 'Suse', 'Solaris', 'Darwin', 'AIX': {
-      if !($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
-        $service_names = ['puppet', 'mcollective']
-      }
-      else {
-        $service_names = []
-      }
-
       $local_puppet_dir = '/opt/puppetlabs'
       $local_packages_dir = "${local_puppet_dir}/packages"
 
@@ -59,8 +64,6 @@ class puppet_agent::params {
       $group = 0
     }
     'windows' : {
-      $service_names = ['puppet', 'mcollective']
-
       $local_puppet_dir = windows_native_path("${::puppet_agent_appdata}/Puppetlabs")
       $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
