@@ -8,8 +8,10 @@ set pid=
 for /f "tokens=2" %%a in ('tasklist /v ^| findstr /c:"%windowTitle%"') do set pid=%%a
 set pid_path=%~dp0puppet_agent_upgrade.pid
 
+<% unless @agent_specified_environment.nil? -%>
 set environment=
 for /f "delims=" %%i in ('puppet config print --section agent environment') do set environment=%%i
+<% end -%>
 
 if exist %pid_path% del %pid_path%
 @echo %pid%> %pid_path%
@@ -74,7 +76,7 @@ IF EXIST "%PUPPETRES%" (
 )
 <% end %>
 
-start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*vx "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" PUPPET_AGENT_ENVIRONMENT="%environment%" <% unless @install_dir.to_s.empty? -%>INSTALLDIR="<%= @install_dir %>"<% end -%> <% unless @_agent_startup_mode.to_s.empty? -%>PUPPET_AGENT_STARTUP_MODE="<%= @_agent_startup_mode %>"<% end -%><% unless @_install_options.to_s.empty? -%><%  @_install_options.each do |option| -%> <%= option%><% end -%><% end -%>
+start /wait msiexec.exe /qn /norestart /i "<%= @_msi_location %>" /l*vx "<%= @_logfile %>" PUPPET_MASTER_SERVER="<%= @_puppet_master %>" <% unless @agent_specified_environment.nil? -%>PUPPET_AGENT_ENVIRONMENT="%environment%"<% end -%> <% unless @install_dir.to_s.empty? -%>INSTALLDIR="<%= @install_dir %>"<% end -%> <% unless @_agent_startup_mode.to_s.empty? -%>PUPPET_AGENT_STARTUP_MODE="<%= @_agent_startup_mode %>"<% end -%><% unless @_install_options.to_s.empty? -%><%  @_install_options.each do |option| -%> <%= option%><% end -%><% end -%>
 
 :End
 
