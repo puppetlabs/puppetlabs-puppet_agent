@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
-  package_version = '1.2.5'
+  package_version = '6.5.4'
   global_params = {
     :package_version => package_version
   }
@@ -23,7 +23,7 @@ describe 'puppet_agent' do
           :mco_confdir       => 'C:\\ProgramData\\Puppetlabs\\mcollective\\etc',
           :env_temp_variable => 'C:/tmp',
           :puppet_agent_pid  => 42,
-          :puppet_config     => Puppet.version < "4.0.0" ? "file:///C:\\\\puppet.conf" : "C:\\puppet.conf",
+          :puppet_config     => "C:\\puppet.conf",
         }
       else
         {}
@@ -64,23 +64,19 @@ describe 'puppet_agent' do
         end
 
         before(:each) do
-          Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) {|args| '4.0.0'}
-          Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) {|args| '1.2.5'}
-          Puppet::Parser::Functions.newfunction(:pe_compiling_server_version, :type => :rvalue) {|args| '2.2.0'}
+          Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) {|args| '2000.0.0'}
+          Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) {|args| '1.10.100'}
+          Puppet::Parser::Functions.newfunction(:pe_compiling_server_version, :type => :rvalue) {|args| '2.20.200'}
         end
 
         context 'package_version is initialized automatically' do
-          if Puppet.version < '4.0.0'
-            it { is_expected.to contain_class('puppet_agent').with_package_version('1.2.5') }
-          else
-            it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
-          end
+          it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
         end
 
-        context 'On a PE infrastructure node puppet_agent does nothing', :if => Puppet.version >= '4.0.0' do
+        context 'On a PE infrastructure node puppet_agent does nothing' do
           # The puppet version conditional is only required if the module supports Puppet 3.x
           before(:each) do
-            facts['pe_server_version'] = '2016.2.2'
+            facts['pe_server_version'] = '2000.0.0'
           end
           it { is_expected.to_not contain_class('puppet_agent::prepare') }
           it { is_expected.to_not contain_class('puppet_agent::install') }
@@ -108,11 +104,11 @@ describe 'puppet_agent' do
             # Need to mock the PE functions
 
             Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-              '4.0.0'
+              '2000.0.0'
             end
 
             Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
-              '1.2.5'
+              '1.10.100'
             end
           end
         end
@@ -180,8 +176,8 @@ describe 'puppet_agent' do
             # Windows platform does not use Service resources
             unless facts[:osfamily] == 'windows'
               if params[:service_names].nil? &&
-                !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
-                (Puppet.version < "4.0.0" || os !~ /sles/)
+                  !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
+                  os !~ /sles/
                 it { is_expected.to contain_service('puppet') }
                 it { is_expected.to contain_service('mcollective') }
               else
@@ -207,28 +203,6 @@ describe 'puppet_agent' do
       let(:params) { global_params }
 
       it { is_expected.to raise_error(Puppet::Error, /Nexenta not supported/) }
-    end
-  end
-
-  context 'stringify_facts is set to true' do
-    describe 'when puppet_stringify_facts evaluates as true ' do
-      # Mock a supported agent but with puppet_stringify_facts set to true
-      # check for both boolean true and string true
-      [ true, 'true' ].each do |truthiness|
-        let(:facts) {{
-          :osfamily               => 'RedHat',
-          :operatingsystem        => 'Fedora',
-          :puppet_ssldir          => '/dev/null/ssl',
-          :puppet_config          => '/dev/null/puppet.conf',
-          :architecture           => 'i386',
-          :puppet_stringify_facts => truthiness,
-        }}
-        let(:params) { global_params }
-
-        if Puppet.version < '4.0.0'
-          it { is_expected.to raise_error(Puppet::Error, /requires stringify_facts to be disabled/) }
-        end
-      end
     end
   end
 end

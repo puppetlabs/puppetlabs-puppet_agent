@@ -126,7 +126,7 @@ describe 'puppet_agent' do
         # Need to mock the PE functions
 
         Puppet::Parser::Functions.newfunction(:pe_build_version, :type => :rvalue) do |args|
-          '4.0.0'
+          '2000.0.0'
         end
 
         Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, :type => :rvalue) do |args|
@@ -154,7 +154,7 @@ describe 'puppet_agent' do
         it { is_expected.to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
 
         it { is_expected.to contain_yumrepo('pc_repo').with({
-          'baseurl' => "https://master.example.vm:8140/packages/4.0.0/#{repodir}",
+          'baseurl' => "https://master.example.vm:8140/packages/2000.0.0/#{repodir}",
           'enabled' => 'true',
           'gpgcheck' => '1',
           'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
