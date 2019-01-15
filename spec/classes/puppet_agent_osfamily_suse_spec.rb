@@ -32,18 +32,15 @@ describe 'puppet_agent' do
   describe 'unsupported environment' do
     context 'when not PE' do
       let(:facts) do
-        facts.merge({
-          :is_pe => false,
-        })
+        facts.merge(is_pe: false)
       end
 
-      it { expect { catalogue }.to raise_error(/SLES not supported/) }
+      it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
     end
 
     context 'when not SLES' do
       let(:facts) do
         facts.merge({
-          :is_pe           => false,
           :operatingsystem => 'OpenSuse',
         })
       end

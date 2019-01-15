@@ -3,8 +3,12 @@ class puppet_agent::osfamily::suse(
 ) {
   assert_private()
 
-  if $::operatingsystem != 'SLES' or getvar('::puppet_agent::is_pe') == false {
+  if $::operatingsystem != 'SLES' {
     fail("${::operatingsystem} not supported")
+  }
+
+  if $::puppet_agent::is_pe != true {
+    fail('SLES upgrades are only supported on Puppet Enterprise')
   }
 
   case $::operatingsystemmajrelease {
