@@ -12,5 +12,7 @@ pkgadd -a <%= @adminfile %> -d <%= @sourcefile %> -G <%= @install_options.join('
 # Ensure services are running. We do this on Solaris 10 b/c the installer cannot restart
 # services on its own since that only happens when the service manifests change, which is
 # highly unlikely in most agent upgrade scenarios.
-start_service puppet
-start_service mcollective
+
+<% @service_names.each do |service_name| %>
+start_service <%= service_name %>
+<% end %>

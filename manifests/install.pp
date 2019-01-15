@@ -40,6 +40,7 @@ class puppet_agent::install(
     # The following are expected to be available in the solaris_install.sh.erb template:
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
+    $service_names = $puppet_agent::service_names
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or

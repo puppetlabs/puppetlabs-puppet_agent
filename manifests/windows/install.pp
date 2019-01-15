@@ -13,6 +13,8 @@ class puppet_agent::windows::install(
   ) {
   assert_private()
 
+  $service_names         = $::puppet_agent::service_names
+
   if $::puppet_agent::is_pe {
     $_agent_version = $puppet_agent::params::master_agent_version
     $_pe_server_version = pe_build_version()

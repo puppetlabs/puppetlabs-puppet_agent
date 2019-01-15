@@ -173,13 +173,16 @@ describe 'puppet_agent' do
               end
             end
 
-            # Windows platform does not use Service resources
+            # Windows platform does not use Service resources; their services
+            # are managed by the MSI installer.
             unless facts[:osfamily] == 'windows'
               if params[:service_names].nil? &&
                   !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
                   os !~ /sles/
                 it { is_expected.to contain_service('puppet') }
-                it { is_expected.to contain_service('mcollective') }
+                if Puppet.version < "5.99.0" # mcollective was removed in puppet 6 (5.99 indicates a pre-release version)
+                  it { is_expected.to contain_service('mcollective') }
+                end
               else
                 it { is_expected.to_not contain_service('puppet') }
                 it { is_expected.to_not contain_service('mcollective') }
