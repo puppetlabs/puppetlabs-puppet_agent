@@ -186,21 +186,23 @@ try {
   Write-Log "Installation PID:$PID"
   $install_pid_lock = Join-Path -Path (Split-Path -Parent (puppet.bat config print agent_catalog_run_lockfile)) -ChildPath 'puppet_install.pid'
   Lock-Installation $install_pid_lock
-  # Wait for the puppet run to finish
-  #
-  # We must wait for the puppet agent to finish applying its catalog before we
-  # stop all of our services. Otherwise if the catalog has additional resources
-  # that manage our services (e.g. such as those from the PE module), then the
-  # install will fail to proceed.
-  Write-Log "Waiting for puppet to stop, PID:$PuppetPID"
-  $proc = Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue
-  if ($proc) {
-    if (!$proc.WaitForExit(120000)){
-      Write-Log "ERROR: Timed out waiting for puppet!"
-      throw
+  if ($PuppetPID) {
+    # Wait for the puppet run to finish
+    #
+    # We must wait for the puppet agent to finish applying its catalog before we
+    # stop all of our services. Otherwise if the catalog has additional resources
+    # that manage our services (e.g. such as those from the PE module), then the
+    # install will fail to proceed.
+    Write-Log "Waiting for puppet to stop, PID:$PuppetPID"
+    $pup_process = Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue
+    if ($pup_process) {
+      if (!$pup_process.WaitForExit(120000)){
+        Write-Log "ERROR: Timed out waiting for puppet!"
+        throw
+      }
+    } else {
+      Write-Log "Puppet Already finished"
     }
-  } else {
-    Write-Log "Puppet Already finished"
   }
   # We *must* shutdown all puppet-agent services for the MSI installation to correctly
   # work without requiring a restart.
@@ -232,19 +234,19 @@ try {
   $startInfo.UseShellExecute = $false
   $startInfo.CreateNoWindow = $true
   $invocationId = [Guid]::NewGuid().ToString()
-  $process = New-Object System.Diagnostics.Process
-  $process.StartInfo = $startInfo
-  $process.EnableRaisingEvents = $true
-  $exitedEvent = Register-ObjectEvent -InputObject $process -EventName 'Exited' -SourceIdentifier $invocationId
-  $process.Start() | Out-Null
+  $msi_process = New-Object System.Diagnostics.Process
+  $msi_process.StartInfo = $startInfo
+  $msi_process.EnableRaisingEvents = $true
+  $exitedEvent = Register-ObjectEvent -InputObject $msi_process -EventName 'Exited' -SourceIdentifier $invocationId
+  $msi_process.Start() | Out-Null
   # park current thread until the PS event is signaled upon process exit
   # OR the timeout has elapsed
   $waitResult = Wait-Event -SourceIdentifier $invocationId
   Write-Log "****************************** End msiexec.exe output ******************************"
-  if (($process.ExitCode -eq 3010) -or ($process.ExitCode -eq 1641) ){
-    Write-Log "WARNING: msiexec.exe returned $($msi_exec.ExitCode) and has flagged the system for restart!!!"
-  } elseif ($process.ExitCode -ne 0){
-    Write-Log "ERROR: msiexec.exe installation failed!!! Return code $($msi_exec.ExitCode)"
+  if (($msi_process.ExitCode -eq 3010) -or ($msi_process.ExitCode -eq 1641) ){
+    Write-Log "WARNING: msiexec.exe returned $($msi_process.ExitCode) and has flagged the system for restart!!!"
+  } elseif ($msi_process.ExitCode -ne 0){
+    Write-Log "ERROR: msiexec.exe installation failed!!! Return code $($msi_process.ExitCode)"
     throw
   }
 } catch {
