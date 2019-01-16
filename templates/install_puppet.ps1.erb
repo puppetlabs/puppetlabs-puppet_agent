@@ -1,0 +1,262 @@
+# install_puppet.ps1
+<#
+.Synopsis
+  Install or upgrade puppet-agent
+.Description
+  This script will install or upgrade puppet-agent on a windows machine from the MSI file at $Source.
+  If the script is supplied with $PuppetPID it will wait on the $PuppetPID before attempting to perform
+  an upgrade.
+.Parameter PuppetPID
+  The process ID of puppet to wait on before executing an upgrade. Note that all puppet processes must shut
+  down before an installation can occur
+.Parameter Source
+  The location of the new puppet-agent MSI installer
+.Parameter Logfile
+  File location where the installation will log output
+.Parameter InstallDir
+  Optionally change the default location where puppet-agent will be installed
+.Parameter PuppetMaster
+  The location of the puppet master
+.Parameter PuppetStartType
+  Optionally change the default start type of puppet
+.Parameter InstallArgs
+  Provide any extra argmuments to the MSI installation
+.Parameter UseLockedFilesWorkaround
+  Set to $true to enable execution of the puppetres.dll move workaround. See https://tickets.puppetlabs.com/browse/MODULES-4207
+#>
+[CmdletBinding()]
+param(
+  # PuppetPID _must_ come first!, this script needs PuppetPID to be a positional parameter to execute
+  # correctly from the module.
+  [parameter(Position=0)]
+  [String] $PuppetPID,
+  [String] $Source='<%= @_msi_location %>',
+  [String] $Logfile='<%= @_logfile %>',
+  [String] $InstallDir='<%= @install_dir %>',
+  [String] $PuppetMaster='<%= @_puppet_master %>',
+  [String] $PuppetStartType='<%= @_agent_startup_mode %>',
+  [String] $InstallArgs='<%= @_install_options   %>',
+  [String] $InstallScriptPIDFile='<%= @_install_pid_file_loc %>',
+  [Bool]   $UseLockedFilesWorkaround=<%= @_move_dll_workaround %>
+)
+# Find-InstallDir, Move-PuppetresDLL and Reset-PuppetresDLL serve as a workaround for older
+# installations of puppet: we used to need to move puppetres.dll out of the way during puppet
+# upgrades because the file would lock and cause network stack restarts.
+# See https://tickets.puppetlabs.com/browse/MODULES-4207
+<#
+.Synopsis
+  Fetch the location of the puppet installation from the registry
+#>
+function Script:Find-InstallDir {
+  begin {
+    if (Get-ItemProperty -Path "HKLM:\SOFTWARE\Puppet Labs\Puppet" -Name RememberedInstallDir64 -ErrorAction SilentlyContinue) {
+      return (Get-ItemProperty -Path "HKLM:\SOFTWARE\Puppet Labs\Puppet").RememberedInstallDir64
+    } elseif (Get-ItemProperty -Path "HKLM:\SOFTWARE\Puppet Labs\Puppet" -Name RememberedInstallDir -ErrorAction SilentlyContinue) {
+      return (Get-ItemProperty -Path "HKLM:\SOFTWARE\Puppet Labs\Puppet").RememberedInstallDir
+    } else {
+      return $null
+    }
+  }
+}
+
+<#
+.Synopsis
+  Move/rename puppetres.dll to a temporary location
+#>
+function Script:Move-PuppetresDLL {
+  begin {
+    $rand_string = [String[]](Get-Random)
+    $temp_puppetres = "$env:temp\$rand_string-lockeddll"
+    # _Never_ use the $InstallDir top-level parameter to try and find the InstallDir
+    # for the puppetres workaround. The workaround should _always_ fetch the InstallDir
+    # from the registry. This is so a user can specify a different InstallDir than the
+    # directory where the current package is installed and the workaround will still work
+    # for the already installed package
+    $InstallDir = Find-InstallDir
+    if (Test-Path "$InstallDir\puppet\bin\puppetres.dll") {
+      Write-Log "Moving puppetres.dll to $temp_puppetres"
+      Move-Item -Path "$InstallDir\puppet\bin\puppetres.dll" -Destination $temp_puppetres
+      # Remove-Item -Path $temp_puppetres
+    }
+    return $temp_puppetres
+  }
+}
+
+<#
+.Synopsis
+  Restore puppetres.dll to the original location. This should only be used when an installation fails
+.Parameter temp_puppetres
+  Location of the temporary puppetres.dll file.
+#>
+function Script:Reset-PuppetresDLL {
+  param(
+    [Parameter(Mandatory=$true)]
+    [String] $temp_puppetres
+  )
+  begin {
+    # _Never_ use the $InstallDir top-level parameter to try and find the InstallDir
+    # for the puppetres workaround. The workaround should _always_ fetch the InstallDir
+    # from the registry. This is so a user can specify a different InstallDir than the
+    # directory where the current package is installed and the workaround will still work
+    # for the already installed package
+    $InstallDir = Find-InstallDir
+    if (Test-Path $temp_puppetres -and -not (Test-Path "$InstallDir\puppet\bin\puppetres.dll")) {
+      Write-Log "Restoring puppetres.dll"
+      Move-Item -Path $temp_puppetres -Destination "$InstallDir\puppet\bin\puppetres.dll"
+    }
+  }
+}
+
+<#
+.Synopsis
+  Write message to location of $Logfile
+.Parameter message
+  String containing the message to write
+#>
+function Script:Write-Log {
+  param(
+    [Parameter(Mandatory=$true)]
+    [String] $message
+  )
+  begin {
+    "$(Get-Date -Format g) $message" | Out-File -FilePath $Logfile -Append
+  }
+}
+
+<#
+.Synopsis
+  Take control of the installation lockfile, fail if the lock
+  already exists
+.Parameter install_pid_lock
+  Location of the installation pid lock file
+#>
+function Script:Lock-Installation {
+  param(
+    [Parameter(Mandatory=$true)]
+    [String] $install_pid_lock
+  )
+  begin {
+    Write-Log "Locking installation"
+    if (Test-Path $install_pid_lock) {
+      Write-Log "Another process has control of $install_pid_lock! Cannot lock, exiting..."
+      throw
+    } else {
+      $PID | Out-File -NoClobber -FilePath $install_pid_lock
+    }
+    Write-Log "Locked"
+  }
+}
+
+<#
+.Synopsis
+  Release control of the installation lockfile
+.Parameter install_pid_lock
+  Location of the installation pid lock file
+#>
+function Script:Unlock-Installation {
+  param(
+    [Parameter(Mandatory=$true)]
+    [String] $install_pid_lock
+  )
+  begin {
+    Write-Log "Unlocking installation"
+    if (Test-Path $install_pid_lock) {
+      if ((Get-Content $install_pid_lock) -ne $PID) {
+        Write-Log "Another process has control of $install_pid_lock! Cannot unlock, exiting..."
+      } else {
+        try {
+          Remove-Item -Force $install_pid_lock | Out-Null
+          Write-Log "Unlocked"
+        } catch {
+          Write-Log $_
+        }
+      }
+    }
+  }
+}
+
+# ************** Execution start **************
+$ErrorActionPreference = "Stop"
+$service_names=@(
+  "puppet",
+  "pxp-agent",
+  "mcollective"
+)
+try {
+  Write-Log "Installation PID:$PID"
+  $install_pid_lock = Join-Path -Path (Split-Path -Parent (puppet.bat config print agent_catalog_run_lockfile)) -ChildPath 'puppet_install.pid'
+  Lock-Installation $install_pid_lock
+  # Wait for the puppet run to finish
+  #
+  # We must wait for the puppet agent to finish applying its catalog before we
+  # stop all of our services. Otherwise if the catalog has additional resources
+  # that manage our services (e.g. such as those from the PE module), then the
+  # install will fail to proceed.
+  Write-Log "Waiting for puppet to stop, PID:$PuppetPID"
+  try {
+    Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue | Wait-Process -Timeout 120
+  # We have to catch all exceptions here since the Error action preference of 'stop' will cause wait-process
+  # to actually throw [System.Management.Automation.ActionPreferenceStopException] rather than the actual
+  # exceptions. Once inside the catch block, the value of $_ is correctly set as the actual exception
+  } catch {
+    if ($_.Exception.GetType() -eq [System.TimeoutException]) {
+      Write-Log "ERROR: timed out waiting for puppet run to finish!"
+      throw $_
+    } else {
+      Write-Log "ERROR: failed while trying to wait for puppet process with $($_.Exception.GetType())"
+      throw $_
+    }
+  }
+  # We *must* shutdown all puppet-agent services for the MSI installation to correctly
+  # work without requiring a restart.
+  foreach($service in $service_names) {
+    $serv_exists = Get-Service -Name $service -ErrorAction SilentlyContinue
+    if ($serv_exists) {
+      Write-Log "Stopping $($service) before upgrade"
+      Stop-Service $service
+    }
+  }
+  if ($UseLockedFilesWorkaround) {
+    $temp_puppetres = Move-PuppetresDLL
+  }
+  $msi_arguments = "/qn /norestart /i `"$Source`" /l*vx+ `"$Logfile`""
+  $msi_arguments += " PUPPET_AGENT_ENVIRONMENT=`"$((puppet.bat config print --section agent environment) -replace '\s','')`""
+  if ($InstallDir) {
+    $msi_arguments += " INSTALLDIR=`"$InstallDir`""
+  }
+  if ($PuppetMaster) {
+    $msi_arguments += " PUPPET_MASTER_SERVER=`"$PuppetMaster`""
+  }
+  if ($PuppetStartType) {
+    $msi_arguments += " PUPPET_AGENT_STARTUP_MODE=`"$PuppetStartType`""
+  }
+  $msi_arguments += " $InstallArgs"
+  Write-Log "Beginning MSI installation with Arguments: $msi_arguments"
+  Write-Log "****************************** Begin msiexec.exe output ******************************"
+  $startInfo = New-Object System.Diagnostics.ProcessStartInfo('msiexec.exe', $msi_arguments)
+  $startInfo.UseShellExecute = $false
+  $startInfo.CreateNoWindow = $true
+  $invocationId = [Guid]::NewGuid().ToString()
+  $process = New-Object System.Diagnostics.Process
+  $process.StartInfo = $startInfo
+  $process.EnableRaisingEvents = $true
+  $exitedEvent = Register-ObjectEvent -InputObject $process -EventName 'Exited' -SourceIdentifier $invocationId
+  $process.Start() | Out-Null
+  # park current thread until the PS event is signaled upon process exit
+  # OR the timeout has elapsed
+  $waitResult = Wait-Event -SourceIdentifier $invocationId
+  Write-Log "****************************** End msiexec.exe output ******************************"
+  if (($process.ExitCode -eq 3010) -or ($process.ExitCode -eq 1641) ){
+    Write-Log "WARNING: msiexec.exe returned $($msi_exec.ExitCode) and has flagged the system for restart!!!"
+  } elseif ($process.ExitCode -ne 0){
+    Write-Log "ERROR: msiexec.exe installation failed!!! Return code $($msi_exec.ExitCode)"
+    throw
+  }
+} catch {
+  Write-Log "ERROR: $_"
+  if ($UseLockedFilesWorkaround) {
+    Reset-PuppetresDLL $temp_puppetres
+  }
+} finally {
+  Unlock-Installation $install_pid_lock
+}
