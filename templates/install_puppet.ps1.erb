@@ -193,19 +193,14 @@ try {
   # that manage our services (e.g. such as those from the PE module), then the
   # install will fail to proceed.
   Write-Log "Waiting for puppet to stop, PID:$PuppetPID"
-  try {
-    Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue | Wait-Process -Timeout 120
-  # We have to catch all exceptions here since the Error action preference of 'stop' will cause wait-process
-  # to actually throw [System.Management.Automation.ActionPreferenceStopException] rather than the actual
-  # exceptions. Once inside the catch block, the value of $_ is correctly set as the actual exception
-  } catch {
-    if ($_.Exception.GetType() -eq [System.TimeoutException]) {
-      Write-Log "ERROR: timed out waiting for puppet run to finish!"
-      throw $_
-    } else {
-      Write-Log "ERROR: failed while trying to wait for puppet process with $($_.Exception.GetType())"
-      throw $_
+  $proc = Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue
+  if ($proc) {
+    if (!$proc.WaitForExit(120000)){
+      Write-Log "ERROR: Timed out waiting for puppet!"
+      throw
     }
+  } else {
+    Write-Log "Puppet Already finished"
   }
   # We *must* shutdown all puppet-agent services for the MSI installation to correctly
   # work without requiring a restart.
