@@ -28,7 +28,7 @@ else {
     $msi_name = "puppet-agent-${arch}-latest.msi"
 }
 
-$msi_source = "http://downloads.puppetlabs.com/windows/${collection}/${msi_name}"
+$msi_source = "https://downloads.puppetlabs.com/windows/${collection}/${msi_name}"
 
 $date_time_stamp = (Get-Date -format s) -replace ':', '-'
 $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"
