@@ -106,7 +106,7 @@ function Script:Reset-PuppetresDLL {
     # directory where the current package is installed and the workaround will still work
     # for the already installed package
     $InstallDir = Find-InstallDir
-    if (Test-Path $temp_puppetres -and -not (Test-Path "$InstallDir\puppet\bin\puppetres.dll")) {
+    if ((Test-Path $temp_puppetres) -and -not (Test-Path "$InstallDir\puppet\bin\puppetres.dll")) {
       Write-Log "Restoring puppetres.dll"
       Move-Item -Path $temp_puppetres -Destination "$InstallDir\puppet\bin\puppetres.dll"
     }
@@ -181,6 +181,70 @@ function Script:Unlock-Installation {
   }
 }
 
+<#
+.Synopsis
+  Collect the current state of puppet-agent services
+.Parameter service_names
+  an array of service names to save the state for
+#>
+function Script:Read-PuppetServices {
+  param(
+    [Parameter(Mandatory=$true)]
+    [Array] $service_names
+  )
+  begin{
+    $services = @()
+    foreach ($service_name in $service_names) {
+      # Let Get-Service silently continue if the service doesn't exist. This is
+      # so we can ignore mcollective when it doesn't exist (i.e. agent > 6.0.0)
+      $service_entry = Get-Service $service_name -ErrorAction SilentlyContinue
+      # The StartType entry was only added to 'Get-Service' in powershell 4, so
+      # we need to use WMI to fetch it for older versions of windows
+      if ($service_entry) {
+        $start_type = (Get-WmiObject -Class Win32_Service -Property StartMode -Filter "Name='$service_name'").StartMode.Replace('Auto', 'Automatic')
+        Write-Log "Fetched Service $service_name status: $($service_entry.Status), StartType: $start_type"
+        $services += @{ 'Name' = $service_name; 'Status' = $service_entry.Status; 'StartType' = $start_type }
+      } else {
+        Write-Log "Service $service_name does not exist, continuing..."
+      }
+    }
+    return $services
+  }
+}
+
+<#
+.Synopsis
+  Restore the state of puppet-agent services
+.Parameter services
+  An array containing hashtables of service statuses and start types in the form:
+  {'Name' = 'service name'; 'Status' = 'service status'; 'StartType' = 'service start type'}
+#>
+function Script:Reset-PuppetServices {
+  param(
+    [Parameter(Mandatory=$true)]
+    [AllowNull()]
+    [Array] $services
+  )
+  begin{
+    if (!$services) {
+      Write-Log "Services to reset is empty..."
+      return
+    }
+    foreach ($service in $services) {
+      # We need to check if the service still exists after upgrade, since
+      # an upgrade from agent < 6 to agent >= 6 will have an mcollective
+      # service before upgrade, but no mcollective service after
+      if (Get-Service $service.Name -ErrorAction SilentlyContinue) {
+        Write-Log "Restoring service state for $($service.Name)"
+        Set-Service $service.Name -StartupType $service.StartType
+        Set-Service $service.Name -Status $service.Status
+      } else {
+        Write-Log "Get-Service failed to fetch $($service.Name), continuing..."
+      }
+    }
+  }
+}
+
 # ************** Execution start **************
 $ErrorActionPreference = "Stop"
 $service_names=@(
@@ -210,6 +274,7 @@ try {
       Write-Log "Puppet Already finished"
     }
   }
+  $services_before = Read-PuppetServices $service_names
   # We *must* shutdown all puppet-agent services for the MSI installation to correctly
   # work without requiring a restart.
   foreach($service in $service_names) {
@@ -257,8 +322,12 @@ try {
   }
 } catch {
   Write-Log "ERROR: $_"
-  if ($UseLockedFilesWorkaround) {
-    Reset-PuppetresDLL $temp_puppetres
+  try {
+    if ($UseLockedFilesWorkaround) {
+      Reset-PuppetresDLL $temp_puppetres
+    }
+  } finally {
+    Reset-PuppetServices $services_before
   }
 } finally {
   Unlock-Installation $install_pid_lock
