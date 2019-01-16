@@ -91,9 +91,15 @@ function Script:Move-PuppetresDLL {
 function Script:Reset-PuppetresDLL {
   param(
     [Parameter(Mandatory=$true)]
+    [AllowNull()]
+    [AllowEmptyString()]
     [String] $temp_puppetres
   )
   begin {
+    if (!$temp_puppetres) {
+      Write-Log "puppetres.dll Never moved, continuing..."
+      return
+    }
     # _Never_ use the $InstallDir top-level parameter to try and find the InstallDir
     # for the puppetres workaround. The workaround should _always_ fetch the InstallDir
     # from the registry. This is so a user can specify a different InstallDir than the
