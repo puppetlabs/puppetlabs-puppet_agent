@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1] - 2019-01-17
+
+### Summary
+New Installation tasks using [Bolt](https://github.com/puppetlabs/bolt), Updated module deps, Migration from
+batch to powershell for windows upgrades
+
+### Features
+- Bolt task installations
+- Updated module dependencies
+- Powershell scripts for Windows upgrades
+
+### Bug fixes
+- Windows installations now recover service state on failed upgrades
+
 ## [1.7.0] - 2018-09-18
 
 ### Summary
