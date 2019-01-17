@@ -254,7 +254,7 @@ $service_names=@(
 )
 try {
   Write-Log "Installation PID:$PID"
-  $install_pid_lock = Join-Path -Path (Split-Path -Parent (puppet.bat config print agent_catalog_run_lockfile)) -ChildPath 'puppet_install.pid'
+  $install_pid_lock = Join-Path -Path (Split-Path -Parent (puppet.bat config print agent_catalog_run_lockfile)) -ChildPath 'puppet_agent_upgrade.pid'
   Lock-Installation $install_pid_lock
   if ($PuppetPID) {
     # Wait for the puppet run to finish
