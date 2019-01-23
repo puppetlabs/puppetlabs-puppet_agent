@@ -80,28 +80,6 @@ Install the puppet_agent module with `puppet module install puppetlabs-puppet_ag
 
 ## Usage
 
-### Puppet 3 Upgrades
-
-Add the class to agents you want to upgrade:
-
-~~~puppet
-include ::puppet_agent
-~~~
-
-This installs the latest released version of Puppet from Puppet Collection 1.
-
-To upgrade with this module, first stand up a Puppet Server 2.1 master---which supports backward compatibility with Puppet 3 agents---and point the agent you want to upgrade at that master. Once you've confirmed the agent runs successfully against the new master, and thus the Puppet 4 language, apply the class to the agent and confirm that it checks back in after a successful upgrade. Further details on upgrading are available [here](http://docs.puppetlabs.com/puppet/4.2/reference/upgrade_major_pre.html).
-
-As part of preparing the agent for Puppet 4, the module performs several significant steps:
-* Copies SSL files (based on their location settings: ssldir, certdir, privatedir, privatekeydir, publickeydir, requestdir) to new Puppet 4 defaults, and restore those settings to default in puppet.conf.
-* Resets non-deprecated settings to defaults: disable_warnings, vardir, rundir, libdir, confdir, ssldir, and classfile.
-* Resets logfile in MCollective's server.cfg and client.cfg.
-* Adds new libdir and plugin.yaml locations to MCollective's server.cfg and client.cfg.
-
-> **Note:** The upgrade does not change several config options. Anything else that's been explicitly configured will not be changed to reflect new default locations in Puppet 4. Some of these options are:
-* Puppet's logdir
-* MCollective's logfile
-
 ### Puppet 4 Upgrades
 
 Add the class to agents you want to upgrade, specifying the desired puppet-agent version:
@@ -136,35 +114,51 @@ This will ensure the version `1.4.0` of the puppet-agent package is installed. F
 
 ##### `arch`
 
-The architecture version you wish to install. Defaults to `$::architecture`. This parameter is [ignored](#known-issues) in Windows Server 2003.
+The architecture version you wish to install. Defaults to `$::facts['architecture']`.
+``` puppet
+  arch => 'x86_64'
+```
 
 ##### `collection`
 
-The Puppet Collection to track. Defaults to `PC1`.
+The Puppet Collection to track, should be one of `puppet5` or `puppet6`. Puppet collections contain the latest agents included
+in the collection's series, so the latest 5 series in puppet5 (for example: 5.5.10) and the latest 6 series in puppet6 (for
+example: 6.1.0).
+``` puppet
+  collection => 'puppet6'
+```
 
 ##### `is_pe`
 
 Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
+``` puppet
+  is_pe => true
+```
 
 ##### `manage_repo`
 
 Boolean to determine whether to configure zypper/yum/apt/solaris repositories. Defaults to `true`.
 If set to false, it is assumed an internally hosted repository will be used for the installation,
 and the native package providers will be used to query pre-configured repos on the host being upgraded.
-
-##### `package_name`
-
-The package to upgrade to, i.e., `puppet-agent`. Currently, the default and only accepted value is `puppet-agent`.
+``` puppet
+  manage_repo => true
+```
 
 ##### `package_version`
 
-The package version to upgrade to. When upgrading from Puppet < 4.0, defaults to the puppet master's latest supported version
-if compiled with A PE master or undef otherwise (meaning get the latest Open Source release). Explicitly specify a version to
-upgrade from puppet-agent packages (implying Puppet >= 4.0).
+The package version to upgrade to. Defaults to the puppet master's latest supported version if compiled with A PE master,
+otherwise `undef` (meaning get the latest Open Source release). Explicitly specify a version to upgrade from puppet-agent
+packages (implying Puppet >= 4.0).
+``` puppet
+  package_version => '5.5.8'
+```
 
 ##### `service_names`
 
-An array of services to start, normally `puppet` and `mcollective`. If the array is empty, no services are started.
+An array of services to start, normally `puppet`. If the array is empty, no services are started.
+``` puppet
+  service_names => ['puppet']
+```
 
 ##### `source`
 
@@ -185,7 +179,6 @@ The directory the puppet agent should be installed to. This is only applicable f
 An array of additional options to pass when installing puppet-agent. Each option in the array can be either a string or a hash. Each option is automatically quoted when passed to the install command.
 
 With Windows packages, note that file paths in `install_options` must use backslashes. (Since install options are passed directly to the installation command, forward slashes aren't automatically converted like they are in `file` resources.) Backslashes in double-quoted strings _must_ be escaped, while backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="maus"`.
-
 ``` puppet
   install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp','PUPPET_AGENT_ACCOUNT_USER=bob','PUPPET_AGENT_ACCOUNT_PASSWORD=password']
 ```
@@ -222,10 +215,9 @@ Mac OS X Open Source packages are currently not supported.
 
 In addition, there are several known issues with Windows:
 
-* To upgrade the agent by executing `puppet agent -t` interactively in a console, you must close the console and wait for the upgrade to finish before attempting to use the `puppet` command again.
+* To upgrade the agent by executing `puppet agent -t` interactively in a console, you must leave the console open and wait for the upgrade to finish before attempting to use the `puppet` command again. During upgrades the upgrade scripts use a 'pid file' located at Drive:\ProgramData\PuppetLabs\puppet\cache\state\puppet_agent_upgrade.pid to indicate there is an upgrade in progress. The 'pid file' also contains the process ID of the upgrade, if you wish to track the process itself.
+
 * MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent. If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
-* On Windows Server 2003, only x86 is supported, and the `arch` parameter is ignored. If you try to force an upgrade to x64, Puppet installs the x86 version with no error message.
-* On Windows Server 2003 with Puppet Enterprise, the default download location is unreachable. You can work around this issue by specifying an alternate download URL in the `source` parameter.
 
 Specifically in the 1.2.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
