@@ -74,7 +74,6 @@ describe 'puppet_agent' do
         end
 
         context 'On a PE infrastructure node puppet_agent does nothing' do
-          # The puppet version conditional is only required if the module supports Puppet 3.x
           before(:each) do
             facts['pe_server_version'] = '2000.0.0'
           end
@@ -159,7 +158,7 @@ describe 'puppet_agent' do
             if facts[:osfamily] == 'Debian'
               deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
-            elsif facts[:osfamily] == 'Solaris' && (facts[:operatingsystemmajrelease] == '10' || Puppet.version < '4.0.0')
+            elsif facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '10'
               it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
             elsif facts[:osfamily] == 'windows'
               # Windows does not contain any Package resources
@@ -168,7 +167,7 @@ describe 'puppet_agent' do
             end
 
             unless os =~ /windows/
-              if Puppet.version < "4.0.0" || (os !~ /sles/ && os !~ /solaris/)
+              if os !~ /sles/ && os !~ /solaris/
                 it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::install]') }
               end
             end

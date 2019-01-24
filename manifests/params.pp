@@ -4,10 +4,6 @@
 # It sets variables according to platform.
 #
 class puppet_agent::params {
-  if (versioncmp("${::clientversion}", '4.0.0') < 0 and str2bool($::puppet_stringify_facts) == true) {
-    fail('The puppet_agent class requires stringify_facts to be disabled')
-  }
-
   # Which services should be started after the upgrade process?
   if ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
     # Solaris 11 is a special case; it uses a custom script.
@@ -104,11 +100,7 @@ class puppet_agent::params {
     $master_agent_version = undef
   }
 
-  if ($master_agent_version != undef and versioncmp("${::clientversion}", '4.0.0') < 0) {
-    $package_version = $master_agent_version
-  } else {
-    $package_version = undef
-  }
+  $package_version = undef
 
   # Calculate the default collection
   $_pe_version = $_is_pe ? {

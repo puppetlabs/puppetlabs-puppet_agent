@@ -15,8 +15,7 @@ class puppet_agent::service {
 
   if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' and versioncmp("${::clientversion}", '5.0.0') < 0 {
     # Skip managing service, upgrade script will handle it.
-  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and
-      ((versioncmp("${::clientversion}", '4.0.0') < 0) or $puppet_agent::aio_upgrade_required) {
+  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and $puppet_agent::aio_upgrade_required {
     # Only use script if we just performed an upgrade.
     $_logfile = "${::env_temp_variable}/solaris_start_puppet.log"
     # We'll need to pass the names of the services to start to the script
