@@ -34,7 +34,6 @@ describe 'puppet_agent::prepare' do
           it { is_expected.to contain_ini_setting("#{section}/pluginsync").with_ensure('absent') }
         end
 
-        it { is_expected.not_to contain_class("puppet_agent::prepare::ssl") }
         it { is_expected.to contain_class("puppet_agent::prepare::puppet_config") }
         it { is_expected.to contain_class("puppet_agent::osfamily::#{facts[:osfamily]}") }
       end
