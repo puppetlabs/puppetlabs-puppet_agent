@@ -11,8 +11,6 @@
     * [Setup requirements](#setup-requirements)
     * [Beginning with puppet_agent](#beginning-with-puppet_agent)
 4. [Usage - Configuration options and additional functionality](#usage)
-    * [Puppet 3 Upgrades](#puppet-3-upgrades)
-    * [Puppet 4 Upgrades](#puppet-4-upgrades)
 5. [Reference](#reference)
     * [Public classes](#public-classes)
     * [Private classes](#private-classes)
@@ -28,11 +26,9 @@ A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-ag
 
 ## Module Description
 
-The puppet_agent module installs the Puppet Collection 1 repo (as a default, and on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation. When starting from Puppet 3, it will upgrade to the latest Puppet open-source release, or to the latest puppet-agent package supported by your PE installation.
+The puppet_agent module installs the Puppet Collection 1 repo (as a default, and on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
 
-If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent (Puppet 4) package.
-
-This module expects Puppet to be installed from packages.
+If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package.
 
 ## Setup
 
@@ -40,47 +36,17 @@ This module expects Puppet to be installed from packages.
 
 * Puppet, Facter, Hiera, and MCollective.
 * Puppet's SSL directory and puppet.conf.
-* MCollective's server.cfg and client.cfg.
 * Removes deprecated settings from puppet.conf.
-* Updates puppet.conf and server.cfg for behavioral changes in puppet-agent (future parser is now the default, and MCollective has a new varlog location).
 
 ### Setup requirements
 
-Your agents must be running Puppet 3 with `stringify_facts` set to 'false', or Puppet 4+. Agents should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
-
-To compile this module, you must use Puppet 3.7 with future parser or newer, meaning it can be applied to masterless Puppet 3.7 or newer, or earlier Puppet 3 agents connecting to a Puppet 3.7 or newer master.
-
-#### Configuring `stringify_facts`
-
-On systems running Puppet 3.x, you can configure the `stringify_facts` settings with either a dedicated Puppet class or the [`puppet_conf`](https://forge.puppet.com/puppetlabs/puppet_conf) task module.
-
-For example, this class can configure the settings:
-
-```puppet
-include ::puppet_agent::prepare::stringify_facts
-```
-
-This [Puppet Enterprise task](https://puppet.com/docs/pe/2017.3/orchestrator/puppet_tasks_overview.html) can also configure the settings:
-
-```bash
-puppet task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
-```
-
-This [bolt task](https://puppet.com/docs/bolt/0.x/bolt.html) can also configure the settings over SSH/WinRM:
-
-```bash
-bolt task run puppet_conf action=set section=main setting=stringify_facts value=false --nodes example-38-box.vm
-```
-
-> *Warning:* `stringify_facts` was [deprecated in Puppet 3.8](https://docs.puppet.com/puppet/3.8/deprecated_settings.html#stringifyfacts--true) and [removed in Puppet 5](https://puppet.com/docs/puppet/5.3/upgrade_major_pre.html#stop-stringifying-facts-and-check-for-breakage).
+Your agents must be running a minimum version of Puppet 4. They should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
 
 ### Beginning with puppet_agent
 
 Install the puppet_agent module with `puppet module install puppetlabs-puppet_agent`.
 
 ## Usage
-
-### Puppet 4 Upgrades
 
 Add the class to agents you want to upgrade, specifying the desired puppet-agent version:
 
@@ -99,12 +65,10 @@ This will ensure the version `1.4.0` of the puppet-agent package is installed. F
 
 ### Private classes
 * `puppet_agent::install`: Installs packages.
-* `puppet_agent::install::remove_packages`: For platforms that can't perform in-place upgrades, removes the old packages.
-* `puppet_agent::install::remove_packages_osx`: Removes the old packages on Mac OS X.
 * `puppet_agent::osfamily::*`: Platform-specific preparation performed before upgrades.
 * `puppet_agent::prepare`: Prepares the agent for upgrade.
 * `puppet_agent::prepare::package`: Stages packages locally for install, on platforms that can't install from remote packages.
-* `puppet_agent::prepare::*`: Prepare various file and ssl configuration.
+* `puppet_agent::prepare::*`: Prepare various file configurations.
 * `puppet_agent::service`: Ensures the services are running.
 * `puppet_agent::windows::install`: Handles Windows package installation.
 
@@ -146,9 +110,7 @@ and the native package providers will be used to query pre-configured repos on t
 
 ##### `package_version`
 
-The package version to upgrade to. Defaults to the puppet master's latest supported version if compiled with A PE master,
-otherwise `undef` (meaning get the latest Open Source release).  Explicitly specify a version to upgrade from puppet-agent
-packages (implying Puppet >= 4.0).  **This parameter is required for installations not connected to PE**
+The package version to upgrade to. This must be explicitly specified.
 ``` puppet
   package_version => '5.5.8'
 ```
