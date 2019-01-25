@@ -16,7 +16,6 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         :osfamily => 'windows',
         :puppetversion => '4.10.100',
         :puppet_confdir => "#{values[:appdata]}\\Puppetlabs\\puppet\\etc",
-        :mco_confdir => "#{values[:appdata]}\\Puppetlabs\\mcollective\\etc",
         :puppet_agent_pid => 42,
         :system32 => 'C:\windows\sysnative',
         :puppet_agent_appdata => values[:appdata],
@@ -191,7 +190,6 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             :architecture => 'x86',
             :system32 => 'C:\windows\sysnative',
             :puppet_confdir => "#{values[:appdata]}\\Puppetlabs\\puppet\\etc",
-            :mco_confdir => "#{values[:appdata]}\\Puppetlabs\\mcollective\\etc",
           } }
 
           let(:params) { global_params.merge(
@@ -241,7 +239,6 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         :osfamily => 'windows',
         :puppetversion => '3.8.0',
         :puppet_confdir => "#{values[:appdata]}/PuppetLabs/puppet/etc",
-        :mco_confdir => "#{values[:appdata]}/PuppetLabs/mcollective/etc",
         :puppet_agent_pid => 42,
         :system32 => 'C:\windows\sysnative',
         :tmpdir => 'C:\tmp',

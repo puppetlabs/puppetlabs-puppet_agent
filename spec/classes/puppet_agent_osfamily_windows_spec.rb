@@ -28,7 +28,6 @@ describe 'puppet_agent' do
         :servername           => 'master.example.vm',
         :clientcert           => 'foo.example.vm',
         :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
-        :mco_confdir          => "#{appdata}\\Puppetlabs\\mcollective\\etc",
         :puppet_agent_appdata => appdata,
         :env_temp_variable => 'C:/tmp',
         :puppet_agent_pid     => 42,

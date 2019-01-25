@@ -44,15 +44,12 @@ class puppet_agent::params {
       $local_packages_dir = "${local_puppet_dir}/packages"
 
       $confdir = '/etc/puppetlabs/puppet'
-      $mco_dir = '/etc/puppetlabs/mcollective'
 
-      $mco_install = "${local_puppet_dir}/mcollective"
       $logdir = '/var/log/puppetlabs'
 
       # A list of dirs that need to be created. Mainly done this way because
       # Windows requires more directories to exist for confdir.
       $puppetdirs = ['/etc/puppetlabs', $confdir]
-      $mcodirs = [$mco_dir]
 
       $path_separator = ':'
 
@@ -64,12 +61,9 @@ class puppet_agent::params {
       $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
       $confdir = $::puppet_confdir
-      $mco_dir = $::mco_confdir
 
-      $mco_install = $mco_dir
       $logdir = 'C:\ProgramData\PuppetLabs\mcollective\var\log'
 
-      $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
       $path_separator = ';'
 
@@ -122,10 +116,4 @@ class puppet_agent::params {
 
   $ssldir = "${confdir}/ssl"
   $config = "${confdir}/puppet.conf"
-
-  $mco_server  = "${mco_dir}/server.cfg"
-  $mco_client  = "${mco_dir}/client.cfg"
-  $mco_libdir  = "${mco_install}/plugins"
-  $mco_plugins = "${mco_dir}/facts.yaml"
-  $mco_log     = "${logdir}/mcollective.log"
 }

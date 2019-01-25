@@ -20,7 +20,6 @@ describe 'puppet_agent' do
         {
           :puppet_agent_appdata => 'C:\\ProgramData',
           :puppet_confdir    => 'C:\\ProgramData\\Puppetlabs\\puppet\\etc',
-          :mco_confdir       => 'C:\\ProgramData\\Puppetlabs\\mcollective\\etc',
           :env_temp_variable => 'C:/tmp',
           :puppet_agent_pid  => 42,
           :puppet_config     => "C:\\puppet.conf",
