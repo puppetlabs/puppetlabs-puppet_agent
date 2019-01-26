@@ -178,27 +178,35 @@ module Beaker
         # PMT will have installed dependencies in the production environment; We will put our manifest there, too:
         site_pp_path = File.join(puppet_config(master, 'codedir'), 'environments', 'production', 'manifests', 'site.pp')
 
-        if file_exists_on(master, site_pp_path)
-          original_contents = file_contents_on(master, site_pp_path)
-          original_perms = on(master, %(stat -c "%a" #{site_pp_path})).stdout.strip
+        step "Save current site.pp" do
+          if file_exists_on(master, site_pp_path)
+            original_contents = file_contents_on(master, site_pp_path)
+            original_perms = on(master, %(stat -c "%a" #{site_pp_path})).stdout.strip
 
-          teardown do
-            on(master, %(echo "#{original_contents}" > #{site_pp_path}))
-            on(master, %(chmod #{original_perms} #{site_pp_path}))
-          end
-        else
-          teardown do
-            on(master, "rm -f #{site_pp_path}")
+            teardown do
+              step "restore original manifest" do
+                on(master, %(echo "#{original_contents}" > #{site_pp_path}))
+                on(master, %(chmod #{original_perms} #{site_pp_path}))
+              end
+            end
+          else
+            teardown do
+              on(master, "rm -f #{site_pp_path}")
+            end
           end
         end
 
-        create_remote_file(master, site_pp_path, manifest_contents)
-        on(master, %(chown #{puppet_user(master)} "#{site_pp_path}"))
-        on(master, %(chmod 755 "#{site_pp_path}"))
+        step "create site.pp on master with manifest:\n#{manifest_contents}" do
+          create_remote_file(master, site_pp_path, manifest_contents)
+          on(master, %(chown #{puppet_user(master)} "#{site_pp_path}"))
+          on(master, %(chmod 755 "#{site_pp_path}"))
+        end
 
-        with_puppet_running_on(master, master_opts) do
-          on(agents_only, puppet(%(agent --test --server #{master.hostname})), acceptable_exit_codes: [0, 2])
-          yield if block_given?
+        step "Execute puppet runs" do
+          with_puppet_running_on(master, master_opts) do
+            on(agents_only, puppet(%(agent --test --server #{master.hostname})), acceptable_exit_codes: [0, 2])
+            yield if block_given?
+          end
         end
       end
 
@@ -215,16 +223,16 @@ module Beaker
       # @param [String] upgrade_manifest A manifest to apply to all agent nodes
       def run_foss_upgrade_with_manifest(initial_package_version_or_collection, upgrade_manifest)
         confine :except, platform: PE_ONLY_UPGRADES
-
-        logger.notify("Performing FOSS upgrade with default manifest:\n#{upgrade_manifest}")
-
-        prepare_upgrade_with(initial_package_version_or_collection)
-        teardown { purge_agents }
-
-        with_default_site_pp(upgrade_manifest) do
-          # Put your assertions here
-          yield if block_given?
+        step "Prepare for FOSS upgrade" do
+          prepare_upgrade_with(initial_package_version_or_collection)
         end
+        step "Execute FOSS upgrade with default manifest:\n#{upgrade_manifest}" do
+          with_default_site_pp(upgrade_manifest) do
+            # Put your assertions here
+            yield if block_given?
+          end
+        end
+        teardown { purge_agents }
       end
     end
   end
