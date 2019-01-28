@@ -63,6 +63,10 @@ class puppet_agent (
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
+  if (getvar('::aio_agent_version') == undef) {
+    fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
+  }
+
   if $::osfamily == 'windows' and $install_dir != undef {
     validate_absolute_path($install_dir)
   }

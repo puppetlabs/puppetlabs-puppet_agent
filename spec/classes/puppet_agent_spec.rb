@@ -36,6 +36,14 @@ describe 'puppet_agent' do
           global_facts(facts, os)
         end
 
+        context "when the aio_agent_version fact is undefined" do
+          let(:facts) do
+            global_facts(facts, os).merge({:aio_agent_version => nil})
+          end
+
+          it { should_not compile }
+        end
+
         if os !~ /sles/ and os !~ /solaris/
           context 'package_version is undef by default' do
             let(:facts) do
