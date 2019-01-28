@@ -6,6 +6,13 @@
 class puppet_agent::service {
   assert_private()
 
+  # Starting with puppet6 collections we no longer carry the mcollective service
+  if $::puppet_agent::collection != 'PC1' and $::puppet_agent::collection != 'puppet5' {
+    $_service_names = delete($::puppet_agent::service_names, 'mcollective')
+  } else {
+    $_service_names = $::puppet_agent::service_names
+  }
+
   if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' and versioncmp("${::clientversion}", '5.0.0') < 0 {
     # Skip managing service, upgrade script will handle it.
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' and
@@ -13,7 +20,7 @@ class puppet_agent::service {
     # Only use script if we just performed an upgrade.
     $_logfile = "${::env_temp_variable}/solaris_start_puppet.log"
     # We'll need to pass the names of the services to start to the script
-    $_service_names_arg = join($::puppet_agent::service_names, ' ')
+    $_service_names_arg = join($_service_names, ' ')
     notice ("Puppet service start log file at ${_logfile}")
     file { "${::env_temp_variable}/solaris_start_puppet.sh":
       ensure => file,
@@ -28,7 +35,7 @@ class puppet_agent::service {
       ensure => directory,
     }
   } else {
-    $::puppet_agent::service_names.each |$service| {
+    $_service_names.each |$service| {
       service { $service:
         ensure     => running,
         enable     => true,
