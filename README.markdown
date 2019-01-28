@@ -121,9 +121,9 @@ The architecture version you wish to install. Defaults to `$::facts['architectur
 
 ##### `collection`
 
-The Puppet Collection to track, should be one of `puppet5` or `puppet6`. Puppet collections contain the latest agents included
+The Puppet Collection to track, should be one of `puppet5` or `puppet6`.  Puppet collections contain the latest agents included
 in the collection's series, so the latest 5 series in puppet5 (for example: 5.5.10) and the latest 6 series in puppet6 (for
-example: 6.1.0).
+example: 6.1.0).  **This parameter is required for installations not connected to PE**
 ``` puppet
   collection => 'puppet6'
 ```
@@ -147,8 +147,8 @@ and the native package providers will be used to query pre-configured repos on t
 ##### `package_version`
 
 The package version to upgrade to. Defaults to the puppet master's latest supported version if compiled with A PE master,
-otherwise `undef` (meaning get the latest Open Source release). Explicitly specify a version to upgrade from puppet-agent
-packages (implying Puppet >= 4.0).
+otherwise `undef` (meaning get the latest Open Source release).  Explicitly specify a version to upgrade from puppet-agent
+packages (implying Puppet >= 4.0).  **This parameter is required for installations not connected to PE**
 ``` puppet
   package_version => '5.5.8'
 ```
