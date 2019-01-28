@@ -36,41 +36,6 @@ class puppet_agent::prepare(
   }
   contain puppet_agent::prepare::puppet_config
 
-  if versioncmp("${::clientversion}", '4.0.0') < 0 {
-    # Migrate old files; assumes user Puppet runs under won't change during upgrade
-    # We assume the current Puppet settings are authoritative; if anything exists
-    # in the destination but not the source, it'll be overwritten.
-    file { $::puppet_agent::params::puppetdirs:
-      ensure => directory,
-    }
-
-    if !$_windows_client { #Windows didn't change only nix systems
-      class { 'puppet_agent::prepare::ssl':
-        before => Class[$_osfamily_class],
-      }
-      contain puppet_agent::prepare::ssl
-
-      # manage client.cfg and server.cfg contents
-      file { $::puppet_agent::params::mcodirs:
-        ensure => directory,
-      }
-
-      # The mco_*_config facts will return the location of mcollective config (or nil), prefering PE over FOSS.
-      if getvar('::mco_server_config') {
-        class { 'puppet_agent::prepare::mco_server_config':
-          before => Class[$_osfamily_class],
-        }
-        contain puppet_agent::prepare::mco_server_config
-      }
-      if getvar('::mco_client_config') {
-        class { 'puppet_agent::prepare::mco_client_config':
-          before => Class[$_osfamily_class],
-        }
-        contain puppet_agent::prepare::mco_client_config
-      }
-    }
-  }
-
   # PLATFORM SPECIFIC CONFIGURATION
   # Break out the platform-specific configuration into subclasses, dependent on
   # the osfamily of the client being configured.

@@ -4,10 +4,6 @@
 # It sets variables according to platform.
 #
 class puppet_agent::params {
-  if (versioncmp("${::clientversion}", '4.0.0') < 0 and str2bool($::puppet_stringify_facts) == true) {
-    fail('The puppet_agent class requires stringify_facts to be disabled')
-  }
-
   # Which services should be started after the upgrade process?
   if ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
     # Solaris 11 is a special case; it uses a custom script.
@@ -48,15 +44,12 @@ class puppet_agent::params {
       $local_packages_dir = "${local_puppet_dir}/packages"
 
       $confdir = '/etc/puppetlabs/puppet'
-      $mco_dir = '/etc/puppetlabs/mcollective'
 
-      $mco_install = "${local_puppet_dir}/mcollective"
       $logdir = '/var/log/puppetlabs'
 
       # A list of dirs that need to be created. Mainly done this way because
       # Windows requires more directories to exist for confdir.
       $puppetdirs = ['/etc/puppetlabs', $confdir]
-      $mcodirs = [$mco_dir]
 
       $path_separator = ':'
 
@@ -68,12 +61,9 @@ class puppet_agent::params {
       $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
       $confdir = $::puppet_confdir
-      $mco_dir = $::mco_confdir
 
-      $mco_install = $mco_dir
       $logdir = 'C:\ProgramData\PuppetLabs\mcollective\var\log'
 
-      $mcodirs = [$mco_dir] # Directories should already exists as they have not changed
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
       $path_separator = ';'
 
@@ -104,11 +94,7 @@ class puppet_agent::params {
     $master_agent_version = undef
   }
 
-  if ($master_agent_version != undef and versioncmp("${::clientversion}", '4.0.0') < 0) {
-    $package_version = $master_agent_version
-  } else {
-    $package_version = undef
-  }
+  $package_version = undef
 
   # Calculate the default collection
   $_pe_version = $_is_pe ? {
@@ -130,10 +116,4 @@ class puppet_agent::params {
 
   $ssldir = "${confdir}/ssl"
   $config = "${confdir}/puppet.conf"
-
-  $mco_server  = "${mco_dir}/server.cfg"
-  $mco_client  = "${mco_dir}/client.cfg"
-  $mco_libdir  = "${mco_install}/plugins"
-  $mco_plugins = "${mco_dir}/facts.yaml"
-  $mco_log     = "${logdir}/mcollective.log"
 }

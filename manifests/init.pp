@@ -1,9 +1,6 @@
 # == Class: puppet_agent
 #
-# Upgrades Puppet 3.8 and newer to the requested version.
-# Makes Puppet 4 upgrades easier by migrating SSL certs and config files to the
-# new Puppet-Agent paths and removing deprecated settings that are no longer
-# supported by Puppet 4.
+# Upgrades Puppet 4 and newer to the requested version.
 #
 # === Parameters
 #
@@ -26,10 +23,7 @@
 # [package_name]
 #   The package to upgrade to, i.e. `puppet-agent`.
 # [package_version]
-#   The package version to upgrade to. When upgrading from Puppet < 4.0, defaults to
-#   the puppet master's latest supported version if compiled with a PE master or
-#   undef otherwise (meaning get the latest Open Source release). Explicitly specify
-#   a version to upgrade from puppet-agent packages (implying Puppet >= 4.0).
+#   The package version to upgrade to. Explicitly specify a version to upgrade
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
@@ -69,32 +63,34 @@ class puppet_agent (
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
 
+  if (getvar('::aio_agent_version') == undef) {
+    fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
+  }
+
   if $::osfamily == 'windows' and $install_dir != undef {
     validate_absolute_path($install_dir)
   }
 
-  if $package_version == undef and versioncmp("${::clientversion}", '4.0.0') >= 0 {
-    info('puppet_agent performs no actions if a package_version is not specified on Puppet 4')
-  } elsif $package_version == undef and $is_pe {
-    info("puppet_agent performs no actions if the master's agent version cannot be determed on PE 3.x")
+  if $package_version == undef {
+    info('puppet_agent performs no actions if a package_version is not specified')
   } elsif defined('$::pe_server_version') {
     info('puppet_agent performs no actions on PE infrastructure nodes to prevent a mismatch between agent and PE components')
   } else {
-    if $package_version != undef and $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+    # In this code-path, $package_version != undef AND we are not on a PE infrastructure
+    # node since $::pe_server_version is not defined
+
+    if $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
       fail("invalid version ${package_version} requested")
     }
 
     # Strip git sha from dev builds
-    if ($package_version != undef and $package_version =~ /g/){
+    if $package_version =~ /g/ {
       $_expected_package_version = split($package_version, /[.-]g.*/)[0]
     } else {
       $_expected_package_version = $package_version
     }
 
-    $aio_upgrade_required = (getvar('::aio_agent_version') == undef) or
-      (getvar('::aio_agent_version') != undef and
-      $_expected_package_version != undef and
-      versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0)
+    $aio_upgrade_required = versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0
 
     if $::architecture == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')
@@ -105,7 +101,6 @@ class puppet_agent (
     # use the full version string for comparisons.
     if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
-      # Need to pass the regex as strings for Puppet 3 compatibility.
       $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
       $_version_without_orphan_dashes = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
       $_package_version = regsubst($_version_without_orphan_dashes, '\b(?:0*?)([1-9]\d*|0)\b', '\1', 'G')
@@ -149,10 +144,8 @@ class puppet_agent (
 
       if $is_pe {
         $_package_file_name = "${package_name}-${_arch}.msi"
-      } elsif $package_version != undef {
-        $_package_file_name = "${package_name}-${package_version}-${_arch}.msi"
       } else {
-        $_package_file_name = "${package_name}-${_arch}-latest.msi"
+        $_package_file_name = "${package_name}-${package_version}-${_arch}.msi"
       }
     } else {
       $_package_file_name = undef
