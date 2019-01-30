@@ -75,6 +75,7 @@ class puppet_agent::osfamily::suse(
 
         $repo_file = '/etc/zypp/repos.d/pc_repo.repo'
         $repo_name = 'pc_repo'
+        $agent_version = $::puppet_agent::package_version
 
         # In Puppet Enterprise, agent packages are served by the same server
         # as the master, which can be using either a self signed CA, or an external CA.
@@ -94,7 +95,15 @@ class puppet_agent::osfamily::suse(
             section => $repo_name,
             setting => $setting,
             value   => $value,
+            before  => Exec["refresh-${repo_name}"],
           }
+        }
+
+        exec { "refresh-${repo_name}":
+          path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+          unless    => "zypper search -r ${repo_name} -s | grep puppet-agent | awk '{print \$7}' | grep \"^${agent_version}\"",
+          command   => "zypper refresh ${repo_name}",
+          logoutput => 'on_failure',
         }
       }
     }
