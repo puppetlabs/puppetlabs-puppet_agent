@@ -288,7 +288,6 @@ try {
     $temp_puppetres = Move-PuppetresDLL
   }
   $msi_arguments = "/qn /norestart /i `"$Source`" /l*vx+ `"$Logfile`""
-  $msi_arguments += " PUPPET_AGENT_ENVIRONMENT=`"$((puppet.bat config print --section agent environment) -replace '\s','')`""
   if ($InstallDir) {
     $msi_arguments += " INSTALLDIR=`"$InstallDir`""
   }
