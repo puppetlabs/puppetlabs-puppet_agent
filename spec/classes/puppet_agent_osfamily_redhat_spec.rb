@@ -120,7 +120,7 @@ describe 'puppet_agent' do
     end
   end
 
-  [['RedHat', 'el-7-x86_64', 'el-7-x86_64', 7], ['Amazon', '', 'el-6-x64', 6]].each do |os, tag, repodir, osmajor|
+  [['RedHat', 'el-7-x86_64', 'el-7-x86_64', 7], ['RedHat', 'el-8-x86_64', 'el-8-x86_64', 8], ['Amazon', '', 'el-6-x64', 6]].each do |os, tag, repodir, osmajor|
     context "when PE on #{os}" do
       before(:each) do
         # Need to mock the PE functions
