@@ -55,7 +55,7 @@ describe 'puppet_agent' do
       }
     }
 
-    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7'], ['5.3', '5.3', '7']].each do |aixver, pkg_aixver, powerver|
+    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
       context "aix #{aixver}" do
         include_examples 'aix', aixver, pkg_aixver, powerver
       end
@@ -70,7 +70,7 @@ describe 'puppet_agent' do
       }
     }
 
-    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7'], ['5.3', '5.3', '7']].each do |aixver, pkg_aixver, powerver|
+    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
       context "aix #{aixver}" do
         include_examples 'aix', aixver, pkg_aixver, powerver
       end
