@@ -18,7 +18,7 @@ describe 'puppet_agent' do
     }
   end
 
-  [['Fedora', 'fedora/f$releasever', 27], ['Fedora', 'fedora/f$releasever', 29], ['CentOS', 'el/$releasever', 7], ['Amazon', 'el/6', 6]].each do |os, urlbit, osmajor|
+  [['Fedora', 'fedora/f$releasever', 29], ['CentOS', 'el/$releasever', 7], ['Amazon', 'el/6', 6]].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
         super().merge(:operatingsystem  => os, :operatingsystemmajrelease => osmajor)

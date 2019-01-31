@@ -4,12 +4,12 @@ describe 'puppet_agent' do
   facts = {
     :lsbdistid => 'Debian',
     :osfamily => 'Debian',
-    :lsbdistcodename => 'wheezy',
+    :lsbdistcodename => 'stretch',
     :os => {
       'name' => 'Debian',
       'release' => {
-        'full' => '6.0',
-        'major' => '6',
+        'full' => '9.0',
+        'major' => '9',
       },
     },
     :operatingsystem => 'Debian',

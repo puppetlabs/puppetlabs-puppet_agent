@@ -20,7 +20,7 @@ describe 'puppet_agent' do
     :is_pe                       => true,
     :osfamily                    => 'Darwin',
     :operatingsystem             => 'Darwin',
-    :macosx_productversion_major => '10.9',
+    :macosx_productversion_major => '10.13',
     :architecture                => 'x86_64',
     :servername                  => 'master.example.vm',
     :clientcert                  => 'foo.example.vm',
@@ -37,11 +37,11 @@ describe 'puppet_agent' do
       it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
     end
 
-    context "when OSX 10.8" do
+    context "when an supported OSX version" do
       let(:facts) do
         facts.merge({
-          :platform_tag                => "osx-10.8-x86_64",
-          :macosx_productversion_major => '10.8',
+          :platform_tag                => "osx-10.11-x86_64",
+          :macosx_productversion_major => '10.11',
         })
       end
 
@@ -51,7 +51,7 @@ describe 'puppet_agent' do
 
   describe 'supported environment' do
     context "when running a supported OSX" do
-      ["osx-10.9-x86_64", "osx-10.10-x86_64", "osx-10.11-x86_64", "osx-10.12-x86_64", "osx-10.13-x86_64"].each do |tag|
+      ["osx-10.12-x86_64", "osx-10.13-x86_64"].each do |tag|
         context "on #{tag} with no aio_version" do
           let(:osmajor) { tag.split('-')[1] }
 

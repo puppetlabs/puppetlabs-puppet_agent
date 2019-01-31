@@ -2,7 +2,7 @@
   "name": "puppetlabs-puppet_agent",
   "version": "2.0.1",
   "author": "puppetlabs",
-  "summary": "Upgrades Puppet 3.7+ and All-In-One Puppet Agents",
+  "summary": "Upgrades All-In-One Puppet Agents",
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "project_page": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
@@ -11,7 +11,6 @@
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
-        "4",
         "5",
         "6",
         "7"
@@ -44,7 +43,6 @@
     {
       "operatingsystem": "SLES",
       "operatingsystemrelease": [
-        "10",
         "11",
         "12",
         "15"
@@ -53,8 +51,6 @@
     {
       "operatingsystem": "Debian",
       "operatingsystemrelease": [
-        "6",
-        "7",
         "8",
         "9"
       ]
@@ -62,24 +58,14 @@
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [
-        "12.04",
         "14.04",
-        "15.04",
-        "15.10",
         "16.04",
-        "16.10",
         "18.04"
       ]
     },
     {
       "operatingsystem": "Fedora",
       "operatingsystemrelease": [
-        "22",
-        "23",
-        "24",
-        "25",
-        "26",
-        "27",
         "28",
         "29"
       ]
@@ -108,7 +94,6 @@
     {
       "operatingsystem": "AIX",
       "operatingsystemrelease": [
-        "5.3",
         "6.1",
         "7.1",
         "7.2"
@@ -117,9 +102,6 @@
     {
       "operatingsystem": "OSX",
       "operatingsystemrelease": [
-        "10.9",
-        "10.10",
-        "10.11",
         "10.12",
         "10.13"
        ]

@@ -108,9 +108,7 @@ class puppet_agent (
       $_package_version = $package_version
     }
 
-    if $::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10' {
-      $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.sles10.${::architecture}.rpm"
-    } elsif $::operatingsystem == 'Solaris' {
+    if $::operatingsystem == 'Solaris' {
       $pkg_arch = $arch ? {
         /^sun4[uv]$/ => 'sparc',
         default      => 'i386',
@@ -121,7 +119,7 @@ class puppet_agent (
       } elsif $::operatingsystemmajrelease == '11' {
         $_package_file_name = "${puppet_agent::package_name}@${_package_version},5.11-1.${pkg_arch}.p5p"
       }
-    } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12|13)/ {
+    } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(12|13)/ {
       $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
     } elsif $::operatingsystem == 'AIX' {
       $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')

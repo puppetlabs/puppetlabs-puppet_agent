@@ -50,31 +50,6 @@ describe 'puppet_agent' do
   end
 
   describe 'supported environment' do
-    context "when operatingsystemmajrelease 10 is supported" do
-      let(:facts) do
-        facts.merge({
-          :operatingsystemmajrelease => '10',
-          :platform_tag              => "sles-10-x86_64",
-          :architecture              => "x86_64",
-        })
-      end
-
-      it { is_expected.to contain_file('/opt/puppetlabs') }
-      it { is_expected.to contain_file('/opt/puppetlabs/packages') }
-      it do
-        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles10.x86_64.rpm').with_ensure('present')
-        is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles10.x86_64.rpm').with_source('puppet:///pe_packages/2000.0.0/sles-10-x86_64/puppet-agent-1.10.100-1.sles10.x86_64.rpm')
-      end
-
-      it { is_expected.to contain_class("puppet_agent::osfamily::suse") }
-      it { is_expected.to contain_package('puppet-agent').with_ensure('1.10.100') }
-
-      it do
-        is_expected.to contain_package('puppet-agent').with_provider('rpm')
-        is_expected.to contain_package('puppet-agent').with_source('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles10.x86_64.rpm')
-      end
-    end
-
     context "when operatingsystemmajrelease 11 or 12 is supported" do
       ['11', '12'].each do |os_version|
         context "when SLES #{os_version}" do

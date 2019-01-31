@@ -20,12 +20,8 @@ class puppet_agent::install(
 
   $pa_collection = getvar('::puppet_agent::collection')
 
-  if ($::operatingsystem == 'SLES' and $::operatingsystemmajrelease == '10') or $::operatingsystem == 'AIX' {
-    $_install_options = $::operatingsystem ? {
-      'AIX'   => concat(['--ignoreos'],$install_options),
-      default => $install_options
-    }
-
+  if $::operatingsystem == 'AIX' {
+    $_install_options = concat(['--ignoreos'],$install_options)
 
     package { $::puppet_agent::package_name:
       ensure          => $package_version,
@@ -63,7 +59,7 @@ class puppet_agent::install(
         command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
       }
     }
-  } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(9|10|11|12|13)/ {
+  } elsif $::operatingsystem == 'Darwin' {
     if $puppet_agent::aio_upgrade_required {
       $install_script = 'osx_install.sh.erb'
 

@@ -12,12 +12,6 @@ class puppet_agent::osfamily::suse(
   }
 
   case $::operatingsystemmajrelease {
-    '10': {
-      class { 'puppet_agent::prepare::package':
-        package_file_name => $package_file_name,
-      }
-      contain puppet_agent::prepare::package
-    }
     '11', '12', '15': {
       # Import the GPG key
       $legacy_keyname  = 'GPG-KEY-puppetlabs'
