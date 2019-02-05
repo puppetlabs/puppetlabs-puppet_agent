@@ -45,8 +45,6 @@ class puppet_agent::params {
 
       $confdir = '/etc/puppetlabs/puppet'
 
-      $logdir = '/var/log/puppetlabs'
-
       # A list of dirs that need to be created. Mainly done this way because
       # Windows requires more directories to exist for confdir.
       $puppetdirs = ['/etc/puppetlabs', $confdir]
@@ -61,8 +59,6 @@ class puppet_agent::params {
       $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
       $confdir = $::puppet_confdir
-
-      $logdir = 'C:\ProgramData\PuppetLabs\mcollective\var\log'
 
       $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
       $path_separator = ';'
