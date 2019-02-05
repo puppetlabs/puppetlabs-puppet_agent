@@ -81,8 +81,3 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
     on(master, puppet('resource', 'service', master['puppetservice'], 'ensure=running', 'enable=true'))
   end
 end
-
-# Now install the puppet_agent module itself, and its dependencies
-test_name 'Pre-Suite: Install puppet_agent module and dependencies on the master' do
-  install_puppet_agent_module_on(master)
-end

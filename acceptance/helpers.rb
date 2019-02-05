@@ -74,7 +74,7 @@ module Beaker
         args_are_not_a_valid_hash =
           ! args.is_a?(Hash) ||
           args.empty? ||
-          ! Set[*args.keys].subset?(Set[:restrict_to, :max, :min]) 
+          ! Set[*args.keys].subset?(Set[:restrict_to, :max, :min])
 
         if (! args.is_a?(Symbol)) && args_are_not_a_valid_hash
           fail_test("The require_master_collection DSL structure accepts ether a String/Symbol that specifies the collection, or a non-empty Hash consisting of only the keys :max or :min. You passed-in an argument of type #{args.class} with value #{args}.")
@@ -154,19 +154,46 @@ module Beaker
       # platforms (for example, on Windows). This directory holds those scripts.
       SUPPORTING_FILES = File.expand_path('./files').freeze
 
+
+      # Add new environment to the puppet master. This environment will be usable
+      # from any connected agents.
+      def new_puppet_testing_environment
+        environment_name = 'puppet_agent_testing_' + SecureRandom.hex(10).to_s
+        puppet_testing_environment = environment_location(environment_name)
+        step '(Master) Create test environment' do
+          on(master, "mkdir -p #{File.join(puppet_testing_environment, 'modules')}")
+          on(master, "mkdir -p #{File.join(puppet_testing_environment, 'manifests')}")
+        end
+        step '(Master) Install puppet_agent to the test environment' do
+          install_puppet_agent_module_on(master, environment_name)
+        end
+        return environment_name
+      end
+
       # Use `puppet module install` to install the puppet_agent module's
       # dependencies on the target host, and then install the puppet_agent
-      # module itself. Requires that puppet is installed in advance.
+      # module itself. The function will install the modules to the environment
+      # specified in the 'environment' param. Requires that puppet is installed in advance.
       #
       # @param [Beaker::Host] host The target host
-      def install_puppet_agent_module_on(host)
-        on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '5.1.0'), { acceptable_exit_codes: [0] })
-        on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '2.4.0'), { acceptable_exit_codes: [0] })
-        on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '6.0.0'), { acceptable_exit_codes: [0] })
+      # @param [String] environment The puppet environment to install the modules to, this must
+      #   be a valid environment in the puppet install on the host.
+      def install_puppet_agent_module_on(host, environment)
+        on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '5.1.0', '--environment', environment), { acceptable_exit_codes: [0] })
+        on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '2.4.0', '--environment', environment), { acceptable_exit_codes: [0] })
+        on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '6.0.0', '--environment', environment), { acceptable_exit_codes: [0] })
 
         install_dev_puppet_module_on(host,
                                      source: File.join(File.dirname(__FILE__), '..', ),
-                                     module_name: 'puppet_agent')
+                                     module_name: 'puppet_agent',
+                                     target_module_path: File.join(environment_location(environment), 'modules'))
+      end
+
+      # Find the fully qualified path to the 'environment_name' environment on the puppet master
+      #
+      # @param [String] environment_name the name of the environment to find
+      def environment_location(environment_name)
+        File.join(puppet_config(master, 'codedir'), 'environments', environment_name)
       end
 
       # Read as "host_to_informative_string".
@@ -177,27 +204,29 @@ module Beaker
         "#{host} (#{host['platform']})"
       end
 
-      # Install puppet-agent on all agent nodes and connects them to the master.
-      # This is intended to set-up SUTs for tests that upgrade puppet-agent
-      # from some initial version. A key post-condition of this method is that
-      # all of the agents are ready to be upgraded with the puppet_agent module.
+
+      # Installs an initial puppet agent package on a host and connect the new agent node to the
+      # puppet master. This 'initial' agent is likely a lower version than the puppet master on
+      # purpose to facilitate an upgrade scenario.
       #
+      # @param [Beaker::Host] host The host
       # @param [String] initial_package_version_or_collection Either a version
       #   of puppet-agent or the name of a puppet collection to install the agent from.
-      # @yield Invokes any additional setup that's required. 
-      def set_up_agents_to_upgrade(initial_package_version_or_collection)
+      def set_up_initial_agent_on(host, initial_package_version_or_collection)
         master_agent_version = fact_on(master, 'aio_agent_version')
         unless master_agent_version
           fail_test('Expected puppet-agent to already be installed on the master, but it was not. ' \
                     'Try running the `prepare` rake task.')
         end
 
-        # This variable should be read as teardowns::clean_agents. It stores the
-        # teardowns we'll need to invoke to clean our agents
-        teardowns__clean_agents = []
+        # We use the teardowns lambdas in this setup helper so that teardowns for installations
+        # only appear after the installation has actually occured, rather than seeing failed
+        # teardown statements when the helper fails before an installation can occur but the helper
+        # still tries the uninstall helper.
+        teardowns = []
 
         step 'Set-up the agents to upgrade' do
-          step '(Agents) Install the puppet-agent package' do
+          step '(Agent) Install the puppet-agent package' do
             initial_package_version_or_collection ||= master_agent_version
             if initial_package_version_or_collection =~ /(^pc1$|^puppet\d+)/i
               agent_install_options = { puppet_collection: initial_package_version_or_collection }
@@ -208,183 +237,175 @@ module Beaker
               }
             end
 
-            agents_only.each do |agent|
-              install_puppet_agent_on(agent, agent_install_options)
-
-              teardowns__clean_agents << lambda do
-                step "Teardown: Uninstall the puppet-agent package on agent #{host_to_info_s(agent)}" do
-                  if agent['platform'] =~ /windows/
-                    scp_to(agent, "#{SUPPORTING_FILES}/uninstall.ps1", "uninstall.ps1")
-                    on(agent, 'rm -rf C:/ProgramData/PuppetLabs')
-                    on(agent, 'powershell.exe -File uninstall.ps1 < /dev/null')
-                  else
-                    manifest_lines = []
-                    # Remove pc_repo:
-                    # Note pc_repo is specific to this module's manifests. This is
-                    # knowledge we need to clean from the machine after each run.
-                    if agent['platform'] =~ /debian|ubuntu/
-                      on(agent, puppet('module', 'install', 'puppetlabs-apt'), acceptable_exit_codes: [0])
-                      manifest_lines << 'include apt'
-                      manifest_lines << "apt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
-                    elsif agent['platform'] =~ /fedora|el|centos/
-                      manifest_lines << "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
-                    end
-
-                    manifest_lines << "file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }"
-
-                    if agent['platform'] =~ /^(osx|solaris)/
-                      # The macOS pkgdmg and Solaris sun providers don't support 'purged':
-                      manifest_lines << "package { ['puppet-agent']: ensure => absent }"
-                    else
-                      manifest_lines << "package { ['puppet-agent']: ensure => purged }"
-                    end
-
-                    on(agent, puppet('apply', '-e', %("#{manifest_lines.join("\n")}"), '--no-report'), acceptable_exit_codes: [0, 2])
-                  end
-                end
-              end
+            install_puppet_agent_on(host, agent_install_options)
+            teardowns << lambda do
+              remove_installed_agent(host)
             end
           end
+          step '(Agent) Clear SSL and stop firewalls' do
+            ssldir = puppet_config(host, 'ssldir').strip
+            on(host, "rm -rf '#{ssldir}'/*") # Preserve the directory itself, to keep permissions
 
-          step '(Agents) Clear SSL and stop firewalls' do
-            agents_only.each do |agent|
-              ssldir = puppet_config(agent, 'ssldir').strip
-              on(agent, "rm -rf '#{ssldir}'/*") # Preserve the directory itself, to keep permissions
-
-              stop_firewall_with_puppet_on(agent)
-            end
+            stop_firewall_with_puppet_on(host)
           end
 
-          step '(Agents) Stop the puppet service to avoid possible race conditions with conflicting Puppet runs' do
-            on(agent, puppet('resource', 'service', 'puppet', 'ensure=stopped'))
+          step '(Agent) Stop the puppet service to avoid possible race conditions with conflicting Puppet runs' do
+            on(host, puppet('resource', 'service', 'puppet', 'ensure=stopped'))
           end
 
           server_version = puppetserver_version_on(master)
-          agent_certnames = []
 
-          step '(Agents) Run puppet agent -t to generate CSRs' do
-            agents_only.each do |agent|
-              on(agent, puppet("agent --test --server #{master}"), acceptable_exit_codes: [1])
-
-              # We cannot calculate this in the teardown block because the puppet-agent
-              # package, and hence facter, will have already been uninstalled by the time
-              # this block is invoked.
-              agent_certname = fact_on(agent, 'fqdn')
-              agent_certnames << agent_certname
-
-              teardowns__clean_agents << lambda do
-                step "Teardown: (Master) Clean agent '#{host_to_info_s(agent)}'s cert " do
-                  if version_is_less('5.99.99', server_version)
-                    on(master, "puppetserver ca clean --certname #{agent_certname}")
-                  else
-                    on(master, puppet("cert clean #{agent_certname}"))
-                  end
-                end
-              end
-            end
+          step '(Agent) configure server setting on agent' do
+            on(host, puppet("config set server #{master}"))
           end
 
+          step '(Agent) Run puppet agent -t to generate CSRs' do
+            on(host, puppet("agent -t"), acceptable_exit_codes: [1])
+          end
+
+          agent_certname = fact_on(host, 'fqdn')
           step '(Master) Sign certs' do
             if version_is_less('5.99.99', server_version)
-              on(master, "puppetserver ca sign --certname #{agent_certnames.join(',')}")
+              on(master, "puppetserver ca sign --certname #{agent_certname}")
             else
-              on(master, puppet("cert sign #{agent_certnames.join(' ')}"))
+              on(master, puppet("cert sign #{agent_certname}"))
             end
           end
 
-          step '(Agents) Run puppet agent -t again to obtain the signed cert' do
-            on(agents_only, puppet("agent --test --server #{master}"), acceptable_exit_codes: [0])
+          teardowns << lambda do
+            clean_agent_certificate(agent_certname)
           end
 
-          # Do any additional setup
-          yield if block_given?
+          step '(Agent) Run puppet agent -t again to obtain the signed cert and apply initial configuration' do
+            on(host, puppet("agent -t"), acceptable_exit_codes: [0, 2])
+          end
         end
+        yield if block_given?
       ensure
-        if teardowns__clean_agents && ! teardowns__clean_agents.empty?
-          teardowns__clean_agents.each do |teardown__clean_agents|
-            teardown(&teardown__clean_agents)
+        if teardowns && ! teardowns.empty?
+          teardowns.each do |_teardown|
+            teardown(&_teardown)
           end
         end
       end
 
-      # Applies a manifest on the agents. Behaves as follows:
-      #
-      # 1. Set up a `site.pp` file in the production environment on the master
-      #    such that the puppet code in `manifest` is applied _only_ on the agents.
-      #    - If a `site.pp` already exists there, record its contents and
-      #      permissions, then restore them after the method's invoked.
-      #
-      # 2. Perform a puppet run on the agents
-      #
-      # @param [String] manifest The manifest to apply. This content will
-      #   be wrapped as follows, so that it applies to all of the agents:
-      #     ```
-      #     node '#{agent1}', '#{agent2}' ... {
-      #       #{manifest}
-      #     }
-      def apply_manifest_on_agents(manifest)
-        agent_nodes = agents_only.map do |agent|
-          "'#{agent.to_s}'"
-        end.join(', ')
-        site_pp_contents = %(node #{agent_nodes} { #{manifest} })
-
-        # PMT will have installed dependencies in the production environment; We will put our manifest there, too:
-        site_pp_path = File.join(puppet_config(master, 'codedir'), 'environments', 'production', 'manifests', 'site.pp')
-
-        cleanup = nil
-
-        step "(Master) Save the current site.pp file" do
-          if file_exists_on(master, site_pp_path)
-            original_contents = file_contents_on(master, site_pp_path)
-            original_perms = on(master, %(stat -c "%a" #{site_pp_path})).stdout.strip
-  
-            cleanup = lambda do
-              step "(Master) Restore the original site.pp file" do
-                on(master, %(echo "#{original_contents}" > #{site_pp_path}))
-                on(master, %(chmod #{original_perms} #{site_pp_path}))
-              end
-            end
-          else
-            cleanup = lambda do
-              on(master, "rm -f #{site_pp_path}")
-            end
-          end
-        end
-
-        step "(Master) Create the new site.pp file with manifest:\n#{manifest}" do
-          create_remote_file(master, site_pp_path, manifest)
-          on(master, %(chown #{puppet_user(master)} "#{site_pp_path}"))
-          on(master, %(chmod 755 "#{site_pp_path}"))
-        end
-
-        step "(Agents) Run Puppet to apply the manifest" do
-          on(agents_only, puppet(%(agent --test --server #{master.hostname})), acceptable_exit_codes: [0, 2])
-        end
-      ensure
-        cleanup.call if cleanup
-      end
 
       # Asserts a successful upgrade by asserting that all of the
-      # agents were upgraded to the expected version. You can pass-in
-      # a block for additional assertions. For example,
+      # agents were upgraded to the expected version.
       #
-      # assert_successful_upgrade('6.0.0') do |agent|
-      #   // Additional assertions go here.
-      # end
-      #
+      # @param [Beaker::Host] host The host
       # @param [String] expected_version The expected version that
       #   the agents should be upgraded to
-      # @yield [Beaker::Host] the agent to perform additional assertions
-      #   on
-      def assert_successful_upgrade(expected_version)
-        agents_only.each do |agent|
-          installed_version = puppet_agent_version_on(agent)
+      def assert_agent_version_on(host, expected_version)
+        installed_version = puppet_agent_version_on(host)
 
-          assert_equal(expected_version, installed_version,
-                       "Expected '#{host_to_info_s(agent)}' agent to be upgraded to puppet-agent #{expected_version}, but detected '#{installed_version}' instead")
+        assert_equal(expected_version, installed_version,
+                      "Expected '#{host_to_info_s(host)}' agent to be upgraded to puppet-agent #{expected_version}, but detected '#{installed_version}' instead")
+      end
 
-          # Additional assertions go here
-          yield agent if block_given?
+      # Start the puppet service on a host and wait for it's
+      # first run to finish. Waiting is perforned by diffing the mtime
+      # of the last_run_report before the service was started and waiting
+      # for it to change.
+      #
+      # @param [Beaker::Host] host The host
+      def start_puppet_service_and_wait_for_puppet_run(host)
+        statedir = on(host, puppet('config', 'print', 'statedir')).stdout.chomp
+        # Get modification time of last_run_report
+        mtime_cmd = "File.stat(\"#{statedir}/last_run_report.yaml\").mtime.to_i"
+        last_run_time = on(host, "env PATH=\"#{host['privatebindir']}:${PATH}\" ruby -e 'puts #{mtime_cmd}'").stdout.chomp
+        step "(Agent) Enable agent's puppet service to perform the agent upgrade from puppet service" do
+          on(host, puppet('resource', 'service', 'puppet', 'ensure=running'))
+        end
+        # wait for Puppet to have finished, i.e. retry until last_run_report modification time has changed
+        step "(Agent) waiting for puppet run to complete..." do
+          retry_on(host, "env PATH=\"#{host['privatebindir']}:${PATH}\" ruby -e 'exit #{mtime_cmd} > #{last_run_time}'", {:max_retries => 1000, :retry_interval => 2})
+        end
+
+        step "(Agent) waiting for puppet to exit..." do
+          retry_on(host, "cat #{statedir}/agent_catalog_run.lock", {:desired_exit_codes => [1, 2]})
+        end
+      end
+
+      # Wait for the installation pidfile on a host to indicate an installation has finished.
+      # pidfiles are only created on windows/MacOS/Solaris platforms so this function
+      # will return immediately for anything else.
+      #
+      # @param [Beaker::Host] host The host
+      def wait_for_installation_pid(host)
+        case host['platform']
+        when /windows/
+          upgrade_pidfile = 'C:/ProgramData/PuppetLabs/puppet/cache/state/puppet_agent_upgrade.pid'
+        when /osx/
+          upgrade_pidfile = File.join(on(host, 'echo $TMPDIR').stdout.chomp, 'puppet_agent_upgrade.pid')
+        when /solaris/
+          upgrade_pidfile = '/tmp/puppet_agent_upgrade.pid'
+        else
+          # All other platforms will have an agent run execute _through_ the installation, rather than
+          # having to exit the agent and wait for an external script to perform the upgrade
+          return
+        end
+
+        step "(Agent) waiting for upgrade pid file to be created..." do
+          retry_on(host, "cat #{upgrade_pidfile}", {:max_retries => 5, :retry_interval => 2})
+        end
+
+        step "(Agent) waiting for upgrade to complete..." do
+          retry_on(host, "cat #{upgrade_pidfile}", {:max_retries => 1000, :retry_interval => 2, :desired_exit_codes => [1, 2]})
+        end
+      end
+
+      # Remove an a currently installed agent from a host, this should be a 'clean' installation that
+      # includes removal of things like the codedir.
+      #
+      # @param [Beaker::Host] host The host
+      def remove_installed_agent(host)
+        step '(Agent) Stop the puppet service' do
+          on(host, puppet('resource', 'service', 'puppet', 'ensure=stopped'))
+        end
+
+        step "Teardown: (Agent) Uninstall the puppet-agent package on agent #{host_to_info_s(host)}" do
+          if host['platform'] =~ /windows/
+            scp_to(host, "#{SUPPORTING_FILES}/uninstall.ps1", "uninstall.ps1")
+            on(host, 'rm -rf C:/ProgramData/PuppetLabs')
+            on(host, 'powershell.exe -File uninstall.ps1 < /dev/null')
+          else
+            manifest_lines = []
+            # Remove pc_repo:
+            # Note pc_repo is specific to this module's manifests. This is
+            # knowledge we need to clean from the machine after each run.
+            if host['platform'] =~ /debian|ubuntu/
+              on(host, puppet('module', 'install', 'puppetlabs-apt'), acceptable_exit_codes: [0])
+              manifest_lines << 'include apt'
+              manifest_lines << "apt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
+            elsif host['platform'] =~ /fedora|el|centos/
+              manifest_lines << "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
+            end
+
+            manifest_lines << "file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }"
+
+            if host['platform'] =~ /^(osx|solaris)/
+              # The macOS pkgdmg and Solaris sun providers don't support 'purged':
+              manifest_lines << "package { ['puppet-agent']: ensure => absent }"
+            else
+              manifest_lines << "package { ['puppet-agent']: ensure => purged }"
+            end
+
+            on(host, puppet('apply', '-e', %("#{manifest_lines.join("\n")}"), '--no-report'), acceptable_exit_codes: [0, 2])
+          end
+        end
+      end
+
+      # Remove an agent certificate from the master cert store.
+      #
+      # @param [String] agent_certname The name of the cert to remove from the master
+      def clean_agent_certificate(agent_certname)
+        step "Teardown: (Master) Clean agent #{agent_certname} cert" do
+          if version_is_less('5.99.99', puppetserver_version_on(master))
+            on(master, "puppetserver ca clean --certname #{agent_certname}")
+          else
+            on(master, puppet("cert clean #{agent_certname}"))
+          end
         end
       end
     end
