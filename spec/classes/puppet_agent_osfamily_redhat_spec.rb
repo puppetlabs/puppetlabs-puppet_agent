@@ -18,7 +18,7 @@ describe 'puppet_agent' do
     }
   end
 
-  [['Fedora', 'fedora/f$releasever', 29], ['CentOS', 'el/$releasever', 7], ['Amazon', 'el/6', 6]].each do |os, urlbit, osmajor|
+  [['Fedora', 'fedora/f29', 29], ['CentOS', 'el/7', 7], ['Amazon', 'el/6', 6]].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
         super().merge(:operatingsystem  => os, :operatingsystemmajrelease => osmajor)
@@ -71,24 +71,6 @@ describe 'puppet_agent' do
         'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet',
       }) }
 
-      context 'when FOSS and manage_repo enabled' do
-        let(:params)  {
-          {
-            :manage_repo => true,
-            :package_version => package_version
-          }
-        }
-        it { is_expected.not_to contain_yumrepo('puppetlabs-pepackages').with_ensure('absent') }
-        it { is_expected.to contain_yumrepo('pc_repo').with({
-          'baseurl' => "http://yum.puppetlabs.com/#{urlbit}/PC1/x64",
-          'enabled' => 'true',
-            'gpgcheck' => '1',
-            'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
-        }) }
-
-        it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
-      end
-
       context 'when FOSS and manage_repo disabled' do
         let(:params)  {
           {
@@ -111,7 +93,7 @@ describe 'puppet_agent' do
         }
         it { is_expected.to contain_yumrepo('pc_repo').with({
           # We no longer expect the 'f' in fedora repos
-          'baseurl' => "http://yum.puppetlabs.com/puppet5/#{urlbit.gsub('/f','/')}/x64",
+          'baseurl' => "http://yum.puppet.com/puppet5/#{urlbit.gsub('/f','/')}/x64",
           'enabled' => 'true',
             'gpgcheck' => '1',
             'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",

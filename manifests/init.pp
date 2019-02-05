@@ -52,13 +52,13 @@ class puppet_agent (
   $is_pe                 = $::puppet_agent::params::_is_pe,
   $manage_pki_dir        = true,
   $manage_repo           = true,
-  $package_name          = $::puppet_agent::params::package_name,
-  $package_version       = $::puppet_agent::params::package_version,
+  $package_name          = 'puppet-agent',
+  $package_version       = undef,
   $service_names         = $::puppet_agent::params::service_names,
-  $source                = $::puppet_agent::params::_source,
-  $install_dir           = $::puppet_agent::params::install_dir,
+  $source                = undef,
+  $install_dir           = undef,
   $disable_proxy         = false,
-  $install_options       = $::puppet_agent::params::install_options,
+  $install_options       = [],
   $skip_if_unavailable   = 'absent',
   $msi_move_locked_files = false,
 ) inherits ::puppet_agent::params {
@@ -96,68 +96,22 @@ class puppet_agent (
       fail('Unable to install x64 on a x86 system')
     }
 
-    # Allow for normalizing package_version for the package provider via _package_version.
-    # This only needs to be passed through to install, as elsewhere we want to
-    # use the full version string for comparisons.
     if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
-      $_version_without_letters = regsubst($package_version, '[a-zA-Z]', '', 'G')
+      $_version_without_letters = regsubst($::puppet_agent::package_version, '[a-zA-Z]', '', 'G')
       $_version_without_orphan_dashes = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
       $_package_version = regsubst($_version_without_orphan_dashes, '\b(?:0*?)([1-9]\d*|0)\b', '\1', 'G')
     } else {
       $_package_version = $package_version
     }
 
-    if $::operatingsystem == 'Solaris' {
-      $pkg_arch = $arch ? {
-        /^sun4[uv]$/ => 'sparc',
-        default      => 'i386',
-      }
-
-      if $::operatingsystemmajrelease == '10' {
-        $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.${pkg_arch}.pkg.gz"
-      } elsif $::operatingsystemmajrelease == '11' {
-        $_package_file_name = "${puppet_agent::package_name}@${_package_version},5.11-1.${pkg_arch}.p5p"
-      }
-    } elsif $::operatingsystem == 'Darwin' and $::macosx_productversion_major =~ /^10\.(12|13)/ {
-      $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.osx${$::macosx_productversion_major}.dmg"
-    } elsif $::operatingsystem == 'AIX' {
-      $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
-      if $_aix_ver_number {
-        if $collection =~ /(PC1|puppet5)/ {
-          $aix_ver_number = $_aix_ver_number ? {
-            /^7\.2$/ => '7.1',
-            default  => $_aix_ver_number,
-          }
-        } else {
-          $aix_ver_number = '6.1'
-        }
-      }
-      $_package_file_name = "${puppet_agent::package_name}-${package_version}-1.aix${aix_ver_number}.ppc.rpm"
-    } elsif $::osfamily == 'windows' {
-      $_arch = $::kernelmajversion ?{
-        /^5\.\d+/ => 'x86', # x64 is never allowed on windows 2003
-        default   => $arch
-      }
-
-      if $is_pe {
-        $_package_file_name = "${package_name}-${_arch}.msi"
-      } else {
-        $_package_file_name = "${package_name}-${package_version}-${_arch}.msi"
-      }
-    } else {
-      $_package_file_name = undef
-    }
-
     class { '::puppet_agent::prepare':
-      package_file_name => $_package_file_name,
-      package_version   => $package_version,
+      package_version => $_package_version,
     }
     -> class { '::puppet_agent::install':
-      package_file_name => $_package_file_name,
-      package_version   => $_package_version,
-      install_dir       => $install_dir,
-      install_options   => $install_options,
+      package_version => $_package_version,
+      install_dir     => $install_dir,
+      install_options => $install_options,
     }
 
     contain '::puppet_agent::prepare'

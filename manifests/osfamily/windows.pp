@@ -1,12 +1,18 @@
-class puppet_agent::osfamily::windows(
-  $package_file_name = undef,
-) {
+class puppet_agent::osfamily::windows{
   assert_private()
-
-  if !empty($package_file_name) and $::puppet_agent::is_pe == true {
-    class { 'puppet_agent::prepare::package':
-      package_file_name => $package_file_name,
+  if $::puppet_agent::is_pe {
+    $pe_server_version = pe_build_version()
+    $tag = $::puppet_agent::arch ? {
+      'x64' => 'windows-x86_64',
+      'x86' => 'windows-i386',
     }
-    contain puppet_agent::prepare::package
+    $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${::puppet_agent::package_name}-${::puppet_agent::arch}.msi"
+  } else {
+    $source = "https://downloads.puppet.com/windows/${::puppet_agent::collection}/${::puppet_agent::package_name}-${::puppet_agent::package_version}-${::puppet_agent::arch}.msi"
   }
+
+  class { '::puppet_agent::prepare::package':
+    source => $source,
+  }
+  contain puppet_agent::prepare::package
 }

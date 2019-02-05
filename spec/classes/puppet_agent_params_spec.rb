@@ -38,12 +38,6 @@ notify { "#{notify_title}":
       is_expected.to contain_notify(notify_title).with_message(collection)
     end
 
-    context 'not in PE' do
-      let(:facts) { super().merge(is_pe: false, custom_fact__pe_version: '') }
-
-      it { sets_collection_to('PC1') }
-    end
-
     context 'pe_version < 2018.1.3' do
       let(:facts) { super().merge(custom_fact__pe_version: '2018.1.2') }
 

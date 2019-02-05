@@ -28,27 +28,6 @@ describe 'puppet_agent' do
     :puppet_agent_pid            => 42
   }
 
-  describe 'unsupported environment' do
-    context 'when not PE' do
-      let(:facts) do
-        facts.merge(is_pe: false)
-      end
-
-      it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
-    end
-
-    context "when an supported OSX version" do
-      let(:facts) do
-        facts.merge({
-          :platform_tag                => "osx-10.11-x86_64",
-          :macosx_productversion_major => '10.11',
-        })
-      end
-
-      it { expect { catalogue }.to raise_error(/not supported/) }
-    end
-  end
-
   describe 'supported environment' do
     context "when running a supported OSX" do
       ["osx-10.12-x86_64", "osx-10.13-x86_64"].each do |tag|

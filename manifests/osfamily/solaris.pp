@@ -1,6 +1,4 @@
-class puppet_agent::osfamily::solaris(
-  $package_file_name = undef,
-) {
+class puppet_agent::osfamily::solaris{
   assert_private()
 
   if $::operatingsystem != 'Solaris' {
@@ -11,10 +9,18 @@ class puppet_agent::osfamily::solaris(
     fail('Solaris upgrades are only supported on Puppet Enterprise')
   }
 
+  $pkg_arch = $::puppet_agent::arch ? {
+    /^sun4[uv]$/ => 'sparc',
+    default      => 'i386',
+  }
+  $pe_server_version = pe_build_version()
+
   case $::operatingsystemmajrelease {
     '10': {
-      class { 'puppet_agent::prepare::package':
-        package_file_name => $package_file_name,
+      $package_file_name = "${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.${pkg_arch}.pkg.gz"
+      $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+      class { '::puppet_agent::prepare::package':
+        source => $source,
       }
       contain puppet_agent::prepare::package
 
@@ -27,7 +33,6 @@ class puppet_agent::osfamily::solaris(
         logoutput => 'on_failure',
       }
 
-      $pe_server_version = pe_build_version()
       file { '/opt/puppetlabs/packages/solaris-noask':
         ensure => present,
         owner  => 0,
@@ -38,8 +43,10 @@ class puppet_agent::osfamily::solaris(
     }
     '11': {
       if $::puppet_agent::manage_repo {
-        class { 'puppet_agent::prepare::package':
-          package_file_name => $package_file_name,
+        $package_file_name = "${::puppet_agent::package_name}@${::puppet_agent::prepare::package_version},5.11-1.${pkg_arch}.p5p"
+        $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+        class { '::puppet_agent::prepare::package':
+          source => $source,
         }
         contain puppet_agent::prepare::package
 
@@ -54,7 +61,6 @@ class puppet_agent::osfamily::solaris(
         exec { 'puppet_agent remove existing repo':
           command   => "rm -rf '${pkgrepo_dir}'",
           path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-          onlyif    => "test -d ${pkgrepo_dir}",
           logoutput => 'on_failure',
           unless    => "pkgrepo list -p ${publisher} -s ${pkgrepo_dir} ${pkg_name}",
         }

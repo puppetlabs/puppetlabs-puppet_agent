@@ -36,7 +36,7 @@ describe 'puppet_agent' do
 
     it { is_expected.to contain_class("puppet_agent::osfamily::aix") }
 
-    it { is_expected.to contain_class('Puppet_agent::Install').with({ 'package_file_name' => rpmname, }) }
+    it { is_expected.to contain_class('Puppet_agent::Install') }
 
     it {
       is_expected.to contain_package('puppet-agent').with({
@@ -99,11 +99,6 @@ describe 'puppet_agent' do
           collection: 'puppet6'
       }
     }
-
-    context 'outside PE' do
-      let(:facts) { common_facts.merge({ is_pe: false }) }
-      it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
-    end
 
     context 'not AIX' do
       let(:facts) { common_facts.merge({ operatingsystem: 'not-AIX' })}

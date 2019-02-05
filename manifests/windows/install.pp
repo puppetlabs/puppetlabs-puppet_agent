@@ -5,8 +5,6 @@
 # Manage the install process for windows specifically
 #
 class puppet_agent::windows::install(
-  $package_file_name,
-  $source                = $::puppet_agent::source,
   $install_dir           = undef,
   $install_options       = [],
   $msi_move_locked_files = $::puppet_agent::msi_move_locked_files,
@@ -15,37 +13,9 @@ class puppet_agent::windows::install(
 
   $service_names         = $::puppet_agent::service_names
 
-  if $::puppet_agent::is_pe {
-    $_agent_version = $puppet_agent::params::master_agent_version
-    $_pe_server_version = pe_build_version()
-    $_https_source = "https://pm.puppetlabs.com/puppet-agent/${_pe_server_version}/${_agent_version}/repos/windows/${package_file_name}"
-  }
-  else {
-    $dir = $package_file_name ? {
-      /puppet-agent-5\..*/ => 'puppet5/',
-      /puppet-agent-6\..*/ => 'puppet6/',
-      default => ''
-    }
-    $_https_source = "https://downloads.puppetlabs.com/windows/${dir}${package_file_name}"
-  }
-
   $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
 
-  $_source = $source ? {
-    undef          => $_https_source,
-    /^[a-zA-Z]:/ => windows_native_path($source),
-    default        => $source,
-  }
-  $_msi_location = $_source ? {
-    /^puppet:/ => windows_native_path("${::env_temp_variable}/puppet-agent.msi"),
-    default    => $_source,
-  }
-  if $_source =~ /^puppet:/ {
-    file{ $_msi_location:
-      source => $_source,
-      before => File["${_installps1}"],
-    }
-  }
+  $_msi_location = $::puppet_agent::prepare::package::local_package_file_path
 
   $_install_options = $install_options ? {
     []      => windows_msi_installargs(['REINSTALLMODE="amus"']),
