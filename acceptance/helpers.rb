@@ -384,8 +384,8 @@ module Beaker
 
             manifest_lines << "file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }"
 
-            if host['platform'] =~ /^(osx|solaris)/
-              # The macOS pkgdmg and Solaris sun providers don't support 'purged':
+            if host['platform'] =~ /^(osx|sles|solaris)/
+              # The macOS pkgdmg, SLES zypper, and Solaris sun providers don't support 'purged':
               manifest_lines << "package { ['puppet-agent']: ensure => absent }"
             else
               manifest_lines << "package { ['puppet-agent']: ensure => purged }"

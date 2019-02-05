@@ -30,14 +30,6 @@ describe 'puppet_agent' do
   end
 
   describe 'unsupported environment' do
-    context 'when not PE' do
-      let(:facts) do
-        facts.merge(is_pe: false)
-      end
-
-      it { expect { catalogue }.to raise_error(/Puppet Enterprise/) }
-    end
-
     context 'when not SLES' do
       let(:facts) do
         facts.merge({
