@@ -14,28 +14,31 @@ class puppet_agent::prepare::puppet_config (
     }
   }
 
+  # (minimum agent package version) => (list of deprecated settings)
+  $_deprecations = {
+    '1.4.0'     => ['pluginsync'],
+    '5.0.0'     => ['app_management', 'ignorecache', 'configtimeout', 'trusted_server_facts']
+  }
+
+  $_pkg_version = getvar('package_version')
+
   # manage puppet.conf contents, using inifile module
-  ['', 'master', 'agent', 'main'].each |$loop_section| {
-    $section = $loop_section
+  $_deprecations.each |$_min_version, $_setting_names| {
+    if (versioncmp("${_pkg_version}", "${_min_version}") >= 0) {
+      $_setting_names.each |$_setting_name| {
+        ['', 'master', 'agent', 'main'].each |$_section_name| {
+          $_setting_key = "${_section_name}/${_setting_name}"
 
-    $_removed_settings = []
-
-    # When upgrading to 1.4.x or later remove pluginsync
-    $_pkg_version = getvar('package_version')
-    if (versioncmp("${_pkg_version}", '1.4.0') >= 0)
-        and !defined(Ini_setting["${section}/pluginsync"]) {
-      $removed_settings = $_removed_settings + ['pluginsync']
-    } else {
-      $removed_settings = $_removed_settings
-    }
-
-    $removed_settings.each |$setting| {
-      ini_setting { "${section}/${setting}":
-        ensure  => absent,
-        section => $section,
-        setting => $setting,
-        path    => $puppetconf,
-        require => File[$puppetconf],
+          if !defined(Ini_setting[$_setting_key]) {
+            ini_setting { $_setting_key:
+              ensure  => absent,
+              section => $_section_name,
+              setting => $_setting_name,
+              path    => $puppetconf,
+              require => File[$puppetconf],
+            }
+          }
+        }
       }
     }
   }
