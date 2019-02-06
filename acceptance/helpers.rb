@@ -23,8 +23,8 @@ module Beaker
 
         return 0 if col_1 == col_2
 
-        return -1 if col_1 == 'pc1'
-        return 1 if col_2 == 'pc1'
+        return -1 if col_1.casecmp('PC1').zero?
+        return 1 if col_2.casecmp('PC1').zero?
 
         col_1 <=> col_2
       end
@@ -47,11 +47,11 @@ module Beaker
       # you can specify this restriction:
       #
       # test_name 'an agent upgrade test' do
-      #   require_master_collection min: 'puppet4', max: 'puppet5'
+      #   require_master_collection min: 'PC1', max: 'puppet5'
       # end
       #
       # test_name 'an agent upgrade test' do
-      #   require_master_collection min: 'puppet4'
+      #   require_master_collection min: 'PC1'
       # end
       #
       # test_name 'an agent upgrade test' do
@@ -82,12 +82,12 @@ module Beaker
 
         server_version = puppetserver_version_on(master)
         server_collection = puppet_collection_for(:puppetserver, server_version)
-        msg_prefix = "This master is set-up with a puppetserver from the #{server_collection} collection."
+        msg_prefix = "This master is set up with a puppetserver from the #{server_collection} collection."
 
         if args.is_a?(Symbol)
           collection = args.to_s
           unless server_collection == collection
-            skip_test(msg_prefix + " This test requires a puppetserver from the #{collection} collection. Skipping the test ...")
+            skip_test(msg_prefix + "\nThis test requires a puppetserver from the #{collection} collection. Skipping the test ...")
           end
 
           return

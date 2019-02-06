@@ -43,8 +43,6 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
 
     server_version = puppetserver_version_on(master)
     fail_test('Failed to install puppetserver') unless server_version
-
-    logger.notify("Installed puppetserver #{server_version} on master")
   end
 
   step 'Configure puppetserver' do
