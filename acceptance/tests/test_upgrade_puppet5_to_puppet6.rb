@@ -2,8 +2,8 @@ require 'beaker-puppet'
 require_relative '../helpers'
 
 # Tests FOSS upgrades from the latest puppet 5 (the puppet5 collection) to puppet 6.0.0.
-test_name 'puppet_agent class: collection parameter for FOSS upgrades' do
-  require_master_collection 'puppet5'
+test_name 'puppet_agent class: Upgrade agents from puppet5 to puppet6' do
+  require_master_collection 'puppet6'
   exclude_pe_upgrade_platforms
 
   puppet_testing_environment = new_puppet_testing_environment
