@@ -336,10 +336,8 @@ module Beaker
         case host['platform']
         when /windows/
           upgrade_pidfile = 'C:/ProgramData/PuppetLabs/puppet/cache/state/puppet_agent_upgrade.pid'
-        when /osx/
-          upgrade_pidfile = File.join(on(host, 'echo $TMPDIR').stdout.chomp, 'puppet_agent_upgrade.pid')
-        when /solaris/
-          upgrade_pidfile = '/tmp/puppet_agent_upgrade.pid'
+        when /(solaris|osx)/
+          upgrade_pidfile = '/opt/puppetlabs/puppet/cache/state/puppet_agent_upgrade.pid'
         else
           # All other platforms will have an agent run execute _through_ the installation, rather than
           # having to exit the agent and wait for an external script to perform the upgrade
