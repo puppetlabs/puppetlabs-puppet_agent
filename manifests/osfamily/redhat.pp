@@ -45,6 +45,13 @@ class puppet_agent::osfamily::redhat{
     $_sslclientkey_path = undef
   }
 
+  # Fedora doesn't ship with a gpg binary, only gpg2
+  if $::operatingsystem == 'Fedora' {
+    $gpg_cmd = 'gpg2'
+  } else {
+    $gpg_cmd = 'gpg'
+  }
+
   $legacy_keyname = 'GPG-KEY-puppetlabs'
   $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
   $keyname = 'GPG-KEY-puppet'
@@ -67,10 +74,12 @@ class puppet_agent::osfamily::redhat{
   }
 
   # Given the path to a key, see if it is imported, if not, import it
+  $legacy_gpg_pubkey = "gpg-pubkey-$(echo $(${gpg_cmd} --with-colons ${legacy_gpg_path} 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))"
+
   exec {  "import-${legacy_keyname}":
     path      => '/bin:/usr/bin:/sbin:/usr/sbin',
     command   => "rpm --import ${legacy_gpg_path}",
-    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${legacy_gpg_path}) | cut --characters=11-18 | tr '[:upper:]' '[:lower:]'`",
+    unless    => "rpm -q ${legacy_gpg_pubkey}",
     require   => File[$legacy_gpg_path],
     logoutput => 'on_failure',
   }
@@ -84,10 +93,11 @@ class puppet_agent::osfamily::redhat{
   }
 
   # Given the path to a key, see if it is imported, if not, import it
+  $gpg_pubkey = "gpg-pubkey-$(echo $(${gpg_cmd} --with-colons ${gpg_path} 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))"
   exec {  "import-${keyname}":
     path      => '/bin:/usr/bin:/sbin:/usr/sbin',
     command   => "rpm --import ${gpg_path}",
-    unless    => "rpm -q gpg-pubkey-`echo $(gpg --throw-keyids < ${gpg_path}) | cut --characters=11-18 | tr '[:upper:]' '[:lower:]'`",
+    unless    => "rpm -q ${gpg_pubkey}",
     require   => File[$gpg_path],
     logoutput => 'on_failure',
   }
