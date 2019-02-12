@@ -1,16 +1,15 @@
-class puppet_agent::osfamily::suse(
-  $package_file_name = undef,
-) {
+class puppet_agent::osfamily::suse{
   assert_private()
 
   if $::operatingsystem != 'SLES' {
     fail("${::operatingsystem} not supported")
   }
 
-  $collection = getvar('::puppet_agent::collection')
-
-  if $collection == 'PC1' and $::operatingsystemmajrelease !~ /(11|12)/ {
-    fail("Puppet 4 is not supported on SLES ${::operatingsystemmajrelease}")
+  if $::puppet_agent::is_pe {
+    $pe_server_version = pe_build_version()
+    $source = "https://${::servername}:8140/packages/${pe_server_version}/${::platform_tag}"
+  } else {
+    $source = "https://yum.puppet.com/${::puppet_agent::collection}/sles/${::operatingsystemmajrelease}/${::puppet_agent::arch}"
   }
 
   case $::operatingsystemmajrelease {
@@ -66,22 +65,6 @@ class puppet_agent::osfamily::suse(
 
       if getvar('::puppet_agent::manage_repo') == true {
         # Set up a zypper repository by creating a .repo file which mimics a ini file
-        if getvar('::puppet_agent::is_pe') == true {
-          $pe_server_version = pe_build_version()
-          $source = "${::puppet_agent::source}/${pe_server_version}/${::platform_tag}"
-        } else {
-          if $collection =~ /(?i:PC1)/ {
-            $_default_source = "https://yum.puppet.com/sles/${::operatingsystemmajrelease}/PC1/${::architecture}"
-          } else {
-            $_default_source = "https://yum.puppet.com/${collection}/sles/${::operatingsystemmajrelease}/${::architecture}"
-          }
-
-          $source = getvar('::puppet_agent::source') ? {
-            undef   => $_default_source,
-            default => getvar('::puppet_agent::source'),
-          }
-        }
-
         $repo_file = '/etc/zypp/repos.d/pc_repo.repo'
         $repo_name = 'pc_repo'
         $agent_version = $::puppet_agent::package_version

@@ -4,14 +4,10 @@
 #
 # === Parameters
 #
-# [package_file_name]
-#   The puppet-agent package file name.
-#   (see puppet_agent::prepare::package_file_name)
 # [version]
 #   The puppet-agent version to install.
 #
 class puppet_agent::install(
-  $package_file_name = undef,
   $package_version   = 'present',
   $install_dir       = undef,
   $install_options   = [],
@@ -26,17 +22,22 @@ class puppet_agent::install(
     package { $::puppet_agent::package_name:
       ensure          => $package_version,
       provider        => 'rpm',
-      source          => "/opt/puppetlabs/packages/${package_file_name}",
+      source          => "/opt/puppetlabs/packages/${::puppet_agent::prepare::package::package_file_name}",
       install_options => $_install_options,
     }
   } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
-    $_unzipped_package_name = regsubst($package_file_name, '\.gz$', '')
+    $_unzipped_package_name = regsubst($::puppet_agent::prepare::package::package_file_name, '\.gz$', '')
     $install_script = 'solaris_install.sh.erb'
 
     # The following are expected to be available in the solaris_install.sh.erb template:
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
-    $service_names = $puppet_agent::service_names
+    # Starting with puppet6 collections we no longer carry the mcollective service
+    if $::puppet_agent::collection != 'PC1' and $::puppet_agent::collection != 'puppet5' {
+      $service_names = delete($::puppet_agent::service_names, 'mcollective')
+    } else {
+      $service_names = $::puppet_agent::service_names
+    }
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
@@ -79,22 +80,9 @@ class puppet_agent::install(
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
     if $puppet_agent::aio_upgrade_required {
-      if $::puppet_agent::is_pe == true and empty($::puppet_agent::source) {
-        $local_package_file_path = windows_native_path("${::puppet_agent::params::local_packages_dir}/${package_file_name}")
-        class { 'puppet_agent::windows::install':
-          package_file_name => $package_file_name,
-          source            => $local_package_file_path,
-          install_dir       => $install_dir,
-          require           => File[$local_package_file_path],
-          install_options   => $install_options,
-        }
-      } else {
-        class { 'puppet_agent::windows::install':
-          package_file_name => $package_file_name,
-          source            => $::puppet_agent::source,
-          install_dir       => $install_dir,
-          install_options   => $install_options,
-        }
+      class { 'puppet_agent::windows::install':
+        install_dir     => $install_dir,
+        install_options => $install_options,
       }
     }
   } elsif ($::osfamily == 'Debian') and ($package_version != 'present') {

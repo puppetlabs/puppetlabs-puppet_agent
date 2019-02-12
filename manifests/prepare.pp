@@ -4,15 +4,10 @@
 #
 # === Parameters
 #
-# [package_file_name]
-#   The file name, with platform and version, of the puppet-agent package to be
-#   downloaded and installed.  Older systems and package managers may require
-#   us to manually download the puppet-agent package.
 # [version]
 #   The puppet-agent version to install.
 #
 class puppet_agent::prepare(
-  $package_file_name = undef,
   $package_version = undef,
 ){
   include puppet_agent::params
@@ -42,9 +37,6 @@ class puppet_agent::prepare(
 
   case $::osfamily {
     'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
-      class { $_osfamily_class:
-        package_file_name => $package_file_name,
-      }
       contain $_osfamily_class
     }
     default: {

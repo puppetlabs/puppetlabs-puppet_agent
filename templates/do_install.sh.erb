@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Mark install process starting
-pid_path="$(dirname ${BASH_SOURCE[0]})/puppet_agent_upgrade.pid"
+pid_path="/opt/puppetlabs/puppet/cache/state/puppet_agent_upgrade.pid"
 
 if [[ -f $pid_path ]]; then
   rm -f $pid_path

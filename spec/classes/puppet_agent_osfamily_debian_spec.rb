@@ -214,7 +214,8 @@ describe 'puppet_agent' do
       let(:params) {
         {
           :manage_repo => true,
-          :package_version => package_version
+          :package_version => package_version,
+          :collection => 'puppet5',
         }
       }
 
@@ -224,8 +225,8 @@ describe 'puppet_agent' do
       }) }
 
       it { is_expected.to contain_apt__source('pc_repo').with({
-        'location' => 'http://apt.puppetlabs.com',
-        'repos'    => 'PC1',
+        'location' => 'https://apt.puppet.com',
+        'repos'    => 'puppet5',
         'key'      => {
           'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
           'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet',
