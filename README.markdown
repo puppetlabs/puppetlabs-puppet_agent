@@ -26,7 +26,7 @@ A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-ag
 
 ## Module Description
 
-The puppet_agent module installs the Puppet Collection 1 repo (as a default, and on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
+The puppet_agent module installs the appropriate official Puppet package repository (on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
 
 If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package.
 
@@ -34,13 +34,13 @@ If a package_version parameter is provided, it will ensure that puppet-agent ver
 
 ### What puppet_agent affects
 
-* Puppet, Facter, Hiera, and MCollective.
+* Puppet, Facter, Hiera, and MCollective (MCollective is no longer included in puppet6 installs).
 * Puppet's SSL directory and puppet.conf.
 * Removes deprecated settings from puppet.conf.
 
 ### Setup requirements
 
-Your agents must be running a minimum version of Puppet 4. They should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 language.
+Your agents must be running a minimum version of Puppet 4. They should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 or newer language.
 
 ### Beginning with puppet_agent
 
@@ -87,14 +87,14 @@ The architecture version you wish to install. Defaults to `$::facts['architectur
 
 The Puppet Collection to track, should be one of `puppet5` or `puppet6`.  Puppet collections contain the latest agents included
 in the collection's series, so the latest 5 series in puppet5 (for example: 5.5.10) and the latest 6 series in puppet6 (for
-example: 6.1.0).  **This parameter is required for installations not connected to PE**
+example: 6.1.0).  **This parameter is required for installations not connected to Puppet Enterprise**
 ``` puppet
   collection => 'puppet6'
 ```
 
 ##### `is_pe`
 
-Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
+Install from Puppet Enterprise (PE) repos. Enabled if communicating with a PE master.
 ``` puppet
   is_pe => true
 ```
@@ -112,7 +112,7 @@ and the native package providers will be used to query pre-configured repos on t
 
 The package version to upgrade to. This must be explicitly specified.
 ``` puppet
-  package_version => '5.5.8'
+  package_version => '5.5.10'
 ```
 
 ##### `service_names`
@@ -173,9 +173,7 @@ Mac OS X Open Source packages are currently not supported.
 
 ### Known issues
 
-* In masterless environments, modules installed manually on individual agents cannot be found after upgrading to Puppet 4.x. You should reinstall these modules on the agents with `puppet module install`.
-
-In addition, there are several known issues with Windows:
+There are a few known issues on Windows platforms:
 
 * To upgrade the agent by executing `puppet agent -t` interactively in a console, you must leave the console open and wait for the upgrade to finish before attempting to use the `puppet` command again. During upgrades the upgrade scripts use a 'pid file' located at Drive:\ProgramData\PuppetLabs\puppet\cache\state\puppet_agent_upgrade.pid to indicate there is an upgrade in progress. The 'pid file' also contains the process ID of the upgrade, if you wish to track the process itself.
 
