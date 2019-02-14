@@ -11,5 +11,8 @@ fixtures:
       ref: "6.0.0"
     yumrepo_core:
       repo: "puppetlabs/yumrepo_core"
+    facts:
+      repo: "puppetlabs/facts"
+      ref: "0.5.1"
   symlinks:
     puppet_agent: "#{source_dir}"
