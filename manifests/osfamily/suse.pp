@@ -44,13 +44,13 @@ class puppet_agent::osfamily::suse{
       }
 
       # Given the path to a key, see if it is imported, if not, import it
-      $legacy_gpg_pubkey = "gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --throw-keyids < ${legacy_gpg_path})"
-      $gpg_pubkey = "gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --throw-keyids < ${gpg_path})"
+      $legacy_gpg_pubkey = "gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --with-colons ${legacy_gpg_path} 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))"
+      $gpg_pubkey        = "gpg-pubkey-$(echo $(gpg --homedir ${gpg_homedir} --with-colons ${gpg_path} 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))"
 
       exec { "import-${legacy_keyname}":
         path      => '/bin:/usr/bin:/sbin:/usr/sbin',
         command   => "rpm --import ${legacy_gpg_path}",
-        unless    => "rpm -q ${legacy_gpg_pubkey} | cut --characters=11-18 | tr [:upper:] [:lower:])",
+        unless    => "rpm -q ${legacy_gpg_pubkey}",
         require   => File[$legacy_gpg_path],
         logoutput => 'on_failure',
       }
@@ -58,7 +58,7 @@ class puppet_agent::osfamily::suse{
       exec { "import-${keyname}":
         path      => '/bin:/usr/bin:/sbin:/usr/sbin',
         command   => "rpm --import ${gpg_path}",
-        unless    => "rpm -q ${gpg_pubkey} | cut --characters=11-18 | tr [:upper:] [:lower:])",
+        unless    => "rpm -q ${gpg_pubkey}",
         require   => File[$gpg_path],
         logoutput => 'on_failure',
       }
