@@ -284,6 +284,21 @@ try {
       Stop-Service $service
     }
   }
+  # Wait for any pxp-agent process still hanging around
+  #
+  # There is a known problem for pxp-agent shutdown: there are cases where after service
+  # shutdown pxp-agent processes are still open. See https://tickets.puppetlabs.com/browse/FM-7628
+  # for more details on the symptoms of this.
+  Write-Log "Waiting for pxp-agent processes to stop"
+  Get-Process -Name "pxp-agent" -ErrorAction SilentlyContinue | ForEach-Object {
+    if ($_) {
+      # wait on each process for 2 minutes (120000 milliseconds)
+      if (!$_.WaitForExit(120000)){
+        Write-Log "ERROR: Timed out waiting for pxp-agent!"
+        throw
+      }
+    }
+  }
   if ($UseLockedFilesWorkaround) {
     $temp_puppetres = Move-PuppetresDLL
   }
