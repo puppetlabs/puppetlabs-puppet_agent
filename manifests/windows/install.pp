@@ -13,8 +13,6 @@ class puppet_agent::windows::install(
 
   $service_names         = $::puppet_agent::service_names
 
-  $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
-
   $_msi_location = $::puppet_agent::prepare::package::local_package_file_path
 
   $_install_options = $install_options ? {
@@ -29,25 +27,40 @@ class puppet_agent::windows::install(
   }
 
   if $msi_move_locked_files {
-    $_move_dll_workaround = '$true'
+    $_move_dll_workaround = '-UseLockedFilesWorkaround'
   } else {
-    $_move_dll_workaround = '$false'
+    $_move_dll_workaround = undef
   }
 
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
   $_logfile = windows_native_path("${::env_temp_variable}/puppet-${_timestamp}-installer.log")
-  $_puppet_master = $::puppet_master_server
-  $_install_pid_file_loc = windows_native_path("${::env_temp_variable}/puppet_agent_install.pid")
 
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
 
+  $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
   file { "${_installps1}":
     ensure  => file,
-    content => template('puppet_agent/install_puppet.ps1.erb')
+    content => file('puppet_agent/install_puppet.ps1')
   }
   -> exec { 'install_puppet.ps1':
-    command => "${::system32}\\cmd.exe /c start /b ${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -File ${_installps1} ${::puppet_agent_pid}",
+    # The powershell execution uses -Command and not -File because -File will interpolate the quotes
+    # in a context like cmd.exe: https://docs.microsoft.com/en-us/powershell/scripting/components/console/powershell.exe-command-line-help?view=powershell-6#-file--
+    # Because of this it's much cleaner to use -Command and use single quotes for each powershell param
+    command => "${::system32}\\cmd.exe /S /c start /b ${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+                  -ExecutionPolicy Bypass \
+                  -NoProfile \
+                  -NoLogo \
+                  -NonInteractive \
+                  -Command ${_installps1} \
+                          -PuppetPID ${::puppet_agent_pid} \
+                          -Source '${_msi_location}' \
+                          -Logfile '${_logfile}' \
+                          -InstallDir '${install_dir}' \
+                          -PuppetMaster '${::puppet_master_server}' \
+                          -PuppetStartType '${_agent_startup_mode}' \
+                          -InstallArgs '${_install_options}' \
+                          ${_move_dll_workaround}",
     path    => $::path,
   }
 

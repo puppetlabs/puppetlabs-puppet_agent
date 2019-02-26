@@ -30,14 +30,17 @@ param(
   # correctly from the module.
   [parameter(Position=0)]
   [String] $PuppetPID,
-  [String] $Source='<%= @_msi_location %>',
-  [String] $Logfile='<%= @_logfile %>',
-  [String] $InstallDir='<%= @install_dir %>',
-  [String] $PuppetMaster='<%= @_puppet_master %>',
-  [String] $PuppetStartType='<%= @_agent_startup_mode %>',
-  [String] $InstallArgs='<%= @_install_options   %>',
-  [String] $InstallScriptPIDFile='<%= @_install_pid_file_loc %>',
-  [Bool]   $UseLockedFilesWorkaround=<%= @_move_dll_workaround %>
+  [String] $Source,
+  [String] $Logfile,
+  [AllowEmptyString()]
+  [String] $InstallDir,
+  [AllowEmptyString()]
+  [String] $PuppetMaster,
+  [AllowEmptyString()]
+  [String] $PuppetStartType,
+  [AllowEmptyString()]
+  [String] $InstallArgs,
+  [switch] $UseLockedFilesWorkaround
 )
 # Find-InstallDir, Move-PuppetresDLL and Reset-PuppetresDLL serve as a workaround for older
 # installations of puppet: we used to need to move puppetres.dll out of the way during puppet
@@ -336,13 +339,10 @@ try {
   }
 } catch {
   Write-Log "ERROR: $_"
-  try {
-    if ($UseLockedFilesWorkaround) {
-      Reset-PuppetresDLL $temp_puppetres
-    }
-  } finally {
-    Reset-PuppetServices $services_before
+  if ($UseLockedFilesWorkaround) {
+    Reset-PuppetresDLL $temp_puppetres
   }
 } finally {
+  Reset-PuppetServices $services_before
   Unlock-Installation $install_pid_lock
 }

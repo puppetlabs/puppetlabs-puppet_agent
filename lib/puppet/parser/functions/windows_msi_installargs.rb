@@ -14,6 +14,10 @@ module Puppet::Parser::Functions
         option
       end
     end
-    return arg_string.join(' ')
+    # When the MSI installargs parameter is passed to the powershell script it's inside
+    # a cmd.exe instance, so we need to escape the quotes correctly so they show up as
+    # plaintext double quotes to the powershell command. (To correctly escape to a
+    # plaintext " you use three "'s in cmd.exe)
+    return arg_string.join(' ').gsub('"', '"""')
   end
 end
