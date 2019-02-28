@@ -39,11 +39,12 @@ class puppet_agent::windows::install(
   debug ("Installing puppet from ${_msi_location}")
 
   $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
+  puppet_agent_upgrade_error { 'puppet_agent_upgrade_failure.log': }
   file { "${_installps1}":
     ensure  => file,
     content => file('puppet_agent/install_puppet.ps1')
   }
-  -> exec { 'install_puppet.ps1':
+  exec { 'install_puppet.ps1':
     # The powershell execution uses -Command and not -File because -File will interpolate the quotes
     # in a context like cmd.exe: https://docs.microsoft.com/en-us/powershell/scripting/components/console/powershell.exe-command-line-help?view=powershell-6#-file--
     # Because of this it's much cleaner to use -Command and use single quotes for each powershell param
@@ -62,6 +63,10 @@ class puppet_agent::windows::install(
                           -InstallArgs '${_install_options}' \
                           ${_move_dll_workaround}",
     path    => $::path,
+    require => [
+      Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
+      File["${_installps1}"]
+    ]
   }
 
   # PUP-5480/PE-15037 Cache dir loses inheritable SYSTEM perms

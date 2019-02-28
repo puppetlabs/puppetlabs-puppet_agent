@@ -256,8 +256,9 @@ $service_names=@(
   "mcollective"
 )
 try {
+  $state_dir = (puppet.bat config print statedir)
   Write-Log "Installation PID:$PID"
-  $install_pid_lock = Join-Path -Path (Split-Path -Parent (puppet.bat config print agent_catalog_run_lockfile)) -ChildPath 'puppet_agent_upgrade.pid'
+  $install_pid_lock = Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade.pid'
   Lock-Installation $install_pid_lock
   if ($PuppetPID) {
     # Wait for the puppet run to finish
@@ -342,6 +343,7 @@ try {
   if ($UseLockedFilesWorkaround) {
     Reset-PuppetresDLL $temp_puppetres
   }
+  "$_" | Out-File -FilePath (Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade_failure.log')
 } finally {
   Reset-PuppetServices $services_before
   Unlock-Installation $install_pid_lock
