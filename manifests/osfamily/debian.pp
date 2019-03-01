@@ -10,7 +10,7 @@ class puppet_agent::osfamily::debian{
       if $::puppet_agent::source {
         $source = $::puppet_agent::source
       } else {
-        $source = "https://${::servername}:8140/packages/${pe_server_version}/${::platform_tag}"
+        $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${::platform_tag}"
       }
       # In Puppet Enterprise, agent packages are served by the same server
       # as the master, which can be using either a self signed CA, or an external CA.

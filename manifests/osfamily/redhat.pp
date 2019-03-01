@@ -11,7 +11,7 @@ class puppet_agent::osfamily::redhat{
     if $::puppet_agent::source {
       $source = $::puppet_agent::source
     } else {
-      $source = "https://${::servername}:8140/packages/${pe_server_version}/${pe_repo_dir}"
+      $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${pe_repo_dir}"
     }
     # In Puppet Enterprise, agent packages are served by the same server
     # as the master, which can be using either a self signed CA, or an external CA.
