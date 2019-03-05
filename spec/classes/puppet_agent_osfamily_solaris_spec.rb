@@ -57,6 +57,28 @@ describe 'puppet_agent' do
       pkg.stubs(:defaultprovider).returns(pkg.provider(:pkg))
     end
 
+    context "when Solaris 11 i386 and a custom source" do
+      let(:facts) do
+        facts.merge({
+          :is_pe                     => true,
+          :platform_tag              => "solaris-11-i386",
+          :operatingsystemmajrelease => '11',
+        })
+      end
+      let(:params) do
+        {
+          :package_version => package_version,
+          :source => "http://fake-solaris-source.com/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p"
+        }
+      end
+      it do
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p").with({
+          'ensure' => 'present',
+          'source' => "http://fake-solaris-source.com/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
+        })
+      end
+    end
+
     context "when Solaris 11 i386" do
       let(:facts) do
         facts.merge({
@@ -173,6 +195,28 @@ describe 'puppet_agent' do
       it do
         is_expected.not_to contain_transition("remove puppet-agent")
         is_expected.to contain_package('puppet-agent').with_ensure(sol11_package_version)
+      end
+    end
+
+    context "when Solaris 10 i386 and a custom source" do
+      let(:facts) do
+        facts.merge({
+          :is_pe                     => true,
+          :platform_tag              => "solaris-10-i386",
+          :operatingsystemmajrelease => '10',
+        })
+      end
+      let(:params) do
+        {
+          :package_version => package_version,
+          :source => "http://fake-solaris-source.com/packages/puppet-agent-#{package_version}-1.i386.pkg.gz"
+        }
+      end
+      it do
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with({
+          'ensure' => 'present',
+          'source' => "http://fake-solaris-source.com/packages/puppet-agent-#{package_version}-1.i386.pkg.gz",
+        })
       end
     end
 

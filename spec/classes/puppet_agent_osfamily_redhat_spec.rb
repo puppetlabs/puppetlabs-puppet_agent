@@ -117,6 +117,17 @@ describe 'puppet_agent' do
             'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
         }) }
       end
+
+      context 'when using a custom source' do
+        let(:params)  {
+          {
+            :package_version => '5.2.0',
+            :collection => 'puppet5',
+            :source => "http://fake-yum.com/#{urlbit.gsub('/f','/')}/x64"
+          }
+        }
+        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/#{urlbit.gsub('/f','/')}/x64") }
+      end
     end
   end
 
@@ -142,6 +153,18 @@ describe 'puppet_agent' do
           is_pe: true
         )
       end
+
+      context 'when using a custom source' do
+        let(:params)  {
+          {
+            :package_version => '5.2.0',
+            :manage_repo => true,
+            :source => "http://fake-yum.com/#{repodir}/x64"
+          }
+        }
+        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/#{repodir}/x64") }
+      end
+
 
       context 'with manage_repo enabled' do
         let(:params)  {

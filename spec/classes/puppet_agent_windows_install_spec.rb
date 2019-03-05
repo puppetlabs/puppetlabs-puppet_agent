@@ -1,12 +1,12 @@
 require 'spec_helper'
 
 RSpec.describe 'puppet_agent', tag: 'win' do
-  package_version = '1.10.100.1'
+  package_version = '5.10.100.1'
+  collection = 'puppet5'
   global_params = {
     :package_version => package_version,
+    :collection      => collection
   }
-
-
   ['x86', 'x64'].each do |arch|
     context "Windows arch #{arch}" do
       facts = {
@@ -96,34 +96,37 @@ RSpec.describe 'puppet_agent', tag: 'win' do
       end
 
       context 'source =>' do
-        describe 'https://alterernate.com/puppet-agent.msi' do
+        describe 'https://alterernate.com/puppet-agent-999.1-x64.msi' do
           let(:params) { global_params.merge(
-            {:source => 'https://alternate.com/puppet-agent.msi',})
+            {:source => 'https://alternate.com/puppet-agent-999.1-x64.msi',})
           }
           it {
-            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{package_version}-#{arch}\.msi'/)
+            is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.1-x64.msi').with_source('https://alternate.com/puppet-agent-999.1-x64.msi')
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-999.1-x64\.msi'/)
             is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Logfile 'C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
 
-        describe 'C:/tmp/puppet-agent-x64.msi' do
+        describe 'C:/tmp/puppet-agent-999.2-x64.msi' do
           let(:params) { global_params.merge(
-            {:source => 'C:/tmp/puppet-agent-x64.msi',})
+            {:source => 'C:/tmp/puppet-agent-999.2-x64.msi',})
           }
           it {
-            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{package_version}-#{arch}\.msi'/)
+            is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.2-x64.msi').with_source('C:/tmp/puppet-agent-999.2-x64.msi')
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-999.2-x64\.msi'/)
             is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Logfile 'C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
 
-        describe '\\\\garded\c$\puppet-agent-x64.msi' do
+        describe '\\\\garded\c$\puppet-agent-999.3-x64.msi' do
           let(:params) { global_params.merge(
-            {:source => "\\\\garded\\c$\\puppet-agent-x64.msi",})
+            {:source => "\\\\garded\\c$\\puppet-agent-999.3-x64.msi",})
           }
           it {
-            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{package_version}-#{arch}\.msi'/)
+            is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.3-x64.msi').with_source('\\\\garded\c$\puppet-agent-999.3-x64.msi')
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-999.3-x64\.msi'/)
             is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Logfile 'C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
@@ -131,26 +134,20 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
         describe 'default source' do
           it {
+            is_expected.to contain_file("C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{package_version}-#{arch}\.msi")
+                              .with_source("https://downloads.puppet.com/windows/#{collection}/puppet-agent-#{package_version}-#{arch}.msi")
             is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{package_version}-#{arch}\.msi'/)
-            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Logfile 'C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log'/)
-          }
-          it {
-            should contain_exec('install_puppet.ps1').with { {
-                     'command' => 'C:\windows\sysnative\cmd.exe /c start /b C:\windows\sysnative\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -NoProfile -NoLogo -NonInteractive -Command C:\tmp\install_puppet.ps1 42',
-                   } }
-          }
-          it {
-            is_expected.to_not contain_file('C:\tmp\puppet-agent.msi')
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
 
-        describe 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi' do
+        describe 'puppet:///puppet_agent/puppet-agent-999.4-x86.msi' do
           let(:params) { global_params.merge(
-            {:source => 'puppet:///puppet_agent/puppet-agent-1.1.0-x86.msi'})
+            {:source => 'puppet:///puppet_agent/puppet-agent-999.4-x86.msi'})
           }
           it {
-            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{package_version}-#{arch}\.msi'/)
+            is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.4-x86.msi').with_source('puppet:///puppet_agent/puppet-agent-999.4-x86.msi')
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source 'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-999.4-x86\.msi'/)
           }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end

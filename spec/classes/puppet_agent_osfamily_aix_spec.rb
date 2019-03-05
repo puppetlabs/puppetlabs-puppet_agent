@@ -47,6 +47,30 @@ describe 'puppet_agent' do
     }
   end
 
+  context 'with a user specified source' do
+    let(:facts) {
+      common_facts.merge({
+        architecture: "PowerPC_POWER8",
+        platform_tag: "aix-7.2-power",
+      })
+    }
+    let(:params) {
+      {
+        package_version: '5.10.100.1',
+        collection: 'puppet5',
+        source: 'https://fake-source.com/aix/packages/puppet-agent-5.10.100.1-1.aix6.1.ppc.rpm',
+      }
+    }
+    before(:each) do
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
+      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| '1.10.100' }
+    end
+
+    it {
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.aix6.1.ppc.rpm').with_source('https://fake-source.com/aix/packages/puppet-agent-5.10.100.1-1.aix6.1.ppc.rpm')
+    }
+  end
+
   context 'with a PC1 collection' do
     let(:params) {
       {
