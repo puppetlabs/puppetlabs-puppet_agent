@@ -7,7 +7,11 @@ class puppet_agent::osfamily::debian{
 
     if getvar('::puppet_agent::is_pe') == true {
       $pe_server_version = pe_build_version()
-      $source = "https://${::servername}:8140/packages/${pe_server_version}/${::platform_tag}"
+      if $::puppet_agent::source {
+        $source = $::puppet_agent::source
+      } else {
+        $source = "https://${::servername}:8140/packages/${pe_server_version}/${::platform_tag}"
+      }
       # In Puppet Enterprise, agent packages are served by the same server
       # as the master, which can be using either a self signed CA, or an external CA.
       # In order for apt to authenticate to the repo on the PE Master, it will need
@@ -55,7 +59,11 @@ class puppet_agent::osfamily::debian{
         content  => '',
       }
     } else {
-      $source = 'https://apt.puppet.com'
+      if $::puppet_agent::source {
+        $source = $::puppet_agent::source
+      } else {
+        $source = 'https://apt.puppet.com'
+      }
     }
 
     $legacy_keyname = 'GPG-KEY-puppetlabs'

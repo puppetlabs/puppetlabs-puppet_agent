@@ -18,7 +18,11 @@ class puppet_agent::osfamily::solaris{
   case $::operatingsystemmajrelease {
     '10': {
       $package_file_name = "${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.${pkg_arch}.pkg.gz"
-      $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+      if $::puppet_agent::source {
+        $source = $::puppet_agent::source
+      } else {
+        $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+      }
       class { '::puppet_agent::prepare::package':
         source => $source,
       }
@@ -44,7 +48,11 @@ class puppet_agent::osfamily::solaris{
     '11': {
       if $::puppet_agent::manage_repo {
         $package_file_name = "${::puppet_agent::package_name}@${::puppet_agent::prepare::package_version},5.11-1.${pkg_arch}.p5p"
-        $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+        if $::puppet_agent::source {
+          $source = $::puppet_agent::source
+        } else {
+          $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+        }
         class { '::puppet_agent::prepare::package':
           source => $source,
         }

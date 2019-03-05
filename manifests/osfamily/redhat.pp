@@ -8,7 +8,11 @@ class puppet_agent::osfamily::redhat{
       true    => "el-6-${::architecture}",
       default =>  $::platform_tag,
     }
-    $source = "https://${::servername}:8140/packages/${pe_server_version}/${pe_repo_dir}"
+    if $::puppet_agent::source {
+      $source = $::puppet_agent::source
+    } else {
+      $source = "https://${::servername}:8140/packages/${pe_server_version}/${pe_repo_dir}"
+    }
     # In Puppet Enterprise, agent packages are served by the same server
     # as the master, which can be using either a self signed CA, or an external CA.
     # In order for yum to authenticate to the yumrepo on the PE Master, it will need
@@ -39,7 +43,11 @@ class puppet_agent::osfamily::redhat{
         $platform_and_version = "el/${::operatingsystemmajrelease}"
       }
     }
-    $source = "http://yum.puppet.com/${::puppet_agent::collection}/${platform_and_version}/${::puppet_agent::arch}"
+    if $::puppet_agent::source {
+      $source = $::puppet_agent::source
+    } else {
+      $source = "http://yum.puppet.com/${::puppet_agent::collection}/${platform_and_version}/${::puppet_agent::arch}"
+    }
     $_sslcacert_path = undef
     $_sslclientcert_path = undef
     $_sslclientkey_path = undef

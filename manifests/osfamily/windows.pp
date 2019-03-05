@@ -1,6 +1,8 @@
 class puppet_agent::osfamily::windows{
   assert_private()
-  if $::puppet_agent::is_pe {
+  if $::puppet_agent::source {
+    $source = $::puppet_agent::source
+  } elsif $::puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
     $tag = $::puppet_agent::arch ? {
       'x64' => 'windows-x86_64',
