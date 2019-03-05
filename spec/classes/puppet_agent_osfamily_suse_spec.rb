@@ -144,6 +144,22 @@ describe 'puppet_agent' do
             end
           end
 
+          context "with manage_repo enabled and custom source" do
+            let(:params) {
+              {
+                :manage_repo => true,
+                :package_version => package_version,
+                :source => "https://fake-sles-source.com/packages/sles-#{os_version}-x86_64",
+              }
+            }
+            it { is_expected.to contain_ini_setting("zypper pc_repo baseurl").with({
+              'path'    => '/etc/zypp/repos.d/pc_repo.repo',
+              'section' => 'pc_repo',
+              'setting' => 'baseurl',
+              'value'   => "https://fake-sles-source.com/packages/sles-#{os_version}-x86_64?ssl_verify=no",
+            }) }
+          end
+
           it do
             is_expected.to contain_package('puppet-agent')
           end

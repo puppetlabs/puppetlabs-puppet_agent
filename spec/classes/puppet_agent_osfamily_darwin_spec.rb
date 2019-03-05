@@ -14,7 +14,6 @@ describe 'puppet_agent' do
   end
 
   package_version = '1.10.100'
-  let(:params) {{ package_version: package_version }}
 
   facts = {
     :is_pe                       => true,
@@ -29,6 +28,7 @@ describe 'puppet_agent' do
   }
 
   describe 'supported environment' do
+    let(:params) {{ package_version: package_version }}
     context "when running a supported OSX" do
       ["osx-10.12-x86_64", "osx-10.13-x86_64", "osx-10.14-x86_64"].each do |tag|
         context "on #{tag} with no aio_version" do
@@ -65,5 +65,24 @@ describe 'puppet_agent' do
         end
       end
     end
+  end
+
+  describe 'when using a user defined source' do
+    let(:params) {
+      {
+        package_version: '5.10.100.1',
+        collection: 'puppet5',
+        source: 'https://fake-source.com/aix/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg',
+      }
+    }
+    let(:facts) do
+      facts.merge({
+        :is_pe                       => true,
+        :aio_agent_version           => '1.10.99',
+        :platform_tag                => 'osx-10.13-x86_64',
+        :macosx_productversion_major => '10.13'
+      })
+    end
+    it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg").with_source('https://fake-source.com/aix/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg') }
   end
 end

@@ -1,7 +1,9 @@
 class puppet_agent::osfamily::darwin{
   assert_private()
 
-  if $::puppet_agent::is_pe {
+  if $::puppet_agent::source {
+    $source = $::puppet_agent::source
+  } elsif $::puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
     $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${puppet_agent::package_name}-${puppet_agent::package_version}-1.osx${$::macosx_productversion_major}.dmg"
   } else {

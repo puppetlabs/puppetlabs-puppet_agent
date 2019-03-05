@@ -5,7 +5,9 @@ class puppet_agent::osfamily::suse{
     fail("${::operatingsystem} not supported")
   }
 
-  if $::puppet_agent::is_pe {
+  if $::puppet_agent::source {
+    $source = $::puppet_agent::source
+  } elsif $::puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
     $source = "https://${::servername}:8140/packages/${pe_server_version}/${::platform_tag}"
   } else {
