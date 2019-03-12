@@ -123,10 +123,10 @@ describe 'puppet_agent' do
           {
             :package_version => '5.2.0',
             :collection => 'puppet5',
-            :source => "http://fake-yum.com/#{urlbit.gsub('/f','/')}/x64"
+            :yum_source => "http://fake-yum.com"
           }
         }
-        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/#{urlbit.gsub('/f','/')}/x64") }
+        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/puppet5/#{urlbit.gsub('/f','/')}/x64") }
       end
     end
   end
@@ -159,12 +159,11 @@ describe 'puppet_agent' do
           {
             :package_version => '5.2.0',
             :manage_repo => true,
-            :source => "http://fake-yum.com/#{repodir}/x64"
+            :source => "http://fake-pe-master.com"
           }
         }
-        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/#{repodir}/x64") }
+        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-pe-master.com/packages/2000.0.0/#{repodir}") }
       end
-
 
       context 'with manage_repo enabled' do
         let(:params)  {

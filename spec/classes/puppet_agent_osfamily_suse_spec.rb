@@ -149,14 +149,14 @@ describe 'puppet_agent' do
               {
                 :manage_repo => true,
                 :package_version => package_version,
-                :source => "https://fake-sles-source.com/packages/sles-#{os_version}-x86_64",
+                :source => "https://fake-sles-source.com",
               }
             }
             it { is_expected.to contain_ini_setting("zypper pc_repo baseurl").with({
               'path'    => '/etc/zypp/repos.d/pc_repo.repo',
               'section' => 'pc_repo',
               'setting' => 'baseurl',
-              'value'   => "https://fake-sles-source.com/packages/sles-#{os_version}-x86_64?ssl_verify=no",
+              'value'   => "https://fake-sles-source.com/packages/2000.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
             }) }
           end
 

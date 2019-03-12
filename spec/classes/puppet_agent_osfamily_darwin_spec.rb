@@ -72,7 +72,7 @@ describe 'puppet_agent' do
       {
         package_version: '5.10.100.1',
         collection: 'puppet5',
-        source: 'https://fake-source.com/aix/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg',
+        source: 'https://fake-pe-master.com',
       }
     }
     let(:facts) do
@@ -83,6 +83,6 @@ describe 'puppet_agent' do
         :macosx_productversion_major => '10.13'
       })
     end
-    it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg").with_source('https://fake-source.com/aix/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg') }
+    it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg").with_source('https://fake-pe-master.com/packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.100.1-1.osx10.13.dmg') }
   end
 end

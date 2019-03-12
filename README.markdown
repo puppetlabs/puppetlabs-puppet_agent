@@ -3,22 +3,50 @@
 [![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-puppet_agent.svg?branch=master)](https://travis-ci.org/puppetlabs/puppetlabs-puppet_agent)
 
 #### Table of Contents
-
-1. [Overview](#overview)
-2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with puppet_agent](#setup)
-    * [What puppet_agent affects](#what-puppet_agent-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with puppet_agent](#beginning-with-puppet_agent)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference](#reference)
-    * [Public classes](#public-classes)
-    * [Private classes](#private-classes)
-    * [Parameters](#parameters)
-    * [Tasks](#tasks)
-6. [Limitations - OS compatibility, etc.](#limitations)
-    * [Known issues](#known-issues)
-7. [Development - Guide for contributing to the module](#development)
+- [puppet_agent](#puppet_agent)
+      - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Module Description](#module-description)
+  - [Setup](#setup)
+    - [What puppet_agent affects](#what-puppet_agent-affects)
+    - [Setup requirements](#setup-requirements)
+    - [Beginning with puppet_agent](#beginning-with-puppet_agent)
+  - [Usage](#usage)
+  - [Using alternate sources](#using-alternate-sources)
+    - [Public downloads mirrors](#public-downloads-mirrors)
+    - [Absolute paths to packages](#absolute-paths-to-packages)
+    - [Alternate PE master location](#alternate-pe-master-location)
+  - [Reference](#reference)
+    - [Public classes](#public-classes)
+    - [Private classes](#private-classes)
+    - [Parameters](#parameters)
+      - [Class: puppet_agent](#class-puppet_agent)
+        - [`arch`](#arch)
+        - [`collection`](#collection)
+        - [`is_pe`](#is_pe)
+        - [`manage_repo`](#manage_repo)
+        - [`package_version`](#package_version)
+        - [`service_names`](#service_names)
+        - [`source`](#source)
+        - [`absolute_source`](#absolute_source)
+        - [`yum_source`](#yum_source)
+        - [`apt_source`](#apt_source)
+        - [`mac_source`](#mac_source)
+        - [`windows_source`](#windows_source)
+        - [`solaris_source`](#solaris_source)
+        - [`aix_source`](#aix_source)
+        - [`use_alternate_sources`](#use_alternate_sources)
+        - [`alternate_pe_source`](#alternate_pe_source)
+        - [`install_dir`](#install_dir)
+        - [`install_options`](#install_options)
+        - [`msi_move_locked_files`](#msi_move_locked_files)
+    - [Tasks](#tasks)
+      - [`puppet_agent::version`](#puppet_agentversion)
+      - [`puppet_agent::install`](#puppet_agentinstall)
+  - [Limitations](#limitations)
+    - [Known issues](#known-issues)
+  - [Development](#development)
+  - [Maintenance](#maintenance)
 
 ## Overview
 
@@ -57,6 +85,35 @@ class {'::puppet_agent':
 ~~~
 
 This will ensure the version `1.4.0` of the puppet-agent package is installed. For version `1.4.0` and later, it will also remove the deprecated `pluginsync` setting from `puppet.conf`, unless explicitly managed elsewhere.
+
+## Using alternate sources
+
+In cases where you wish to download agents from sources other than the defaults you can use source parameters to change the location to grab packages from.
+
+### Public downloads mirrors
+
+If you wish to mirror the Puppet public downloads sites (yum.puppet.com, apt.puppet.com, downloads.puppet.com) you can provide the following parameters to change the location of downloads:
+
+* `yum_source`
+* `apt_source`
+* `mac_source`
+* `windows_source`
+* `solaris_source`
+* `aix_source`
+
+For AIX and Solaris packages: because AIX and Solaris are PE only you must use puppetlabs-pe_repo to create repos for these platforms on the PE master, then mirror the PE master package serve.
+
+When working with a PE installation: if you set `use_alternate_sources` to `true` you can force agent downloads to come from downloads sites (or a mirror if you set the source parameters) rather than the PE master. **WARNING** This parameter will override the default settings in PE installations to download packages from the PE master. If you wish to continue to download from the PE master _do not_ set this parameter.
+
+### Absolute paths to packages
+
+If your packages are already available on the target system (for example if you are using a network share) you can provide `absolute_source` the path to the packages to use during installation.
+
+**WARNING** You must provide the full path, including the package name, for this parameter to work. This also means you cannot provide the same `absolute_source` for two different types of packages.
+
+### Alternate PE master location
+
+If you are using puppetlabs-pe_repo to serve packages, but want to provide a location other than the current master to serve packages: use `alternate_pe_source` to specify a seperate location where packages are located in the same structure that would be on a PE master.
 
 ## Reference
 
@@ -122,11 +179,87 @@ An array of services to start, normally `puppet`. If the array is empty, no serv
   service_names => ['puppet']
 ```
 
+
 ##### `source`
 
-Alternate source from which you wish to download the latest version of Puppet. On the Windows operating system this is the absolute path to the MSI file to install, for example:
+INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute\_source", "(yum/apt/mac etc.)\_source", "alternate\_pe\_source" OVER USE OF "source".
+
+The location to find packages. Replaces base URL for unix/MacOS agents, used as fully qualified path in windows.
+
+Unix/MacOS
 ``` puppet
-  source => 'C:/packages/puppet-agent-1.7.0-x64.msi'
+  source => 'https://alternate-pe-master.com:8140'
+```
+
+Windows
+``` puppet
+  source => 'C:/packages/puppet-agent-6.0.0-x64.msi'
+```
+
+##### `absolute_source`
+
+Absolute ("fully qualified") source path from which you wish to download the latest version of Puppet. No path structure or package name is assumed: the fully qualified path to the package itself must be provided.
+``` puppet
+  absolute_source => 'C:/packages/puppet-agent-6.0.0-x64.msi'
+```
+
+##### `yum_source`
+
+Base URL of a location or mirrors of yum.puppet.com downloads sites. Directories under the URL should match the structure of yum.puppet.com
+``` puppet
+  yum_source => 'https://my-puppet-yum-mirror.com'
+```
+
+##### `apt_source`
+
+Base URL of a location or mirrors of apt.puppet.com downloads sites. Directories under the URL should match the structure of apt.puppet.com
+``` puppet
+  apt_source => 'https://my-puppet-apt-mirror.com'
+```
+
+##### `mac_source`
+
+Base URL of a location or mirrors of downloads.puppet.com downloads site that serves MacOS packages. Directories under the URL should match the structure of the downloads.puppet.com site
+``` puppet
+  mac_source => 'https://my-puppet-downloads-mirror.com'
+```
+
+##### `windows_source`
+
+URL of a location or mirrors of downloads.puppet.com downloads site that serves packages. Directories under the URL should match the structure of downloads.puppet.com site
+``` puppet
+  windows_source => 'https://my-puppet-downloads-mirror.com'
+```
+
+##### `solaris_source`
+
+Base URL of the location of a mirror for Solaris packages. Currently, solaris packages can only be made available by using puppetlabs-pe\_repo. This means the mirror must be of a PE master package serve.
+``` puppet
+  solaris_source => 'https://my-pe_master-mirror.com'
+```
+
+##### `aix_source`
+
+Base URL of the location of a mirror for AIX packages. Currently, AIX packages can only be made available by using puppetlabs-pe\_repo. This means the mirror must be of a PE master package serve.
+``` puppet
+  solaris_source => 'https://my-pe_master-mirror.com'
+```
+
+
+##### `use_alternate_sources`
+
+**ONLY APPLICABLE WHEN WORKING WITH PE INSTALLTIONS**
+
+When set to true will force downloads to come from the values of $apt\_source, $deb\_source $mac\_source etc. rather than from the default PE master package serve. Note that this will also force downloads to ignore alternate\_pe\_source.
+``` puppet
+  use_alternate_sources => true
+```
+
+##### `alternate_pe_source`
+
+Base URL of a location where packages are located in the same structure that's served by a PE master (the directory structure in PE for serving packages is created by the puppetlabs-pe\_repo module). The general structure served by PE is: `/packages/${pe_server_version}/${platform_tag}/${package_name}`
+``` puppet
+  alternate_pe_source => 'https://my-alternate-pe-master.com:8140'
 ```
 
 ##### `install_dir`

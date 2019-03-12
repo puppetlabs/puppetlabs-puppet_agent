@@ -4,10 +4,9 @@
 #
 # Manage the install process for windows specifically
 #
-class puppet_agent::windows::install(
+class puppet_agent::install::windows(
   $install_dir           = undef,
   $install_options       = [],
-  $msi_move_locked_files = $::puppet_agent::msi_move_locked_files,
   ) {
   assert_private()
 
@@ -26,7 +25,7 @@ class puppet_agent::windows::install(
     $_agent_startup_mode = undef
   }
 
-  if $msi_move_locked_files {
+  if $::puppet_agent::msi_move_locked_files {
     $_move_dll_workaround = '-UseLockedFilesWorkaround'
   } else {
     $_move_dll_workaround = undef

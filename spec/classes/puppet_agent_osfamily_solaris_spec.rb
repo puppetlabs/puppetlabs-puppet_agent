@@ -68,13 +68,13 @@ describe 'puppet_agent' do
       let(:params) do
         {
           :package_version => package_version,
-          :source => "http://fake-solaris-source.com/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p"
+          :source => "http://fake-solaris-source.com"
         }
       end
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p").with({
           'ensure' => 'present',
-          'source' => "http://fake-solaris-source.com/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
+          'source' => "http://fake-solaris-source.com/packages/2000.0.0/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
         })
       end
     end
@@ -209,13 +209,13 @@ describe 'puppet_agent' do
       let(:params) do
         {
           :package_version => package_version,
-          :source => "http://fake-solaris-source.com/packages/puppet-agent-#{package_version}-1.i386.pkg.gz"
+          :source => "http://fake-solaris-source.com"
         }
       end
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz").with({
           'ensure' => 'present',
-          'source' => "http://fake-solaris-source.com/packages/puppet-agent-#{package_version}-1.i386.pkg.gz",
+          'source' => "http://fake-solaris-source.com/packages/2000.0.0/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz",
         })
       end
     end
