@@ -36,7 +36,17 @@ end
 
 Facter.add('puppet_master_server') do
   setcode do
-    Puppet.settings['server']
+    if Puppet.settings['server_list'].nil? || Puppet.settings['server_list'].empty?
+      Puppet.settings['server']
+    else
+      case (entry = Puppet.settings['server_list'].first)
+      when Array
+        # Tuple of hostname and port
+        entry.first
+      else
+        entry
+      end
+    end
   end
 end
 

@@ -2,20 +2,20 @@ require 'spec_helper'
 
 describe 'puppet_agent' do
   facts = {
-    :lsbdistid => 'Debian',
-    :osfamily => 'Debian',
-    :lsbdistcodename => 'stretch',
-    :os => {
-      'name' => 'Debian',
-      'release' => {
-        'full' => '9.0',
-        'major' => '9',
-      },
-    },
-    :operatingsystem => 'Debian',
-    :architecture => 'x64',
-      :servername   => 'master.example.vm',
-      :clientcert   => 'foo.example.vm',
+    :lsbdistid            => 'Debian',
+    :osfamily             => 'Debian',
+    :lsbdistcodename      => 'stretch',
+    :os                   => {
+                               'name' => 'Debian',
+                               'release' => {
+                                 'full' => '9.0',
+                                 'major' => '9',
+                               },
+                             },
+    :operatingsystem      => 'Debian',
+    :architecture         => 'x64',
+    :puppet_master_server => 'master.example.vm',
+    :clientcert           => 'foo.example.vm',
   }
 
   # All FOSS and all Puppet 4+ upgrades require the package_version

@@ -19,7 +19,7 @@ describe 'puppet_agent' do
     :operatingsystem           => 'SLES',
     :operatingsystemmajrelease => '12',
     :architecture              => 'x64',
-    :servername                => 'master.example.vm',
+    :puppet_master_server      => 'master.example.vm',
     :clientcert                => 'foo.example.vm',
   }
 

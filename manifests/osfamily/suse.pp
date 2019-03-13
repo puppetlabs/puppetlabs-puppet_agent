@@ -9,7 +9,7 @@ class puppet_agent::osfamily::suse{
     $source = $::puppet_agent::source
   } elsif $::puppet_agent::is_pe {
     $pe_server_version = pe_build_version()
-    $source = "https://${::servername}:8140/packages/${pe_server_version}/${::platform_tag}"
+    $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${::platform_tag}"
   } else {
     $source = "https://yum.puppet.com/${::puppet_agent::collection}/sles/${::operatingsystemmajrelease}/${::puppet_agent::arch}"
   }
