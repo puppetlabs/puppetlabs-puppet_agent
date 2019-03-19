@@ -69,9 +69,8 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
     stop_firewall_with_puppet_on(master)
     ssldir = puppet_config(master, 'ssldir').strip
     on(master, "rm -rf '#{ssldir}'/*") # Preserve the directory itself, to keep permissions
-    unless version_is_less(server_version, '6.0.0')
-      on(master, 'puppetserver ca setup')
-    end
+    # DO NOT RUN 'puppetserver ca setup': this will create the new intermediate certs that
+    # will not work when installing the old version of agents.
   end
 
 
