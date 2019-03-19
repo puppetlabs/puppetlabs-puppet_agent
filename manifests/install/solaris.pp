@@ -1,8 +1,8 @@
-# == Class puppet_agent::windows::install
+# == Class puppet_agent::install::solaris
 #
 # Private class called from puppet_agent class
 #
-# Manage the install process for windows specifically
+# Manage the install process for solaris specifically
 #
 class puppet_agent::install::solaris(
   $package_version,
@@ -27,7 +27,7 @@ class puppet_agent::install::solaris(
     # service. That resulted in service-initiated upgrades failing because trying to remove or
     # upgrade the package would stop the service, thereby killing the Puppet run. Use a script
     # to perform the upgrade after Puppet is done running.
-    # Puppet 5.0 adds this, but some i18n implementation is loading code fairly late and appearsx
+    # Puppet 5.0 adds this, but some i18n implementation is loading code fairly late and appears
     # to be messing up the upgrade.
 
     if $::puppet_agent::aio_upgrade_required {

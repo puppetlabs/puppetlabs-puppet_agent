@@ -1,4 +1,4 @@
-# == Class puppet_agent::windows::install
+# == Class puppet_agent::install::windows
 #
 # Private class called from puppet_agent class
 #

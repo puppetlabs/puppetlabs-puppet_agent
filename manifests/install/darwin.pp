@@ -1,8 +1,8 @@
-# == Class puppet_agent::windows::install
+# == Class puppet_agent::install::darwin
 #
 # Private class called from puppet_agent class
 #
-# Manage the install process for windows specifically
+# Manage the install process for Darwin OSes specifically
 #
 class puppet_agent::install::darwin(
   $package_version,

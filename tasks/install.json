@@ -7,7 +7,27 @@
     },
     "collection": {
       "description": "The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)",
-      "type": "Optional[Enum[puppet5, puppet6, puppet]]"
+      "type": "Optional[Enum[puppet5, puppet6, puppet, puppet5-nightly, puppet6-nightly, puppet-nightly]]"
+    },
+    "yum_source": {
+      "description": "The source location to find yum repos (defaults to yum.puppet.com)",
+      "type": "Optional[String]"
+    },
+    "apt_source": {
+      "description": "The source location to find apt repos (defaults to apt.puppet.com)",
+      "type": "Optional[String]"
+    },
+    "mac_source": {
+      "description": "The source location to find mac packages (defaults to downloads.puppet.com)",
+      "type": "Optional[String]"
+    },
+    "windows_source": {
+      "description": "The source location to find windows packages (defaults to downloads.puppet.com)",
+      "type": "Optional[String]"
+    },
+    "install_options": {
+      "description": "optional install arguments to the windows installer (defaults to REINSTALLMODE=\"amus\")",
+      "type": "Optional[String]"
     }
   },
   "implementations": [
