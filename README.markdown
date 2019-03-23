@@ -22,7 +22,9 @@
 
 ## Overview
 
-A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions.
+A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions including Puppet 4, Puppet 5, and Puppet 6.
+
+Previous releases of this module, now unsupported, upgraded agents from later versions of Puppet 3 to Puppet 4.
 
 ## Module Description
 
@@ -34,7 +36,7 @@ If a package_version parameter is provided, it will ensure that puppet-agent ver
 
 ### What puppet_agent affects
 
-* Puppet, Facter, Hiera, and MCollective (MCollective is no longer included in puppet6 installs).
+* Puppet, Facter, Hiera, and MCollective (MCollective is no longer included in Puppet 6 installs).
 * Puppet's SSL directory and puppet.conf.
 * Removes deprecated settings from puppet.conf.
 
@@ -85,9 +87,7 @@ The architecture version you wish to install. Defaults to `$::facts['architectur
 
 ##### `collection`
 
-The Puppet Collection to track, should be one of `puppet5` or `puppet6`.  Puppet collections contain the latest agents included
-in the collection's series, so the latest 5 series in puppet5 (for example: 5.5.10) and the latest 6 series in puppet6 (for
-example: 6.1.0).  **This parameter is required for installations not connected to Puppet Enterprise**
+The Puppet Collection to track, should be one of `puppet5` or `puppet6`.  Puppet collections contain the latest agents included in the collection's series, so `puppet5` will pull in the most recent Puppet 5 release (for example: 5.5.10) as also will `puppet6` for Puppet 6 (for example: 6.3.0).  **This parameter is required for installations not connected to Puppet Enterprise**
 ``` puppet
   collection => 'puppet6'
 ```
