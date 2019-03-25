@@ -28,7 +28,46 @@
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
 # [source]
-#   The location to find packages.
+#   **INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute_source",
+#   "apt_source", "deb_source" etc. OVER USE OF "source".**
+#
+#   The location to find packages. Replaces base URL for unix/MacOS agents, used as fully
+#   qualified path in windows
+# [absolute_source]
+#   The exact location of the package to install. The entire path to the package must be
+#   provided with this parameter.
+# [yum_source]
+#   Base URL of the location of mirrors of yum.puppet.com downloads sites. Directories under
+#   the URL "yum_source" should match the structure of the yum.puppet.com
+# [apt_source]
+#   Base URL of the location of mirrors of apt.puppet.com downloads sites. Directories under
+#   the URL "apt_source" should match the structure of the apt.puppet.com
+# [mac_source]
+#   Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
+#   MacOS packages. Directories under the URL "mac_source" should match the structure of the
+#   downloads.puppet.com site
+# [windows_source]
+#   Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
+#   Windows packages. Directories under the URL "windows_source" should match the structure of
+#   the downloads.puppet.com site
+# [solaris_source]
+#   Base URL of the location of a mirror for Solaris packages. Currently, solaris packages can
+#   only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
+#   PE master package serve.
+# [aix_source]
+#   Base URL of the location of a mirror for AIX packages. Currently, AIX packages can
+#   only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
+#   PE master package serve.
+# [use_alternate_sources]
+#   **ONLY APPLICABLE WHEN WORKING WITH PE INSTALLTIONS**
+#   When set to true will force downloads to come from the values of $apt_source, $deb_source
+#   $mac_source etc. rather than from the default PE master package serve. Note that this will
+#   also force downloads to ignore alternate_pe_source
+# [alternate_pe_source]
+#   Base URL of the location where packages are located in the same structure that's served
+#   by a PE master (the directory structure in PE for serving packages is created by the
+#   puppetlabs-pe_repo module). The general structure served by PE is:
+#   /packages/${pe_server_version}/${platform_tag}/${package_name}
 # [install_dir]
 #   The directory the puppet agent should be installed to. This is only applicable for
 #   windows operating systems. This only applies when upgrading the agent to a new
@@ -47,24 +86,37 @@
 #   will move files prior to installation that are known to cause file locks.
 #
 class puppet_agent (
-  $arch                  = $::architecture,
-  $collection            = $::puppet_agent::params::collection,
-  $is_pe                 = $::puppet_agent::params::_is_pe,
-  $manage_pki_dir        = true,
-  $manage_repo           = true,
-  $package_name          = 'puppet-agent',
-  $package_version       = undef,
-  $service_names         = $::puppet_agent::params::service_names,
-  $source                = undef,
-  $install_dir           = undef,
-  $disable_proxy         = false,
-  $install_options       = [],
-  $skip_if_unavailable   = 'absent',
-  $msi_move_locked_files = false,
+  $arch                    = $::architecture,
+  $collection              = $::puppet_agent::params::collection,
+  $is_pe                   = $::puppet_agent::params::_is_pe,
+  $manage_pki_dir          = true,
+  $manage_repo             = true,
+  $package_name            = 'puppet-agent',
+  $package_version         = undef,
+  $service_names           = $::puppet_agent::params::service_names,
+  $source                  = undef,
+  $absolute_source         = undef,
+  $yum_source              = 'http://yum.puppet.com',
+  $apt_source              = 'https://apt.puppet.com',
+  $mac_source              = 'https://downloads.puppet.com',
+  $windows_source          = 'https://downloads.puppet.com',
+  $solaris_source          = 'puppet:///pe_packages',
+  $aix_source              = 'puppet:///pe_packages',
+  $use_alternate_sources   = false,
+  $alternate_pe_source     = undef,
+  $install_dir             = undef,
+  $disable_proxy           = false,
+  $install_options         = [],
+  $skip_if_unavailable     = 'absent',
+  $msi_move_locked_files   = false,
 ) inherits ::puppet_agent::params {
 
   if (getvar('::aio_agent_version') == undef) {
     fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
+  }
+
+  if $source != undef and $absolute_source != undef {
+    fail('Only one of $source and $absolute_source can be set')
   }
 
   if $::osfamily == 'windows' and $install_dir != undef {

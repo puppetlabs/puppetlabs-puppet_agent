@@ -9,19 +9,29 @@ class puppet_agent::osfamily::solaris{
     fail('Solaris upgrades are only supported on Puppet Enterprise')
   }
 
+  $pe_server_version = pe_build_version()
+  if $::puppet_agent::absolute_source {
+    $source_dir = $::puppet_agent::absolute_source
+  } elsif $::puppet_agent::alternate_pe_source {
+    $source_dir = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
+  } elsif $::puppet_agent::source {
+    $source_dir = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
+  } else {
+    $source_dir = "${::puppet_agent::solaris_source}/${pe_server_version}/${::platform_tag}"
+  }
+
   $pkg_arch = $::puppet_agent::arch ? {
     /^sun4[uv]$/ => 'sparc',
     default      => 'i386',
   }
-  $pe_server_version = pe_build_version()
 
   case $::operatingsystemmajrelease {
     '10': {
       $package_file_name = "${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.${pkg_arch}.pkg.gz"
-      if $::puppet_agent::source {
-        $source = $::puppet_agent::source
+      if $::puppet_agent::absolute_source {
+        $source = $source_dir
       } else {
-        $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+        $source = "${source_dir}/${package_file_name}"
       }
       class { '::puppet_agent::prepare::package':
         source => $source,
@@ -48,10 +58,10 @@ class puppet_agent::osfamily::solaris{
     '11': {
       if $::puppet_agent::manage_repo {
         $package_file_name = "${::puppet_agent::package_name}@${::puppet_agent::prepare::package_version},5.11-1.${pkg_arch}.p5p"
-        if $::puppet_agent::source {
-          $source = $::puppet_agent::source
+        if $::puppet_agent::absolute_source {
+          $source = $source_dir
         } else {
-          $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${package_file_name}"
+          $source = "${source_dir}/${package_file_name}"
         }
         class { '::puppet_agent::prepare::package':
           source => $source,

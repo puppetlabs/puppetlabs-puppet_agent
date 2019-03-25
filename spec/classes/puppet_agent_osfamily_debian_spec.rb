@@ -193,12 +193,12 @@ describe 'puppet_agent' do
         {
           :manage_repo => true,
           :package_version => package_version,
-          :source => 'https://fake-apt-mirror.com/packages/debian-7-x86_64'
+          :source => 'https://fake-apt-mirror.com'
         }
       }
 
       it { is_expected.to contain_apt__source('pc_repo').with({
-        'location' => 'https://fake-apt-mirror.com/packages/debian-7-x86_64',
+        'location' => 'https://fake-apt-mirror.com/packages/2000.0.0/debian-7-x86_64',
         'repos'    => 'PC1',
         'key'      => {
           'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
@@ -259,12 +259,12 @@ describe 'puppet_agent' do
           :manage_repo => true,
           :package_version => package_version,
           :collection => 'puppet5',
-          :source => 'https://fake-apt-mirror.com/packages/debian-7-x86_64'
+          :apt_source => 'https://fake-apt-mirror.com/'
         }
       }
 
       it { is_expected.to contain_apt__source('pc_repo').with({
-        'location' => 'https://fake-apt-mirror.com/packages/debian-7-x86_64',
+        'location' => 'https://fake-apt-mirror.com/',
         'repos'    => 'puppet5',
         'key'      => {
           'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',

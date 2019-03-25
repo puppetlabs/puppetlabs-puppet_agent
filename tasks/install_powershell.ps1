@@ -1,7 +1,9 @@
 [CmdletBinding()]
 Param(
 	[String]$version,
-    [String]$collection = 'puppet'
+  [String]$collection = 'puppet',
+  [String]$windows_source = 'https://downloads.puppet.com',
+  [String]$install_options = 'REINSTALLMODE="amus"'
 )
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
@@ -28,7 +30,7 @@ else {
     $msi_name = "puppet-agent-${arch}-latest.msi"
 }
 
-$msi_source = "https://downloads.puppetlabs.com/windows/${collection}/${msi_name}"
+$msi_source = "$windows_source/windows/${collection}/${msi_name}"
 
 $date_time_stamp = (Get-Date -format s) -replace ':', '-'
 $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"
@@ -53,7 +55,7 @@ function DownloadPuppet {
 }
 
 function InstallPuppet {
-  $msiexec_args = "/qn /log $install_log /i $msi_dest /norestart"
+  $msiexec_args = "/qn /log $install_log /i $msi_dest /norestart $install_options"
   Write-Output "Installing the Puppet Agent on $env:COMPUTERNAME..."
   $msiexec_proc = [System.Diagnostics.Process]::Start('msiexec', $msiexec_args)
   $msiexec_proc.WaitForExit()

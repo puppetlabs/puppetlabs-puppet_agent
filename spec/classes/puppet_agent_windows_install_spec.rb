@@ -67,7 +67,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             :aio_agent_version => '1.10.0'
           })}
 
-          it { is_expected.to contain_class('puppet_agent::windows::install') }
+          it { is_expected.to contain_class('puppet_agent::install::windows') }
           it { is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source \'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi\'/) }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -95,10 +95,10 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         end
       end
 
-      context 'source =>' do
+      context 'absolute_source =>' do
         describe 'https://alterernate.com/puppet-agent-999.1-x64.msi' do
           let(:params) { global_params.merge(
-            {:source => 'https://alternate.com/puppet-agent-999.1-x64.msi',})
+            {:absolute_source => 'https://alternate.com/puppet-agent-999.1-x64.msi',})
           }
           it {
             is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.1-x64.msi').with_source('https://alternate.com/puppet-agent-999.1-x64.msi')
@@ -110,7 +110,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
         describe 'C:/tmp/puppet-agent-999.2-x64.msi' do
           let(:params) { global_params.merge(
-            {:source => 'C:/tmp/puppet-agent-999.2-x64.msi',})
+            {:absolute_source => 'C:/tmp/puppet-agent-999.2-x64.msi',})
           }
           it {
             is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.2-x64.msi').with_source('C:/tmp/puppet-agent-999.2-x64.msi')
@@ -122,7 +122,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
         describe '\\\\garded\c$\puppet-agent-999.3-x64.msi' do
           let(:params) { global_params.merge(
-            {:source => "\\\\garded\\c$\\puppet-agent-999.3-x64.msi",})
+            {:absolute_source => "\\\\garded\\c$\\puppet-agent-999.3-x64.msi",})
           }
           it {
             is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.3-x64.msi').with_source('\\\\garded\c$\puppet-agent-999.3-x64.msi')
@@ -143,7 +143,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
         describe 'puppet:///puppet_agent/puppet-agent-999.4-x86.msi' do
           let(:params) { global_params.merge(
-            {:source => 'puppet:///puppet_agent/puppet-agent-999.4-x86.msi'})
+            {:absolute_source => 'puppet:///puppet_agent/puppet-agent-999.4-x86.msi'})
           }
           it {
             is_expected.to contain_file('C:\ProgramData\Puppetlabs\packages\puppet-agent-999.4-x86.msi').with_source('puppet:///puppet_agent/puppet-agent-999.4-x86.msi')

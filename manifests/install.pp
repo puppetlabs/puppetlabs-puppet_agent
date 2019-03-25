@@ -14,86 +14,83 @@ class puppet_agent::install(
 ) {
   assert_private()
 
-  $pa_collection = getvar('::puppet_agent::collection')
-
-  if $::operatingsystem == 'AIX' {
-    $_install_options = concat(['--ignoreos'],$install_options)
-
-    package { $::puppet_agent::package_name:
-      ensure          => $package_version,
-      provider        => 'rpm',
-      source          => "/opt/puppetlabs/packages/${::puppet_agent::prepare::package::package_file_name}",
-      install_options => $_install_options,
+  # Solaris, MacOS, Windows platforms will require more than just a package
+  # resource to install correctly. These will call to other classes that
+  # define how the installations work.
+  if $::operatingsystem == 'Solaris' {
+    class { 'puppet_agent::install::solaris':
+      package_version => $package_version,
+      install_options => $install_options,
     }
-  } elsif $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '10' {
-    $_unzipped_package_name = regsubst($::puppet_agent::prepare::package::package_file_name, '\.gz$', '')
-    $install_script = 'solaris_install.sh.erb'
-
-    # The following are expected to be available in the solaris_install.sh.erb template:
-    $adminfile = '/opt/puppetlabs/packages/solaris-noask'
-    $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
-    # Starting with puppet6 collections we no longer carry the mcollective service
-    if $::puppet_agent::collection != 'PC1' and $::puppet_agent::collection != 'puppet5' {
-      $service_names = delete($::puppet_agent::service_names, 'mcollective')
-    } else {
-      $service_names = $::puppet_agent::service_names
-    }
-
-    # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
-    # service. That resulted in service-initiated upgrades failing because trying to remove or
-    # upgrade the package would stop the service, thereby killing the Puppet run. Use a script
-    # to perform the upgrade after Puppet is done running.
-    # Puppet 5.0 adds this, but some i18n implementation is loading code fairly late and appears
-    # to be messing up the upgrade.
-
-    if $puppet_agent::aio_upgrade_required {
-      $_logfile = "${::env_temp_variable}/solaris_install.log"
-      notice ("Puppet install log file at ${_logfile}")
-
-      $_installsh = "${::env_temp_variable}/solaris_install.sh"
-      file { "${_installsh}":
-        ensure  => file,
-        mode    => '0755',
-        content => template('puppet_agent/do_install.sh.erb')
-      }
-      -> exec { 'solaris_install script':
-        command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
-      }
-    }
+    contain '::puppet_agent::install::solaris'
   } elsif $::operatingsystem == 'Darwin' {
+    # Prevent re-running the script install
     if $puppet_agent::aio_upgrade_required {
-      $install_script = 'osx_install.sh.erb'
-
-      $_logfile = "${::env_temp_variable}/osx_install.log"
-      notice("Puppet install log file at ${_logfile}")
-
-      $_installsh = "${::env_temp_variable}/osx_install.sh"
-      file { "${_installsh}":
-        ensure  => file,
-        mode    => '0755',
-        content => template('puppet_agent/do_install.sh.erb')
+      class { 'puppet_agent::install::darwin':
+        package_version => $package_version,
+        install_options => $install_options,
       }
-      -> exec { 'osx_install script':
-        command => "${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
-      }
+      contain '::puppet_agent::install::darwin'
     }
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
     if $puppet_agent::aio_upgrade_required {
-      class { 'puppet_agent::windows::install':
+      class { 'puppet_agent::install::windows':
         install_dir     => $install_dir,
         install_options => $install_options,
       }
-    }
-  } elsif ($::osfamily == 'Debian') and ($package_version != 'present') {
-    package { $::puppet_agent::package_name:
-      ensure          => "${package_version}-1${::lsbdistcodename}",
-      install_options => $install_options,
+      contain '::puppet_agent::install::windows'
     }
   } else {
+    if $::operatingsystem == 'AIX' {
+      # AIX installations always use RPM directly since no there isn't any default package manager for rpms
+      $_package_version = $package_version
+      $_install_options = concat(['--ignoreos'],$install_options)
+      $_provider = 'rpm'
+      $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+    } elsif $::osfamily == 'Debian' {
+      $_install_options = $install_options
+      if $::puppet_agent::absolute_source {
+        # absolute_source means we use dpkg on debian based platforms
+        $_package_version = 'present'
+        $_provider = 'dpkg'
+        # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
+        $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+      } else {
+        # any other type of source means we use apt with no 'source' defined in the package resource below
+        if $package_version == 'present' {
+          $_package_version = $package_version
+        } else {
+          $_package_version = "${package_version}-1${::lsbdistcodename}"
+        }
+        $_provider = 'apt'
+        $_source = undef
+      }
+    } else { # RPM platforms: EL and SUSE
+      $_install_options = $install_options
+      if $::puppet_agent::absolute_source {
+        # absolute_source means we use rpm on EL/suse based platforms
+        $_package_version = 'present'
+        $_provider = 'rpm'
+        # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
+        $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+      } else {
+        # any other type of source means we use a package manager (yum or zypper) with no 'source' parameter in the
+        # package resource below
+        $_package_version = $package_version
+        if $::osfamily == 'suse' {
+          $_provider = 'zypper'
+        } else {
+          $_provider = 'yum'
+        }
+        $_source = undef
+      }
+    }
     package { $::puppet_agent::package_name:
-      ensure          => $package_version,
-      install_options => $install_options,
+      ensure          => $_package_version,
+      install_options => $_install_options,
+      provider        => $_provider,
+      source          => $_source,
     }
   }
 }

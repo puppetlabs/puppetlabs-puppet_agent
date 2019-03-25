@@ -46,6 +46,24 @@ else
   collection='puppet'
 fi
 
+if [ -n "$PT_yum_source" ]; then
+  yum_source=$PT_yum_source
+else
+  yum_source='http://yum.puppet.com'
+fi
+
+if [ -n "$PT_apt_source" ]; then
+  apt_source=$PT_apt_source
+else
+  apt_source='http://apt.puppet.com'
+fi
+
+if [ -n "$PT_mac_source" ]; then
+  mac_source=$PT_mac_source
+else
+  mac_source='http://downloads.puppet.com'
+fi
+
 # Error if non-root
 if [ `id -u` -ne 0 ]; then
   echo "puppet_agent::install task must be run as root"
@@ -417,24 +435,24 @@ case $platform in
   "SLES")
     info "SLES platform! Lets get you an RPM..."
     gpg_key="${tmp_dir}/RPM-GPG-KEY-puppet"
-    do_download "https://yum.puppetlabs.com/RPM-GPG-KEY-puppet" "$gpg_key"
+    do_download "https://yum.puppet.com/RPM-GPG-KEY-puppet" "$gpg_key"
     rpm --import "$gpg_key"
     rm -f "$gpg_key"
     filetype="noarch.rpm"
     filename="${collection}-release-sles-${platform_version}.noarch.rpm"
-    download_url="https://yum.puppetlabs.com/${collection}/${filename}"
+    download_url="${yum_source}/${collection}/${filename}"
     ;;
   "el")
     info "Red hat like platform! Lets get you an RPM..."
     filetype="rpm"
     filename="${collection}-release-el-${platform_version}.noarch.rpm"
-    download_url="https://yum.puppetlabs.com/${collection}/${filename}"
+    download_url="${yum_source}/${collection}/${filename}"
     ;;
   "Fedora")
     info "Fedora platform! Lets get the RPM..."
     filetype="rpm"
     filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
-    download_url="https://yum.puppetlabs.com/${collection}/${filename}"
+    download_url="${yum_source}/${collection}/${filename}"
     ;;
   "Debian")
     info "Debian platform! Lets get you a DEB..."
@@ -447,7 +465,7 @@ case $platform in
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
-    download_url="https://apt.puppetlabs.com/${filename}"
+    download_url="${apt_source}/${filename}"
     ;;
   "Ubuntu")
     info "Ubuntu platform! Lets get you a DEB..."
@@ -467,7 +485,7 @@ case $platform in
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
-    download_url="https://apt.puppetlabs.com/${filename}"
+    download_url="${apt_source}/${filename}"
     ;;
   "mac_os_x")
     info "OSX platform! Lets get you a DMG..."
@@ -477,7 +495,7 @@ case $platform in
     else
       filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
     fi
-    download_url="https://downloads.puppetlabs.com/mac/${collection}/${platform_version}/x86_64/${filename}"
+    download_url="${mac_source}/mac/${collection}/${platform_version}/x86_64/${filename}"
     ;;
   *)
     critical "Sorry $platform is not supported yet!"
