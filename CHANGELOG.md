@@ -2,6 +2,26 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] - 2019-03-26
+
+### Summary
+New parameters for managing package sources to allow for targeting mirrors. SLES and MacOS support for open-source installs. Better service management for windows installations
+
+### Features
+- Added SLES support for open-source installations ([MODULES-8598](https://tickets.puppetlabs.com/browse/MODULES-8598))
+- Added MacOS support for open-source installations ([MODULES-8599](https://tickets.puppetlabs.com/browse/MODULES-8599))
+- Error reporting for windows background upgrades ([MODULES-8554](https://tickets.puppetlabs.com/browse/MODULES-8554))
+- New source parameters for managing alternate sources (like mirrors) ([MODULES-6604](https://tickets.puppetlabs.com/browse/MODULES-6604))
+
+### Bug fixes
+- Fix inherited permissions exec resource on windows ([MODULES-8406](https://tickets.puppetlabs.com/browse/MODULES-8406))
+- Fix service management for puppet > 6 ([MODULES-8319](https://tickets.puppetlabs.com/browse/MODULES-8319))
+- No longer passing environment for windows installations ([MODULES-4730](https://tickets.puppetlabs.com/browse/MODULES-4730))
+- Fix rpm import of gpg keys for newer SLES ([MODULES-8583](https://tickets.puppetlabs.com/browse/MODULES-8583))
+- Wait on any hanging pxp-agent processes in windows installations ([FM-7628](https://tickets.puppetlabs.com/browse/FM-7628))
+- Update parameters to use 'server_list' when provided rather than the 'server' setting
+- Update windows installations to always run service management outside of the initial puppet run (i.e. restart any services after the upgrade without using puppet)
+
 ## [2.0.1] - 2019-01-17
 
 ### Summary
