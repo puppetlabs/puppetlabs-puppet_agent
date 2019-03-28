@@ -256,7 +256,7 @@ $service_names=@(
   "mcollective"
 )
 try {
-  $state_dir = (puppet.bat config print statedir)
+  $state_dir = (puppet.bat config print statedir --environment production)
   Write-Log "Installation PID:$PID"
   $install_pid_lock = Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade.pid'
   Lock-Installation $install_pid_lock
