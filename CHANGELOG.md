@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.1] - 2019-03-28
+
+### Summary
+Quick fix release for windows environment issue
+
+### Bug fixes
+- Update installation .ps1 script to force environment to production when executing "puppet config" ([MODULES-8821](https://tickets.puppetlabs.com/browse/MODULES-8821))
+
 ## [2.1.0] - 2019-03-26
 
 ### Summary
