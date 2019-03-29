@@ -302,7 +302,7 @@ package `version` can be specified; if not, will install or upgrade to the lates
 
 ## Limitations
 
-Mac OS X Open Source packages are currently not supported.
+Mac OS X/macOS open source packages are not supported in puppet_agent module releases prior to v2.1.0.
 
 ### Known issues
 
