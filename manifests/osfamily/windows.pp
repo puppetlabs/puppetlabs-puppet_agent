@@ -1,5 +1,6 @@
 class puppet_agent::osfamily::windows{
   assert_private()
+
   if $::puppet_agent::absolute_source {
     $source = $::puppet_agent::absolute_source
   } elsif $::puppet_agent::source {
@@ -17,14 +18,15 @@ class puppet_agent::osfamily::windows{
     }
   } else {
     if $::puppet_agent::collection == 'PC1'{
-      $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::package_name}-${::puppet_agent::package_version}-${::puppet_agent::arch}.msi"
+      $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-${::puppet_agent::arch}.msi"
     } else {
-      $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::collection}/${::puppet_agent::package_name}-${::puppet_agent::package_version}-${::puppet_agent::arch}.msi"
+      $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::collection}/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-${::puppet_agent::arch}.msi"
     }
   }
 
   class { '::puppet_agent::prepare::package':
     source => $source,
   }
+
   contain puppet_agent::prepare::package
 }

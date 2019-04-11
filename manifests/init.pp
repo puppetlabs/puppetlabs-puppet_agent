@@ -23,7 +23,8 @@
 # [package_name]
 #   The package to upgrade to, i.e. `puppet-agent`.
 # [package_version]
-#   The package version to upgrade to. Explicitly specify a version to upgrade
+#   The package version to upgrade to. Explicitly specify the version to upgrade to,
+#   or set to 'auto' to specify the version of the compiling master.
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
@@ -131,30 +132,36 @@ class puppet_agent (
     # In this code-path, $package_version != undef AND we are not on a PE infrastructure
     # node since $::pe_server_version is not defined
 
-    if $package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
-      fail("invalid version ${package_version} requested")
-    }
-
-    # Strip git sha from dev builds
-    if $package_version =~ /g/ {
-      $_expected_package_version = split($package_version, /[.-]g.*/)[0]
-    } else {
-      $_expected_package_version = $package_version
-    }
-
-    $aio_upgrade_required = versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0
-
     if $::architecture == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')
     }
 
+    if $package_version == 'auto' {
+      $master_or_package_version = $::serverversion
+    } else {
+      $master_or_package_version = $package_version
+    }
+
+    if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+      fail("invalid version ${master_or_package_version} requested")
+    }
+
+    # Strip git sha from dev builds
+    if $master_or_package_version =~ /g/ {
+      $_expected_package_version = split($master_or_package_version, /[.-]g.*/)[0]
+    } else {
+      $_expected_package_version = $master_or_package_version
+    }
+
+    $aio_upgrade_required = versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0
+
     if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
-      $_version_without_letters = regsubst($::puppet_agent::package_version, '[a-zA-Z]', '', 'G')
+      $_version_without_letters = regsubst($master_or_package_version, '[a-zA-Z]', '', 'G')
       $_version_without_orphan_dashes = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
       $_package_version = regsubst($_version_without_orphan_dashes, '\b(?:0*?)([1-9]\d*|0)\b', '\1', 'G')
     } else {
-      $_package_version = $package_version
+      $_package_version = $master_or_package_version
     }
 
     class { '::puppet_agent::prepare':
