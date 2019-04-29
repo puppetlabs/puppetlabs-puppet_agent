@@ -41,6 +41,13 @@ if [ -n "$PT_version" ]; then
 fi
 
 if [ -n "$PT_collection" ]; then
+  # Check whether collection is nightly
+  if [[ "$PT_collection" == *"nightly"* ]]; then
+    nightly=true
+  else
+    nightly=false
+  fi
+
   collection=$PT_collection
 else
   collection='puppet'
@@ -49,13 +56,21 @@ fi
 if [ -n "$PT_yum_source" ]; then
   yum_source=$PT_yum_source
 else
-  yum_source='http://yum.puppet.com'
+  if [ "$nightly" = true ]; then
+    yum_source='http://nightlies.puppet.com/yum'
+  else
+    yum_source='http://yum.puppet.com'
+  fi
 fi
 
 if [ -n "$PT_apt_source" ]; then
   apt_source=$PT_apt_source
 else
-  apt_source='http://apt.puppet.com'
+  if [ "$nightly" = true ]; then
+    apt_source='http://nightlies.puppet.com/apt'
+  else
+    apt_source='http://apt.puppet.com'
+  fi
 fi
 
 if [ -n "$PT_mac_source" ]; then
@@ -440,19 +455,19 @@ case $platform in
     rm -f "$gpg_key"
     filetype="noarch.rpm"
     filename="${collection}-release-sles-${platform_version}.noarch.rpm"
-    download_url="${yum_source}/${collection}/${filename}"
+    download_url="${yum_source}/${filename}"
     ;;
   "el")
     info "Red hat like platform! Lets get you an RPM..."
     filetype="rpm"
     filename="${collection}-release-el-${platform_version}.noarch.rpm"
-    download_url="${yum_source}/${collection}/${filename}"
+    download_url="${yum_source}/${filename}"
     ;;
   "Fedora")
     info "Fedora platform! Lets get the RPM..."
     filetype="rpm"
     filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
-    download_url="${yum_source}/${collection}/${filename}"
+    download_url="${yum_source}/${filename}"
     ;;
   "Debian")
     info "Debian platform! Lets get you a DEB..."
