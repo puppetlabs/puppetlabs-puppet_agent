@@ -40,15 +40,15 @@ LABEL before=${before}
 # Install proper FROM repo: PC1 (puppet 4), puppet 5, or puppet 6.
 RUN if [[ ${before} == 1.* ]]; then \
         echo Installing PC1 repo; \
-        wget -O puppet-pc1.rpm http://yum.puppetlabs.com/puppetlabs-release-pc1-el-7.noarch.rpm && \
+        wget -O puppet-pc1.rpm http://yum.puppet.com/puppetlabs-release-pc1-el-7.noarch.rpm && \
         rpm -i puppet-pc1.rpm; \
     elif [[ ${before} == 5.* ]]; then \
         echo Installing PC1 repo; \
-        wget -O puppet5.rpm http://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm && \
+        wget -O puppet5.rpm http://yum.puppet.com/puppet5-release-el-7.noarch.rpm && \
         rpm -i puppet5.rpm; \
     elif [[ ${before} == 6.* ]]; then \
         echo Installing PC1 repo; \
-        wget -O puppet6.rpm http://yum.puppetlabs.com/puppet6/puppet6-release-el-7.noarch.rpm && \
+        wget -O puppet6.rpm http://yum.puppet.com/puppet6-release-el-7.noarch.rpm && \
         rpm -i puppet6.rpm; \
     else echo no; \
     fi
