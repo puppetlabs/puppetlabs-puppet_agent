@@ -242,7 +242,7 @@ Base URL of the location of a mirror for Solaris packages. Currently, solaris pa
 
 Base URL of the location of a mirror for AIX packages. Currently, AIX packages can only be made available by using puppetlabs-pe\_repo. This means the mirror must be of a PE master package serve.
 ``` puppet
-  solaris_source => 'https://my-pe_master-mirror.com'
+  aix_source => 'https://my-pe_master-mirror.com'
 ```
 
 
