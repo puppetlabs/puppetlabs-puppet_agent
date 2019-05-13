@@ -63,7 +63,7 @@ describe 'puppet_agent class' do
           wait_for_finish_on default
           case default['platform']
           when /debian|ubuntu/
-            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'http://apt.puppet.com', repos => 'PC1' }"
+            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'https://apt.puppet.com', repos => 'PC1' }"
           when /fedora|el|centos/
             pp = "yumrepo { 'pc_repo': ensure => present }"
           else
