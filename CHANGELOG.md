@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.2] - 2019-05-13
+
+### Summary
+Update for the URLs used to retrieve Puppet Agent. Fix for using the modules in a non PE Environment
+
+### Bug fixes
+- The Puppet Agent artifacts are now retrieved from *.puppet.com instead of *.puppetlabs.com ([RE-12326](https://tickets.puppetlabs.com/browse/RE-12326))
+- set PC1 as the default Puppet Agent repository
+
 ## [2.1.1] - 2019-03-28
 
 ### Summary
