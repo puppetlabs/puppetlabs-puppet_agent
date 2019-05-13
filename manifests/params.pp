@@ -73,6 +73,6 @@ class puppet_agent::params {
     $_pe_version = undef
     $pe_repo_dir = undef
     $master_agent_version = undef
-    $collection = undef
+    $collection = 'PC1'
   }
 }
