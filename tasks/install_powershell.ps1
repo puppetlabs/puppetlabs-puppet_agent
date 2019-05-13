@@ -30,7 +30,12 @@ else {
     $msi_name = "puppet-agent-${arch}-latest.msi"
 }
 
-$msi_source = "$windows_source/windows/${collection}/${msi_name}"
+if ($collection) {
+    $msi_source = "$windows_source/windows/${collection}/${msi_name}"
+}
+else {
+    $msi_source = "$windows_source/windows/${msi_name}"
+}
 
 $date_time_stamp = (Get-Date -format s) -replace ':', '-'
 $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"
