@@ -16,7 +16,11 @@ class puppet_agent::osfamily::windows{
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${::puppet_agent::package_name}-${::puppet_agent::arch}.msi"
     }
   } else {
-    $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::collection}/${::puppet_agent::package_name}-${::puppet_agent::package_version}-${::puppet_agent::arch}.msi"
+    if $::puppet_agent::collection == 'PC1'{
+      $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::package_name}-${::puppet_agent::package_version}-${::puppet_agent::arch}.msi"
+    } else {
+      $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::collection}/${::puppet_agent::package_name}-${::puppet_agent::package_version}-${::puppet_agent::arch}.msi"
+    }
   }
 
   class { '::puppet_agent::prepare::package':
