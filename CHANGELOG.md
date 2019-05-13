@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.2] - 2019-05-13
+
+### Sumary
+Quick fix for changes to public release package links
+
+### Bug fixes
+- The location of public release packages changed from yum.puppetlabs.com to yum.puppet.com ([RE-12326](https://tickets.puppetlabs.com/browse/RE-12326))
+- Fix bad aix_source example in documentation
+
 ## [2.1.1] - 2019-03-28
 
 ### Summary
