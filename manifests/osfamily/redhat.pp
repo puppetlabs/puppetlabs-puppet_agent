@@ -37,7 +37,11 @@ class puppet_agent::osfamily::redhat{
         $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${pe_repo_dir}"
       }
     } else {
-      $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/${platform_and_version}/${::puppet_agent::arch}"
+      if $::puppet_agent::collection == 'PC1' {
+        $source = "${::puppet_agent::yum_source}/${platform_and_version}/${::puppet_agent::collection}/${::puppet_agent::arch}"
+      } else {
+        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/${platform_and_version}/${::puppet_agent::arch}"
+      }
     }
 
 
