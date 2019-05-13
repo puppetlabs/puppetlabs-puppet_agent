@@ -23,19 +23,25 @@ describe 'puppet_agent class' do
       it { is_expected.to be_installed }
     end
 
-    describe service('puppet') do
-      it { is_expected.to be_enabled }
-      it { is_expected.to be_running }
-    end
-
     if default['platform'] =~ /windows/i
       # MODULES-4244: MCollective not started after upgrade
       describe service('mcollective') do
         it { is_expected.to_not be_enabled }
         it { is_expected.to_not be_running }
       end
+
+      describe service('puppet') do
+        # PUPPET_AGENT_STARTUP_MODE=Manual
+        it { is_expected.to_not be_enabled }
+        it { is_expected.to_not be_running }
+      end
     else
       describe service('mcollective') do
+        it { is_expected.to be_enabled }
+        it { is_expected.to be_running }
+      end
+
+      describe service('puppet') do
         it { is_expected.to be_enabled }
         it { is_expected.to be_running }
       end
@@ -57,7 +63,7 @@ describe 'puppet_agent class' do
           wait_for_finish_on default
           case default['platform']
           when /debian|ubuntu/
-            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'http://apt.puppetlabs.com', repos => 'PC1' }"
+            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'http://apt.puppet.com', repos => 'PC1' }"
           when /fedora|el|centos/
             pp = "yumrepo { 'pc_repo': ensure => present }"
           else
