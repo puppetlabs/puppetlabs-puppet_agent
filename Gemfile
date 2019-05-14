@@ -66,7 +66,7 @@ group :system_tests do
   gem "puppet-blacksmith", '~> 3.4',                                             :require => false
   # Bundler fails on 2.1.9 even though this group is excluded
   if ENV['GEM_BOLT']
-    gem 'bolt', '~> 1.9', require: false
+    gem 'bolt', '~> 1.15', require: false
     gem 'beaker-task_helper', '~> 1.5.2', require: false
   end
 end

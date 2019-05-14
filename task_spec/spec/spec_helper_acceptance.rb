@@ -18,6 +18,5 @@ RSpec.configure do |c|
 
   # should we just use rspec_puppet
   c.add_setting :module_path
-  c.module_path  = File.join(base_dir, 'fixtures', 'modules')
-
+  c.module_path = File.join(base_dir, 'fixtures', 'modules')
 end
