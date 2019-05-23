@@ -8,7 +8,7 @@ describe 'puppet_agent class' do
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'puppet_agent': package_version => '1.10.0' }
+      class { 'puppet_agent': package_version => '6.0.9' }
       EOS
 
       # Run it twice and test for idempotency

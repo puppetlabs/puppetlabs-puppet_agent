@@ -25,7 +25,11 @@ class puppet_agent::osfamily::suse{
         $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${::platform_tag}"
       }
     } else {
-      $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/sles/${::operatingsystemmajrelease}/${::puppet_agent::arch}"
+      if $::puppet_agent::collection == 'PC1' {
+        $source = "${::puppet_agent::yum_source}/sles/${::operatingsystemmajrelease}/${::puppet_agent::collection}/${::puppet_agent::arch}"
+      } else {
+        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/sles/${::operatingsystemmajrelease}/${::puppet_agent::arch}"
+      }
     }
 
     case $::operatingsystemmajrelease {
