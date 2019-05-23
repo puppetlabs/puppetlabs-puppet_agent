@@ -133,7 +133,7 @@ def setup_puppet_on(host, opts = {})
 
   puts "Setup foss puppet on #{host}"
   configure_defaults_on host, 'foss'
-  install_puppet_agent_on host, :version => ENV['PUPPET_CLIENT_VERSION'] || '1.7.0'
+  install_puppet_agent_on host, :version => ENV['PUPPET_CLIENT_VERSION'] || '5.5.14'
 
   puppet_opts = agent_opts(master.to_s)
   if host['platform'] =~ /windows/i
@@ -200,6 +200,7 @@ end
 
 def teardown_puppet_on(host)
   puts "Purge puppet from #{host}"
+  ensure_type = 'purged'
   # Note pc_repo is specific to the module's manifests. This is knowledge we need to clean
   # the machine after each run.
   case host['platform']
@@ -208,6 +209,8 @@ def teardown_puppet_on(host)
       clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     when /fedora|el|centos/
       clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
+    when /sles/
+      ensure_type = 'absent'
     else
       logger.notify("Not sure how to remove repos on #{host['platform']}")
       clean_repo = ''
@@ -221,7 +224,7 @@ def teardown_puppet_on(host)
     pp = <<-EOS
 #{clean_repo}
 file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
-package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => purged }
+package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => #{ensure_type} }
 EOS
     on host, puppet('apply', '-e', "\"#{pp}\"", '--no-report')
   end
