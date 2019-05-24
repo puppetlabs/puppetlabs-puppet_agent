@@ -8,7 +8,7 @@ describe 'puppet_agent class' do
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'puppet_agent': package_version => '6.0.9' }
+      class { 'puppet_agent': package_version => '5.5.14', collection => 'puppet5' }
       EOS
 
       # Run it twice and test for idempotency
@@ -63,7 +63,7 @@ describe 'puppet_agent class' do
           wait_for_finish_on default
           case default['platform']
           when /debian|ubuntu/
-            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'https://apt.puppet.com', repos => 'PC1' }"
+            pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'https://apt.puppet.com', repos => 'puppet5'}"
           when /fedora|el|centos/
             pp = "yumrepo { 'pc_repo': ensure => present }"
           else
@@ -133,7 +133,7 @@ describe 'puppet_agent class' do
   context 'agent run' do
     before(:all) {
       setup_puppet_on default, :agent => true
-      manifest = 'class { "puppet_agent": package_version => "1.10.0", service_names => ["mcollective"] }'
+      manifest = 'class { "puppet_agent": package_version => "5.5.14", collection => "puppet5", service_names => ["mcollective"] }'
       pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
       apply_manifest_on(master, pp, :catch_failures => true)
     }
@@ -173,7 +173,7 @@ describe 'puppet_agent class' do
     context 'with mcollective configured' do
       before(:all) {
         setup_puppet_on default, :mcollective => true, :agent => true
-        manifest = 'class { "puppet_agent": package_version => "1.10.0", service_names => ["mcollective"] }'
+        manifest = 'class { "puppet_agent": package_version => "5.5.14", collection => "puppet5", service_names => ["mcollective"] }'
         pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
