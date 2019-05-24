@@ -3,8 +3,16 @@
 # This class is meant to be called from puppet_agent.
 # It ensures that managed services are running.
 #
-class puppet_agent::service {
+class puppet_agent::service (
+  Boolean $autostart = true,
+){
   assert_private()
+
+  if $autostart {
+    $_puppet_service_ensure = running
+  } else {
+    $_puppet_service_ensure = undef
+  }
 
   # Starting with puppet6 collections we no longer carry the mcollective service
   if $::puppet_agent::collection != 'PC1' and $::puppet_agent::collection != 'puppet5' {
@@ -36,7 +44,7 @@ class puppet_agent::service {
   } else {
     $_service_names.each |$service| {
       service { $service:
-        ensure     => running,
+        ensure     => $_puppet_service_ensure,
         enable     => true,
         hasstatus  => true,
         hasrestart => true,
