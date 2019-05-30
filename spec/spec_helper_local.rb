@@ -4,8 +4,8 @@ include RspecPuppetFacts
 
 RSpec.configure do |c|
   c.default_facts = {
-    :aio_agent_version           => '1.10.100',
-    :puppetversion               => nil,
+    :aio_agent_version           => '5.5.10',
+    :puppetversion               => '5.5.10',
     :lsbdistrelease              => nil,
     :is_pe                       => false,
     :platform_tag                => nil,
