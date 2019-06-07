@@ -56,7 +56,7 @@ A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-ag
 
 The puppet_agent module installs the appropriate official Puppet package repository (on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
 
-If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package.
+If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package, also this parameter can be set to "auto", ensuring that agent version matches the version on the master without having to manually update package_version after upgrading the master(s).
 
 ## Setup
 
@@ -170,6 +170,10 @@ and the native package providers will be used to query pre-configured repos on t
 The package version to upgrade to. This must be explicitly specified.
 ``` puppet
   package_version => '5.5.10'
+```
+or
+``` puppet
+  package_version => 'auto'
 ```
 
 ##### `service_names`
