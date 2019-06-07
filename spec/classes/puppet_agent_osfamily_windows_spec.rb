@@ -43,4 +43,35 @@ describe 'puppet_agent' do
       }
     end
   end
+
+  [['x64', 'x86_64'], ['x86', 'i386']].each do |arch, tag|
+    describe "supported Windows #{arch} environment with auto" do
+      server_version = '1.10.100'
+      let(:params)  {{ package_version: 'auto' }}
+      let(:appdata) { 'C:\ProgramData' }
+      let(:facts) {{
+        :is_pe                => true,
+        :osfamily             => 'windows',
+        :operatingsystem      => 'windows',
+        :architecture         => arch,
+        :servername           => 'master.example.vm',
+        :clientcert           => 'foo.example.vm',
+        :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
+        :puppet_agent_appdata => appdata,
+        :env_temp_variable => 'C:/tmp',
+        :puppet_agent_pid     => 42,
+        :aio_agent_version    => '1.0.0',
+        :serverversion        => server_version
+      }}
+
+      it { is_expected.to contain_file("#{appdata}\\Puppetlabs") }
+      it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
+      it {
+        is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
+          'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi"
+        )
+      }
+    end
+  end
+
 end

@@ -116,6 +116,27 @@ describe 'puppet_agent' do
     end
   end
 
+  context 'with package_version auto' do
+    let(:params) {
+      {
+        package_version: 'auto',
+      }
+    }
+    let(:facts) {
+      common_facts.merge({
+        serverversion: '5.10.200'
+      })
+    }
+    let(:rpmname) {"puppet-agent-5.10.200-1.aix7.1.ppc.rpm"}
+    it {
+      is_expected.to contain_package('puppet-agent').with({
+        'source'    => "/opt/puppetlabs/packages/#{rpmname}",
+        'ensure'    => '5.10.200',
+        'provider'  => 'rpm',
+      })
+    }
+  end
+
   context 'unsupported environments' do
     let(:params) {
       {

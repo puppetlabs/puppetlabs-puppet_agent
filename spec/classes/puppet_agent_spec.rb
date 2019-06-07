@@ -59,6 +59,13 @@ describe 'puppet_agent' do
           end
           it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
         end
+
+        context 'package_version is same as master when set to auto' do
+          let(:params) {{ :package_version => 'auto' }}
+          let(:node_params) {{ :serverversion => '7.6.5' }}
+          it { is_expected.to contain_class('puppet_agent::prepare').with_package_version('7.6.5') }
+          it { is_expected.to contain_class('puppet_agent::install').with_package_version('7.6.5') }
+        end
       end
     end
   end
