@@ -10,7 +10,7 @@ class puppet_agent::params {
     $service_names = []
   } else {
     # Mcollective will be removed from this list in the service manifest if
-    # the puppet version is > 6.0.0
+    # the puppet version is >= 6.0.0
     $service_names = ['puppet', 'mcollective']
   }
   if $::osfamily == 'windows' {

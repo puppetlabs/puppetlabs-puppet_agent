@@ -1,13 +1,18 @@
 function start_service() {
   service="${1:?}"
-  /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running
+  /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running enable=true
 }
-service_was_running_before_agent_update = false
-if /opt/puppetlabs/bin/puppet resource service "${service_name:?}" | grep "ensure => 'running'" ; then
-   service_was_running_before_agent_update = true
+
+<% @service_names.each do |service_name| -%>
+<%= service_name %>_was_running = false
+if /opt/puppetlabs/bin/puppet resource service "<%= service_name %>" | grep "ensure => 'running'" ; then
+  <%= service_name %>_was_running = true
 fi
+<% end -%>
+
 # Remove old package
 /opt/puppetlabs/bin/puppet resource package puppet-agent ensure=absent adminfile=<%= @adminfile %>
+
 # Install package
 pkgadd -a <%= @adminfile %> -d <%= @sourcefile %> -G <%= @install_options.join(' ') %> -n puppet-agent
 
@@ -15,8 +20,8 @@ pkgadd -a <%= @adminfile %> -d <%= @sourcefile %> -G <%= @install_options.join('
 # services on its own since that only happens when the service manifests change, which is
 # highly unlikely in most agent upgrade scenarios.
 
-<% @service_names.each do |service_name| %>
-  if $service_was_running_before_agent_update ; then
-    start_service <%= service_name %>
-  fi
-<% end %>
+<% @service_names.each do |service_name| -%>
+if $<%= service_name %>_was_running ; then
+  start_service <%= service_name %>
+fi
+<% end -%>
