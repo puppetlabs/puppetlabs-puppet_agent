@@ -2,6 +2,63 @@ require 'spec_helper'
 
 describe 'puppet_agent' do
   package_version = '1.10.100.90.g93a35da'
+  def install_script(ver, arch)
+<<EOF
+#!/bin/bash
+
+# Mark install process starting
+pid_path="/opt/puppetlabs/puppet/cache/state/puppet_agent_upgrade.pid"
+
+if [[ -f $pid_path ]]; then
+  rm -f $pid_path
+fi
+echo $$ > $pid_path
+
+# Wait for Puppet to exit
+puppet_pid=$1
+while $(kill -0 ${puppet_pid:?}); do
+  sleep 5
+done
+
+# Install the new agent
+function start_service() {
+  service="${1:?}"
+  /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running enable=true
+}
+
+puppet_was_running = false
+if /opt/puppetlabs/bin/puppet resource service "puppet" | grep "ensure => 'running'" ; then
+  puppet_was_running = true
+fi
+mcollective_was_running = false
+if /opt/puppetlabs/bin/puppet resource service "mcollective" | grep "ensure => 'running'" ; then
+  mcollective_was_running = true
+fi
+
+# Remove old package
+/opt/puppetlabs/bin/puppet resource package puppet-agent ensure=absent adminfile=/opt/puppetlabs/packages/solaris-noask
+
+# Install package
+pkgadd -a /opt/puppetlabs/packages/solaris-noask -d /opt/puppetlabs/packages/puppet-agent-#{ver}-1.#{arch}.pkg -G  -n puppet-agent
+
+# Ensure services are running. We do this on Solaris 10 b/c the installer cannot restart
+# services on its own since that only happens when the service manifests change, which is
+# highly unlikely in most agent upgrade scenarios.
+
+if $puppet_was_running ; then
+  start_service puppet
+fi
+if $mcollective_was_running ; then
+  start_service mcollective
+fi
+
+
+# Mark upgrade complete
+if [[ -f $pid_path ]]; then
+  rm -f $pid_path
+fi
+EOF
+  end
 
   facts = {
     :osfamily                  => 'Solaris',
@@ -258,7 +315,7 @@ describe 'puppet_agent' do
         end
 
         it do
-          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
+          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file').with_content(install_script(package_version, 'i386'))
           is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
         end
       end
@@ -314,12 +371,78 @@ describe 'puppet_agent' do
             :is_pe                     => true,
             :platform_tag              => "solaris-10-sparc",
             :operatingsystemmajrelease => '10',
+            :architecture              => 'sun4u',
             :aio_agent_version         => '1.0.0',
           })
         end
 
         it do
-          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file')
+          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file').with_content(install_script(package_version, 'sparc'))
+          is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
+        end
+      end
+
+      context 'upgrading to puppet 6' do
+        let(:params) {
+          {
+            :package_version => '6.0.0',
+            :collection      => 'puppet6',
+          }
+        }
+
+        let(:install_script) {
+<<EOF
+#!/bin/bash
+
+# Mark install process starting
+pid_path="/opt/puppetlabs/puppet/cache/state/puppet_agent_upgrade.pid"
+
+if [[ -f $pid_path ]]; then
+  rm -f $pid_path
+fi
+echo $$ > $pid_path
+
+# Wait for Puppet to exit
+puppet_pid=$1
+while $(kill -0 ${puppet_pid:?}); do
+  sleep 5
+done
+
+# Install the new agent
+function start_service() {
+  service="${1:?}"
+  /opt/puppetlabs/bin/puppet resource service "${service:?}" ensure=running enable=true
+}
+
+puppet_was_running = false
+if /opt/puppetlabs/bin/puppet resource service "puppet" | grep "ensure => 'running'" ; then
+  puppet_was_running = true
+fi
+
+# Remove old package
+/opt/puppetlabs/bin/puppet resource package puppet-agent ensure=absent adminfile=/opt/puppetlabs/packages/solaris-noask
+
+# Install package
+pkgadd -a /opt/puppetlabs/packages/solaris-noask -d /opt/puppetlabs/packages/puppet-agent-6.0.0-1.sparc.pkg -G  -n puppet-agent
+
+# Ensure services are running. We do this on Solaris 10 b/c the installer cannot restart
+# services on its own since that only happens when the service manifests change, which is
+# highly unlikely in most agent upgrade scenarios.
+
+if $puppet_was_running ; then
+  start_service puppet
+fi
+
+
+# Mark upgrade complete
+if [[ -f $pid_path ]]; then
+  rm -f $pid_path
+fi
+EOF
+        }
+
+        it do
+          is_expected.to contain_file('/tmp/solaris_install.sh').with_ensure('file').with_content(install_script)
           is_expected.to contain_exec('solaris_install script').with_command('/usr/bin/ctrun -l none /tmp/solaris_install.sh 42 2>&1 > /tmp/solaris_install.log &')
         end
       end
