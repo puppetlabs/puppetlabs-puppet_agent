@@ -1,0 +1,11 @@
+{
+  "description": "Run Puppet agent",
+  "parameters": {
+    "options": {
+      "type": "Hash",
+      "description": "Hash of Puppet settings to pass. e.g.: {\"modulepath\"=>\"/expl/path\", \"job-id\"=>\"100\", \"noop\"=>true}"
+    }
+  },
+  "input_method": "stdin",
+  "files": ["ruby_task_helper/files/task_helper.rb"]
+}

@@ -43,6 +43,7 @@
     - [Tasks](#tasks)
       - [`puppet_agent::version`](#puppet_agentversion)
       - [`puppet_agent::install`](#puppet_agentinstall)
+      - [`puppet_agent::run`](#puppet_agentrun)
   - [Limitations](#limitations)
     - [Known issues](#known-issues)
   - [Development](#development)
@@ -303,6 +304,26 @@ Installs the puppet-agent package. Currently only supports Linux variants: Debia
 package `version` can be specified; if not, will install or upgrade to the latest Puppet 5 version available.
 
 **Note**: The `puppet_agent::install_shell` task requires the `facts::bash` implementation from the [facts](https://forge.puppet.com/puppetlabs/facts) module. Both the `puppet_agent` and `facts` modules are packaged with Bolt. For use outside of Bolt make sure the `facts` module is installed to the same `modules` directory as `puppet_agent`.
+
+#### `puppet_agent::run`
+
+Performs a one-time run of the Puppet agent. By default the run is invoked with a standard set of command-line options equivalent to `puppet agent -t`. Passing of any/all command-line options is supported.
+
+Default options:
+
+```json
+{
+  "onetime": true,
+  "verbose": true,
+  "daemonize": false,
+  "usecacheonfailure": false,
+  "detailed-exitcodes": true,
+  "splay": false,
+  "show_diff": true
+}
+```
+
+**Note**: Pre-validation of passed command-line options is not performed. If a command-line option is invalid or typo'd, Puppet will be called, but will fail with an error indicating incorrect invocation.
 
 ## Limitations
 
