@@ -36,34 +36,6 @@ def install_modules_on(host)
   on host, puppet('module', 'install', 'puppetlabs-apt'), {:acceptable_exit_codes => [0]}
 end
 
-unless ENV['BEAKER_provision'] == 'no'
-  # Install puppet-server on master
-  options['is_puppetserver'] = true
-  master['puppetservice'] = 'puppetserver'
-  master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
-  master['type'] = 'aio'
-  install_puppet_agent_on master, {:version => ENV['PUPPET_CLIENT_VERSION'] || "5.5.10", :puppet_collection => 'puppet5'}
-
-  install_modules_on master
-
-  # Install activemq on master
-  install_puppetlabs_release_repo(master, 'puppetlabs')
-  install_package master, 'activemq'
-
-  ['truststore', 'keystore'].each do |ext|
-    scp_to master, "#{TEST_FILES}/activemq.#{ext}", "/etc/activemq/activemq.#{ext}"
-  end
-
-  erb = ERB.new(File.read("#{TEST_FILES}/activemq.xml.erb"))
-  create_remote_file master, '/etc/activemq/activemq.xml', erb.result(binding)
-
-  stop_firewall_on master
-  on master, puppet('resource', 'service', 'activemq', 'ensure=running')
-
-  # sleep to give activemq time to start
-  sleep 10
-end
-
 def agent_opts(master_fqdn)
   {
     :main => {:color => 'ansi'},
@@ -123,6 +95,7 @@ end
 
 def setup_puppet_on(host, opts = {})
   opts = {:agent => false, :mcollective => false}.merge(opts)
+  host['type'] = 'aio'
 
   puts "Setup foss puppet on #{host}"
   configure_defaults_on host, 'aio'

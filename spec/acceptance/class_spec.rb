@@ -135,17 +135,6 @@ describe 'puppet_agent class' do
   unless default['platform'] =~ /windows/i
     # MODULES-4244: MCollective not started after upgrade
     context 'with mcollective configured' do
-      before(:all) {
-        setup_puppet_on default, :mcollective => true, :agent => true
-        manifest = 'class { "puppet_agent": package_version => "5.5.14", collection => "puppet5", service_names => ["mcollective"] }'
-        pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
-        apply_manifest_on(master, pp, :catch_failures => true)
-      }
-      after (:all) {
-        pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
-        apply_manifest_on(master, pp, :catch_failures => true)
-        teardown_puppet_on default
-      }
 
       it 'mco should be running' do
         on default, 'mco ping' do
@@ -156,7 +145,7 @@ describe 'puppet_agent class' do
 
       it 'should work idempotently with no errors' do
         pp = <<-EOS
-      class { 'puppet_agent':  collection => "puppet5", service_names => ["mcollective"] }
+      class { "puppet_agent": package_version => "5.5.14", collection => "puppet5", service_names => ["mcollective"] }
         EOS
 
         # Run it twice and test for idempotency
