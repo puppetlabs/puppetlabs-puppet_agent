@@ -1,4 +1,6 @@
+require 'beaker-puppet'
 require 'spec_helper_acceptance'
+
 
 describe 'puppet_agent class' do
 
@@ -130,44 +132,6 @@ describe 'puppet_agent class' do
     end
   end
 
-  context 'agent run' do
-    before(:all) {
-      setup_puppet_on default, :agent => true
-      manifest = 'class { "puppet_agent": package_version => "5.5.14", collection => "puppet5", service_names => ["mcollective"] }'
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
-      apply_manifest_on(master, pp, :catch_failures => true)
-    }
-    after (:all) {
-      teardown_puppet_on default
-      pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
-      apply_manifest_on(master, pp, :catch_failures => true)
-    }
-
-    it 'should work idempotently with no errors' do
-      with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-        # Run it twice and test for idempotency
-        on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
-        wait_for_finish_on default
-        configure_agent_on default, true
-        # We're after idempotency so allow exit code 0 only
-        on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
-        wait_for_finish_on default
-      end
-    end
-
-    describe package(package_name(default)) do
-      it { is_expected.to be_installed }
-    end
-
-    unless default['platform'] =~ /windows/i
-      # MODULES-4244: MCollective not started after upgrade
-      describe service('mcollective') do
-        it { is_expected.to be_enabled }
-        it { is_expected.to be_running }
-      end
-    end
-  end
-
   unless default['platform'] =~ /windows/i
     # MODULES-4244: MCollective not started after upgrade
     context 'with mcollective configured' do
@@ -178,9 +142,9 @@ describe 'puppet_agent class' do
         apply_manifest_on(master, pp, :catch_failures => true)
       }
       after (:all) {
-        teardown_puppet_on default
         pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => absent }"
         apply_manifest_on(master, pp, :catch_failures => true)
+        teardown_puppet_on default
       }
 
       it 'mco should be running' do
@@ -191,15 +155,16 @@ describe 'puppet_agent class' do
       end
 
       it 'should work idempotently with no errors' do
-        with_puppet_running_on(master, server_opts, master.tmpdir('puppet')) do
-          # Run it twice and test for idempotency
-          on default, puppet("agent --test"), { :acceptable_exit_codes => [0,2] }
-          wait_for_finish_on default
-          configure_agent_on default, true
-          # We're after idempotency so allow exit code 0 only
-          on default, puppet("agent --test"), { :acceptable_exit_codes => [0] }
-          wait_for_finish_on default
-        end
+        pp = <<-EOS
+      class { 'puppet_agent':  collection => "puppet5", service_names => ["mcollective"] }
+        EOS
+
+        # Run it twice and test for idempotency
+        apply_manifest(pp, :catch_failures => true)
+        wait_for_finish_on default
+        configure_agent_on default
+        apply_manifest(pp, :catch_changes  => true)
+        wait_for_finish_on default
       end
 
       describe package(package_name(default)) do

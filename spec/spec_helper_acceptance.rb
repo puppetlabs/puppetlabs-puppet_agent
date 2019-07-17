@@ -1,3 +1,4 @@
+require 'beaker-puppet'
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
 require 'beaker/ca_cert_helper'
@@ -41,14 +42,12 @@ unless ENV['BEAKER_provision'] == 'no'
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on master, {}
-  install_package master, 'puppetserver'
-  master['use-service'] = true
+  install_puppet_agent_on master, {:version => ENV['PUPPET_CLIENT_VERSION'] || "5.5.10", :puppet_collection => 'puppet5'}
 
   install_modules_on master
 
   # Install activemq on master
-  install_puppetlabs_release_repo(master, '')
+  install_puppetlabs_release_repo(master, 'puppetlabs')
   install_package master, 'activemq'
 
   ['truststore', 'keystore'].each do |ext|
@@ -69,12 +68,6 @@ def agent_opts(master_fqdn)
   {
     :main => {:color => 'ansi'},
     :agent => {:ssldir => '$vardir/ssl', :server => master_fqdn},
-  }
-end
-
-def server_opts
-  {
-    :master => {:autosign => true, :dns_alt_names => master},
   }
 end
 
@@ -130,9 +123,10 @@ end
 
 def setup_puppet_on(host, opts = {})
   opts = {:agent => false, :mcollective => false}.merge(opts)
+  host['type'] = 'aio'
 
-  puts "Setup foss puppet on #{host}"
-  configure_defaults_on host, 'foss'
+  puts "Setup aio puppet on #{host}"
+  configure_type_defaults_on host
   install_puppet_agent_on host, {:version => ENV['PUPPET_CLIENT_VERSION'] || '5.5.10', :puppet_collection => 'puppet5'}
 
   puppet_opts = agent_opts(master.to_s)
@@ -173,7 +167,6 @@ def setup_puppet_on(host, opts = {})
     puts "Clean SSL on all hosts and disable firewalls"
     hosts.each do |host|
       stop_firewall_on host
-      on(host, "rm -rf '#{host.puppet['ssldir']}'")
     end
   else
     install_modules_on host
@@ -181,7 +174,7 @@ def setup_puppet_on(host, opts = {})
 end
 
 def configure_agent_on(host, agent_run = false)
-  configure_defaults_on host, 'aio'
+  configure_type_defaults_on host
   install_modules_on host unless agent_run
 end
 
@@ -223,7 +216,6 @@ def teardown_puppet_on(host)
   else
     pp = <<-EOS
 #{clean_repo}
-file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }
 package { ['puppet-agent', 'puppet', 'mcollective', 'mcollective-client']: ensure => #{ensure_type} }
 EOS
     on host, puppet('apply', '-e', "\"#{pp}\"", '--no-report')
