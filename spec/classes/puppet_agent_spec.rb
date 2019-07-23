@@ -144,7 +144,7 @@ describe 'puppet_agent' do
         end
 
         [{}, {:service_names => []}].each do |params|
-          context "puppet_agent class with install_options" do
+          context "puppet_agent class with install_options with params: #{params}" do
             let(:params) { global_params.merge(
               {:install_options => ['OPTION1=value1','OPTION2=value2'],})
             }
@@ -152,14 +152,23 @@ describe 'puppet_agent' do
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to contain_class('puppet_agent::install').with_install_options(['OPTION1=value1','OPTION2=value2']) }
 
-            unless facts[:osfamily] == 'windows'
+            if os !~ /windows|solaris-10/
               it { is_expected.to contain_package('puppet-agent').with_install_options(['OPTION1=value1','OPTION2=value2']) }
+            end
+
+            if os =~ /solaris-10/
+              it do
+                is_expected.to contain_exec('solaris_install script')
+                  .with_command(
+                    '/usr/bin/ctrun -l none /tmp/solaris_install.sh 298 2>&1 > /tmp/solaris_install.log &'
+                  )
+              end
             end
           end
         end
 
         [{}, {:service_names => []}].each do |params|
-          context "puppet_agent class without any parameters" do
+          context "puppet_agent class without any parameters(params: #{params})" do
             let(:params) { params.merge(global_params) }
 
             it { is_expected.to compile.with_all_deps }
@@ -172,8 +181,17 @@ describe 'puppet_agent' do
             if facts[:osfamily] == 'Debian'
               deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
-            elsif facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '10'
-              it { is_expected.to contain_package('puppet-agent').with_ensure('present') }
+            elsif facts[:osfamily] == 'Solaris'
+              if facts[:operatingsystemmajrelease] == '11'
+                it { is_expected.to contain_package('puppet-agent').with_ensure('6.5.4') }
+              else
+                it do
+                  is_expected.to contain_exec('solaris_install script')
+                    .with_command(
+                      '/usr/bin/ctrun -l none /tmp/solaris_install.sh 298 2>&1 > /tmp/solaris_install.log &'
+                    )
+                  end
+              end
             elsif facts[:osfamily] == 'windows'
               # Windows does not contain any Package resources
             else
@@ -189,9 +207,7 @@ describe 'puppet_agent' do
             # Windows platform does not use Service resources; their services
             # are managed by the MSI installer.
             unless facts[:osfamily] == 'windows'
-              if params[:service_names].nil? &&
-                  !(facts[:osfamily] == 'Solaris' && facts[:operatingsystemmajrelease] == '11') &&
-                  os !~ /sles/
+              if params[:service_names].nil? && os !~ /solaris|sles/
                 it { is_expected.to contain_service('puppet') }
               else
                 it { is_expected.to_not contain_service('puppet') }
