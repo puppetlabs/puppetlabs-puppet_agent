@@ -143,7 +143,7 @@ class puppet_agent (
     }
 
     if $::osfamily == 'redhat' {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+(.+)?$/ {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
     }
