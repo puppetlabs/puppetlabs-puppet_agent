@@ -345,6 +345,7 @@ try {
   }
   "$_" | Out-File -FilePath (Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade_failure.log')
 } finally {
+  Write-Log "Finally block"
   Reset-PuppetServices $services_before
   Unlock-Installation $install_pid_lock
 }
