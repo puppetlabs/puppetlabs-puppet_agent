@@ -142,13 +142,22 @@ class puppet_agent (
       $master_or_package_version = $package_version
     }
 
-    if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
-      fail("invalid version ${master_or_package_version} requested")
+    if $::osfamily == 'redhat' {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$/ {
+        fail("invalid version ${master_or_package_version} requested")
+      }
+    }
+    else {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+        fail("invalid version ${master_or_package_version} requested")
+      }
     }
 
     # Strip git sha from dev builds
-    if $master_or_package_version =~ /g/ {
+    if $master_or_package_version =~ /.g/ {
       $_expected_package_version = split($master_or_package_version, /[.-]g.*/)[0]
+    } elsif $::osfamily == 'redhat' {
+      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+/)[0]
     } else {
       $_expected_package_version = $master_or_package_version
     }
