@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+## [2.2.0] - 2019-08-05
+
+### Summary
+Autodetect package_version for compiling master. Fedora 30 support. Upgrade to Beaker 4. Handle mcollective service restarts on agent upgrades.
+
+### Features
+- autodetect package_version based upon the compiling master ([MODULES-8923](https://tickets.puppetlabs.com/browse/MODULES-8923))
+- Fedora 30 support
+- Handle mcollective service restarts on agent upgrades ([MODULES-9173](https://tickets.puppetlabs.com/browse/MODULES-9173))
+- Migrate puppet_agent module to Beaker 4 ([MODULES-9444](https://tickets.puppetlabs.com/browse/MODULES-9444))
+- Support upgrade of RedHat Satellite puppet agent packages ([MODULES-7760](https://tickets.puppetlabs.com/browse/MODULES-7760))
+
+### Bug fixes
+- Missing puppetlabs-facts dependency for the install task([MODULES-8665](https://tickets.puppetlabs.com/browse/MODULES-8665))
 
 ## [2.1.2] - 2019-05-13
 
