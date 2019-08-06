@@ -147,8 +147,15 @@ function Script:Lock-Installation {
   begin {
     Write-Log "Locking installation"
     if (Test-Path $install_pid_lock) {
-      Write-Log "Another process has control of $install_pid_lock! Cannot lock, exiting..."
-      throw
+      # if the PID found in $install_pid_lock file is not running, this means
+      # the installation can take control of the file, and assign the new running PID
+      if((Get-Process -Id (Get-Content $install_pid_lock) -ErrorAction SilentlyContinue) -eq $null){
+        Write-Log "Process with PID found in $install_pid_lock is no longer running! Continuing installation and assigning new PID!"
+        $PID | Out-File -FilePath $install_pid_lock
+      }else{
+        Write-Log "Another process has control of $install_pid_lock! Cannot lock, exiting..."
+        throw
+      }
     } else {
       $PID | Out-File -NoClobber -FilePath $install_pid_lock
     }
