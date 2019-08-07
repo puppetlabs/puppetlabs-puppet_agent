@@ -477,6 +477,7 @@ case $platform in
       "7") deb_codename="wheezy";;
       "8") deb_codename="jessie";;
       "9") deb_codename="stretch";;
+      "10") deb_codename="buster";;
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
