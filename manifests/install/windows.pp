@@ -62,6 +62,32 @@ class puppet_agent::install::windows(
                           -InstallArgs '${_install_options}' \
                           ${_move_dll_workaround}",
     path    => $::path,
+    # This unless is necessary to handle nodes using a cached catalog and removes reliance on the aio_agent_version fact.
+    unless  => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+                  -ExecutionPolicy Bypass \
+                  -NoProfile \
+                  -NoLogo \
+                  -NonInteractive \
+                  -Command { \
+                          if ([string]::IsNullOrEmpty(\'${install_dir}\')) { \
+                            \$reg = Get-ItemProperty -Path \'HKLM:\\SOFTWARE\\Puppet Labs\\Puppet\' -ErrorAction SilentlyContinue; \
+                            if (\$null -ne \$reg) { \
+                              if (\$null -ne \$reg.RememberedInstallDir64) { \
+                                \$loc = \$reg.RememberedInstallDir64+\'VERSION\'; \
+                              } elseif (\$null -ne \$reg.RememberedInstallDir) { \
+                                \$loc = \$reg.RememberedInstallDir+\'VERSION\'; \
+                              } \
+                            } \
+                          } else { \
+                            \$loc = \'${install_dir}/VERSION\'; \
+                          } \
+                          if ( (\$null -ne \$loc) -and (Test-Path -Path \$loc) ) { \
+                            \$ver = Get-Content -Path \$loc -ErrorAction Stop; \
+                            if (\$ver -eq \'${puppet_agent::_expected_package_version}\') { \
+                              exit 0; \
+                            } \
+                          } \
+                          exit 1; }.Invoke()",
     require => [
       Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
       File["${_installps1}"]
