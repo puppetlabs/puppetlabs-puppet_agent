@@ -483,6 +483,26 @@ case $platform in
     filename="${collection}-release-${deb_codename}.deb"
     download_url="${apt_source}/${filename}"
     ;;
+  "Linuxmint")
+    info "Mint platform! Lets get you a DEB..."
+    case $major_version in      
+      "3")  deb_codename="stretch";;
+    esac
+    filetype="deb"
+    filename="${collection}-release-${deb_codename}.deb"
+    download_url="http://apt.puppetlabs.com/${filename}"
+    ;;
+  "LinuxMint")
+    info "Mint platform! Lets get you a DEB..."
+    case $major_version in
+      "19") deb_codename="bionic";;
+      "18") deb_codename="xenial";;
+      "17") deb_codename="trusty";;
+    esac
+    filetype="deb"
+    filename="${collection}-release-${deb_codename}.deb"
+    download_url="http://apt.puppetlabs.com/${filename}"
+    ;;
   "Ubuntu")
     info "Ubuntu platform! Lets get you a DEB..."
     case $platform_version in
