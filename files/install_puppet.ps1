@@ -277,7 +277,7 @@ try {
     Write-Log "Waiting for puppet to stop, PID:$PuppetPID"
     $pup_process = Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue
     if ($pup_process) {
-      if (!$pup_process.WaitForExit(120000)){
+      if (!$pup_process.WaitForExit(480000)){
         Write-Log "ERROR: Timed out waiting for puppet!"
         throw
       }
