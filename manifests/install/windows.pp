@@ -31,6 +31,12 @@ class puppet_agent::install::windows(
     $_move_dll_workaround = undef
   }
 
+  if $::puppet_agent::wait_for_pxp_agent_exit {
+    $_pxp_agent_wait = "-WaitForPXPAgentExit ${puppet_agent::wait_for_pxp_agent_exit}"
+  } else {
+    $_pxp_agent_wait = undef
+  }
+
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
   $_logfile = windows_native_path("${::env_temp_variable}/puppet-${_timestamp}-installer.log")
 
@@ -60,7 +66,8 @@ class puppet_agent::install::windows(
                           -PuppetMaster '${::puppet_master_server}' \
                           -PuppetStartType '${_agent_startup_mode}' \
                           -InstallArgs '${_install_options}' \
-                          ${_move_dll_workaround}",
+                          ${_move_dll_workaround} \
+                          ${_pxp_agent_wait}",
     unless  => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
                   -ExecutionPolicy Bypass \
                   -NoProfile \

@@ -222,8 +222,36 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           }
         end
       end
-    end
+  
+      context 'wait_for_pxp_agent_exit =>' do
+        describe 'default' do
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-WaitForPXPAgentExit/)
+          }
+        end
 
+        describe 'specify false' do
+          let(:params) { global_params.merge(
+            {:wait_for_pxp_agent_exit => false,})
+          }
+
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-WaitForPXPAgentExit/)
+          }
+        end
+
+        describe 'specify true' do
+          let(:params) { global_params.merge(
+            {:wait_for_pxp_agent_exit => true,})
+          }
+
+          it {
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-WaitForPXPAgentExit/)
+          }
+        end
+      end
+    end
+  
     context 'rubyplatform' do
       facts = {
         :architecture => 'x64',

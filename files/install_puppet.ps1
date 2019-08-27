@@ -23,6 +23,8 @@
   Provide any extra argmuments to the MSI installation
 .Parameter UseLockedFilesWorkaround
   Set to $true to enable execution of the puppetres.dll move workaround. See https://tickets.puppetlabs.com/browse/MODULES-4207
+.Parameter WaitForPXPAgentExit
+  Time in milliseconds wait for PXP agent process to exit. Default time is 2 minutes (120000) 
 #>
 [CmdletBinding()]
 param(
@@ -40,7 +42,8 @@ param(
   [String] $PuppetStartType,
   [AllowEmptyString()]
   [String] $InstallArgs,
-  [switch] $UseLockedFilesWorkaround
+  [switch] $UseLockedFilesWorkaround,
+  [Int32] $WaitForPXPAgentExit=120000
 )
 # Find-InstallDir, Move-PuppetresDLL and Reset-PuppetresDLL serve as a workaround for older
 # installations of puppet: we used to need to move puppetres.dll out of the way during puppet
@@ -303,8 +306,8 @@ try {
   Write-Log "Waiting for pxp-agent processes to stop"
   Get-Process -Name "pxp-agent" -ErrorAction SilentlyContinue | ForEach-Object {
     if ($_) {
-      # wait on each process for 2 minutes (120000 milliseconds)
-      if (!$_.WaitForExit(120000)){
+      # Wait for each PXP agent process default wait time is 2 minutes.
+      if (!$_.WaitForExit($WaitForPXPAgentExit)){
         Write-Log "ERROR: Timed out waiting for pxp-agent!"
         throw
       }
