@@ -61,6 +61,16 @@ class puppet_agent::install::windows(
                           -PuppetStartType '${_agent_startup_mode}' \
                           -InstallArgs '${_install_options}' \
                           ${_move_dll_workaround}",
+    unless  => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+                  -ExecutionPolicy Bypass \
+                  -NoProfile \
+                  -NoLogo \
+                  -NonInteractive \
+                  -Command {\$CurrentVersion = [string](facter.bat -p aio_agent_version); \
+                            if (\$CurrentVersion -eq '${puppet_agent::_expected_package_version}') { \
+                              exit 0; \
+                            } \
+                            exit 1; }.Invoke()",
     path    => $::path,
     require => [
       Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
