@@ -73,6 +73,17 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         end
       end
 
+      context 'package_version =>' do
+        describe '5.6.7' do
+          let(:params) { global_params.merge(
+            {:package_version => '5.6.7'})
+          }
+          it {
+            is_expected.to contain_exec('install_puppet.ps1').with_unless(/\-Command {\$CurrentVersion = \[string\]\(facter.bat \-p aio_agent_version\);/)
+            is_expected.to contain_exec('install_puppet.ps1').with_unless(/\-Command.*if \(\$CurrentVersion \-eq '5\.6\.7'\) { +exit 0; *} *exit 1; }\.Invoke\(\)/)
+          }
+        end
+      end
       context 'install_options =>' do
         describe 'OPTION1=value1 OPTION2=value2' do
           let(:params) { global_params.merge(
