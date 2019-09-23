@@ -3,7 +3,8 @@ Param(
 	[String]$version,
   [String]$collection = 'puppet',
   [String]$windows_source = 'https://downloads.puppet.com',
-  [String]$install_options = 'REINSTALLMODE="amus"'
+  [String]$install_options = 'REINSTALLMODE="amus"',
+  [Bool]$stop_service = $False
 )
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
@@ -65,6 +66,9 @@ function InstallPuppet {
 }
 
 function Cleanup {
+    if($stop_service -eq 'true') {
+      C:\"Program Files"\"Puppet Labs"\Puppet\bin\puppet resource service puppet ensure=stopped enable=false
+    }
     Write-Output "Deleting $msi_dest and $install_log"
     Remove-Item -Force $msi_dest
     Remove-Item -Force $install_log
