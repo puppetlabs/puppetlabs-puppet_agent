@@ -28,6 +28,10 @@
     "install_options": {
       "description": "optional install arguments to the windows installer (defaults to REINSTALLMODE=\"amus\")",
       "type": "Optional[String]"
+    },
+    "stop_service": {
+      "description": "Whether to stop the puppet agent service after install",
+      "type": "Optional[Boolean]"
     }
   },
   "implementations": [

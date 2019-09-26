@@ -44,7 +44,9 @@ describe 'install task' do
     end
 
     # Try to install an older version
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5', 'version' => puppet_5_version })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5',
+                                                            'version' => puppet_5_version,
+                                                            'stop_service' => true })
     results.each do |res|
       expect(res).to include('status' => 'success')
     end
@@ -56,6 +58,14 @@ describe 'install task' do
       expect(res['result']['version']).to eq(puppet_5_version)
       expect(res['result']['source']).to be
     end
+
+    service = if target_platform =~ /win/
+                run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet', 'target')
+              else
+                run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
+              end
+    output = service[0]['result']['stdout']
+    expect(output).to include("ensure => 'stopped'")
 
     # Run with no argument upgrades
     results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5' })

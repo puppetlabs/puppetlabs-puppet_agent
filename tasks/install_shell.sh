@@ -525,6 +525,10 @@ do_download "$download_url" "$download_filename"
 
 install_file $filetype "$download_filename"
 
+if [[ $PT_stop_service = true ]]; then
+  /opt/puppetlabs/bin/puppet resource service puppet ensure=stopped enable=false
+fi
+
 #Cleanup
 if test "x$tmp_dir" != "x"; then
   rm -r "$tmp_dir"
