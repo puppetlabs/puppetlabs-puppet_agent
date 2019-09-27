@@ -64,7 +64,7 @@ class puppet_agent::install(
           $_package_version = "${package_version}-1${::lsbdistcodename}"
           apt::pin { "pin ${::puppet_agent::package_name} package":
             packages => $::puppet_agent::package_name,
-            priority => 1000,
+            priority => 1001,
             version  => $_package_version,
           }
         }
