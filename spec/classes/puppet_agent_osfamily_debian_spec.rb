@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
+  package_name = 'puppet-agent'
+
   facts = {
     :lsbdistid            => 'Debian',
     :osfamily             => 'Debian',
@@ -218,6 +220,30 @@ describe 'puppet_agent' do
       it { is_expected.not_to contain_apt__source('pc_repo') }
     end
 
+    context "when requesting a specific version" do
+      let(:params) {
+        {
+          :package_version => package_version
+        }
+      }
+
+      it { is_expected.to contain_apt__pin("pin #{package_name} package").with({
+        'packages' => package_name,
+        'priority' => 1001,
+        'version'  => "#{package_version}-1#{facts[:lsbdistcodename]}",
+      }) }
+    end
+
+    context "when not requesting a specific version" do
+      let(:params) {
+        {
+          :package_version => 'auto'
+        }
+      }
+
+      it { is_expected.not_to contain_apt__pin('pin #{package_name} package') }
+    end
+
     it { is_expected.to contain_class("puppet_agent::osfamily::debian") }
 
   end
@@ -281,6 +307,30 @@ describe 'puppet_agent' do
 
       it { is_expected.not_to contain_apt__key('legacy key') }
       it { is_expected.not_to contain_apt__source('pc_repo') }
+    end
+
+    context "when requesting a specific version" do
+      let(:params) {
+        {
+          :package_version => package_version
+        }
+      }
+
+      it { is_expected.to contain_apt__pin("pin #{package_name} package").with({
+        'packages' => package_name,
+        'priority' => 1001,
+        'version'  => "#{package_version}-1#{facts[:lsbdistcodename]}",
+      }) }
+    end
+
+    context "when not requesting a specific version" do
+      let(:params) {
+        {
+          :package_version => 'auto'
+        }
+      }
+
+      it { is_expected.not_to contain_apt__pin('pin #{package_name} package') }
     end
 
     it { is_expected.to contain_class("puppet_agent::osfamily::debian") }
