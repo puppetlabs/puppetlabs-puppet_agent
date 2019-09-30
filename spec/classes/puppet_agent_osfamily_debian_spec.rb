@@ -80,7 +80,6 @@ describe 'puppet_agent' do
         }
       }
 
-      it { is_expected.not_to contain_class('apt') }
       it { is_expected.not_to contain_exec('pc_repo_force') }
       it { is_expected.not_to contain_apt__setting('conf-pe-repo') }
 
@@ -132,7 +131,6 @@ describe 'puppet_agent' do
           }
         }
 
-        it { is_expected.not_to contain_class('apt') }
         it { is_expected.not_to contain_exec('pc_repo_force') }
 
         it { is_expected.not_to contain_apt__setting('conf-pc_repo') }
