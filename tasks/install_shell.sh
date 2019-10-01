@@ -493,7 +493,7 @@ case $platform in
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
-    download_url="http://apt.puppetlabs.com/${filename}"
+    download_url="${apt_source}/${filename}"
     ;;
   "Ubuntu")
     info "Ubuntu platform! Lets get you a DEB..."
