@@ -298,7 +298,7 @@ describe 'puppet_agent' do
       end
       let(:params) { global_params }
 
-      it { is_expected.to raise_error(Puppet::Error, %r{Nexenta not supported}) }
+      it { expect { catalogue }.to raise_error(Puppet::Error, %r{Nexenta not supported}) }
     end
   end
 end
