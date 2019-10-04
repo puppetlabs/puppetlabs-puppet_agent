@@ -192,6 +192,11 @@ case $platform in
   "SLES")
     platform_version=$major_version
     ;;
+  "Amzn")
+    case $platform_version in
+      "2") platform_version="7";;
+    esac
+    ;;
 esac
 
 # Find which version of puppet is currently installed if any
@@ -459,6 +464,12 @@ case $platform in
     ;;
   "el")
     info "Red hat like platform! Lets get you an RPM..."
+    filetype="rpm"
+    filename="${collection}-release-el-${platform_version}.noarch.rpm"
+    download_url="${yum_source}/${filename}"
+    ;;
+  "Amzn")
+    info "Amazon platform! Lets get you an RPM..."
     filetype="rpm"
     filename="${collection}-release-el-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
