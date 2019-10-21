@@ -1,6 +1,27 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+## [2.2.1] - 2019-10-21
+
+### Summary
+Support for Debian 10, Linux Mint, Amazon Linux 2. Stop puppet agent service after install. Puppet_agent task as a plugin.
+
+### Features
+- Debian 10 amd64 support
+- Linux Mint Support
+- Amazon Linux 2 support ([MODULES-9981](https://tickets.puppetlabs.com/browse/MODULES-9981))
+- Update facts module used for testing install task ([MODULES-9698](https://tickets.puppetlabs.com/browse/MODULES-9698))
+- Add option to stop the puppet agent service after install ([GH-1204](https://tickets.puppetlabs.com/browse/GH-1204))
+- Added task to check commit messages
+- Make the puppet_agent task available as a plugin
+
+### Bug fixes
+- Failed puppet agent upgrade prevents future upgrading because of locked .pid file ([MODULES-9497](https://tickets.puppetlabs.com/browse/MODULES-9497)
+- Update bash implementation metadata to require facts implementation
+- Add bolt team as codeowners 
+- Cached Catalog on Windows not idempotent ([MODULES-9846](https://tickets.puppetlabs.com/browse/MODULES-9846))
+- Fix failing tests due to rspec changes
+
 ## [2.2.0] - 2019-08-05
 
 ### Summary
