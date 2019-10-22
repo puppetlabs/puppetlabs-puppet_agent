@@ -42,6 +42,7 @@ minor_version = "#{ruby_version_segments[0]}.#{ruby_version_segments[1]}"
 #end
 
 group :development do
+  gem "puppet-lint", '2.3.6'
   gem "puppet-module-posix-default-r#{minor_version}",       :require => false, :platforms => "ruby"
   gem "puppet-module-win-default-r#{minor_version}",         :require => false, :platforms => ["mswin", "mingw", "x64_mingw"]
   gem "puppet-module-posix-dev-r#{minor_version}", '~> 0.3', :require => false, :platforms => "ruby"
