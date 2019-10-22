@@ -8,8 +8,10 @@ class puppet_agent::osfamily::windows{
   } elsif  ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
     $pe_server_version = pe_build_version()
     $tag = $::puppet_agent::arch ? {
-      'x64' => 'windows-x86_64',
-      'x86' => 'windows-i386',
+      'x64' => $::fips_enabled ? {
+          true => 'windowsfips-x64',
+          default => 'windows-x86_64' },
+      'x86' => 'windows-i386'
     }
     if $::puppet_agent::alternate_pe_source {
       $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${tag}/${::puppet_agent::package_name}-${::puppet_agent::arch}.msi"

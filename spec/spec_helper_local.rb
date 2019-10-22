@@ -20,6 +20,7 @@ RSpec.configure do |c|
     :path                        => nil,
     :puppet_agent_appdata        => nil,
     :system32                    => nil,
+    :fips_enabled                => false,
 
     :puppet_ssldir   => '/dev/null/ssl',
     :puppet_config   => '/dev/null/puppet.conf',
