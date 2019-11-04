@@ -3,7 +3,7 @@
 # This class is meant to be called from puppet_agent
 # It sets variables according to platform.
 #
-class puppet_agent::params {
+class puppet_agent::params{
   # Which services should be started after the upgrade process?
   if ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
     # Solaris 11 is a special case; it uses a custom script.
@@ -51,11 +51,11 @@ class puppet_agent::params {
     # Calculate the default collection
     $_pe_version = pe_build_version()
     # Not PE or pe_version < 2018.1.3, use PC1
-    if ($_pe_version == undef or versioncmp("${_pe_version}", '2018.1.3') < 0) {
+    if ($_pe_version == undef or versioncmp($_pe_version, '2018.1.3') < 0) {
       $collection = 'PC1'
     }
     # 2018.1.3 <= pe_version < 2018.2, use puppet5
-    elsif versioncmp("${_pe_version}", '2018.2') < 0 {
+    elsif versioncmp($_pe_version, '2018.2') < 0 {
       $collection = 'puppet5'
     }
     # pe_version >= 2018.2, use puppet6

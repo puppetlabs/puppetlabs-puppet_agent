@@ -162,7 +162,7 @@ class puppet_agent (
       $_expected_package_version = $master_or_package_version
     }
 
-    $aio_upgrade_required = versioncmp("${::aio_agent_version}", "${_expected_package_version}") < 0
+    $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
 
     if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.

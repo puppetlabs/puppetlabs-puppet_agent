@@ -3,7 +3,7 @@
 # Private class called from puppet_agent::prepare class
 #
 class puppet_agent::prepare::puppet_config (
-  $package_version
+  $package_version,
 ) {
   assert_private()
   $puppetconf = $::puppet_agent::params::config
@@ -24,7 +24,7 @@ class puppet_agent::prepare::puppet_config (
 
   # manage puppet.conf contents, using inifile module
   $_deprecations.each |$_min_version, $_setting_names| {
-    if (versioncmp("${_pkg_version}", "${_min_version}") >= 0) {
+    if (versioncmp($_pkg_version, $_min_version) >= 0) {
       $_setting_names.each |$_setting_name| {
         ['', 'master', 'agent', 'main'].each |$_section_name| {
           $_setting_key = "${_section_name}/${_setting_name}"

@@ -35,7 +35,7 @@ class puppet_agent::install::solaris(
       notice ("Puppet install log file at ${_logfile}")
 
       $_installsh = "${::env_temp_variable}/solaris_install.sh"
-      file { "${_installsh}":
+      file { $_installsh:
         ensure  => file,
         mode    => '0755',
         content => template('puppet_agent/do_install.sh.erb')
