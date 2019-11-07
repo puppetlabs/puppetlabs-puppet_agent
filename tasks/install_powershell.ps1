@@ -31,6 +31,11 @@ else {
     $msi_name = "puppet-agent-${arch}-latest.msi"
 }
 
+# Change windows_source only if the collection is a nightly build, and the source was not explicitly specified.
+if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
+  $windows_source = 'https://nightlies.puppet.com/downloads'
+}
+
 $msi_source = "$windows_source/windows/${collection}/${msi_name}"
 
 $date_time_stamp = (Get-Date -format s) -replace ':', '-'
