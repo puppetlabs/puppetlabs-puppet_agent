@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+## [2.2.2] - 2019-11-7
+
+### Summary
+Support for puppet nightly collection on Windows(puppet_agent::install task).
+
+### Features
+- Puppet Agent module downloads the wrong nightly builds for Windows ([MODULES-10038](https://tickets.puppetlabs.com/browse/MODULES-10038))
+
 ## [2.2.1] - 2019-10-21
 
 ### Summary
