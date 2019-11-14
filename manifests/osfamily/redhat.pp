@@ -137,7 +137,7 @@ class puppet_agent::osfamily::redhat{
         descr               => "Puppet Labs ${::puppet_agent::collection} Repository",
         enabled             => true,
         gpgcheck            => '1',
-        gpgkey              => "${gpg_keys}",
+        gpgkey              => $gpg_keys,
         proxy               => $_proxy,
         sslcacert           => $_sslcacert_path,
         sslclientcert       => $_sslclientcert_path,

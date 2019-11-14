@@ -15,7 +15,7 @@ class puppet_agent::install::darwin(
   notice("Puppet install log file at ${_logfile}")
 
   $_installsh = "${::env_temp_variable}/osx_install.sh"
-  file { "${_installsh}":
+  file { $_installsh:
     ensure  => file,
     mode    => '0755',
     content => template('puppet_agent/do_install.sh.erb')

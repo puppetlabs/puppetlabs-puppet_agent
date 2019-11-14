@@ -8,7 +8,7 @@
 #   The puppet-agent version to install.
 #
 class puppet_agent::prepare(
-  $package_version = undef,
+  $package_version = undef
 ){
   include puppet_agent::params
   $_windows_client = downcase($::osfamily) == 'windows'

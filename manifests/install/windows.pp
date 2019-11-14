@@ -39,7 +39,7 @@ class puppet_agent::install::windows(
 
   $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
   puppet_agent_upgrade_error { 'puppet_agent_upgrade_failure.log': }
-  file { "${_installps1}":
+  file { $_installps1:
     ensure  => file,
     content => file('puppet_agent/install_puppet.ps1')
   }
@@ -67,14 +67,14 @@ class puppet_agent::install::windows(
                   -NoLogo \
                   -NonInteractive \
                   -Command {\$CurrentVersion = [string](facter.bat -p aio_agent_version); \
-                            if (\$CurrentVersion -eq '${puppet_agent::_expected_package_version}') { \
+                            if (\$CurrentVersion -eq '${::puppet_agent::_expected_package_version}') { \
                               exit 0; \
                             } \
                             exit 1; }.Invoke()",
     path    => $::path,
     require => [
       Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
-      File["${_installps1}"]
+      File[$_installps1]
     ]
   }
 
