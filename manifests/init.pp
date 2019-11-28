@@ -85,7 +85,10 @@
 #   This is only applicable for Windows operating systems. There may be instances where
 #   file locks cause unncessary service restarts.  By setting to true, the module
 #   will move files prior to installation that are known to cause file locks.
-#
+# [wait_for_pxp_agent_exit]
+#   This parameter is only applicable for Windows operating systems and pertains to the 
+#   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
+#   for the PXP agent to end successfully. The default value is set 2 minutes.
 class puppet_agent (
   $arch                    = $::architecture,
   $collection              = $::puppet_agent::params::collection,
@@ -110,6 +113,7 @@ class puppet_agent (
   $install_options         = [],
   $skip_if_unavailable     = 'absent',
   $msi_move_locked_files   = false,
+  $wait_for_pxp_agent_exit = undef,
 ) inherits ::puppet_agent::params {
 
   if (getvar('::aio_agent_version') == undef) {

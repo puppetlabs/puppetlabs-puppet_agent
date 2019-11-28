@@ -40,6 +40,7 @@
         - [`install_dir`](#install_dir)
         - [`install_options`](#install_options)
         - [`msi_move_locked_files`](#msi_move_locked_files)
+        - [`wait_for_pxp_agent_exit`](#wait_for_pxp_agent_exit)
     - [Tasks](#tasks)
       - [`puppet_agent::version`](#puppet_agentversion)
       - [`puppet_agent::install`](#puppet_agentinstall)
@@ -288,6 +289,14 @@ This is only applicable for Windows operating systems. There may be instances wh
 
 ``` puppet
   msi_move_locked_files => true
+```
+
+#### `wait_for_pxp_agent_exit`
+
+This is only applicable for Windows operating systems and pertains to /files/install_puppet.ps1 script. This parameterizes the module to define the wait time for the PXP agent to end successfully. The default value is 2 minutes and the timeout value must be defined in milliseconds. Example below, 8 minutes is equal to 480000.
+
+``` puppet
+  wait_for_pxp_agent_exit => 480000
 ```
 
 ### Tasks
