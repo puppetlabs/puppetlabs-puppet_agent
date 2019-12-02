@@ -35,6 +35,16 @@ exists() {
   fi
 }
 
+# Check whether perl and LWP::Simple module are installed
+exists_perl() {
+  if perl -e 'use LWP::Simple;' >/dev/null 2>&1
+  then
+    return 0
+  else
+    return 1
+  fi
+}
+
 # Get command line arguments
 if [ -n "$PT_version" ]; then
   version=$PT_version
@@ -341,10 +351,11 @@ do_download() {
     do_fetch $1 $2 && return 0
   fi
 
-  if exists perl; then
+  if exists_perl; then
     do_perl $1 $2 && return 0
   fi
 
+  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple is found"
   unable_to_retrieve_package
 }
 
