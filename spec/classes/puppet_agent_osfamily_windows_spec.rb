@@ -29,7 +29,7 @@ describe 'puppet_agent' do
         :clientcert           => 'foo.example.vm',
         :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
         :puppet_agent_appdata => appdata,
-        :env_temp_variable => 'C:/tmp',
+        :env_temp_variable    => 'C:/tmp',
         :puppet_agent_pid     => 42,
         :aio_agent_version    => '1.0.0',
       }}
@@ -58,7 +58,7 @@ describe 'puppet_agent' do
         :clientcert           => 'foo.example.vm',
         :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
         :puppet_agent_appdata => appdata,
-        :env_temp_variable => 'C:/tmp',
+        :env_temp_variable    => 'C:/tmp',
         :puppet_agent_pid     => 42,
         :aio_agent_version    => '1.0.0',
         :serverversion        => server_version
@@ -74,4 +74,36 @@ describe 'puppet_agent' do
     end
   end
 
+  describe "supported Windows with fips mode enabled" do
+    server_version = '1.10.100'
+    let(:arch) { 'x64' }
+    let(:tag) { 'x64' }
+    let(:params)  { { package_version: 'auto' } }
+    let(:appdata) { 'C:\ProgramData' }
+    let(:facts) do
+      {
+        :is_pe                => true,
+        :osfamily             => 'windows',
+        :operatingsystem      => 'windows',
+        :architecture         => arch,
+        :servername           => 'master.example.vm',
+        :clientcert           => 'foo.example.vm',
+        :puppet_confdir       => "#{appdata}\\Puppetlabs\\puppet\\etc",
+        :puppet_agent_appdata => appdata,
+        :env_temp_variable    => 'C:/tmp',
+        :puppet_agent_pid     => 42,
+        :aio_agent_version    => '1.0.0',
+        :serverversion        => server_version,
+        :fips_enabled         => true
+      }
+    end
+
+    it { is_expected.to contain_file("#{appdata}\\Puppetlabs") }
+    it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
+    it do
+      is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
+        'source' => "puppet:///pe_packages/#{pe_version}/windowsfips-#{tag}/puppet-agent-#{arch}.msi"
+      )
+    end
+  end
 end
