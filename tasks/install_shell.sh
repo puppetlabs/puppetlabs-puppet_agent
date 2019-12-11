@@ -433,12 +433,12 @@ install_file() {
       apt-get update -y
 
       if test "$version" = 'latest'; then
-        apt-get install -y puppet-agent --allow-downgrades
+        apt-get install -y puppet-agent
       else
         if test "x$deb_codename" != "x"; then
-          apt-get install -y "puppet-agent=${puppet_agent_version}-1${deb_codename}" --allow-downgrades
+          apt-get install -y "puppet-agent=${puppet_agent_version}-1${deb_codename}"
         else
-          apt-get install -y "puppet-agent=${puppet_agent_version}" --allow-downgrades
+          apt-get install -y "puppet-agent=${puppet_agent_version}"
         fi
       fi
       ;;
