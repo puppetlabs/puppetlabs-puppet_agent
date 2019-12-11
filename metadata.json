@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-puppet_agent",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "author": "puppetlabs",
   "summary": "Upgrades All-In-One Puppet Agents",
   "license": "Apache-2.0",

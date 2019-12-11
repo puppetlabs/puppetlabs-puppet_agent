@@ -1,6 +1,20 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+## [2.2.3] - 2019-12-10
+
+### Summary
+Support for Fedora 31, Windows FIPS. WaitForExit can be parameterized. Fix for downgrades using apt.
+
+### Features
+- Fedora 31 support ([MODULES-10238](https://tickets.puppetlabs.com/browse/MODULES-10238) 
+- Windows FIPS support ([MODULES-10043](https://tickets.puppetlabs.com/browse/MODULES-10043))
+- WaitForExit for PXP agent can now be parameterized ([MODULES-10052](https://tickets.puppetlabs.com/browse/MODULES-10052)
+
+### Bug fixes
+- Improve error message when install task could not download puppet-agent package ([MODULES-10067](https://tickets.puppetlabs.com/browse/MODULES-10067)
+- Fixed lint warnings ([MODULES-10055](https://tickets.puppetlabs.com/browse/MODULES-10055)
+
 ## [2.2.2] - 2019-11-7
 
 ### Summary
