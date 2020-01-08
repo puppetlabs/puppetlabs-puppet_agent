@@ -42,6 +42,7 @@ class puppet_agent::install::windows(
 
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
+  warning("Deprecation warning: On January 14, 2020, support for Windows Server 2008 and 2008 R2 will end.")
 
   $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
   puppet_agent_upgrade_error { 'puppet_agent_upgrade_failure.log': }
