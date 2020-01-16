@@ -8,6 +8,8 @@ class puppet_agent::params{
   if ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
     # Solaris 11 is a special case; it uses a custom script.
     $service_names = []
+  } elsif $::osfamily == 'windows' {
+    $service_names = ['puppet']
   } else {
     # Mcollective will be removed from this list in the service manifest if
     # the puppet version is >= 6.0.0
