@@ -24,10 +24,24 @@ catch [System.Management.Automation.CommandNotFoundException] {
   }
 }
 
+function Test-PuppetInstalled {
+  $result = & "$PSScriptRoot\version_powershell.ps1" | ConvertFrom-Json
+  return $result.version
+}
+
 if ($version) {
-    $msi_name = "puppet-agent-${version}-${arch}.msi"
+    if ($version -eq "latest") {
+      $msi_name = "puppet-agent-${arch}-latest.msi"
+    } else {
+      $msi_name = "puppet-agent-${version}-${arch}.msi"
+    }
 }
 else {
+    if (Test-PuppetInstalled) {
+      Write-Output "Puppet Agent detected and no version specified. Nothing to do."
+      Exit
+    }
+
     $msi_name = "puppet-agent-${arch}-latest.msi"
 }
 
