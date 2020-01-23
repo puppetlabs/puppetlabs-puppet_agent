@@ -102,6 +102,26 @@ else
   installed_version=uninstalled
 fi
 
+# Only install the agent in cases where no agent is present, or the version of the agent
+# has been explicitly defined and does not match the version of an installed agent.
+if [ -z "$version" ]; then
+  if [ "$installed_version" == "uninstalled" ]; then
+    info "Version parameter not defined and no agent detected. Assuming latest."
+    version=latest
+  else
+    info "Version parameter not defined and agent detected. Nothing to do."
+    exit 0
+  fi
+else
+  info "Version parameter defined: ${version}"
+  if [ "$version" == "$installed_version" ]; then
+    info "Version parameter defined: ${version}. Puppet Agent ${version} detected. Nothing to do."
+    exit 0
+  elif [ "$version" != "latest" ]; then
+    puppet_agent_version="$version"
+  fi
+fi
+
 # Retrieve Platform and Platform Version
 # Utilize facts implementation when available
 if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
@@ -169,14 +189,6 @@ fi
 if test "x$platform" = "x"; then
   critical "Unable to determine platform version!"
   exit 1
-fi
-
-if test "x$version" = "x"; then
-  version="latest";
-  info "Version parameter not defined, assuming latest";
-else
-  info "Version parameter defined: $version";
-  puppet_agent_version=$version
 fi
 
 # Mangle $platform_version to pull the correct build

@@ -75,6 +75,20 @@ describe 'install task' do
       expect(res).to include('status' => 'success')
     end
 
+    # Verify that it did nothing
+    results = run_task('puppet_agent::version', 'target', {})
+    results.each do |res|
+      expect(res).to include('status' => 'success')
+      expect(res['result']['version']).to eq(puppet_5_version)
+      expect(res['result']['source']).to be
+    end
+
+    # Run with latest upgrades
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5', 'version' => 'latest' })
+    results.each do |res|
+      expect(res).to include('status' => 'success')
+    end
+
     # Verify that it upgraded
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
@@ -85,7 +99,7 @@ describe 'install task' do
     end
 
     # Upgrade from puppet5 to puppet6
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6' })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
     results.each do |res|
       expect(res).to include('status' => 'success')
     end
