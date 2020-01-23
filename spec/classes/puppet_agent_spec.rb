@@ -34,6 +34,7 @@ describe 'puppet_agent' do
       elsif os =~ %r{solaris}
         {
           is_pe: true,
+          puppet_agent_pid: 298,
         }
       elsif os =~ %r{aix}
         {
