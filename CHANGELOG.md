@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
+
+## [3.0.0] - 2020-01-24
+
+### Summary
+Assume latest version of the puppet-agent package only when no version is specified and the puppet-agent package is not installed (`puppet_agent::install` task).
+
 ## [2.2.3] - 2019-12-10
 
 ### Summary
