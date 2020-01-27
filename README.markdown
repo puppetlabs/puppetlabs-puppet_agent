@@ -303,15 +303,28 @@ This is only applicable for Windows operating systems and pertains to /files/ins
 
 #### `puppet_agent::version`
 
-Checks for the version of puppet-agent package installed. Returns results as `{"version": "<ver>", "source": "<how version was
-detected>"}`. If a version cannot be found, returns `{"version": null}`.
+Checks for the version of puppet-agent package installed. 
+
+**Return value**
+
+The `puppet_agent::version` task returns a Result on success specifying the version of the agent installed and how it was detected.
+
+```
+{
+  "version": <version>,
+  "source": <source>
+}
+```
 
 #### `puppet_agent::install`
 
-Installs the puppet-agent package. Currently only supports Linux variants: Debian, Ubuntu, SLES, RHEL/CentOS/Fedora, Amazon Linux 2. A specific
-package `version` can be specified; if not, will install or upgrade to the latest Puppet 5 version available.
+Installs the puppet-agent package.
 
-**Note**: The `puppet_agent::install_shell` task requires the `facts::bash` implementation from the [facts](https://forge.puppet.com/puppetlabs/facts) module. Both the `puppet_agent` and `facts` modules are packaged with Bolt. For use outside of Bolt make sure the `facts` module is installed to the same `modules` directory as `puppet_agent`.
+> **Note:** The `puppet_agent::install_shell` task requires the `facts::bash` implementation from the [facts](https://forge.puppet.com/puppetlabs/facts) module. Both the `puppet_agent` and `facts` modules are packaged with Bolt. For use outside of Bolt make sure the `facts` module is installed to the same `modules` directory as `puppet_agent`.
+
+**Return value**
+
+The task returns the output of the installation script.
 
 ## Limitations
 

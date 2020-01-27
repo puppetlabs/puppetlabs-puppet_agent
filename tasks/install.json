@@ -2,7 +2,7 @@
   "description": "Install the Puppet agent package",
   "parameters": {
     "version": {
-      "description": "The version of puppet-agent to install",
+      "description": "The version of puppet-agent to install (defaults to latest when no agent is installed)",
       "type": "Optional[String]"
     },
     "collection": {
