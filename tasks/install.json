@@ -36,6 +36,6 @@
   },
   "implementations": [
     {"name": "install_shell.sh", "requirements": ["shell"], "files": ["facts/tasks/bash.sh"], "input_method": "environment"},
-    {"name": "install_powershell.ps1", "requirements": ["powershell"], "files": ["puppet_agent/tasks/version_powershell.ps1"]}
+    {"name": "install_powershell.ps1", "requirements": ["powershell"]}
   ]
 }
