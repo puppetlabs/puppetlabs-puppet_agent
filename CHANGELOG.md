@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.1] - 2020-01-28
+
+### Summary
+Fix `install_powershell` task for Powershell < 3.0.
+
+### Bug fixes
+- Fixed `install_powershell` task failure when using Powershell < 3.0 ([MODULES-10514](https://tickets.puppetlabs.com/browse/MODULES-10514))
+
 ## [3.0.0] - 2020-01-24
 
 ### Summary
