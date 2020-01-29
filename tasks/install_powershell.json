@@ -34,6 +34,5 @@
       "description": "Whether to stop the puppet agent service after install",
       "type": "Optional[Boolean]"
     }
-  },
-  "files": ["puppet_agent/tasks/version_powershell.ps1"]
+  }
 }

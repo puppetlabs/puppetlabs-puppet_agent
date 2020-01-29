@@ -25,8 +25,13 @@ catch [System.Management.Automation.CommandNotFoundException] {
 }
 
 function Test-PuppetInstalled {
-  $result = & "$PSScriptRoot\version_powershell.ps1" | ConvertFrom-Json
-  return $result.version
+  $rootPath = 'HKLM:\SOFTWARE\Puppet Labs\Puppet'
+  try { 
+    if (Get-ItemProperty -Path $rootPath) { RETURN $true }
+  }
+  catch {
+    RETURN $false
+  }
 }
 
 if ($version) {
