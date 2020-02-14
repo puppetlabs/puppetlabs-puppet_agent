@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.2] - 2020-02-14
+
+### Summary
+Remove config from `bolt_plugin.json`.
+
+### Bug fixes
+- Removed unsupported `config` field from the `bolt_plugin.json` file.([#469](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/469))
+
 ## [3.0.1] - 2020-01-28
 
 ### Summary
