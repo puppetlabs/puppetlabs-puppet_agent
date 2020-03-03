@@ -35,6 +35,32 @@ exists() {
   fi
 }
 
+# Check whether the apt config file has been modified, warning and exiting early if it has
+assert_unmodified_apt_config() {
+  puppet_list=/etc/apt/sources.list.d/puppet.list
+  puppet6_list=/etc/apt/sources.list.d/puppet6.list
+
+  if [[ -f $puppet_list ]]; then
+    list_file=puppet_list
+  elif [[ -f $puppet6_list ]]; then
+    list_file=puppet6_list
+  fi
+
+  # If puppet.list exists, get its md5sum on disk and its md5sum from the puppet-release package
+  if [[ -n $list_file ]]; then
+    # For md5sum, the checksum is the first word
+    file_md5=($(md5sum "$list_file"))
+    # For dpkg-query with this output format, the sum is the second word
+    package_md5=($(dpkg-query -W -f='${Conffiles}\n' 'puppet-release' | grep -F "$list_file"))
+
+    # If the $package_md5 array is set, and the md5sum on disk doesn't match the md5sum from dpkg-query, it has been modified
+    if [[ $package_md5 && ${file_md5[0]} != ${package_md5[1]} ]]; then
+      warn "Configuration file $list_file has been modified from the default. Skipping agent installation."
+      exit 1
+    fi
+  fi
+}
+
 # Check whether perl and LWP::Simple module are installed
 exists_perl() {
   if perl -e 'use LWP::Simple;' >/dev/null 2>&1
@@ -426,7 +452,7 @@ install_file() {
       fi
       ;;
     "deb")
-      info "installing puppetlabs apt repo with dpkg..."
+      info "Installing puppetlabs apt repo with dpkg..."
 
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
@@ -441,7 +467,9 @@ install_file() {
         fi
       fi
 
-      dpkg -i "$2"
+      assert_unmodified_apt_config
+
+      dpkg -i --force-confmiss "$2"
       apt-get update -y
 
       if test "$version" = 'latest'; then
