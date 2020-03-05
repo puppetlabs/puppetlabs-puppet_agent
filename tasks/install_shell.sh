@@ -441,6 +441,11 @@ install_file() {
         fi
       fi
 
+      # Packages are downloaded from the https site, so make sure the correct transport is installed
+      if ! dpkg -l apt-transport-https; then
+        apt-get install --yes apt-transport-https
+      fi
+
       dpkg -i "$2"
       apt-get update -y
 
