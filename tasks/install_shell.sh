@@ -445,7 +445,7 @@ install_file() {
       apt-get update -y
 
       if test "$version" = 'latest'; then
-        apt-get install -y puppet-agent
+        apt-get install -y puppet
       else
         if test "x$deb_codename" != "x"; then
           apt-get install -y "puppet-agent=${puppet_agent_version}-1${deb_codename}"
