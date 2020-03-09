@@ -204,7 +204,7 @@ case $platform in
       *) platform_version=$major_version;;
     esac
     ;;
-  "Debian")
+  "Debian"|"Raspbian")
     case $major_version in
       "5") platform_version="6";;
       "6") platform_version="6";;
@@ -503,8 +503,8 @@ case $platform in
     filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
-  "Debian")
-    info "Debian platform! Lets get you a DEB..."
+  "Debian"|"Raspbian")
+    info "${platform} platform! Lets get you a DEB..."
     case $major_version in
       "5") deb_codename="lenny";;
       "6") deb_codename="squeeze";;
