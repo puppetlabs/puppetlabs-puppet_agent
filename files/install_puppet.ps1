@@ -249,8 +249,12 @@ function Script:Reset-PuppetServices {
       # service before upgrade, but no mcollective service after
       if (Get-Service $service.Name -ErrorAction SilentlyContinue) {
         Write-Log "Restoring service state for $($service.Name)"
-        Set-Service $service.Name -StartupType $service.StartType
-        Set-Service $service.Name -Status $service.Status
+        try {
+          Set-Service $service.Name -StartupType $service.StartType -ErrorAction Stop
+          Set-Service $service.Name -Status $service.Status -ErrorAction Stop
+        } catch {
+          Write-Log "Could not restore service state for $($service.Name). $_"
+        }
       } else {
         Write-Log "Get-Service failed to fetch $($service.Name), continuing..."
       }
