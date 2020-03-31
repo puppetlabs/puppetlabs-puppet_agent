@@ -77,7 +77,7 @@ describe 'puppet_agent' do
   describe "supported Windows with fips mode enabled" do
     server_version = '1.10.100'
     let(:arch) { 'x64' }
-    let(:tag) { 'x64' }
+    let(:tag) { 'x86_64' }
     let(:params)  { { package_version: 'auto' } }
     let(:appdata) { 'C:\ProgramData' }
     let(:facts) do
