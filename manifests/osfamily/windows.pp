@@ -9,8 +9,9 @@ class puppet_agent::osfamily::windows{
     $pe_server_version = pe_build_version()
     $tag = $::puppet_agent::arch ? {
       'x64' => $::fips_enabled ? {
-          true => 'windowsfips-x64',
-          default => 'windows-x86_64' },
+        true => 'windowsfips-x86_64',
+        default => 'windows-x86_64'
+      },
       'x86' => 'windows-i386'
     }
     if $::puppet_agent::alternate_pe_source {
