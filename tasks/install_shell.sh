@@ -115,12 +115,6 @@ else
   mac_source='http://downloads.puppet.com'
 fi
 
-# Error if non-root
-if [ `id -u` -ne 0 ]; then
-  echo "puppet_agent::install task must be run as root"
-  exit 1
-fi
-
 # Track to handle puppet5 to puppet6
 if [ -f /opt/puppetlabs/puppet/VERSION ]; then
   installed_version=`cat /opt/puppetlabs/puppet/VERSION`
@@ -146,6 +140,12 @@ else
   elif [ "$version" != "latest" ]; then
     puppet_agent_version="$version"
   fi
+fi
+
+# Error if non-root
+if [ `id -u` -ne 0 ]; then
+  echo "puppet_agent::install task must be run as root"
+  exit 1
 fi
 
 # Retrieve Platform and Platform Version
