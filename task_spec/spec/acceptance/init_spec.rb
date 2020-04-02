@@ -35,6 +35,10 @@ describe 'install task' do
                          '5.5.16'
                        when %r{fedora-31}
                          '5.5.18'
+                       when %r{osx-10.14}
+                         '5.5.12'
+                       when %r{osx-10.15}
+                         '5.5.19'
                        else
                          '5.5.3'
                        end
