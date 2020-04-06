@@ -2,6 +2,23 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.1.0] - 2020-04-02
+
+### Summary
+Update `puppetlabs-inifile` dependency. Install task can download macOS 10.15.
+Windows FIPS. Pidlock, puppet.list config and root check fixes for
+`install_shell` task.
+
+### Features
+- Update inifile dependency to allow all 4.x versions ([#477](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/477))
+- Allow install task to downlad macOS 10.15 ([#471](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/471))
+
+### Bug fixes
+- Fix windowsfips upgrades ([MODULES-10606](https://tickets.puppetlabs.com/browse/MODULES-10606))
+- Remove pidlock if service states cannot be restored ([MODULES-10594](https://tickets.puppetlabs.com/browse/MODULES-10594))
+- Exit early when puppet.list config file has been modified ([MODULES-10589](https://tickets.puppetlabs.com/browse/MODULES-10589))
+- Check that user is root only if installation is required ([#475](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/475))
+
 ## [3.0.2] - 2020-02-14
 
 ### Summary
