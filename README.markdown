@@ -318,7 +318,7 @@ The `puppet_agent::version` task returns a Result on success specifying the vers
 
 #### `puppet_agent::install`
 
-Installs the puppet-agent package.
+Installs the puppet-agent package.  This task should not be used for upgrading agents particularly windows agents which have requirements other than just installing the puppet-agent msi.    
 
 > **Note:** The `puppet_agent::install_shell` task requires the `facts::bash` implementation from the [facts](https://forge.puppet.com/puppetlabs/facts) module. Both the `puppet_agent` and `facts` modules are packaged with Bolt. For use outside of Bolt make sure the `facts` module is installed to the same `modules` directory as `puppet_agent`.
 
