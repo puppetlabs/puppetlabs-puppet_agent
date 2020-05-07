@@ -70,7 +70,7 @@ class puppet_agent::install(
       $_install_options = $install_options
       if $::puppet_agent::absolute_source {
         # absolute_source means we use rpm on EL/suse based platforms
-        $_package_version = 'present'
+        $_package_version = $package_version
         $_provider = 'rpm'
         # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
         $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
