@@ -573,6 +573,7 @@ case $platform in
       "16.10") deb_codename="yakkety";;
       "17.04") deb_codename="zesty";;
       "18.04") deb_codename="bionic";;
+      "20.04") deb_codename="focal";;
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
