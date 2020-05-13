@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.2.0] - 2020-05-13
+
+### Summary
+Install task can download Ubuntu 20.04. Fixed mcollective being included as a default service.
+
+### Features
+- Allow install task to download puppet-agent for Ubuntu 20.04 ([#491](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/491))
+
+### Bug fixes
+- Fix mcollective being included as a default service to manage in client version >= 6.0.0 ([#485](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/485))
+
 ## [3.1.0] - 2020-04-02
 
 ### Summary
