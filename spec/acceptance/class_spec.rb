@@ -10,7 +10,7 @@ describe 'puppet_agent class' do
 
     it 'should work idempotently with no errors' do
       pp = <<-EOS
-      class { 'puppet_agent': package_version => '5.5.14', collection => 'puppet5' }
+      class { 'puppet_agent': package_version => '5.5.16', collection => 'puppet5' }
       EOS
 
       # Run it twice and test for idempotency
@@ -137,7 +137,7 @@ describe 'puppet_agent class' do
     context 'with mcollective configured' do
       before(:all) {
         setup_puppet_on default, :mcollective => true, :agent => true
-        manifest = 'class { "puppet_agent": package_version => "5.5.14", collection => "puppet5", service_names => ["mcollective"] }'
+        manifest = 'class { "puppet_agent": package_version => "5.5.16", collection => "puppet5", service_names => ["mcollective"] }'
         pp = "file { '#{master.puppet['codedir']}/environments/production/manifests/site.pp': ensure => file, content => '#{manifest}' }"
         apply_manifest_on(master, pp, :catch_failures => true)
       }
