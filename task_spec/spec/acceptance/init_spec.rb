@@ -29,8 +29,6 @@ describe 'install task' do
 
   it 'works with version and install tasks' do
     puppet_5_version = case target_platform
-                       when %r{fedora-29}
-                         '5.5.10'
                        when %r{fedora-30}
                          '5.5.16'
                        when %r{fedora-31}

@@ -12,7 +12,7 @@ test_name 'puppet_agent class: Upgrade agents from PC1 (puppet 4) to puppet5' do
     manifest = <<-PP
 node default {
   class { puppet_agent:
-    package_version => '5.5.10',
+    package_version => '5.5.16',
     collection      => 'puppet5'
   }
 }
@@ -36,7 +36,7 @@ node default {
     agents_only.each do |agent|
       start_puppet_service_and_wait_for_puppet_run(agent)
       wait_for_installation_pid(agent)
-      assert_agent_version_on(agent, '5.5.10')
+      assert_agent_version_on(agent, '5.5.16')
     end
   end
 end
