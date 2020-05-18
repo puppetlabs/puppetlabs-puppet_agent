@@ -34,7 +34,45 @@ function Test-PuppetInstalled {
   }
 }
 
+function Test-PuppetInstalledVersion {
+  $rootPath = 'HKLM:\SOFTWARE\Puppet Labs\Puppet'
+
+  $reg = Get-ItemProperty -Path $rootPath -ErrorAction SilentlyContinue
+  if ($null -ne $reg) {
+    if ($null -ne $reg.RememberedInstallDir64) {
+      $loc = $reg.RememberedInstallDir64+'VERSION'
+    } elseif ($null -ne $reg.RememberedInstallDir) {
+      $loc = $reg.RememberedInstallDir+'VERSION'
+    }
+  }
+
+  if ($null -ne $loc) {
+    $installedVersion = Get-Content -Path $loc -ErrorAction SilentlyContinue
+    if ($installedVersion -eq $version) {
+      RETURN $true
+    }
+  }
+
+  RETURN $false
+}
+
+function Test-RunningServices {
+  $puppetAgentService = Get-Service -DisplayName 'Puppet Agent' -ErrorAction SilentlyContinue
+  $pxpAgentService = Get-Service -DisplayName 'Puppet PXP Agent' -ErrorAction SilentlyContinue
+
+  if ($puppetAgentService.Status -eq 'Running' -or $pxpAgentService.Status -eq 'Running') {
+    RETURN $true
+  }
+
+  RETURN $false
+}
+
 if ($version) {
+    if (Test-PuppetInstalledVersion) {
+      Write-Output "Puppet Agent ${version} detected. Nothing to do."
+      Exit
+    }
+
     if ($version -eq "latest") {
       $msi_name = "puppet-agent-${arch}-latest.msi"
     } else {
@@ -43,11 +81,15 @@ if ($version) {
 }
 else {
     if (Test-PuppetInstalled) {
-      Write-Output "Puppet Agent detected and no version specified. Nothing to do."
+      Write-Output "Version parameter not defined and agent detected. Nothing to do."
       Exit
     }
 
     $msi_name = "puppet-agent-${arch}-latest.msi"
+}
+
+if (Test-RunningServices) {
+  Write-Error "Puppet Agent upgrade cannot be done while Puppet services are still running."
 }
 
 # Change windows_source only if the collection is a nightly build, and the source was not explicitly specified.
