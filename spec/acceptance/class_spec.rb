@@ -13,12 +13,15 @@ describe 'puppet_agent class' do
       class { 'puppet_agent': package_version => '5.5.16', collection => 'puppet5' }
       EOS
 
-      # Run it twice and test for idempotency
       apply_manifest(pp, :catch_failures => true)
       wait_for_finish_on default
       configure_agent_on default
-      apply_manifest(pp, :catch_changes  => true)
-      wait_for_finish_on default
+      # Run three times to ensure idempotency if upgrading with the package resource (MODULES-10666)
+      unless default['platform'] =~ /solaris-10|aix|osx|windows/i
+        apply_manifest(pp, :expect_changes => true)
+        wait_for_finish_on default
+      end
+      apply_manifest(pp, :catch_changes => true)
     end
 
     describe package(package_name(default)) do
@@ -180,6 +183,42 @@ describe 'puppet_agent class' do
         on default, 'mco ping' do
           hostname = default.hostname.split('.', 2).first
           assert_match(/^#{hostname}[.\w]*\s+time=/, stdout)
+        end
+      end
+    end
+
+    unless default['platform'] =~ /solaris-10|aix|osx|windows/i
+      context 'on platforms managed with the package resource' do
+        before(:all) { setup_puppet_on default }
+
+        after (:all) do
+          on default, 'rm -f /tmp/a'
+          teardown_puppet_on default
+        end
+
+        let(:manifest) do <<-EOS
+      class { 'puppet_agent': package_version => '5.5.16', collection => 'puppet5', before => File['/tmp/a'] }
+      file { '/tmp/a': ensure => 'present' }
+      EOS
+        end
+
+        it 'upgrades the agent on the first run' do
+          # First run should upgrade the agent
+          apply_manifest(manifest, :expect_changes => true)
+          configure_agent_on default
+          expect(package(package_name(default))).to be_installed
+          expect(file('/tmp/a')).not_to exist
+        end
+
+        it 'evaluates remanining resources on the second run' do
+          # Second run should apply the file resource
+          apply_manifest(manifest, :expect_changes => true)
+          expect(file('/tmp/a')).to exist
+        end
+
+        it 'does nothing on future runs' do
+          # Third run should not do anything
+          apply_manifest(manifest, :catch_changes => true)
         end
       end
     end

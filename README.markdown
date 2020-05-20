@@ -338,6 +338,8 @@ There are a few known issues on Windows platforms:
 
 * MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent. If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
 
+* Upgrading on most \*NIX platforms (Linux, AIX, Solaris 11) will end the run after the puppet-agent upgrade finishes. This is to avoid unexpected behavior if already loaded Ruby code happens to interact with newer code that came with the upgrade, or viceversa. If run as a daemon, Puppet will automatically start a new agent run after the upgrade finishes.
+
 Specifically in the 1.2.0 Release:
 * For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
 
