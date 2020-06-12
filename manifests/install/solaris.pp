@@ -48,6 +48,8 @@ class puppet_agent::install::solaris(
     package { $::puppet_agent::package_name:
       ensure          => $package_version,
       install_options => $install_options,
+      notify          => Puppet_agent_end_run[$package_version],
     }
+    puppet_agent_end_run { $package_version : }
   }
 }

@@ -91,6 +91,8 @@ class puppet_agent::install(
       install_options => $_install_options,
       provider        => $_provider,
       source          => $_source,
+      notify          => Puppet_agent_end_run[$_package_version],
     }
+    puppet_agent_end_run { $_package_version : }
   }
 }
