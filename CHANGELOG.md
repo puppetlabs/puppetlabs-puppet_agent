@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.0] - 2020-06-15
+
+### Summary
+Stop agent run after upgrade. Fix `absolute_source` on RPM platforms. Update `puppetlabs-facts` dependency. Do not allow install task to upgrade Windows agents if services are still running.
+
+### Features
+- ([MODULES-10673](https://tickets.puppetlabs.com/browse/MODULES-10673)) Update dependency for puppetlabs-facts ([#495](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/495))
+
+### Bug fixes
+- ([MODULES-10653](https://tickets.puppetlabs.com/browse/MODULES-10653)) Failed to upgrade agent using puppet task ([#494](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/494))
+- ([MODULES-10655](https://tickets.puppetlabs.com/browse/MODULES-10655)) Fix up/downgrade of agent to specified version ([#488](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/488))
+- ([MODULES-10666](https://tickets.puppetlabs.com/browse/MODULES-10666)) Stop agent run after an upgrade ([#496](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/496))
+
 ## [3.2.0] - 2020-05-13
 
 ### Summary
