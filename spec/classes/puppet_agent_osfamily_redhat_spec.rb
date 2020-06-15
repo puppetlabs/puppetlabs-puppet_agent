@@ -237,5 +237,38 @@ describe 'puppet_agent' do
 
       it { is_expected.to contain_class("puppet_agent::osfamily::redhat") }
     end
+
+    context 'when using absolute_source' do
+      let(:params)  {
+        {
+          :package_version => '6.12.0',
+          :absolute_source => "http://just-some-download/url:90/puppet-agent-6.12.0.rpm"
+        }
+      }
+
+      it { is_expected.to contain_class('Puppet_agent::Prepare::Package')
+        .with('source' => 'http://just-some-download/url:90/puppet-agent-6.12.0.rpm')
+      }
+
+      it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-6.12.0.rpm')
+        .with('path'     => '/opt/puppetlabs/packages/puppet-agent-6.12.0.rpm')
+        .with('ensure'   => 'present')
+        .with('owner'    => '0')
+        .with('group'    => '0')
+        .with('mode'     => '0644')
+        .with('source'   => 'http://just-some-download/url:90/puppet-agent-6.12.0.rpm')
+        .that_requires('File[/opt/puppetlabs/packages]')
+        .with('checksum' => 'sha256lite')
+      }
+
+      it { is_expected.to contain_package('puppet-agent')
+        .with('ensure'          => '6.12.0')
+        .with('install_options' => '[]')
+        .with('provider'        => 'rpm')
+        .with('source'          => '/opt/puppetlabs/packages/puppet-agent-6.12.0.rpm')
+      }
+      
+    end
+
   end
 end
