@@ -27,9 +27,6 @@ Puppet::Type.type(:puppet_agent_end_run).provide :puppet_agent_end_run do
     current_version = Facter.value('aio_agent_version')
     desired_version = @resource.name
 
-    # Ensure version has no git SHA or Debian codenames
-    desired_version = Gem::Version.new(desired_version).release.version
-
     Puppet::Util::Package.versioncmp(desired_version, current_version) != 0
   end
 end
