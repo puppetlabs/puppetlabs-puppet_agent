@@ -95,6 +95,20 @@ describe 'puppet_agent' do
           global_facts(facts, os)
         end
 
+        # Windows, Solaris 10 and OS X use scripts for upgrading agents
+        # We test Solaris 11 in its own class
+        if os !~ %r{windows|solaris|darwin}
+          context 'when using a dev build' do
+            let(:params) { { :package_version => '5.2.0.100.g23e53f2' } }
+            it { is_expected.to contain_puppet_agent_end_run('5.2.0.100') }
+          end
+
+          context 'when using a release build' do
+            let(:params) { { :package_version => '5.2.0' } }
+            it { is_expected.to contain_puppet_agent_end_run('5.2.0') }
+          end
+        end
+
         context 'when the aio_agent_version fact is undefined' do
           let(:facts) do
             global_facts(facts, os).merge(aio_agent_version: nil)

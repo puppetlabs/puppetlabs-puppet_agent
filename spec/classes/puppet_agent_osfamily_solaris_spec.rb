@@ -69,7 +69,7 @@ EOF
     :clientcert                => 'foo.example.vm',
     :env_temp_variable         => '/tmp',
     :puppet_agent_pid          => 42,
-    :aio_agent_version         => package_version,
+    :aio_agent_version         => '1.10.100.90',
   }
   # Strips out strings in the version string on Solaris 11,
   # because pkg doesn't accept strings in version numbers. This
@@ -148,6 +148,7 @@ EOF
       it { should compile.with_all_deps }
       it { is_expected.to contain_file('/opt/puppetlabs') }
       it { is_expected.to contain_file('/opt/puppetlabs/packages') }
+      it { is_expected.to contain_puppet_agent_end_run(facts[:aio_agent_version]) }
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p").with({
           'ensure' => 'present',

@@ -45,11 +45,12 @@ class puppet_agent::install::solaris(
       }
     }
   } else {
+    $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?/)[0]
     package { $::puppet_agent::package_name:
       ensure          => $package_version,
       install_options => $install_options,
-      notify          => Puppet_agent_end_run[$package_version],
+      notify          => Puppet_agent_end_run[$_aio_package_version],
     }
-    puppet_agent_end_run { $package_version : }
+    puppet_agent_end_run { $_aio_package_version : }
   }
 }
