@@ -550,6 +550,8 @@ case $platform in
     info "Mint platform! Lets get you a DEB..."
     case $major_version in
       "3")  deb_codename="stretch";;
+      "4")  deb_codename="buster";;
+      "20") deb_codename="focal";;
       "19") deb_codename="bionic";;
       "18") deb_codename="xenial";;
       "17") deb_codename="trusty";;
