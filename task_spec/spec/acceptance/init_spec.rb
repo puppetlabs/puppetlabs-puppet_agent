@@ -71,7 +71,7 @@ describe 'install task' do
                 run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
               end
     output = service[0]['result']['stdout']
-    expect(output).to include("ensure => 'stopped'")
+    expect(output).to match(%r{ensure\s+=> 'stopped'})
 
     # Try to upgrade with no specific version given in parameter
     # Expect nothing to happen and receive a message regarding this
@@ -116,7 +116,7 @@ describe 'install task' do
       # Manually stop the puppet agent service
       service = run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet ensure=stopped', 'target')
       output = service[0]['result']['stdout']
-      expect(output).to include("ensure => 'stopped'")       
+      expect(output).to match(%r{ensure\s+=> 'stopped'})
     end
 
     # Succesfully upgrade from puppet5 to puppet6
@@ -142,6 +142,33 @@ describe 'install task' do
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['result']['_output']).to match(%r{Puppet Agent #{installed_version} detected. Nothing to do.})
+    end
+
+    if target_platform !~ /sles-11/
+      # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
+      if target_platform =~ /win/
+        # Manually stop the puppet agent service
+        service = run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet ensure=stopped', 'target')
+        output = service[0]['result']['stdout']
+        expect(output).to match(%r{ensure\s+=> 'stopped'})
+      end
+
+      #Upgrade from puppet6 to puppet7 nightly
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7-nightly', 'version' => 'latest' })
+      results.each do |res|
+        expect(res).to include('status' => 'success')
+      end
+
+      # Verify that it upgraded
+      installed_version = nil
+      results = run_task('puppet_agent::version', 'target', {})
+      results.each do |res|
+        expect(res).to include('status' => 'success')
+        installed_version = res['result']['version']
+        expect(installed_version).not_to match(%r{^6\.\d+\.\d+})
+        expect(installed_version).to match(%r{^7\.\d+\.\d+})
+        expect(res['result']['source']).to be
+      end
     end
   end
 end
