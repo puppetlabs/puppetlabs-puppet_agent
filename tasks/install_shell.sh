@@ -112,7 +112,11 @@ fi
 if [ -n "$PT_mac_source" ]; then
   mac_source=$PT_mac_source
 else
-  mac_source='http://downloads.puppet.com'
+  if [ "$nightly" = true ]; then
+    mac_source='http://nightlies.puppet.com/downloads'
+  else
+    mac_source='http://downloads.puppet.com'
+  fi
 fi
 
 # Track to handle puppet5 to puppet6
