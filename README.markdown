@@ -41,6 +41,8 @@
         - [`install_options`](#install_options)
         - [`msi_move_locked_files`](#msi_move_locked_files)
         - [`wait_for_pxp_agent_exit`](#wait_for_pxp_agent_exit)
+    - [Plans](#plans)
+      - [`puppet_agent::run`](#puppet_agentrun)
     - [Tasks](#tasks)
       - [`puppet_agent::version`](#puppet_agentversion)
       - [`puppet_agent::install`](#puppet_agentinstall)
@@ -297,6 +299,31 @@ This is only applicable for Windows operating systems and pertains to /files/ins
 
 ``` puppet
   wait_for_pxp_agent_exit => 480000
+```
+
+### Plans
+
+#### `puppet_agent::run`
+
+Starts a Puppet agent run on the specified targets.
+
+**Parameters**
+
+- `targets`: A list of targets to start the Puppet agent run on.
+
+**Return value**
+
+Returns a `ResultSet` object. Targets that do not have an agent installed will have a failing
+`Result` object. For targets that have an agent installed and successfully ran the agent,
+the `Result` object will include the output of the agent run, the detailed exit code, and the
+contents of the run report.
+
+```
+{
+  "_output": <output>,
+  "exitcode": <exitcode>,
+  "report": <report>
+}
 ```
 
 ### Tasks
