@@ -135,7 +135,7 @@ class puppet_agent::osfamily::redhat{
     if $::puppet_agent::manage_repo == true {
       $_proxy = $::puppet_agent::disable_proxy ? {
         true    => '_none_',
-        default => undef,
+        default => $::puppet_agent::proxy,
       }
       yumrepo { 'pc_repo':
         baseurl             => $source,
