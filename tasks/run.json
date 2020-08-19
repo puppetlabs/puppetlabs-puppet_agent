@@ -1,0 +1,5 @@
+{
+  "description": "Run the Puppet agent. This task may cause problems if run in Puppet Enterprise.",
+  "parameters": {},
+  "private": true
+}
