@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.1.0] - 2020-08-19
+
+### Summary
+Add support for Linux Mint 20, and add puppet agent run plan to run the agent against remote
+targets.
+
+### Features
+
+- Support for Linux Mint 20, LDME 4 ([#500](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/500))
+- ([MODULES-10739](https://tickets.puppetlabs.com/browse/MODULES-10739)) add task support for
+  puppet7-nightly ([#501](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/501))
+- ([MODULES-10768](https://tickets.puppetlabs.com/browse/MODULES-10768)) Add task and plan for
+  running the Puppet agent ([#503](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/503))
+
+### Bug fixes
+
+- ([MODULES-10713](https://tickets.puppetlabs.com/browse/MODULES-10713)) Fix agent upgrade on Solaris 11 ([#499](https://github.com/puppetlabs/puppetlabs-puppet_agent/pulls/499))
+
 ## [4.0.0] - 2020-06-15
 
 ### Summary
