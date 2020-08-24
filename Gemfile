@@ -65,6 +65,7 @@ group :system_tests do
   gem "beaker-rspec", *location_for(ENV['BEAKER_RSPEC_VERSION'] || '~> 6.2')
   gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'])
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0.1')
+  gem 'pdk', *location_for(ENV['PDK_GEM_VERSION'])
   gem "puppet-blacksmith", '~> 3.4',                                             :require => false
   # Bundler fails on 2.1.9 even though this group is excluded
   if ENV['GEM_BOLT']
