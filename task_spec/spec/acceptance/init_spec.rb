@@ -65,7 +65,7 @@ describe 'install task' do
     end
 
     # Check that puppet agent service has been stopped due to 'stop_service' parameter set to true
-    service = if target_platform =~ /win/
+    service = if target_platform =~ %r{win}
                 run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet', 'target')
               else
                 run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
@@ -105,7 +105,7 @@ describe 'install task' do
     end
 
     # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
-    if target_platform =~ /win/
+    if target_platform =~ %r{win}
       # Try to upgrade from puppet5 to puppet6 but fail due to puppet agent service already running
       results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
       results.each do |res|
@@ -144,9 +144,9 @@ describe 'install task' do
       expect(res['result']['_output']).to match(%r{Puppet Agent #{installed_version} detected. Nothing to do.})
     end
 
-    if target_platform !~ /sles-11/
+    if target_platform !~ %r{sles-11}
       # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
-      if target_platform =~ /win/
+      if target_platform =~ %r{win}
         # Manually stop the puppet agent service
         service = run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet ensure=stopped', 'target')
         output = service[0]['result']['stdout']

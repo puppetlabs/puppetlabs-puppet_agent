@@ -6,6 +6,6 @@ module Puppet::Parser::Functions
 
     path = args[0]
 
-    return path.gsub(/\/\s/, ' ').gsub(/\//, "\\")
+    return path.gsub(%r{\/\s}, ' ').tr('/', "\\")
   end
 end
