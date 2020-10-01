@@ -44,6 +44,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           })}
 
           it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
+          it { is_expected.not_to contain_exec('prerequisites_check.ps1') }
           it { is_expected.not_to contain_exec('fix inheritable SYSTEM perms') }
         end
 
@@ -59,6 +60,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
           it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
           it { is_expected.not_to contain_exec('install_puppet.bat') }
+          it { is_expected.not_to contain_exec('prerequisites_check.ps1') }
         end
 
         context 'with out of date aio_agent_version' do
@@ -68,6 +70,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           })}
 
           it { is_expected.to contain_class('puppet_agent::install::windows') }
+          it { is_expected.to contain_exec('prerequisites_check.ps1').with_command(/\ #{package_version} C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log/) }
           it { is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source \'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi\'/) }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
