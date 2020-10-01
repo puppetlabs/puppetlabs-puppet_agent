@@ -202,8 +202,11 @@ def teardown_puppet_on(host)
       clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     when /fedora|el|centos/
       clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
-    when /sles|osx/
+    when /osx/
       ensure_type = 'absent'
+    when /sles/
+      ensure_type = 'absent'
+      clean_repo = "file { '/etc/zypp/repos.d/pc_repo.repo': ensure => absent, notify => Package['puppet-agent'] }"
     else
       logger.notify("Not sure how to remove repos on #{host['platform']}")
       clean_repo = ''
