@@ -168,6 +168,14 @@ class puppet_agent (
 
     $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
 
+    if $aio_upgrade_required {
+      if any_resources_of_type('filebucket', { path => false }) {
+        if $settings::digest_algorithm != $::puppet_digest_algorithm {
+          fail("Remote filebuckets are enabled, but there was a agent/server digest algorithm mismatch. Server: ${settings::digest_algorithm}, agent: ${::puppet_digest_algorithm}. Either ensure the algorithms are matching, or disable remote filebuckets during the upgrade.")
+        }
+      }
+    }
+
     if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
       $_version_without_letters = regsubst($master_or_package_version, '[a-zA-Z]', '', 'G')
