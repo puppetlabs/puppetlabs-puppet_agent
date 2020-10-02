@@ -22,6 +22,7 @@ param (
 Write-Log "Checking puppet-agent.msi version and expected puppet-agent version.." $Logfile
 try{
   if (!(Test-Path $Msi.FullName)) {
+    Write-Error "ERROR: File '${Msi.FullName}' does not exist"
     Write-Log "ERROR: File '${Msi.FullName}' does not exist" $Logfile
     throw
   }
@@ -43,6 +44,7 @@ try{
     $Msi_version = $record.GetType().InvokeMember( "StringData", "GetProperty", $Null, $record, 1 )
 
   } catch {
+    Write-Error "ERROR: Failed to get MSI file version: ${_}."
     Write-Log "ERROR: Failed to get MSI file version: ${_}." $Logfile
     throw
   }
@@ -50,6 +52,7 @@ try{
     Write-Log ".msi file version and expected puppet-agent version match (${Msi_version})" $Logfile
     exit 0
   } else {
+    Write-Output "ERROR: The expected puppet-agent version(${RequiredVersion}) does NOT match the .msi version ${Msi_version}.  Installation will STOP!"
     Write-Log "ERROR: The expected puppet-agent version(${RequiredVersion}) does NOT match the .msi version ${Msi_version}. Installation will STOP!" $Logfile
     throw
   }
