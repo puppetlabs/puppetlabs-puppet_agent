@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout current PR code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Install ruby version ${{ env.ruby_version }}
         uses: ruby/setup-ruby@v1
