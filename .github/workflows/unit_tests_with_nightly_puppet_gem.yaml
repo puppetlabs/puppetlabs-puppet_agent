@@ -12,7 +12,7 @@ jobs:
     name: ${{ matrix.os_type }} / Puppet${{ matrix.puppet_version }} gem / Ruby ${{ matrix.ruby }}
     strategy:
       matrix:
-        os: [ 'ubuntu-18.04', 'macos-10.15', 'windows-2019' ]
+        os: [ 'ubuntu-18.04', 'macos-10.15', 'windows-2016' ]
         puppet_version: [ 5, 6, 7 ]
         include:
           - puppet_version: 5
@@ -30,7 +30,7 @@ jobs:
             os_type: 'macOS'
             env_set_cmd: 'export '
             gem_file: 'puppet-latest-universal-darwin.gem'
-          - os: 'windows-2019'
+          - os: 'windows-2016'
             os_type: 'Windows'
             env_set_cmd: '$env:'
             gem_file: 'puppet-latest-x64-mingw32.gem'
