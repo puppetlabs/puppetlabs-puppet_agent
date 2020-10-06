@@ -167,6 +167,7 @@ class puppet_agent (
     }
 
     $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
+    $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
 
     if $aio_upgrade_required {
       if any_resources_of_type('filebucket', { path => false }) {

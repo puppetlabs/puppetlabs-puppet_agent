@@ -34,7 +34,7 @@ class puppet_agent::install(
     }
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
-    if $puppet_agent::aio_upgrade_required {
+    if ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
       class { 'puppet_agent::install::windows':
         install_dir     => $install_dir,
         install_options => $install_options,
