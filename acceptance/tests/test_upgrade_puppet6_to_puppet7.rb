@@ -3,7 +3,7 @@ require_relative '../helpers'
 
 # Tests FOSS upgrades from the latest puppet 6 (the puppet6 collection) to puppet 7.0.0.
 test_name 'puppet_agent class: Upgrade agents from puppet6 to puppet7' do
-  # require_master_collection 'puppet7' #once puppet7 collection is available this can be uncommented
+  require_master_collection 'puppet7-nightly'
   exclude_pe_upgrade_platforms
   latest_version = `curl http://builds.delivery.puppetlabs.net/passing-agent-SHAs/puppet-agent-main-version`.gsub(/\d*\.\d*.\d*\./,"7.0.0.")
   
