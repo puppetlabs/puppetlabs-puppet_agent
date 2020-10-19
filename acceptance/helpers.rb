@@ -143,7 +143,7 @@ module Beaker
         confine :to, {} do |host|
           next true if host['roles'].include?('master')
 
-          ! %w[aix amazon sles solaris osx].include?(host['platform'])
+          ! %w[aix amazon solaris].include?(host['platform'])
         end
       end
     end
