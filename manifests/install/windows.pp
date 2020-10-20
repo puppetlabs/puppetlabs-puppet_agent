@@ -26,7 +26,13 @@ class puppet_agent::install::windows(
   }
 
   if $::puppet_agent::msi_move_locked_files {
-    $_move_dll_workaround = '-UseLockedFilesWorkaround'
+    if ($::puppet_agent::_expected_package_version.match(/^5.5/) and versioncmp($::puppet_agent::_expected_package_version, '5.5.17') < 0) or
+      ($::puppet_agent::_expected_package_version.match(/^6/) and versioncmp($::puppet_agent::_expected_package_version, '6.8.0') < 0) {
+      $_move_dll_workaround = '-UseLockedFilesWorkaround'
+    } else {
+      notify { 'Ignoring msi_move_locked_files setting as it is no longer needed with newer puppet-agent versions (puppet 5 >= 5.5.17 or puppet 6 >= 6.8.0)': }
+      $_move_dll_workaround = undef
+    }
   } else {
     $_move_dll_workaround = undef
   }
