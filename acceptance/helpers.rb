@@ -364,9 +364,11 @@ module Beaker
 
         step "Teardown: (Agent) Uninstall the puppet-agent package on agent #{host_to_info_s(host)}" do
           if host['platform'] =~ /windows/
+            install_dir = on(host, "facter.bat env_windows_installdir").output.tr('\\', '/').chomp
             scp_to(host, "#{SUPPORTING_FILES}/uninstall.ps1", "uninstall.ps1")
             on(host, 'rm -rf C:/ProgramData/PuppetLabs')
             on(host, 'powershell.exe -File uninstall.ps1 < /dev/null')
+            on(host, "rm -rf '#{install_dir}'")
           else
             manifest_lines = []
             # Remove pc_repo:
