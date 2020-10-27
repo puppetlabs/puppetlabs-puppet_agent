@@ -280,17 +280,22 @@ The directory the puppet agent should be installed to. This is only applicable f
 
 An array of additional options to pass when installing puppet-agent. Each option in the array can be either a string or a hash. Each option is automatically quoted when passed to the install command.
 
-With Windows packages, note that file paths in `install_options` must use backslashes. (Since install options are passed directly to the installation command, forward slashes aren't automatically converted like they are in `file` resources.) Backslashes in double-quoted strings _must_ be escaped, while backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="maus"`.
+With Windows packages, note that file paths in `install_options` must use backslashes. (Since install options are passed directly to the installation command, forward slashes aren't automatically converted like they are in `file` resources.) Backslashes in double-quoted strings _must_ be escaped, while backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="amus"`.
 ``` puppet
   install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp','PUPPET_AGENT_ACCOUNT_USER=bob','PUPPET_AGENT_ACCOUNT_PASSWORD=password']
 ```
 
 ##### `msi_move_locked_files`
 
-This is only applicable for Windows operating systems. There may be instances where file locks cause unncessary service restarts.  By setting to true, the module will move files prior to installation that are known to cause file locks. By default this is set to false.
+This is only applicable for Windows operating systems and for Puppet 5 prior to 5.5.17 or Puppet 6 prior to 6.8.0. There may be instances where file locks cause unnecessary service restarts.  By setting to true, the module will move files prior to installation that are known to cause file locks. By default this is set to false.
 
 ``` puppet
   msi_move_locked_files => true
+```
+
+In case `msi_move_locked_files` is set to `true` while upgrading to Puppet 5 following 5.5.17 or Puppet 6 following 6.8.0, Puppet can get into a state where `puppet --version` reports the older version(5.5.16) while the package reported by Windows is the new version(5.5.17). To recover from this case `ADDLOCAL=ALL` must be added to install_options
+``` puppet
+  install_options => ['REINSTALLMODE="amus"', 'ADDLOCAL=ALL']
 ```
 
 #### `wait_for_pxp_agent_exit`
@@ -359,16 +364,20 @@ Mac OS X/macOS open source packages are not supported in puppet_agent module rel
 
 ### Known issues
 
-There are a few known issues on Windows platforms:
+Windows platforms:
 
 * To upgrade the agent by executing `puppet agent -t` interactively in a console, you must leave the console open and wait for the upgrade to finish before attempting to use the `puppet` command again. During upgrades the upgrade scripts use a 'pid file' located at Drive:\ProgramData\PuppetLabs\puppet\cache\state\puppet_agent_upgrade.pid to indicate there is an upgrade in progress. The 'pid file' also contains the process ID of the upgrade, if you wish to track the process itself.
 
 * MSI installation failures do not produce any error. If the install fails, puppet_agent continues to be applied to the agent. If this happens, you'll need to examine the MSI log file to determine the failure's cause. You can find the location of the log file in the debug output from either a puppet apply or an agent run; the log file name follows the pattern `puppet-<timestamp>-installer.log`.
 
-* Upgrading on most \*NIX platforms (Linux, AIX, Solaris 11) will end the run after the puppet-agent upgrade finishes. This is to avoid unexpected behavior if already loaded Ruby code happens to interact with newer code that came with the upgrade, or viceversa. If run as a daemon, Puppet will automatically start a new agent run after the upgrade finishes.
+* If the upgrade is from Puppet 5 prior to 5.5.17 or Puppet 6 prior to 6.8.0 to newer version and `msi_move_locked_files` is set to `true`, Puppet can get into a state where `puppet --version` reports the older version(5.5.16) while the package reported by Windows is the new version(5.5.17). To recover from this case `ADDLOCAL=ALL` must be added to install_options
+``` puppet
+  install_options => ['REINSTALLMODE="amus"', 'ADDLOCAL=ALL']
+```
 
-Specifically in the 1.2.0 Release:
-* For Windows, you must trigger an agent run after upgrading so that Puppet can create the necessary directory structures.
+\*NIX platforms:
+
+* Upgrading on most \*NIX platforms (Linux, AIX, Solaris 11) will end the run after the puppet-agent upgrade finishes. This is to avoid unexpected behavior if already loaded Ruby code happens to interact with newer code that came with the upgrade, or viceversa. If run as a daemon, Puppet will automatically start a new agent run after the upgrade finishes.
 
 ## Development
 
