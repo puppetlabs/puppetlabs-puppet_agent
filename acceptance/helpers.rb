@@ -86,7 +86,9 @@ module Beaker
 
         if args.is_a?(Symbol)
           collection = args.to_s
-          unless server_collection == collection
+
+          # puppet_collection_for doesn't know about nightly collections
+          unless collection.include?(server_collection)
             skip_test(msg_prefix + "\nThis test requires a puppetserver from the #{collection} collection. Skipping the test ...")
           end
 
