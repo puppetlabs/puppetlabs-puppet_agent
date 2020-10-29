@@ -46,6 +46,8 @@ param(
   [Int32] $WaitForPXPAgentExit=120000
 )
 
+# $PSScript is only available in Powershell >= 3.
+if(!$PSScriptRoot){ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
 . "$PSScriptRoot\helpers.ps1"
 
 # Find-InstallDir, Move-PuppetresDLL and Reset-PuppetresDLL serve as a workaround for older
