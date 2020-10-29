@@ -22,13 +22,20 @@ if(!$PSScriptRoot){ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Par
 . "$PSScriptRoot\helpers.ps1"
 
 Write-Log "Checking puppet-agent.msi version and expected puppet-agent version.." $Logfile
-try{
+try {
   if (!(Test-Path $Msi.FullName)) {
     Write-Error "ERROR: File '${Msi.FullName}' does not exist"
     Write-Log "ERROR: File '${Msi.FullName}' does not exist" $Logfile
     throw
   }
   $Msi_version = ""
+
+  # MSI versions in dev/nightly builds are the same as released
+  # builds, so only match MAJOR.MINOR.PATCH.
+  if ($RequiredVersion -match "(\d+.\d+.\d+).\d+") {
+    $RequiredVersion = $Matches[1]
+  }
+
   try {
     $windowsInstaller = New-Object -com WindowsInstaller.Installer
     $database = $windowsInstaller.GetType().InvokeMember(
