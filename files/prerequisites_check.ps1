@@ -17,6 +17,8 @@ param (
     [String] $Logfile
 )
 
+# $PSScript is only available in Powershell >= 3.
+if(!$PSScriptRoot){ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
 . "$PSScriptRoot\helpers.ps1"
 
 Write-Log "Checking puppet-agent.msi version and expected puppet-agent version.." $Logfile
