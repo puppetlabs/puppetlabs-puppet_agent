@@ -2,6 +2,24 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.2.0] - 2020-10.30
+
+### Summary
+Various Windows fixes and additions to facilitate upgrading to Puppet 7.
+
+The fixes for ([MODULES-10850](https://tickets.puppetlabs.com/browse/MODULES-10850)) and ([MODULES-10851](https://tickets.puppetlabs.com/browse/MODULES-10851)) do not affect any released version of the module, but are still included in the changelog.
+
+### Features
+
+- ([MODULES-10799](https://tickets.puppetlabs.com/browse/MODULES-10799)) Ensure upgradability to Puppet 7 when remote filebuckets are enabled ([#511](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/511))
+
+### Bug fixes
+
+- ([MODULES-10813](https://tickets.puppetlabs.com/browse/MODULES-10813)) Mismatched versions stops install on Windows ([#512](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/512))
+- ([MODULES-10818](https://tickets.puppetlabs.com/browse/MODULES-10818)) Ignore `msi_move_locked_files` on newer puppet versions ([#515](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/515))
+- ([MODULES-10850](https://tickets.puppetlabs.com/browse/MODULES-10850)) Determine `PSScriptRoot` if it does not exist ([#519](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/519))
+- ([MODULES-10851](https://tickets.puppetlabs.com/browse/MODULES-10851)) Fix Windows nightly prerequisites check ([#520](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/520))
+
 ## [4.1.0] - 2020-08-19
 
 ### Summary
