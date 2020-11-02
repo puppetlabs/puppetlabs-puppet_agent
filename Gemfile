@@ -49,6 +49,7 @@ group :development do
   gem "puppet-module-posix-default-r#{minor_version}",       :require => false, :platforms => "ruby"
   gem "puppet-module-win-default-r#{minor_version}",         :require => false, :platforms => ["mswin", "mingw", "x64_mingw"]
   gem "rspec-puppet",                                        :require => true, git: "https://github.com/rodjek/rspec-puppet", tag: "v2.7.9"
+  gem 'rspec-expectations', '~> 3.9.0',                      :require => false
   gem "json_pure", '<= 2.0.1',                               :require => false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')
   gem "fast_gettext", '1.1.0',                               :require => false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')
   gem "fast_gettext",                                        :require => false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.1.0')
