@@ -40,5 +40,8 @@ jobs:
         run: |
           git config --global core.longpaths true
           bundle update --jobs 4 --retry 3
+
       - name: Run task acceptance tests
-        run: cd task_spec && bundle exec rake task_acceptance
+        run: |
+          cd task_spec
+          bundle exec rake task_acceptance
