@@ -49,6 +49,7 @@ jobs:
           gem install puppet.gem -N
       - name: Prepare testing environment with bundler
         run: |
+          git config --global core.longpaths true
           bundle config set system 'true'
           ${{ matrix.env_set_cmd }}PUPPET_GEM_VERSION=$(ruby -e 'puts /puppet\s+\((.+)\)/.match(`gem list -eld puppet`)[1]')
           bundle update --jobs 4 --retry 3
