@@ -27,7 +27,9 @@ jobs:
           ruby-version: ${{ env.ruby_version }}
 
       - name: Prepare testing environment with bundler
-        run: bundle update --jobs 4 --retry 3
+        run: |
+          git config --global core.longpaths true
+          bundle update --jobs 4 --retry 3
 
       - name: Run commits check
         run: bundle exec rake commits
