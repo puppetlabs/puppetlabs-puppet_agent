@@ -152,7 +152,7 @@ The architecture version you wish to install. Defaults to `$::facts['architectur
 
 ##### `collection`
 
-The Puppet Collection to track, should be one of `puppet5` or `puppet6`.  Puppet collections contain the latest agents included in the collection's series, so `puppet5` will pull in the most recent Puppet 5 release (for example: 5.5.10) as also will `puppet6` for Puppet 6 (for example: 6.3.0).  **This parameter is required for installations not connected to Puppet Enterprise**
+The Puppet Collection to track, should be one of `puppet5`, `puppet6` or `puppet7`.  Puppet collections contain the latest agents included in the collection's series, so `puppet5` will pull in the most recent Puppet 5 release (for example: 5.5.10) as also will `puppet6` for Puppet 6 (for example: 6.3.0).  **This parameter is required for installations not connected to Puppet Enterprise**
 ``` puppet
   collection => 'puppet6'
 ```

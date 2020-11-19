@@ -55,7 +55,7 @@ module Beaker
       # end
       #
       # test_name 'an agent upgrade test' do
-      #   require_master_collection max: 'puppet6'
+      #   require_master_collection max: 'puppet7'
       # end
       #
       # The first restriction will only run the test if the master's puppetserver is from

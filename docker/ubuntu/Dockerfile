@@ -40,7 +40,7 @@ COPY $0 /tmp/Dockerfile
 ARG before=1.10.14
 LABEL before=${before}
 
-# Install proper FROM repo: PC1 (puppet 4), puppet 5, or puppet 6.
+# Install proper FROM repo: PC1 (puppet 4), puppet 5, puppet 6, or puppet7.
 RUN if (echo "$before" | grep -Eq  ^1\..*$) ; then \
         echo Installing PC1 repo; \
         wget -O puppet-pc1.deb http://apt.puppetlabs.com/puppetlabs-release-pc1-xenial.deb && \
@@ -53,6 +53,10 @@ RUN if (echo "$before" | grep -Eq  ^1\..*$) ; then \
         echo Installing puppet6 repo; \
         wget -O puppet6.deb http://apt.puppetlabs.com/puppet6-release-xenial.deb && \
         dpkg -i puppet6.deb; \
+    elif (echo "$before" | grep -Eq  ^7\..*$) ; then \
+        echo Installing puppet7 repo; \
+        wget -O puppet7.deb http://apt.puppetlabs.com/puppet7-release-xenial.deb && \
+        dpkg -i puppet7.deb; \
     else echo no; \
     fi
 
