@@ -89,6 +89,11 @@
 #   This parameter is only applicable for Windows operating systems and pertains to the 
 #   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
 #   for the PXP agent to end successfully. The default value is set 2 minutes.
+# [config]
+#   An array of configuration data to enforce. Each configuration data item must be a
+#   Puppet_agent::Config hash, which has keys for puppet.conf section, setting, and value.
+#   This parameter is constrained to managing only a predetermined set of configuration
+#   settings, e.g. runinterval.
 class puppet_agent (
   $arch                    = $::architecture,
   $collection              = $::puppet_agent::params::collection,
@@ -114,7 +119,15 @@ class puppet_agent (
   $skip_if_unavailable     = 'absent',
   $msi_move_locked_files   = false,
   $wait_for_pxp_agent_exit = undef,
+  Array[Puppet_agent::Config] $config = [],
 ) inherits ::puppet_agent::params {
+
+  # The configure class uses $puppet_agent::config to manage settings in
+  # puppet.conf, and will always be present. It does not require management of
+  # the agent package. Dependencies for configure will be declared later if the
+  # puppet_agent::prepare and puppet_agent::install are also added to the
+  # catalog.
+  contain('puppet_agent::configure')
 
   if (getvar('::aio_agent_version') == undef) {
     fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
@@ -189,14 +202,15 @@ class puppet_agent (
     class { '::puppet_agent::prepare':
       package_version => $_package_version,
     }
-    -> class { '::puppet_agent::install':
+    class { '::puppet_agent::install':
       package_version => $_package_version,
       install_dir     => $install_dir,
       install_options => $install_options,
     }
 
-    contain '::puppet_agent::prepare'
-    contain '::puppet_agent::install'
+    contain('puppet_agent::prepare')
+    -> contain('puppet_agent::install')
+    -> Class['puppet_agent::configure']
 
     # Service management:
     # - Under Puppet Enterprise, the agent nodegroup is managed by PE, and we don't need to manage services here.
@@ -204,10 +218,8 @@ class puppet_agent (
     # ...but outside of PE, on other platforms, we must make sure the services are restarted. We do that with the
     # ::puppet_agent::service class. Make sure it's applied after the install process finishes if needed:
     if $::osfamily != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
-      class { '::puppet_agent::service':
-        require => Class['::puppet_agent::install'],
-      }
-      contain '::puppet_agent::service'
+      Class['puppet_agent::configure']
+      ~> contain('puppet_agent::service')
     }
   }
 }

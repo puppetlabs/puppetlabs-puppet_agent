@@ -311,6 +311,17 @@ This is only applicable for Windows operating systems and pertains to /files/ins
   wait_for_pxp_agent_exit => 480000
 ```
 
+#### `config`
+
+An array of configuration data to enforce. Each configuration data item must be a Puppet\_agent::Config hash, which has keys for puppet.conf section, setting, and value.  This parameter is constrained to managing only a predetermined set of configuration settings. E.g. runinterval. The optional "ensure" key in a Puppet\_agent::Config hash can be used to ensure a setting is absent. In the example below, the runinterval setting in the main section is set to 1 hour, and a local environment setting is ensured absent.
+
+``` puppet
+  config => [{section => main, setting => runinterval, value => '1h'},
+             {section => main, setting => environment, ensure => absent}]
+```
+
+Valid agent settings are defined by the [`Puppet_agent::Config_setting`](types/config_setting.pp) type alias.
+
 ### Plans
 
 #### `puppet_agent::run`
