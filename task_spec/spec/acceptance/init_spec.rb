@@ -153,8 +153,8 @@ describe 'install task' do
         expect(output).to match(%r{ensure\s+=> 'stopped'})
       end
 
-      #Upgrade from puppet6 to puppet7 nightly
-      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7-nightly', 'version' => 'latest' })
+      #Upgrade from puppet6 to puppet7
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
       results.each do |res|
         expect(res).to include('status' => 'success')
       end

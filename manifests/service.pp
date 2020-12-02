@@ -6,7 +6,7 @@
 class puppet_agent::service{
   assert_private()
 
-  # Starting with puppet6 collections we no longer carry the mcollective service
+  # Starting with puppet6 and up collections we no longer carry the mcollective service
   if versioncmp("${::clientversion}", '6.0.0') >= 0 {
     $_service_names = delete($::puppet_agent::service_names, 'mcollective')
   } else {

@@ -39,11 +39,14 @@ exists() {
 assert_unmodified_apt_config() {
   puppet_list=/etc/apt/sources.list.d/puppet.list
   puppet6_list=/etc/apt/sources.list.d/puppet6.list
+  puppet7_list=/etc/apt/sources.list.d/puppet7.list
 
   if [[ -f $puppet_list ]]; then
     list_file=puppet_list
   elif [[ -f $puppet6_list ]]; then
     list_file=puppet6_list
+  elif [[ -f $puppet7_list ]]; then
+    list_file=puppet7_list
   fi
 
   # If puppet.list exists, get its md5sum on disk and its md5sum from the puppet-release package
