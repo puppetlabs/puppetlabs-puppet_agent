@@ -101,7 +101,7 @@ describe 'puppet_agent' do
     end
   end
 
-  context 'with a puppet6 collection' do
+  context 'with a puppet6 <= 6.19.1 collection' do
     let(:params) {
       {
         package_version: '6.0.0',
@@ -110,6 +110,21 @@ describe 'puppet_agent' do
     }
 
     [['7.2', '6.1', '8'], ['7.1', '6.1', '8'], ['7.1', '6.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
+      context "aix #{aixver}" do
+        include_examples 'aix', aixver, pkg_aixver, powerver
+      end
+    end
+  end
+
+  context 'with a puppet6 > 6.19.1 collection' do
+    let(:params) {
+      {
+        package_version: '6.19.1.72.g49d3c849',
+        collection: 'puppet6',
+      }
+    }
+
+    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7']].each do |aixver, pkg_aixver, powerver|
       context "aix #{aixver}" do
         include_examples 'aix', aixver, pkg_aixver, powerver
       end

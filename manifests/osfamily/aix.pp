@@ -28,8 +28,14 @@ class puppet_agent::osfamily::aix{
   #     * AIX verison 7.1 < aix-6.1-power package
   #     * AIX verison 7.2 < aix-6.1-power package
   #
-  # For puppet > 6 everything will now _only_ use the aix-6.1-power packages (i.e. we now only ship
+  # puppet 6 > 6.19.1 and puppet 7 > 7.0.0:
+  #     * AIX verison 7.1 < aix-7.1-power package
+  #     * AIX verison 7.2 < aix-7.1-power package
+  #
+  # For puppet > 6 and <= 6.19.1 everything will _only_ use the aix-6.1-power packages (i.e. we now only ship
   # one package to support all aix versions).
+  # For puppet 6 > 6.19.1 everything will now _only_ use the aix-7.1-power packages since aix-6.1 is no longer
+  # supported
   #
   # The following will update the aix_ver_number variable to identify which package to install based
   # on puppet collection and version of AIX.
@@ -41,7 +47,11 @@ class puppet_agent::osfamily::aix{
         default  => $_aix_ver_number,
       }
     } else {
-      $aix_ver_number = '6.1'
+      if versioncmp($::puppet_agent::prepare::package_version, "6.19.1") > 0{
+        $aix_ver_number = '7.1'
+      } else {
+        $aix_ver_number = '6.1'
+      }
     }
   }
 
