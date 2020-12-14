@@ -2,7 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [4.2.0] - 2020-10.30
+## [4.3.0] - 2020-12-14
+
+### Summary
+Task support for puppet7 collection. Use correct AIX packages when upgrading.
+
+### Features
+
+- ([MODULES-10873](https://tickets.puppetlabs.com/browse/MODULES-10873)) Add support for puppet7 collection ([#524](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/524))
+
+### Bug fixes
+
+- ([MODULES-10878](https://tickets.puppetlabs.com/browse/MODULES-10878)) Use correct packages when upgrading AIX ([#527](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/527))
+
+## [4.2.0] - 2020-10-30
 
 ### Summary
 Various Windows fixes and additions to facilitate upgrading to Puppet 7.
