@@ -513,10 +513,12 @@ info "Downloading Puppet $version for ${platform}..."
 case $platform in
   "SLES")
     info "SLES platform! Lets get you an RPM..."
-    gpg_key="${tmp_dir}/RPM-GPG-KEY-puppet-20250406"
-    do_download "https://yum.puppet.com/GPG-KEY-puppet-20250406" "$gpg_key"
-    rpm --import "$gpg_key"
-    rm -f "$gpg_key"
+    for key in "puppet" "puppet-20250406"; do
+      gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
+      do_download "https://yum.puppet.com/RPM-GPG-KEY-${key}" "$gpg_key"
+      rpm --import "$gpg_key"
+      rm -f "$gpg_key"
+    done
     filetype="noarch.rpm"
     filename="${collection}-release-sles-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
