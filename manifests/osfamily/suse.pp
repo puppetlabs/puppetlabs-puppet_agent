@@ -35,9 +35,9 @@ class puppet_agent::osfamily::suse{
     case $::operatingsystemmajrelease {
       '11', '12', '15': {
         # Import the GPG key
-        $legacy_keyname  = 'GPG-KEY-puppetlabs'
+        $legacy_keyname  = 'GPG-KEY-puppet'
         $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
-        $keyname         = 'GPG-KEY-puppet'
+        $keyname         = 'GPG-KEY-puppet-20250406'
         $gpg_path        = "/etc/pki/rpm-gpg/RPM-${keyname}"
         $gpg_homedir     = '/root/.gnupg'
 

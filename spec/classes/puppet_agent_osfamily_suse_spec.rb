@@ -60,11 +60,11 @@ describe 'puppet_agent' do
             'logoutput' => 'on_failure',
           }) }
 
-          it { is_expected.to contain_exec('import-GPG-KEY-puppetlabs').with({
+          it { is_expected.to contain_exec('import-GPG-KEY-puppet-20250406').with({
             'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-            'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs',
-            'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir /root/.gnupg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
-            'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs]',
+            'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
+            'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir /root/.gnupg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
+            'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
             'logoutput' => 'on_failure',
           }) }
 
@@ -85,12 +85,12 @@ describe 'puppet_agent' do
 
           it { is_expected.to contain_class("puppet_agent::osfamily::suse") }
 
-          it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs').with({
+          it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406').with({
             'ensure' => 'present',
             'owner'  => '0',
             'group'  => '0',
             'mode'   => '0644',
-            'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppetlabs',
+            'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet-20250406',
           }) }
 
           it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet').with({
