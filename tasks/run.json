@@ -1,5 +1,11 @@
 {
   "description": "Run the Puppet agent. This task may cause problems if run in Puppet Enterprise.",
-  "parameters": {},
+  "parameters": {
+    "report": {
+      "description": "Whether to include the last run report in the output.",
+      "type": "Optional[Boolean]",
+      "default": true
+    }
+  },
   "private": true
 }

@@ -29,6 +29,10 @@ module PuppetAgent
       File.exist?(lockfile)
     end
 
+    def include_report?
+      JSON.parse(STDIN.read)['report']
+    end
+
     # Returns the path to the Puppet agent executable
     def puppet_bin
       @puppet_bin ||= if Puppet.features.microsoft_windows?
@@ -141,11 +145,12 @@ module PuppetAgent
           obj.tag = nil if obj.respond_to?(:tag=)
         end
 
-        {
-          'report'   => report.to_ruby,
+        run_report = {
           'exitcode' => run_result.exitstatus,
           '_output'  => run_result
         }
+        run_report.merge!('report' => report.to_ruby) if include_report?
+        run_report
       rescue => e
         return error_result(
           'puppet_agent/invalid-last-run-report-error',

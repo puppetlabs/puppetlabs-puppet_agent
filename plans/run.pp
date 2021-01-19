@@ -1,8 +1,10 @@
 # Starts a Puppet agent run on the specified targets.
 # Note: This plan may cause issues when run in Puppet Enterprise.
 # @param targets The targets to start a Puppet agent run on.
+# @param report Whether to include the last run report in the task output.
 plan puppet_agent::run (
-  TargetSpec $targets
+  TargetSpec $targets,
+  Optional[Boolean] $report = true,
 ) {
   # Check which targets have the agent installed by checking
   # the version of the agent. No point in trying to run the
@@ -57,6 +59,7 @@ plan puppet_agent::run (
     'puppet_agent::run',
     $agent_results.targets,
     'Run Puppet agent',
+    'report' => $report,
     '_catch_errors' => true
   )
 
