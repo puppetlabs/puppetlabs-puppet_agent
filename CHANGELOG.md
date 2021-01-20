@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.4.0] - 2021-01-20
+
+### Summary
+Add the new GPG signing key and default to puppet 7 for PE 2021.0.
+
+### Features
+
+- ([MODULES-10910](https://tickets.puppetlabs.com/browse/MODULES-10910)) Default to puppet 7 for PE 2021.0 ([#529](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/529))
+- ([MODULES-10897](https://tickets.puppetlabs.com/browse/MODULES-10897)) Add new GPG signing key and remove the old one ([#532](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/532))
+
+### Bug fixes
+
+- Speed up unit tests by bumping apt dependency to 7.4.2 ([#531](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/531))
+
 ## [4.3.0] - 2020-12-14
 
 ### Summary
