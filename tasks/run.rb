@@ -29,8 +29,8 @@ module PuppetAgent
       File.exist?(lockfile)
     end
 
-    def include_report?
-      JSON.parse(STDIN.read)['report']
+    def include_report?(params)
+      params['report']
     end
 
     # Returns the path to the Puppet agent executable
@@ -122,7 +122,7 @@ module PuppetAgent
     end
 
     # Loads the last run report and generates a result from it.
-    def get_result_from_report(last_run_report, run_result, start_time)
+    def get_result_from_report(last_run_report, run_result, start_time, params)
       unless File.exist?(last_run_report)
         return error_result(
           'puppet_agent/no-last-run-report-error',
@@ -149,7 +149,7 @@ module PuppetAgent
           'exitcode' => run_result.exitstatus,
           '_output'  => run_result
         }
-        run_report.merge!('report' => report.to_ruby) if include_report?
+        run_report.merge!('report' => report.to_ruby) if include_report?(params)
         run_report
       rescue => e
         return error_result(
@@ -212,6 +212,7 @@ module PuppetAgent
         )
       end
 
+      params = JSON.parse(STDIN.read)
       puppet_config   = config_print('lastrunreport', 'agent_disabled_lockfile', 'agent_catalog_run_lockfile')
       last_run_report = puppet_config['lastrunreport']
 
@@ -277,7 +278,7 @@ module PuppetAgent
         end
       end
 
-      get_result_from_report(last_run_report, run_result, start_time)
+      get_result_from_report(last_run_report, run_result, start_time, params)
     end
   end
 end

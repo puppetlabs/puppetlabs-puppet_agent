@@ -3,7 +3,7 @@
   "parameters": {
     "report": {
       "description": "Whether to include the last run report in the output.",
-      "type": "Optional[Boolean]",
+      "type": "Boolean",
       "default": true
     }
   },

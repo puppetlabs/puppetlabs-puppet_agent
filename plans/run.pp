@@ -4,7 +4,7 @@
 # @param report Whether to include the last run report in the task output.
 plan puppet_agent::run (
   TargetSpec $targets,
-  Optional[Boolean] $report = true,
+  Boolean $report = true,
 ) {
   # Check which targets have the agent installed by checking
   # the version of the agent. No point in trying to run the
