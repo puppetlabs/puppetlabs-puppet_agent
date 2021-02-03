@@ -46,6 +46,7 @@
         - [`install_options`](#install_options)
         - [`msi_move_locked_files`](#msi_move_locked_files)
         - [`wait_for_pxp_agent_exit`](#wait_for_pxp_agent_exit)
+        - [`wait_for_puppet_run`](#wait_for_puppet_run)
     - [Plans](#plans)
       - [`puppet_agent::run`](#puppet_agentrun)
     - [Tasks](#tasks)
@@ -311,6 +312,14 @@ This is only applicable for Windows operating systems and pertains to /files/ins
 
 ``` puppet
   wait_for_pxp_agent_exit => 480000
+```
+
+#### `wait_for_puppet_run`
+
+This is only applicable for Windows operating systems and pertains to /files/install_puppet.ps1 script. This parameterizes the module to define the wait time for the current puppet agent run to end successfully. The default value is 2 minutes and the timeout value must be defined in milliseconds. Example below, 8 minutes is equal to 480000.
+
+``` puppet
+  wait_for_puppet_run => 480000
 ```
 
 #### `config`

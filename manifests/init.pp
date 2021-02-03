@@ -89,6 +89,10 @@
 #   This parameter is only applicable for Windows operating systems and pertains to the 
 #   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
 #   for the PXP agent to end successfully. The default value is set 2 minutes.
+# [wait_for_puppet_run]
+#   This parameter is only applicable for Windows operating systems and pertains to the
+#   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
+#   for the current puppet agent run to end successfully. The default value is set 2 minutes.
 # [config]
 #   An array of configuration data to enforce. Each configuration data item must be a
 #   Puppet_agent::Config hash, which has keys for puppet.conf section, setting, and value.
@@ -119,6 +123,7 @@ class puppet_agent (
   $skip_if_unavailable     = 'absent',
   $msi_move_locked_files   = false,
   $wait_for_pxp_agent_exit = undef,
+  $wait_for_puppet_run     = undef,
   Array[Puppet_agent::Config] $config = [],
 ) inherits ::puppet_agent::params {
 
