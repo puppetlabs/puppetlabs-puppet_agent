@@ -6,7 +6,7 @@ require_relative '../helpers'
 test_name 'puppet_agent class: Upgrade agents from puppet5 to puppet6' do
   require_master_collection 'puppet6-nightly'
   exclude_pe_upgrade_platforms
-  latest_version = `curl http://builds.delivery.puppetlabs.net/passing-agent-SHAs/puppet-agent-master-version`
+  latest_version = `curl http://builds.delivery.puppetlabs.net/passing-agent-SHAs/puppet-agent-6.x-version`
 
   puppet_testing_environment = new_puppet_testing_environment
 
