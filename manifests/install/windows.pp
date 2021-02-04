@@ -70,6 +70,7 @@ class puppet_agent::install::windows(
 
   exec { 'prerequisites_check.ps1':
     command => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+                  -ExecutionPolicy Bypass \
                   -NoProfile \
                   -NoLogo \
                   -NonInteractive \
