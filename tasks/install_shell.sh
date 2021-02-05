@@ -122,6 +122,12 @@ else
   fi
 fi
 
+if [ -n "$PT_retry" ]; then
+  retry=$PT_retry
+else
+  retry=5
+fi
+
 # Track to handle puppet5 to puppet6
 if [ -f /opt/puppetlabs/puppet/VERSION ]; then
   installed_version=`cat /opt/puppetlabs/puppet/VERSION`
@@ -304,10 +310,36 @@ capture_tmp_stderr() {
 
 trap "rm -f $tmp_stderr; rm -rf $tmp_dir; exit $1" 1 2 15
 
+# Run command and retry on failure
+# run_cmd CMD
+run_cmd() {
+  eval $1
+  rc=$?
+
+  if test $rc -ne 0; then
+    attempt_number=0
+    while test $attempt_number -lt $retry; do
+      info "Retrying... [$((attempt_number + 1))/$retry]"
+      eval $1
+      rc=$?
+
+      if test $rc -eq 0; then
+        break
+      fi
+
+      info "Return code: $rc"
+      sleep 1s
+      ((attempt_number=attempt_number+1))
+    done
+  fi
+
+  return $rc
+}
+
 # do_wget URL FILENAME
 do_wget() {
   info "Trying wget..."
-  wget -O "$2" "$1" 2>$tmp_stderr
+  run_cmd "wget -O '$2' '$1' 2>$tmp_stderr"
   rc=$?
 
   # check for 404
@@ -329,8 +361,9 @@ do_wget() {
 # do_curl URL FILENAME
 do_curl() {
   info "Trying curl..."
-  curl -1 -sL -D $tmp_stderr "$1" > "$2"
+  run_cmd "curl -1 -sL -D $tmp_stderr '$1' > '$2'"
   rc=$?
+
   # check for 404
   grep "404 Not Found" $tmp_stderr 2>&1 >/dev/null
   if test $? -eq 0; then
@@ -350,17 +383,31 @@ do_curl() {
 # do_fetch URL FILENAME
 do_fetch() {
   info "Trying fetch..."
-  fetch -o "$2" "$1" 2>$tmp_stderr
-  # check for bad return status
-  test $? -ne 0 && return 1
+  run_cmd "fetch -o '$2' '$1' 2>$tmp_stderr"
+  rc=$?
+
+  # check for 404
+  grep "404 Not Found" $tmp_stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    critical "ERROR 404"
+    unable_to_retrieve_package
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 || test ! -s "$2"; then
+    capture_tmp_stderr "fetch"
+    return 1
+  fi
+
   return 0
 }
 
 # do_perl URL FILENAME
 do_perl() {
   info "Trying perl..."
-  perl -e 'use LWP::Simple; getprint($ARGV[0]);' "$1" > "$2" 2>$tmp_stderr
+  run_cmd "perl -e 'use LWP::Simple; getprint(\$ARGV[0]);' '$1' > '$2' 2>$tmp_stderr"
   rc=$?
+
   # check for 404
   grep "404 Not Found" $tmp_stderr 2>&1 >/dev/null
   if test $? -eq 0; then
@@ -431,9 +478,9 @@ install_file() {
 
       rpm -Uvh --oldpackage --replacepkgs "$2"
       if test "$version" = 'latest'; then
-        yum install -y puppet-agent && yum upgrade -y puppet-agent
+        run_cmd "yum install -y puppet-agent && yum upgrade -y puppet-agent"
       else
-        yum install -y "puppet-agent-${puppet_agent_version}"
+        run_cmd "yum install -y 'puppet-agent-${puppet_agent_version}'"
       fi
       ;;
     "noarch.rpm")
@@ -452,11 +499,11 @@ install_file() {
         fi
       fi
 
-      zypper install --no-confirm "$2"
+      run_cmd "zypper install --no-confirm '$2'"
       if test "$version" = "latest"; then
-        zypper install --no-confirm "puppet-agent"
+        run_cmd "zypper install --no-confirm 'puppet-agent'"
       else
-        zypper install --no-confirm --oldpackage --no-recommends --no-confirm "puppet-agent-${puppet_agent_version}"
+        run_cmd "zypper install --no-confirm --oldpackage --no-recommends --no-confirm 'puppet-agent-${puppet_agent_version}'"
       fi
       ;;
     "deb")
@@ -478,15 +525,15 @@ install_file() {
       assert_unmodified_apt_config
 
       dpkg -i --force-confmiss "$2"
-      apt-get update -y
+      run_cmd 'apt-get update -y'
 
       if test "$version" = 'latest'; then
-        apt-get install -y puppet-agent
+        run_cmd "apt-get install -y puppet-agent"
       else
         if test "x$deb_codename" != "x"; then
-          apt-get install -y "puppet-agent=${puppet_agent_version}-1${deb_codename}"
+          run_cmd "apt-get install -y 'puppet-agent=${puppet_agent_version}-1${deb_codename}'"
         else
-          apt-get install -y "puppet-agent=${puppet_agent_version}"
+          run_cmd "apt-get install -y 'puppet-agent=${puppet_agent_version}'"
         fi
       fi
       ;;
