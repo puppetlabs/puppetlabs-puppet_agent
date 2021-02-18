@@ -69,14 +69,17 @@ group :system_tests do
   gem "beaker-rspec", *location_for(ENV['BEAKER_RSPEC_VERSION'])
   gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'])
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0.1')
-  gem 'pdk', *location_for(ENV['PDK_GEM_VERSION'])
-  gem "puppet-blacksmith", '~> 3.4',                                             :require => false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.7.0')
-  gem "puppet-blacksmith", '~> 6',                                               :require => false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.7.0')
   # Bundler fails on 2.1.9 even though this group is excluded
   if ENV['GEM_BOLT']
     gem 'bolt', '~> 1.15', require: false
     gem 'beaker-task_helper', '~> 1.5.2', require: false
   end
+end
+
+group :release do
+  gem 'pdk', *location_for(ENV['PDK_GEM_VERSION'])
+  gem "puppet-blacksmith", '~> 3.4',                                             :require => false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.7.0')
+  gem "puppet-blacksmith", '~> 6',                                               :require => false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.7.0')
 end
 
 gem 'puppet', *location_for(ENV['PUPPET_GEM_VERSION'])

@@ -52,6 +52,7 @@ jobs:
         run: |
           git config --global core.longpaths true
           bundle config set system 'true'
+          bundle config set --local without 'release'
           ${{ matrix.env_set_cmd }}PUPPET_GEM_VERSION=$(ruby -e 'puts /puppet\s+\((.+)\)/.match(`gem list -eld puppet`)[1]')
           bundle update --jobs 4 --retry 3
 
