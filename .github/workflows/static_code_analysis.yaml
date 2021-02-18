@@ -12,7 +12,7 @@ jobs:
     name: Run checks
 
     env:
-      ruby_version: 2.5
+      ruby_version: 2.6
 
     runs-on: 'ubuntu-18.04'
     steps:
