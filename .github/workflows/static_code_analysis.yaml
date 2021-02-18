@@ -12,7 +12,7 @@ jobs:
     name: Run checks
 
     env:
-      ruby_version: 2.5
+      ruby_version: 2.6
 
     runs-on: 'ubuntu-18.04'
     steps:
@@ -29,6 +29,7 @@ jobs:
       - name: Prepare testing environment with bundler
         run: |
           git config --global core.longpaths true
+          bundle config set --local without 'release'
           bundle update --jobs 4 --retry 3
 
       - name: Run commits check

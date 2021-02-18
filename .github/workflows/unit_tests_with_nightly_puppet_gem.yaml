@@ -13,10 +13,8 @@ jobs:
     strategy:
       matrix:
         os: [ 'ubuntu-18.04', 'macos-10.15', 'windows-2016' ]
-        puppet_version: [ 5, 6, 7 ]
+        puppet_version: [ 6, 7 ]
         include:
-          - puppet_version: 5
-            ruby: 2.4
           - puppet_version: 6
             ruby: 2.5
           - puppet_version: 7
@@ -54,6 +52,7 @@ jobs:
         run: |
           git config --global core.longpaths true
           bundle config set system 'true'
+          bundle config set --local without 'release'
           ${{ matrix.env_set_cmd }}PUPPET_GEM_VERSION=$(ruby -e 'puts /puppet\s+\((.+)\)/.match(`gem list -eld puppet`)[1]')
           bundle update --jobs 4 --retry 3
 
