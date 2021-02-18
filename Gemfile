@@ -57,8 +57,8 @@ group :development do
 end
 
 group :system_tests do
-  gem "puppet-module-posix-system-r#{minor_version}",                            require: false, platforms: "ruby"
-  gem "puppet-module-win-system-r#{minor_version}",                              require: false, platforms: ["mswin", "mingw", "x64_mingw"]
+  gem "puppet-module-posix-system-r#{minor_version}", '~> 0.5',                  require: false, platforms: [:ruby]
+  gem "puppet-module-win-system-r#{minor_version}", '~> 0.5',                    require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 4')
   gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || ["~> 1.0", ">= 1.0.1"])
   gem "beaker-docker", '~> 0.3'
