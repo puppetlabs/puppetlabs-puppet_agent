@@ -7,9 +7,11 @@
 /.bundle/
 /.idea/
 /.vagrant/
+/acceptance/
 /coverage/
 /bin/
 /doc/
+/docker/
 /Gemfile.local
 /Gemfile.lock
 /junit/
@@ -17,6 +19,7 @@
 /pkg/
 /spec/fixtures/manifests/
 /spec/fixtures/modules/
+/task_spec/
 /tmp/
 /vendor/
 /convert_report.txt
@@ -30,6 +33,7 @@
 /Gemfile
 /.gitattributes
 /.gitignore
+/.github/
 /.gitlab-ci.yml
 /.pdkignore
 /.puppet-lint.rc
@@ -37,6 +41,7 @@
 /rakelib/
 /.rspec
 /.rubocop.yml
+/.rubocop_todo.yml
 /.travis.yml
 /.yardopts
 /spec/
