@@ -18,6 +18,7 @@ AllCops:
   - pkg/**/*
   - spec/fixtures/**/*
   - vendor/**/*
+  - files/*
 inherit_from: .rubocop_todo.yml
 Metrics/LineLength:
   Description: People have wide screens, use them.
