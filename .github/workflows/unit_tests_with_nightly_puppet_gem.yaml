@@ -58,3 +58,10 @@ jobs:
 
       - name: Run unit tests
         run: bundle exec rake parallel_spec
+
+      - name: Start SSH session
+        if: ${{ failure() }}
+        uses: luchihoratiu/debug-via-ssh@main
+        with:
+          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+          SSH_PASS: ${{ secrets.SSH_PASS }}

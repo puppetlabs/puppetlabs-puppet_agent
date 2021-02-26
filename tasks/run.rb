@@ -1,5 +1,5 @@
 #!/opt/puppetlabs/puppet/bin/ruby
-# frozen_string_literal: true
+# frozen_string_literal: true 
 
 require 'yaml'
 require 'json'
