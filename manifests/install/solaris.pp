@@ -16,7 +16,7 @@ class puppet_agent::install::solaris(
     # The following are expected to be available in the solaris_install.sh.erb template:
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
-    # Starting with puppet6 collections we no longer carry the mcollective service
+    # Starting with puppet6 and up collections we no longer carry the mcollective service
     if $::puppet_agent::collection != 'PC1' and $::puppet_agent::collection != 'puppet5' {
       $service_names = delete($::puppet_agent::service_names, 'mcollective')
     } else {

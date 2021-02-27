@@ -44,6 +44,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           })}
 
           it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
+          it { is_expected.not_to contain_exec('prerequisites_check.ps1') }
           it { is_expected.not_to contain_exec('fix inheritable SYSTEM perms') }
         end
 
@@ -59,6 +60,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
           it { is_expected.not_to contain_file('c:\tmp\install_puppet.bat') }
           it { is_expected.not_to contain_exec('install_puppet.bat') }
+          it { is_expected.not_to contain_exec('prerequisites_check.ps1') }
         end
 
         context 'with out of date aio_agent_version' do
@@ -68,6 +70,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           })}
 
           it { is_expected.to contain_class('puppet_agent::install::windows') }
+          it { is_expected.to contain_exec('prerequisites_check.ps1').with_command(/\ #{package_version} C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi C:\\tmp\\puppet-\d+_\d+_\d+-\d+_\d+-installer.log/) }
           it { is_expected.to contain_exec('install_puppet.ps1').with_command(/\-Source \'C:\\ProgramData\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi\'/) }
           it { is_expected.to contain_exec('fix inheritable SYSTEM perms') }
         end
@@ -212,13 +215,47 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           }
         end
 
-        describe 'specify true' do
+        describe 'specify true with puppet 5.5.16' do
           let(:params) { global_params.merge(
-            {:msi_move_locked_files => true,})
+            {:msi_move_locked_files => true,
+             :package_version => '5.5.16',})
           }
 
           it {
             is_expected.to contain_exec('install_puppet.ps1').with_command(/\-UseLockedFilesWorkaround/)
+          }
+        end
+
+        describe 'specify true with puppet 5.5.17' do
+          let(:params) { global_params.merge(
+            {:msi_move_locked_files => true,
+             :package_version => '5.5.17',})
+          }
+
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-UseLockedFilesWorkaround/)
+          }
+        end
+
+        describe 'specify true with puppet 6.7.0' do
+          let(:params) { global_params.merge(
+            {:msi_move_locked_files => true,
+             :package_version => '6.7.0',})
+          }
+
+          it {
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-UseLockedFilesWorkaround/)
+          }
+        end
+
+        describe 'specify true with puppet 6.8.0' do
+          let(:params) { global_params.merge(
+            {:msi_move_locked_files => true,
+             :package_version => '6.8.0',})
+          }
+
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-UseLockedFilesWorkaround/)
           }
         end
       end

@@ -53,7 +53,12 @@ desc 'Run all the tests and destroy the hosts afterward'
 task :ci do
   begin
     Rake.application['prepare'].invoke
-    beaker('exec ./tests')
+    case ENV['MASTER_COLLECTION']
+    when /puppet6/
+      beaker('exec ./tests/test_upgrade_puppet5_to_puppet6.rb')
+    when /puppet7/
+      beaker('exec ./tests/test_upgrade_puppet6_to_puppet7.rb')
+    end
   ensure
     beaker('destroy')
   end

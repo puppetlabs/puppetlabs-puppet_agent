@@ -57,7 +57,7 @@ It also installs this module (from your local checkout) and its dependencies.
 The versions of puppet-agent and puppetserver installed on the master during
 the pre-suite can be controlled in two ways:
 
-- set `MASTER_COLLECTION` to 'pc1' (for puppet 4), 'puppet5', or 'puppet6' to
+- set `MASTER_COLLECTION` to 'pc1' (for puppet 4), 'puppet5', 'puppet6', 'puppet7' to
   install the latest releases from those streams, or
 - set `MASTER_PACKAGE_VERSION` to a specific version of puppet-agent (like
   '5.5.10') to install that agent package and a compatible puppetserver

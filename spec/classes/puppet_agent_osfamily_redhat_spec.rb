@@ -25,11 +25,11 @@ describe 'puppet_agent' do
       end
 
       if os == 'Fedora' then
-        it { is_expected.to contain_exec('import-GPG-KEY-puppetlabs').with({
+        it { is_expected.to contain_exec('import-GPG-KEY-puppet-20250406').with({
           'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-          'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs',
-          'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg2 --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
-          'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs]',
+          'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
+          'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg2 --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
+          'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
           'logoutput' => 'on_failure',
         }) }
 
@@ -41,11 +41,11 @@ describe 'puppet_agent' do
           'logoutput' => 'on_failure',
         }) }
       else
-        it { is_expected.to contain_exec('import-GPG-KEY-puppetlabs').with({
+        it { is_expected.to contain_exec('import-GPG-KEY-puppet-20250406').with({
           'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-          'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs',
-          'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
-          'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs]',
+          'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
+          'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
+          'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
           'logoutput' => 'on_failure',
         }) }
 
@@ -73,12 +73,12 @@ describe 'puppet_agent' do
         end
       end
 
-      it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs').with({
+      it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406').with({
         'ensure' => 'present',
         'owner'  => '0',
         'group'  => '0',
         'mode'   => '0644',
-        'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppetlabs',
+        'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet-20250406',
       }) }
 
       it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet').with({
@@ -114,7 +114,7 @@ describe 'puppet_agent' do
           'baseurl' => "http://yum.puppet.com/puppet5/#{urlbit.gsub('/f','/')}/x64",
           'enabled' => 'true',
             'gpgcheck' => '1',
-            'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
+            'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
         }) }
       end
 
@@ -179,7 +179,7 @@ describe 'puppet_agent' do
           'baseurl' => "https://master.example.vm:8140/packages/2000.0.0/#{repodir}",
           'enabled' => 'true',
           'gpgcheck' => '1',
-          'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppetlabs\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
+          'gpgkey' => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
           'sslcacert' => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
           'sslclientcert' => '/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem',
           'sslclientkey' => '/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem',

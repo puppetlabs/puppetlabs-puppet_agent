@@ -95,6 +95,47 @@ describe 'puppet_agent' do
           global_facts(facts, os)
         end
 
+        context 'when remote filebuckets are enabled' do
+          let(:pre_condition) { 'filebucket { "main": path => false }' }
+
+          before(:each) { Puppet.settings[:digest_algorithm] = 'sha256' }
+
+          context 'when an upgrade is required' do
+            let(:params) { { :package_version => '6.18.0' } }
+
+            context 'with mismatching digest algorithms' do
+              let(:facts) do
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'md5')
+              end
+
+              it { is_expected.not_to compile }
+              it { expect { catalogue }.to raise_error(%r{Server: sha256, agent: md5}) }
+            end
+
+            context 'with matching digest algorithms' do
+              let(:facts) do
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'sha256')
+              end
+
+              it { is_expected.to compile.with_all_deps }
+              it { expect { catalogue }.not_to raise_error }
+            end
+          end
+
+          context 'when no upgrade is required' do
+            let(:params) { { :package_version => '6.17.0' } }
+
+            context 'with mismatching digest algorithms' do
+              let(:facts) do
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'md5', aio_agent_version: '6.17.0')
+              end
+
+              it { is_expected.to compile }
+              it { expect { catalogue }.not_to raise_error }
+            end
+          end
+        end
+
         # Windows, Solaris 10 and OS X use scripts for upgrading agents
         # We test Solaris 11 in its own class
         if os !~ %r{windows|solaris|darwin}

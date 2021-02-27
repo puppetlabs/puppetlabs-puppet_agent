@@ -2,6 +2,69 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.4.0] - 2021-01-20
+
+### Summary
+Add the new GPG signing key and default to puppet 7 for PE 2021.0.
+
+### Features
+
+- ([MODULES-10910](https://tickets.puppetlabs.com/browse/MODULES-10910)) Default to puppet 7 for PE 2021.0 ([#529](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/529))
+- ([MODULES-10897](https://tickets.puppetlabs.com/browse/MODULES-10897)) Add new GPG signing key and remove the old one ([#532](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/532))
+
+### Bug fixes
+
+- Speed up unit tests by bumping apt dependency to 7.4.2 ([#531](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/531))
+
+## [4.3.0] - 2020-12-14
+
+### Summary
+Task support for puppet7 collection. Use correct AIX packages when upgrading.
+
+### Features
+
+- ([MODULES-10873](https://tickets.puppetlabs.com/browse/MODULES-10873)) Add support for puppet7 collection ([#524](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/524))
+
+### Bug fixes
+
+- ([MODULES-10878](https://tickets.puppetlabs.com/browse/MODULES-10878)) Use correct packages when upgrading AIX ([#527](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/527))
+
+## [4.2.0] - 2020-10-30
+
+### Summary
+Various Windows fixes and additions to facilitate upgrading to Puppet 7.
+
+The fixes for ([MODULES-10850](https://tickets.puppetlabs.com/browse/MODULES-10850)) and ([MODULES-10851](https://tickets.puppetlabs.com/browse/MODULES-10851)) do not affect any released version of the module, but are still included in the changelog.
+
+### Features
+
+- ([MODULES-10799](https://tickets.puppetlabs.com/browse/MODULES-10799)) Ensure upgradability to Puppet 7 when remote filebuckets are enabled ([#511](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/511))
+
+### Bug fixes
+
+- ([MODULES-10813](https://tickets.puppetlabs.com/browse/MODULES-10813)) Mismatched versions stops install on Windows ([#512](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/512))
+- ([MODULES-10818](https://tickets.puppetlabs.com/browse/MODULES-10818)) Ignore `msi_move_locked_files` on newer puppet versions ([#515](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/515))
+- ([MODULES-10850](https://tickets.puppetlabs.com/browse/MODULES-10850)) Determine `PSScriptRoot` if it does not exist ([#519](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/519))
+- ([MODULES-10851](https://tickets.puppetlabs.com/browse/MODULES-10851)) Fix Windows nightly prerequisites check ([#520](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/520))
+
+## [4.1.0] - 2020-08-19
+
+### Summary
+Add support for Linux Mint 20, and add puppet agent run plan to run the agent against remote
+targets.
+
+### Features
+
+- Support for Linux Mint 20, LDME 4 ([#500](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/500))
+- ([MODULES-10739](https://tickets.puppetlabs.com/browse/MODULES-10739)) add task support for
+  puppet7-nightly ([#501](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/501))
+- ([MODULES-10768](https://tickets.puppetlabs.com/browse/MODULES-10768)) Add task and plan for
+  running the Puppet agent ([#503](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/503))
+
+### Bug fixes
+
+- ([MODULES-10713](https://tickets.puppetlabs.com/browse/MODULES-10713)) Fix agent upgrade on Solaris 11 ([#499](https://github.com/puppetlabs/puppetlabs-puppet_agent/pulls/499))
+
 ## [4.0.0] - 2020-06-15
 
 ### Summary

@@ -1,19 +1,24 @@
 require 'beaker-puppet'
 require_relative '../helpers'
 
-# Tests FOSS upgrades from the latest puppet 4 (the PC1 collection) to puppet 5.5.10.
-test_name 'puppet_agent class: Upgrade agents from PC1 (puppet 4) to puppet5' do
-  require_master_collection 'puppet5'
+# Tests FOSS upgrades from the latest puppet 6 (the puppet6-nightly collection)
+# to the latest puppet7-nightly build.
+test_name 'puppet_agent class: Upgrade agents from puppet6 to puppet7' do
+  require_master_collection 'puppet7-nightly'
   exclude_pe_upgrade_platforms
-
+  latest_version = `curl http://builds.delivery.puppetlabs.net/passing-agent-SHAs/puppet-agent-main-version`
+  
   puppet_testing_environment = new_puppet_testing_environment
 
   step "Create new site.pp with upgrade manifest" do
     manifest = <<-PP
 node default {
   class { puppet_agent:
-    package_version => '5.5.16',
-    collection      => 'puppet5'
+    package_version => '#{latest_version}',
+    apt_source      => 'http://nightlies.puppet.com/apt',
+    yum_source      => 'http://nightlies.puppet.com/yum',
+    windows_source  => 'http://nightlies.puppet.com/downloads',
+    collection      => 'puppet7-nightly'
   }
 }
     PP
@@ -24,7 +29,7 @@ node default {
   end
 
   agents_only.each do |agent|
-    set_up_initial_agent_on(agent, 'pc1') do
+    set_up_initial_agent_on(agent, 'puppet6-nightly') do
       step '(Agent) Change agent environment to testing environment' do
         on(agent, puppet("config --section agent set environment #{puppet_testing_environment}"))
         on(agent, puppet("config --section user set environment production"))
@@ -32,11 +37,11 @@ node default {
     end
   end
 
-  step "Upgrade the agents from Puppet 4 to Puppet 5..." do
+  step "Upgrade the agents from Puppet 6 to Puppet 7..." do
     agents_only.each do |agent|
       start_puppet_service_and_wait_for_puppet_run(agent)
       wait_for_installation_pid(agent)
-      assert_agent_version_on(agent, '5.5.16')
+      assert_agent_version_on(agent, latest_version.scan(/7\.\d*\.\d*\.\d*/).first)
     end
   end
 end

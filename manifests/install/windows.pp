@@ -26,7 +26,13 @@ class puppet_agent::install::windows(
   }
 
   if $::puppet_agent::msi_move_locked_files {
-    $_move_dll_workaround = '-UseLockedFilesWorkaround'
+    if ($::puppet_agent::_expected_package_version.match(/^5.5/) and versioncmp($::puppet_agent::_expected_package_version, '5.5.17') < 0) or
+      ($::puppet_agent::_expected_package_version.match(/^6/) and versioncmp($::puppet_agent::_expected_package_version, '6.8.0') < 0) {
+      $_move_dll_workaround = '-UseLockedFilesWorkaround'
+    } else {
+      notify { 'Ignoring msi_move_locked_files setting as it is no longer needed with newer puppet-agent versions (puppet 5 >= 5.5.17 or puppet 6 >= 6.8.0)': }
+      $_move_dll_workaround = undef
+    }
   } else {
     $_move_dll_workaround = undef
   }
@@ -43,12 +49,35 @@ class puppet_agent::install::windows(
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
 
+  $_helpers = windows_native_path("${::env_temp_variable}/helpers.ps1")
+  file { $_helpers:
+    ensure  => file,
+    content => file('puppet_agent/helpers.ps1')
+  }
+
   $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
   puppet_agent_upgrade_error { 'puppet_agent_upgrade_failure.log': }
   file { $_installps1:
     ensure  => file,
     content => file('puppet_agent/install_puppet.ps1')
   }
+
+  $_prerequisites_check = windows_native_path("${::env_temp_variable}/prerequisites_check.ps1")
+  file { $_prerequisites_check:
+    ensure  => file,
+    content => file('puppet_agent/prerequisites_check.ps1')
+  }
+
+  exec { 'prerequisites_check.ps1':
+    command => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+                  -ExecutionPolicy Bypass \
+                  -NoProfile \
+                  -NoLogo \
+                  -NonInteractive \
+                  ${_prerequisites_check} ${::puppet_agent::_expected_package_version} ${_msi_location} ${_logfile}",
+    require => File[$_prerequisites_check]
+  }
+
   exec { 'install_puppet.ps1':
     # The powershell execution uses -Command and not -File because -File will interpolate the quotes
     # in a context like cmd.exe: https://docs.microsoft.com/en-us/powershell/scripting/components/console/powershell.exe-command-line-help?view=powershell-6#-file--
@@ -81,7 +110,8 @@ class puppet_agent::install::windows(
     path    => $::path,
     require => [
       Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
-      File[$_installps1]
+      File[$_installps1],
+      Exec['prerequisites_check.ps1']
     ]
   }
 
