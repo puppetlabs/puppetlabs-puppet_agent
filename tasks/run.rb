@@ -5,21 +5,13 @@ require 'yaml'
 require 'json'
 require 'puppet'
 
+params = JSON.parse(STDIN.read)
+require_relative File.join(params['_installdir'], 'puppet_agent', 'files', 'rb_task_helper.rb')
+
+
 module PuppetAgent
   class Runner
-    def error_result(error_type, error_message)
-      {
-        '_error' => {
-          'msg'     => error_message,
-          'kind'    => error_type,
-          'details' => {}
-        }
-      }
-    end
-
-    def puppet_bin_present?
-      File.exist?(puppet_bin)
-    end    
+    include PuppetAgent::RbTaskHelper
 
     def running?(lockfile)
       File.exist?(lockfile)
@@ -29,35 +21,6 @@ module PuppetAgent
       File.exist?(lockfile)
     end
 
-    # Returns the path to the Puppet agent executable
-    def puppet_bin
-      @puppet_bin ||= if Puppet.features.microsoft_windows?
-                        puppet_bin_windows
-                      else
-                        '/opt/puppetlabs/bin/puppet'
-                      end
-    end
-    
-    # Returns the path to the Puppet agent executable on Windows
-    def puppet_bin_windows
-      require 'win32/registry'
-
-      install_dir = begin
-                      Win32::Registry::HKEY_LOCAL_MACHINE.open('SOFTWARE\Puppet Labs\Puppet') do |reg|
-                        # Rescue missing key
-                        dir = reg['RememberedInstallDir64'] rescue ''
-                        # Both keys may exist, make sure the dir exists
-                        break dir if File.exist?(dir)
-                        # Rescue missing key
-                        reg['RememberedInstallDir'] rescue ''
-                      end
-                    rescue Win32::Registry::Error
-                      # Rescue missing registry path
-                      ''
-                    end
-      
-      File.join(install_dir, 'bin', 'puppet.bat')
-    end
 
     # Prepare an environment fix-up to make up for its cleansing performed
     # by the Puppet::Util::Execution.execute function.
