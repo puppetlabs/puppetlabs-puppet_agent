@@ -58,7 +58,7 @@
 
 ## Overview
 
-A module for upgrading Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions including Puppet 4, Puppet 5, and Puppet 6.
+A module for installing, running, upgrading, and managing the configuration of Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions including Puppet 4, Puppet 5, and Puppet 6.
 
 Previous releases of this module, now unsupported, upgraded agents from later versions of Puppet 3 to Puppet 4.
 
@@ -67,6 +67,8 @@ Previous releases of this module, now unsupported, upgraded agents from later ve
 The puppet_agent module installs the appropriate official Puppet package repository (on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
 
 If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package, also this parameter can be set to "auto", ensuring that agent version matches the version on the master without having to manually update package_version after upgrading the master(s).
+
+If a config parameter is provided, it will manage the defined agent configuration settings.
 
 ## Setup
 
