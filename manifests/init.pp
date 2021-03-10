@@ -25,6 +25,9 @@
 # [package_version]
 #   The package version to upgrade to. Explicitly specify the version to upgrade to,
 #   or set to 'auto' to specify the version of the compiling master.
+# [manage_service]
+#   A boolean to simply indicate if we should ensure the service is running.
+#   If not, don't touch it
 # [service_names]
 #   An array of services to start, normally `puppet` and `mcollective`.
 #   None will be started if the array is empty.
@@ -97,6 +100,7 @@ class puppet_agent (
   $manage_repo             = true,
   $package_name            = 'puppet-agent',
   $package_version         = undef,
+  $manage_service          = true,
   $service_names           = $::puppet_agent::params::service_names,
   $source                  = undef,
   $absolute_source         = undef,
@@ -203,7 +207,7 @@ class puppet_agent (
     # - On Windows, services are handled by the puppet-agent MSI packages themselves.
     # ...but outside of PE, on other platforms, we must make sure the services are restarted. We do that with the
     # ::puppet_agent::service class. Make sure it's applied after the install process finishes if needed:
-    if $::osfamily != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
+    if !$is_pe or versioncmp($::clientversion, '4.0.0') < 0 {
       class { '::puppet_agent::service':
         require => Class['::puppet_agent::install'],
       }

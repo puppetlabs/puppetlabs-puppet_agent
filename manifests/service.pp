@@ -33,7 +33,10 @@ class puppet_agent::service{
     file { ['/var/opt/lib', '/var/opt/lib/pe-puppet', '/var/opt/lib/pe-puppet/state']:
       ensure => directory,
     }
-  } else {
+  }
+
+  # as per class comment, this is where we actually manage the service proper.
+  if $::puppet_agent::manage_service {
     $_service_names.each |$service| {
       service { $service:
         ensure     => running,
