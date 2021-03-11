@@ -69,6 +69,7 @@ describe 'puppet_agent' do
             it { expect { catalogue }.not_to raise_error }
             it { is_expected.to contain_class('puppet_agent::prepare').with_package_version(version) }
             it { is_expected.to contain_class('puppet_agent::install').with_package_version(version) }
+            it { is_expected.to contain_class('puppet_agent::configure').that_requires('Class[puppet_agent::install]') }
           end
         end
       end
@@ -321,7 +322,7 @@ describe 'puppet_agent' do
 
             unless os =~ %r{windows}
               if os !~ %r{sles|solaris|aix}
-                it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::install]') }
+                it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::configure]') }
               end
             end
 
