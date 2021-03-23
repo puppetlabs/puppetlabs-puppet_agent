@@ -2,6 +2,28 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.5.0] - 2021-03-23
+
+### Summary
+The module can now manage agent configuration. Various Windows fixes and additions, task updates.
+
+### Features
+
+- ([MODULES-10879](https://tickets.puppetlabs.com/browse/MODULES-10879)) Implement configuration management ([#525](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/525))
+- ([MODULES-10909](https://tickets.puppetlabs.com/browse/MODULES-10909)) Retry task commands in case of network connectivity failures ([#536](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/536))
+- ([MODULES-9798](https://tickets.puppetlabs.com/browse/MODULES-9798)) Add timeout parameter for current Puppet run ([#537](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/537))
+- Ignore unneeded paths when packaging the module ([#540](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/540))
+- ([MODULES-10925](https://tickets.puppetlabs.com/browse/MODULES-10925)) Add facts_diff task ([#542](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/542))
+
+### Bug fixes
+
+- Update puppet-20250406 GPG key ([#538](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/538))
+- Fix upgrading Puppet on Windows ([#539](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/539))
+
+### Acknowledgements
+
+Thanks to [smortex](https://github.com/smortex) and [phil4business](https://github.com/phil4business) who have contributed to this release 🎉!
+
 ## [4.4.0] - 2021-01-20
 
 ### Summary

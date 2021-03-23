@@ -77,7 +77,7 @@ group :system_tests do
 end
 
 group :release do
-  gem 'pdk', *location_for(ENV['PDK_GEM_VERSION'])
+  gem 'pdk', *location_for(ENV['PDK_GEM_VERSION'] || '~> 2')
   gem "puppet-blacksmith", '~> 3.4',                                             require: false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.7.0')
   gem "puppet-blacksmith", '~> 6',                                               require: false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.7.0')
 end
