@@ -43,7 +43,8 @@ param(
   [AllowEmptyString()]
   [String] $InstallArgs,
   [switch] $UseLockedFilesWorkaround,
-  [Int32] $WaitForPXPAgentExit=120000
+  [Int32] $WaitForPXPAgentExit=120000,
+  [Int32] $WaitForPuppetRun=120000
 )
 
 # $PSScript is only available in Powershell >= 3.
@@ -273,7 +274,7 @@ try {
     Write-Log "Waiting for puppet to stop, PID:$PuppetPID" $Logfile
     $pup_process = Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue
     if ($pup_process) {
-      if (!$pup_process.WaitForExit(120000)){
+      if (!$pup_process.WaitForExit($WaitForPuppetRun)){
         Write-Log "ERROR: Timed out waiting for puppet!" $Logfile
         throw
       }

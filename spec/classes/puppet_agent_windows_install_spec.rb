@@ -267,23 +267,59 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           }
         end
 
-        describe 'specify false' do
+        describe 'specify timeout value of 5 minutes' do
           let(:params) { global_params.merge(
-            {:wait_for_pxp_agent_exit => false,})
+            {:wait_for_pxp_agent_exit => 300000,})
           }
 
           it {
-            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-WaitForPXPAgentExit/)
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-WaitForPXPAgentExit 300000/)
+          }
+        end
+      end
+
+      context 'wait_for_puppet_run =>' do
+        describe 'default' do
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-WaitForPuppetRun/)
+          }
+        end
+
+        describe 'specify timeout of 10 minutes' do
+          let(:params) { global_params.merge(
+            {:wait_for_puppet_run => 600000,})
+          }
+
+          it {
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-WaitForPuppetRun 600000/)
+          }
+        end
+      end
+
+      context 'wait_for_puppet_run =>' do
+        describe 'default' do
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-WaitForPuppetRun/)
+          }
+        end
+
+        describe 'specify false' do
+          let(:params) { global_params.merge(
+            {:wait_for_puppet_run => false,})
+          }
+
+          it {
+            is_expected.not_to contain_exec('install_puppet.ps1').with_command(/\-WaitForPuppetRun/)
           }
         end
 
         describe 'specify true' do
           let(:params) { global_params.merge(
-            {:wait_for_pxp_agent_exit => true,})
+            {:wait_for_puppet_run => true,})
           }
 
           it {
-            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-WaitForPXPAgentExit/)
+            is_expected.to contain_exec('install_puppet.ps1').with_command(/\-WaitForPuppetRun/)
           }
         end
       end
