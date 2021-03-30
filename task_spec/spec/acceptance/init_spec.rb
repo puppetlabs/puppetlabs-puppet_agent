@@ -27,7 +27,7 @@ describe 'install task' do
     hosts.first[:platform]
   end
 
-  it 'works with version and install tasks', :if => hosts.first[:platform] !~ %r{fedora-32} do
+  it 'works with version and install tasks' do
     puppet_5_version = case target_platform
                        when %r{fedora-30}
                          '5.5.16'
@@ -169,24 +169,6 @@ describe 'install task' do
         expect(installed_version).to match(%r{^7\.\d+\.\d+})
         expect(res['result']['source']).to be
       end
-    end
-  end
-  it 'works with fedora 32', :if => hosts.first[:platform] =~ %r{fedora-32} do 
-    #Upgrade from puppet6 to puppet7
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-    end
-
-    # Verify that it upgraded
-    installed_version = nil
-    results = run_task('puppet_agent::version', 'target', {})
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-      installed_version = res['result']['version']
-      expect(installed_version).not_to match(%r{^6\.\d+\.\d+})
-      expect(installed_version).to match(%r{^7\.\d+\.\d+})
-      expect(res['result']['source']).to be
     end
   end
 end
