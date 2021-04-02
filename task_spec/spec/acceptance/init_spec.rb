@@ -28,17 +28,17 @@ describe 'install task' do
   end
 
   it 'works with version and install tasks' do
-    puppet_5_version = case target_platform
+    puppet_6_version = case target_platform
                        when %r{fedora-30}
-                         '5.5.16'
+                         '6.19.1'
                        when %r{fedora-31}
-                         '5.5.18'
+                         '6.20.0'
                        when %r{osx-10.14}
-                         '5.5.12'
+                         '6.18.0'
                        when %r{osx-10.15}
-                         '5.5.19'
+                         '6.15.0'
                        else
-                         '5.5.3'
+                         '6.17.0'
                        end
 
     # Test the agent isn't already installed and that the version task works
@@ -48,19 +48,19 @@ describe 'install task' do
       expect(res['result']['version']).to eq(nil)
     end
 
-    # Try to install an older puppet5 version
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5',
-                                                            'version' => puppet_5_version,
+    # Try to install an older puppet6 version
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6',
+                                                            'version' => puppet_6_version,
                                                             'stop_service' => true })
     results.each do |res|
       expect(res).to include('status' => 'success')
     end
 
-    # It installed a version older than latest puppet5
+    # It installed a version older than latest puppet6
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
       expect(res).to include('status' => 'success')
-      expect(res['result']['version']).to eq(puppet_5_version)
+      expect(res['result']['version']).to eq(puppet_6_version)
       expect(res['result']['source']).to be
     end
 
@@ -75,7 +75,7 @@ describe 'install task' do
 
     # Try to upgrade with no specific version given in parameter
     # Expect nothing to happen and receive a message regarding this
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5' })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6' })
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['result']['_output']).to match(%r{Version parameter not defined and agent detected. Nothing to do.})
@@ -85,12 +85,12 @@ describe 'install task' do
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
       expect(res).to include('status' => 'success')
-      expect(res['result']['version']).to eq(puppet_5_version)
+      expect(res['result']['version']).to eq(puppet_6_version)
       expect(res['result']['source']).to be
     end
 
-    # Upgrade to latest puppet5 version
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet5', 'version' => 'latest' })
+    # Upgrade to latest puppet6 version
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
     results.each do |res|
       expect(res).to include('status' => 'success')
     end
@@ -99,15 +99,15 @@ describe 'install task' do
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
       expect(res).to include('status' => 'success')
-      expect(res['result']['version']).not_to eq(puppet_5_version)
-      expect(res['result']['version']).to match(%r{^5\.\d+\.\d+})
+      expect(res['result']['version']).not_to eq(puppet_6_version)
+      expect(res['result']['version']).to match(%r{^6\.\d+\.\d+})
       expect(res['result']['source']).to be
     end
 
     # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
     if target_platform =~ %r{win}
-      # Try to upgrade from puppet5 to puppet6 but fail due to puppet agent service already running
-      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
+      # Try to upgrade from puppet6 to puppet7 but fail due to puppet agent service already running
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
       results.each do |res|
         expect(res).to include('status' => 'failure')
         expect(res['result']['_error']['msg']).to match(%r{Puppet Agent upgrade cannot be done while Puppet services are still running.})
@@ -119,8 +119,8 @@ describe 'install task' do
       expect(output).to match(%r{ensure\s+=> 'stopped'})
     end
 
-    # Succesfully upgrade from puppet5 to puppet6
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
+    # Succesfully upgrade from puppet6 to puppet7
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
     results.each do |res|
       expect(res).to include('status' => 'success')
     end
@@ -131,44 +131,17 @@ describe 'install task' do
     results.each do |res|
       expect(res).to include('status' => 'success')
       installed_version = res['result']['version']
-      expect(installed_version).not_to match(%r{^5\.\d+\.\d+})
-      expect(installed_version).to match(%r{^6\.\d+\.\d+})
+      expect(installed_version).not_to match(%r{^6\.\d+\.\d+})
+      expect(installed_version).to match(%r{^7\.\d+\.\d+})
       expect(res['result']['source']).to be
     end
 
     # Try installing the same version again
     # Expect nothing to happen and receive a message regarding this
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => installed_version })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => installed_version })
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['result']['_output']).to match(%r{Puppet Agent #{installed_version} detected. Nothing to do.})
-    end
-
-    if target_platform !~ %r{sles-11}
-      # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
-      if target_platform =~ %r{win}
-        # Manually stop the puppet agent service
-        service = run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet ensure=stopped', 'target')
-        output = service[0]['result']['stdout']
-        expect(output).to match(%r{ensure\s+=> 'stopped'})
-      end
-
-      #Upgrade from puppet6 to puppet7
-      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
-      results.each do |res|
-        expect(res).to include('status' => 'success')
-      end
-
-      # Verify that it upgraded
-      installed_version = nil
-      results = run_task('puppet_agent::version', 'target', {})
-      results.each do |res|
-        expect(res).to include('status' => 'success')
-        installed_version = res['result']['version']
-        expect(installed_version).not_to match(%r{^6\.\d+\.\d+})
-        expect(installed_version).to match(%r{^7\.\d+\.\d+})
-        expect(res['result']['source']).to be
-      end
     end
   end
 end
