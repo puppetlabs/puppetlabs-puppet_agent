@@ -7,7 +7,7 @@
     },
     "collection": {
       "description": "The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)",
-      "type": "Optional[Enum[puppet5, puppet6, puppet7, puppet, puppet5-nightly, puppet6-nightly, puppet7-nightly, puppet-nightly]]"
+      "type": "Optional[Enum[puppet6, puppet7, puppet, puppet6-nightly, puppet7-nightly, puppet-nightly]]"
     },
     "yum_source": {
       "description": "The source location to find yum repos (defaults to yum.puppet.com)",
