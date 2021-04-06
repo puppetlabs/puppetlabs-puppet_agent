@@ -97,7 +97,7 @@ class puppet_agent::osfamily::suse{
           $repo_settings = {
             'name'        => $repo_name,
             'enabled'     => '1',
-            'autorefresh' => '0',
+            'autorefresh' => '1',
             'baseurl'     => "${source}?ssl_verify=no",
             'type'        => 'rpm-md',
           }

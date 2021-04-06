@@ -112,7 +112,7 @@ describe 'puppet_agent' do
             {
               'name'        => 'pc_repo',
               'enabled'     => '1',
-              'autorefresh' => '0',
+              'autorefresh' => '1',
               'baseurl'     => "https://master.example.vm:8140/packages/2000.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
               'type'        => 'rpm-md',
             }.each do |setting, value|
