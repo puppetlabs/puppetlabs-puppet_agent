@@ -5,11 +5,16 @@ require 'json'
 require 'puppet'
 
 params = JSON.parse(STDIN.read)
+exclude = params['exclude']
 require_relative File.join(params['_installdir'], 'puppet_agent', 'files', 'rb_task_helper.rb')
 
 module PuppetAgent
   class FactsDiff
     include PuppetAgent::RbTaskHelper
+
+    def initialize(exclude)
+      @exclude = exclude
+    end
 
     def run
       return error_result(
@@ -22,6 +27,10 @@ module PuppetAgent
         "puppet facts diff command is only available on puppet 6.x(>= 6.20.0), target has: #{Puppet.version}",
       ) unless suitable_puppet_version?
 
+      return error_result(
+        'puppet_agent/exclude-parameter-not-supported',
+        "exclude parameter is only available on puppet >= 6.22.0, target has: #{Puppet.version}",
+      ) if @exclude && !exclude_parameter_supported?
 
       options = {
         failonfail: false,
@@ -29,6 +38,7 @@ module PuppetAgent
       }
 
       command = [puppet_bin, 'facts', 'diff']
+      command << "--exclude" << @exclude if @exclude
       run_result = Puppet::Util::Execution.execute(command, options)
       run_result.start_with?('{}') ? 'No differences found' : run_result
     end
@@ -40,10 +50,16 @@ module PuppetAgent
       Puppet::Util::Package.versioncmp(puppet_version, '6.20.0') >= 0 &&
       Puppet::Util::Package.versioncmp(puppet_version, '7.0.0') < 0
     end
+
+    def exclude_parameter_supported?
+      puppet_version = Puppet.version
+      Puppet::Util::Package.versioncmp(puppet_version, '6.22.0') >= 0 &&
+      Puppet::Util::Package.versioncmp(puppet_version, '7.0.0') < 0
+    end
   end
 end
 
 if __FILE__ == $PROGRAM_NAME
-  task = PuppetAgent::FactsDiff.new
+  task = PuppetAgent::FactsDiff.new(exclude)
   puts task.run
 end
