@@ -68,7 +68,7 @@ class puppet_agent::install(
       }
     } else { # RPM platforms: EL and SUSE
       $_install_options = $install_options
-      if $::puppet_agent::absolute_source {
+      if ($::puppet_agent::absolute_source) or ($::osfamily == 'suse' and $::operatingsystemmajrelease == '11' and $::puppet_agent::is_pe) {
         # absolute_source means we use rpm on EL/suse based platforms
         $_package_version = $package_version
         $_provider = 'rpm'
