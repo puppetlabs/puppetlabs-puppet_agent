@@ -38,7 +38,8 @@ module PuppetAgent
       }
 
       command = [puppet_bin, 'facts', 'diff']
-      command << "--exclude" << @exclude if @exclude
+      command << "--exclude" << @exclude if @exclude && ! @exclude.empty?
+
       run_result = Puppet::Util::Execution.execute(command, options)
       run_result.start_with?('{}') ? 'No differences found' : run_result
     end
