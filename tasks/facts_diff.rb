@@ -33,7 +33,7 @@ module PuppetAgent
       ) if @exclude && !exclude_parameter_supported?
 
       options = {
-        failonfail: false,
+        failonfail: true,
         override_locale: false
       }
 
@@ -41,7 +41,9 @@ module PuppetAgent
       command << "--exclude" << @exclude if @exclude && ! @exclude.empty?
 
       run_result = Puppet::Util::Execution.execute(command, options)
-      run_result.start_with?('{}') ? 'No differences found' : run_result
+
+      minified_run_result = run_result.gsub("\n", '').gsub(' ', '')
+      minified_run_result == '{}' ? 'No differences found' : run_result
     end
 
     private
