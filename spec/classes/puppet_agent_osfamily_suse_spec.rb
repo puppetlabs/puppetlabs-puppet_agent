@@ -333,7 +333,20 @@ describe 'puppet_agent' do
 
             describe 'package source', :if => os_version == '11' do
               it { is_expected.to contain_file('/etc/zypp/repos.d/pc_repo.repo').with({ 'ensure' => 'absent' }) }
-              it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm').with_source('puppet:///pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm') }
+              it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm')
+                .with(
+                  :source => 'puppet:///pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                )
+              }
+              it { is_expected.to contain_exec('GPG check the RPM file')
+                .with(
+                  :command   => 'rpm -K /opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                  :path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+                  :require   => 'File[/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm]',
+                  :logoutput => 'on_failure',
+                  :notify    => 'Package[puppet-agent]',
+                )
+              }
             end
           end
         end
