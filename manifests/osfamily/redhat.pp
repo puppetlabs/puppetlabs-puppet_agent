@@ -75,17 +75,11 @@ class puppet_agent::osfamily::redhat{
       $_sslclientkey_path = undef
     }
 
-    # Fedora doesn't ship with a gpg binary, only gpg2
-    if $::operatingsystem == 'Fedora' {
-      $gpg_cmd = 'gpg2'
-    } else {
-      $gpg_cmd = 'gpg'
-    }
-
     $legacy_keyname = 'GPG-KEY-puppet'
     $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
     $keyname = 'GPG-KEY-puppet-20250406'
     $gpg_path = "/etc/pki/rpm-gpg/RPM-${keyname}"
+    $gpg_homedir = '/root/.gnupg'
     $gpg_keys = "file://${legacy_gpg_path}
   file://${gpg_path}"
 
@@ -103,17 +97,6 @@ class puppet_agent::osfamily::redhat{
       source => "puppet:///modules/puppet_agent/${legacy_keyname}",
     }
 
-    # Given the path to a key, see if it is imported, if not, import it
-    $legacy_gpg_pubkey = "gpg-pubkey-$(echo $(${gpg_cmd} --with-colons ${legacy_gpg_path} 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))"
-
-    exec {  "import-${legacy_keyname}":
-      path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command   => "rpm --import ${legacy_gpg_path}",
-      unless    => "rpm -q ${legacy_gpg_pubkey}",
-      require   => File[$legacy_gpg_path],
-      logoutput => 'on_failure',
-    }
-
     file { $gpg_path:
       ensure => present,
       owner  => 0,
@@ -122,12 +105,22 @@ class puppet_agent::osfamily::redhat{
       source => "puppet:///modules/puppet_agent/${keyname}",
     }
 
-    # Given the path to a key, see if it is imported, if not, import it
-    $gpg_pubkey = "gpg-pubkey-$(echo $(${gpg_cmd} --with-colons ${gpg_path} 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))"
-    exec {  "import-${keyname}":
+    file { "${::env_temp_variable}/rpm_gpg_import_check.sh":
+      ensure => file,
+      source => 'puppet:///modules/puppet_agent/rpm_gpg_import_check.sh',
+      mode   => '0755',
+    }
+    -> exec { "import-${legacy_keyname}":
       path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command   => "rpm --import ${gpg_path}",
-      unless    => "rpm -q ${gpg_pubkey}",
+      command   => "${::env_temp_variable}/rpm_gpg_import_check.sh import ${gpg_homedir} ${legacy_gpg_path}",
+      unless    => "${::env_temp_variable}/rpm_gpg_import_check.sh check ${gpg_homedir} ${legacy_gpg_path}",
+      require   => File[$legacy_gpg_path],
+      logoutput => 'on_failure',
+    }
+    -> exec { "import-${keyname}":
+      path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+      command   => "${::env_temp_variable}/rpm_gpg_import_check.sh import ${gpg_homedir} ${gpg_path}",
+      unless    => "${::env_temp_variable}/rpm_gpg_import_check.sh check ${gpg_homedir} ${gpg_path}",
       require   => File[$gpg_path],
       logoutput => 'on_failure',
     }

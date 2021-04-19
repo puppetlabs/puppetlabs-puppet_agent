@@ -10,6 +10,7 @@ describe 'puppet_agent' do
     :operatingsystemmajrelease => '12',
     :architecture              => 'x86_64',
     :puppet_master_server      => 'master.example.vm',
+    :env_temp_variable         => '/tmp',
     :clientcert                => 'foo.example.vm',
   }
 
@@ -50,19 +51,24 @@ describe 'puppet_agent' do
               }
             end
 
+            it { is_expected.to contain_file('/tmp/rpm_gpg_import_check.sh').with({
+              'ensure'    => 'file',
+              'source'    => 'puppet:///modules/puppet_agent/rpm_gpg_import_check.sh',
+              'mode'      => '0755',
+            }) }
 
             it { is_expected.to contain_exec('import-GPG-KEY-puppet').with({
               'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-              'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
-              'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir /root/.gnupg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
+              'command'   => '/tmp/rpm_gpg_import_check.sh import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
+              'unless'    => '/tmp/rpm_gpg_import_check.sh check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
               'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet]',
               'logoutput' => 'on_failure',
             }) }
 
             it { is_expected.to contain_exec('import-GPG-KEY-puppet-20250406').with({
               'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-              'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
-              'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir /root/.gnupg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
+              'command'   => '/tmp/rpm_gpg_import_check.sh import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
+              'unless'    => '/tmp/rpm_gpg_import_check.sh check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
               'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
               'logoutput' => 'on_failure',
             }) }
@@ -196,22 +202,6 @@ describe 'puppet_agent' do
               })
             end
 
-            it { is_expected.to contain_exec('import-GPG-KEY-puppet').with({
-              'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-              'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
-              'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir /root/.gnupg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
-              'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet]',
-              'logoutput' => 'on_failure',
-            }) }
-
-            it { is_expected.to contain_exec('import-GPG-KEY-puppet-20250406').with({
-              'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-              'command'   => 'rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
-              'unless'    => "rpm -q gpg-pubkey-$(echo $(gpg --homedir /root/.gnupg --with-colons /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406 2>&1 | grep ^pub | awk -F ':' '{print \$5}' | cut --characters=9-16 | tr '[:upper:]' '[:lower:]'))",
-              'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
-              'logoutput' => 'on_failure',
-            }) }
-
             context 'with manage_pki_dir => true' do
               ['/etc/pki', '/etc/pki/rpm-gpg'].each do |path|
                 it { is_expected.to contain_file(path).with({
@@ -228,6 +218,12 @@ describe 'puppet_agent' do
             end
 
             it { is_expected.to contain_class("puppet_agent::osfamily::suse") }
+
+            it { is_expected.to contain_file('/tmp/rpm_gpg_import_check.sh').with({
+              'ensure'    => 'file',
+              'source'    => 'puppet:///modules/puppet_agent/rpm_gpg_import_check.sh',
+              'mode'      => '0755',
+            }) }
 
             it { is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406').with({
               'ensure' => 'present',
