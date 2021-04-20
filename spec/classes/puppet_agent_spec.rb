@@ -29,7 +29,12 @@ describe 'puppet_agent' do
       if os =~ %r{sles}
         {
           is_pe: true,
+          env_temp_variable: '/tmp',
           operatingsystemmajrelease: facts[:operatingsystemrelease].split('.')[0],
+        }
+      elsif os =~ %r{redhat|centos|fedora|scientific|oracle}
+        {
+          env_temp_variable: '/tmp',
         }
       elsif os =~ %r{solaris}
         {

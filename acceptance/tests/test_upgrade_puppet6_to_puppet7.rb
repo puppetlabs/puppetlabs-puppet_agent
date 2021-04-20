@@ -18,7 +18,8 @@ node default {
     apt_source      => 'http://nightlies.puppet.com/apt',
     yum_source      => 'http://nightlies.puppet.com/yum',
     windows_source  => 'http://nightlies.puppet.com/downloads',
-    collection      => 'puppet7-nightly'
+    collection      => 'puppet7-nightly',
+    service_names   => []
   }
 }
     PP
@@ -39,9 +40,15 @@ node default {
 
   step "Upgrade the agents from Puppet 6 to Puppet 7..." do
     agents_only.each do |agent|
-      start_puppet_service_and_wait_for_puppet_run(agent)
+      on(agent, puppet("agent -t --debug"), acceptable_exit_codes: 2)
       wait_for_installation_pid(agent)
       assert_agent_version_on(agent, latest_version.scan(/7\.\d*\.\d*\.\d*/).first)
+    end
+  end
+
+  step "Run again for idempotency" do
+    agents_only.each do |agent|
+      on(agent, puppet("agent -t --debug"), acceptable_exit_codes: 0)
     end
   end
 end
