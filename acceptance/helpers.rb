@@ -346,8 +346,10 @@ module Beaker
           return
         end
 
-        step "(Agent) waiting for upgrade pid file to be created..." do
-          retry_on(host, "cat #{upgrade_pidfile}", {:max_retries => 5, :retry_interval => 2})
+        unless host['platform'] =~ /windows/
+          step "(Agent) waiting for upgrade pid file to be created..." do
+            retry_on(host, "cat #{upgrade_pidfile}", {:max_retries => 5, :retry_interval => 2})
+          end
         end
 
         step "(Agent) waiting for upgrade to complete..." do
