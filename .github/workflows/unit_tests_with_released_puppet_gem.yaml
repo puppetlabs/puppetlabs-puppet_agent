@@ -16,7 +16,7 @@ jobs:
         puppet_version: [ 6, 7 ]
         include:
           - puppet_version: 6
-            ruby: 2.5
+            ruby: 2.5.8
           - puppet_version: 7
             ruby: 2.7
 
