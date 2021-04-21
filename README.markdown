@@ -1,6 +1,6 @@
 # puppet_agent
 
-[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/[Daily]%20Unit%20Tests%20with%nightly%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
+[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions/workflows/daily_unit_tests_with_nightly_puppet_gem.yaml/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions/workflows/daily_unit_tests_with_nightly_puppet_gem.yaml)
 [![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Static%20Code%20Analysis/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
 [![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Unit%20Tests%20with%20nightly%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
 [![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Unit%20Tests%20with%20released%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
