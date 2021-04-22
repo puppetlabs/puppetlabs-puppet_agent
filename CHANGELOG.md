@@ -2,6 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.6.0] - 2021-04-22
+
+### Summary
+Fix PE upgrades for SLES 11 and improve GPG key checks. Remove puppet5 task support. Add `exclude` flag to `puppet facts diff` and add task to remove local filebucket cache.
+
+### Features
+
+- ([MODULES-10987](https://tickets.puppetlabs.com/browse/MODULES-10987)) Add Fedora32 support to puppet_agent module ([#548](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/548))
+- ([MODULES-11045](https://tickets.puppetlabs.com/browse/MODULES-11045)) add `exclude` parameter to `facts_diff` task ([#552](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/552))
+- ([MODULES-11048](https://tickets.puppetlabs.com/browse/MODULES-11048)) task to remove local filebucket ([#550](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/550))
+
+### Bug fixes
+
+- ([MODULES-10996](https://tickets.puppetlabs.com/browse/MODULES-10996)) Fix SLES 11 PE upgrades and improve GPG key check ([#551](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/551))
+
+### Removals
+
+- ([MODULES-10989](https://tickets.puppetlabs.com/browse/MODULES-10989)) Remove puppet5 collection from puppet_agent::install task ([#549](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/549))
+
 ## [4.5.0] - 2021-03-23
 
 ### Summary
