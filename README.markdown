@@ -1,8 +1,8 @@
 # puppet_agent
 
-[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/[Daily]%20Unit%20Tests%20with%nightly%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
-[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Static%20Code%20Analysis/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions) 
-[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Unit%20Tests%20with%20nightly%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions) 
+[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions/workflows/daily_unit_tests_with_nightly_puppet_gem.yaml/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions/workflows/daily_unit_tests_with_nightly_puppet_gem.yaml)
+[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Static%20Code%20Analysis/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
+[![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Unit%20Tests%20with%20nightly%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
 [![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Unit%20Tests%20with%20released%20Puppet%20gem/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
 [![Modules Status](https://github.com/puppetlabs/puppetlabs-puppet_agent/workflows/Task%20Acceptance%20Tests/badge.svg?branch=main)](https://github.com/puppetlabs/puppetlabs-puppet_agent/actions)
 
@@ -362,7 +362,7 @@ contents of the run report.
 
 #### `puppet_agent::version`
 
-Checks for the version of puppet-agent package installed. 
+Checks for the version of puppet-agent package installed.
 
 **Return value**
 
@@ -377,13 +377,51 @@ The `puppet_agent::version` task returns a Result on success specifying the vers
 
 #### `puppet_agent::install`
 
-Installs the puppet-agent package.  This task should not be used for upgrading agents particularly windows agents which have requirements other than just installing the puppet-agent msi.    
+Installs the puppet-agent package.  This task should not be used for upgrading agents particularly windows agents which have requirements other than just installing the puppet-agent msi.
 
 > **Note:** The `puppet_agent::install_shell` task requires the `facts::bash` implementation from the [facts](https://forge.puppet.com/puppetlabs/facts) module. Both the `puppet_agent` and `facts` modules are packaged with Bolt. For use outside of Bolt make sure the `facts` module is installed to the same `modules` directory as `puppet_agent`.
 
 **Return value**
 
 The task returns the output of the installation script.
+
+
+#### `puppet_agent::facts_diff`
+
+Executes `puppet facts diff` action to check if there are differences between Facter 3 and Facter 4 outputs.(*requires Puppet >= 6.21.0*)
+
+**Parameters**
+
+- `exclude`: Regex used to exclude specific facts from diff.(*requires Puppet >= 6.22.0*)
+
+**Return value**
+
+Returns a `ResultSet` object containing the differences.
+
+```
+{
+  "foo": {
+    "new_value": "bar",
+    "old_value": "baz"
+  }
+}
+```
+
+#### `puppet_agent::delete_local_filebucket`
+
+Removes the local filebucket cache. The location of the filebucket is determined using the `clientbucketdir` puppet config.
+
+**Parameters**
+
+- `force`: ignore nonexistent files and errors.
+
+**Return value**
+
+Returns a `ResultSet` object.
+
+```
+{:success=>true}
+```
 
 ## Limitations
 
