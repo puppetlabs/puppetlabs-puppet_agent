@@ -24,19 +24,40 @@ describe 'puppet_agent' do
       let(:facts) do
         super().merge(:operatingsystem  => os, :operatingsystemmajrelease => osmajor)
       end
+      script = <<-SCRIPT
+ACTION=$0
+GPG_HOMEDIR=$1
+GPG_KEY_PATH=$2
+GPG_ARGS="--homedir $GPG_HOMEDIR --with-colons"
+GPG_BIN=$(command -v gpg || command -v gpg2)
+if [ -z "${GPG_BIN}" ]; then
+  echo Could not find a suitable gpg command, exiting...
+  exit 1
+fi
+GPG_PUBKEY=gpg-pubkey-$("${GPG_BIN}" ${GPG_ARGS} "${GPG_KEY_PATH}" 2>&1 | grep ^pub | cut -d: -f5 | cut --characters=9-16 | tr "[:upper:]" "[:lower:]")
+if [ "${ACTION}" = "check" ]; then
+  # This will return 1 if there are differences between the key imported in the
+  # RPM database and the local keyfile. This means we need to purge the key and
+  # reimport it.
+  diff <(rpm -qi "${GPG_PUBKEY}" | "${GPG_BIN}" ${GPG_ARGS}) <("${GPG_BIN}" ${GPG_ARGS} "${GPG_KEY_PATH}")
+elif [ "${ACTION}" = "import" ]; then
+  (rpm -q "${GPG_PUBKEY}" && rpm -e --allmatches "${GPG_PUBKEY}") || true
+  rpm --import "${GPG_KEY_PATH}"
+fi
+SCRIPT
 
       it { is_expected.to contain_exec('import-GPG-KEY-puppet-20250406').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-        'command'   => '/tmp/rpm_gpg_import_check.sh import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
-        'unless'    => '/tmp/rpm_gpg_import_check.sh check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406',
+        'command'   => "/bin/bash -c '#{script}' import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
+        'unless'    => "/bin/bash -c '#{script}' check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
         'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
         'logoutput' => 'on_failure',
       }) }
 
       it { is_expected.to contain_exec('import-GPG-KEY-puppet').with({
         'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-        'command'   => '/tmp/rpm_gpg_import_check.sh import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
-        'unless'    => '/tmp/rpm_gpg_import_check.sh check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
+        'command'   => "/bin/bash -c '#{script}' import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
+        'unless'    => "/bin/bash -c '#{script}' check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet",
         'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet]',
         'logoutput' => 'on_failure',
       }) }
