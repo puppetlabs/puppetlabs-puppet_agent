@@ -63,6 +63,28 @@ class puppet_agent::osfamily::suse{
         $gpg_path        = "/etc/pki/rpm-gpg/RPM-${keyname}"
         $gpg_homedir     = '/root/.gnupg'
 
+        $script = @(SCRIPT/L)
+ACTION=$0
+GPG_HOMEDIR=$1
+GPG_KEY_PATH=$2
+GPG_ARGS="--homedir $GPG_HOMEDIR --with-colons"
+GPG_BIN=$(command -v gpg || command -v gpg2)
+if [ -z "${GPG_BIN}" ]; then
+  echo Could not find a suitable gpg command, exiting...
+  exit 1
+fi
+GPG_PUBKEY=gpg-pubkey-$("${GPG_BIN}" ${GPG_ARGS} "${GPG_KEY_PATH}" 2>&1 | grep ^pub | cut -d: -f5 | cut --characters=9-16 | tr "[:upper:]" "[:lower:]")
+if [ "${ACTION}" = "check" ]; then
+  # This will return 1 if there are differences between the key imported in the
+  # RPM database and the local keyfile. This means we need to purge the key and
+  # reimport it.
+  diff <(rpm -qi "${GPG_PUBKEY}" | "${GPG_BIN}" ${GPG_ARGS}) <("${GPG_BIN}" ${GPG_ARGS} "${GPG_KEY_PATH}")
+elif [ "${ACTION}" = "import" ]; then
+  (rpm -q "${GPG_PUBKEY}" && rpm -e --allmatches "${GPG_PUBKEY}") || true
+  rpm --import "${GPG_KEY_PATH}"
+fi
+| SCRIPT
+
         if getvar('::puppet_agent::manage_pki_dir') == true {
           file { ['/etc/pki', '/etc/pki/rpm-gpg']:
             ensure => directory,
@@ -85,22 +107,17 @@ class puppet_agent::osfamily::suse{
           source => "puppet:///modules/puppet_agent/${legacy_keyname}",
         }
 
-        file { "${::env_temp_variable}/rpm_gpg_import_check.sh":
-          ensure => file,
-          source => 'puppet:///modules/puppet_agent/rpm_gpg_import_check.sh',
-          mode   => '0755',
-        }
-        -> exec { "import-${legacy_keyname}":
+        exec { "import-${legacy_keyname}":
           path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-          command   => "${::env_temp_variable}/rpm_gpg_import_check.sh import ${gpg_homedir} ${legacy_gpg_path}",
-          unless    => "${::env_temp_variable}/rpm_gpg_import_check.sh check ${gpg_homedir} ${legacy_gpg_path}",
+          command   => "/bin/bash -c '${script}' import ${gpg_homedir} ${legacy_gpg_path}",
+          unless    => "/bin/bash -c '${script}' check ${gpg_homedir} ${legacy_gpg_path}",
           require   => File[$legacy_gpg_path],
           logoutput => 'on_failure',
         }
-        -> exec { "import-${keyname}":
+        exec { "import-${keyname}":
           path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-          command   => "${::env_temp_variable}/rpm_gpg_import_check.sh import ${gpg_homedir} ${gpg_path}",
-          unless    => "${::env_temp_variable}/rpm_gpg_import_check.sh check ${gpg_homedir} ${gpg_path}",
+          command   => "/bin/bash -c '${script}' import ${gpg_homedir} ${gpg_path}",
+          unless    => "/bin/bash -c '${script}' check ${gpg_homedir} ${gpg_path}",
           require   => File[$gpg_path],
           logoutput => 'on_failure',
         }
