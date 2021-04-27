@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.6.1] - 2021-04-27
+
+### Summary
+Fix upgrades when files from /tmp directory cannot be executed
+
+### Bug fixes
+
+- ([MODULES-11057](https://tickets.puppetlabs.com/browse/MODULES-11057)) Do not use /tmp directory for executables ([#557](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/557))
+
 ## [4.6.0] - 2021-04-22
 
 ### Summary
