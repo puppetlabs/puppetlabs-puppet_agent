@@ -653,6 +653,10 @@ case $platform in
     ;;
 esac
 
+if [[ -n "$PT_absolute_source" ]]; then
+  download_url=$PT_absolute_source
+fi
+
 download_filename="${tmp_dir}/${filename}"
 
 do_download "$download_url" "$download_filename"
