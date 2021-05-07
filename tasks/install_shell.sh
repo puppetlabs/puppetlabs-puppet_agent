@@ -14,7 +14,9 @@ log () {
 }
 
 info () {
+  if [[ $PT__noop != true ]]; then
     log "INFO: ${1}"
+  fi
 }
 
 warn () {
@@ -560,12 +562,16 @@ info "Downloading Puppet $version for ${platform}..."
 case $platform in
   "SLES")
     info "SLES platform! Lets get you an RPM..."
-    for key in "puppet" "puppet-20250406"; do
-      gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
-      do_download "https://yum.puppet.com/RPM-GPG-KEY-${key}" "$gpg_key"
-      rpm --import "$gpg_key"
-      rm -f "$gpg_key"
-    done
+    
+    if [[ $PT__noop != true ]]; then
+      for key in "puppet" "puppet-20250406"; do
+        gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
+        do_download "https://yum.puppet.com/RPM-GPG-KEY-${key}" "$gpg_key"
+        rpm --import "$gpg_key"
+        rm -f "$gpg_key"
+      done
+    fi
+
     filetype="noarch.rpm"
     filename="${collection}-release-sles-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
@@ -653,17 +659,19 @@ case $platform in
     ;;
 esac
 
-download_filename="${tmp_dir}/${filename}"
+if [[ $PT__noop != true ]]; then
+  download_filename="${tmp_dir}/${filename}"
 
-do_download "$download_url" "$download_filename"
+  do_download "$download_url" "$download_filename"
 
-install_file $filetype "$download_filename"
+  install_file $filetype "$download_filename"
 
-if [[ $PT_stop_service = true ]]; then
-  /opt/puppetlabs/bin/puppet resource service puppet ensure=stopped enable=false
-fi
+  if [[ $PT_stop_service = true ]]; then
+    /opt/puppetlabs/bin/puppet resource service puppet ensure=stopped enable=false
+  fi
 
-#Cleanup
-if test "x$tmp_dir" != "x"; then
-  rm -r "$tmp_dir"
+  #Cleanup
+  if test "x$tmp_dir" != "x"; then
+    rm -r "$tmp_dir"
+  fi
 fi

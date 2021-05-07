@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.7.0] - 2021-05-12
+
+### Summary
+Support running `puppet_agent::install` task in no-operation mode.
+
+### Features
+
+- ([MODULES-11066](https://tickets.puppetlabs.com/browse/MODULES-11066)) Support running `puppet_agent::install` task in no-operation mode ([#559](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/559))
+
 ## [4.6.1] - 2021-04-27
 
 ### Summary

@@ -5,7 +5,8 @@ Param(
   [String]$windows_source = 'https://downloads.puppet.com',
   [String]$install_options = 'REINSTALLMODE="amus"',
   [Bool]$stop_service = $False,
-  [Int]$retry = 5
+  [Int]$retry = 5,
+  [Bool]$_noop = $False
 )
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
@@ -153,8 +154,11 @@ function Cleanup {
     Remove-Item -Force $install_log
 }
 
-DownloadPuppet
-InstallPuppet
-Cleanup
-
-Write-Output "Puppet Agent installed on $env:COMPUTERNAME"
+if($_noop -eq 'true') {
+  Exit
+} else {
+  DownloadPuppet
+  InstallPuppet
+  Cleanup
+  Write-Output "Puppet Agent installed on $env:COMPUTERNAME" 
+}
