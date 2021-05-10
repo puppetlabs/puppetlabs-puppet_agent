@@ -210,12 +210,17 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
     platform_version=`sw_vers | awk '/^ProductVersion:/ { print $2 }'`
 
     major_version=`echo $platform_version | cut -d. -f1,2`
+
+    # Starting with MacOS 11, the major version is the first number only
+    if echo "${major_version}" | grep -q '^11\.'; then major_version=11; fi
+
     case $major_version in
       "10.11") platform_version="10.11";;
       "10.12") platform_version="10.12";;
       "10.13") platform_version="10.13";;
       "10.14") platform_version="10.14";;
       "10.15") platform_version="10.15";;
+      "11")    platform_version="11";;
       *) echo "No builds for platform: $major_version"
          exit 1
          ;;

@@ -30,7 +30,7 @@ describe 'puppet_agent' do
   describe 'supported environment' do
     let(:params) {{ package_version: package_version }}
     context "when running a supported OSX" do
-      ["osx-10.12-x86_64", "osx-10.13-x86_64", "osx-10.14-x86_64", "osx-10.15-x86_64"].each do |tag|
+      ["osx-10.12-x86_64", "osx-10.13-x86_64", "osx-10.14-x86_64", "osx-10.15-x86_64", "osx-11-x86_64"].each do |tag|
         context "on #{tag} with no aio_version" do
           let(:osmajor) { tag.split('-')[1] }
 
@@ -104,4 +104,21 @@ describe 'puppet_agent' do
     it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx10.13.dmg").with_source('puppet:///pe_packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.200-1.osx10.13.dmg') }
   end
 
+  describe 'when using package_version auto with MacOS 11' do
+    let(:params) {
+      {
+        package_version: 'auto',
+      }
+    }
+    let(:facts) do
+      facts.merge({
+        :is_pe                       => true,
+        :aio_agent_version           => '1.10.99',
+        :platform_tag                => 'osx-11-x86_64',
+        :macosx_productversion_major => '11.2',
+        :serverversion               => '5.10.200'
+      })
+    end
+    it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg").with_source('puppet:///pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
+  end
 end
