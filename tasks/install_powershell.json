@@ -39,5 +39,6 @@
       "type": "Optional[Integer]",
       "default": 5
     }
-  }
+  },
+  "supports_noop": true
 }

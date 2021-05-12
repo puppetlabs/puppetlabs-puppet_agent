@@ -41,5 +41,6 @@
       "default": 5
     }
   },
-  "files": ["facts/tasks/bash.sh"]
+  "files": ["facts/tasks/bash.sh"],
+  "supports_noop": true
 }
