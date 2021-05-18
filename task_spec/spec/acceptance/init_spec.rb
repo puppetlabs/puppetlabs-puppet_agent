@@ -37,6 +37,8 @@ describe 'install task' do
                          '6.18.0'
                        when %r{osx-10.15}
                          '6.15.0'
+                       when %r{osx-11}
+                         '6.23.0'
                        else
                          '6.17.0'
                        end
