@@ -104,7 +104,7 @@ describe 'puppet_agent' do
     it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx10.13.dmg").with_source('puppet:///pe_packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.200-1.osx10.13.dmg') }
   end
 
-  describe 'when using package_version auto with MacOS 11' do
+  describe 'when using package_version auto with MacOS 11(two numbers version productversion)' do
     let(:params) {
       {
         package_version: 'auto',
@@ -116,6 +116,24 @@ describe 'puppet_agent' do
         :aio_agent_version           => '1.10.99',
         :platform_tag                => 'osx-11-x86_64',
         :macosx_productversion_major => '11.2',
+        :serverversion               => '5.10.200'
+      })
+    end
+    it { is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg").with_source('puppet:///pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
+  end
+
+  describe 'when using package_version auto with MacOS 11(one number version productversion)' do
+    let(:params) {
+      {
+        package_version: 'auto',
+      }
+    }
+    let(:facts) do
+      facts.merge({
+        :is_pe                       => true,
+        :aio_agent_version           => '1.10.99',
+        :platform_tag                => 'osx-11-x86_64',
+        :macosx_productversion_major => '11',
         :serverversion               => '5.10.200'
       })
     end

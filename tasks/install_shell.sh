@@ -211,8 +211,10 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
 
     major_version=`echo $platform_version | cut -d. -f1,2`
 
-    # Starting with MacOS 11, the major version is the first number only
-    if echo "${major_version}" | grep -q '^11\.'; then major_version=11; fi
+    # Excepting MacOS 10.x, the major version is the first number only
+    if ! echo "${major_version}" | grep -q '^10\.'; then
+        major_version=$(echo "${major_version}" | cut -d '.' -f 1);
+    fi
 
     case $major_version in
       "10.11") platform_version="10.11";;

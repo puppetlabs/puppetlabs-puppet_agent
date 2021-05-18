@@ -1,10 +1,11 @@
 class puppet_agent::osfamily::darwin{
   assert_private()
 
-  if $::macosx_productversion_major =~ /^11\./ {
-    $productversion_major = '11'
-  } else {
+  if $::macosx_productversion_major =~ /^10\./ {
     $productversion_major = $::macosx_productversion_major
+  } else {
+    $productversion_array = split($::macosx_productversion_major, '[.]')
+    $productversion_major = $productversion_array[0]
   }
 
   if $::puppet_agent::absolute_source {
