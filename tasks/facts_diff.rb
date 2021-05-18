@@ -38,7 +38,7 @@ module PuppetAgent
       }
 
       command = [puppet_bin, 'facts', 'diff']
-      command << "--exclude" << @exclude if @exclude && ! @exclude.empty?
+      command << "--exclude" << "\"#{Regexp.new(@exclude).to_s}\"" if @exclude && ! @exclude.empty?
 
       run_result = Puppet::Util::Execution.execute(command, options)
 
