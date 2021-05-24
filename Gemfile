@@ -72,7 +72,7 @@ group :system_tests do
   # Bundler fails on 2.1.9 even though this group is excluded
   if ENV['GEM_BOLT']
     gem 'bolt', '~> 1.15', require: false
-    gem 'beaker-task_helper', '~> 1.5.2', require: false
+    gem 'beaker-task_helper', git: 'https://github.com/gimmyxd/beaker-task_helper.git', branch: 'maint/fix_pa', require: false
   end
 end
 
