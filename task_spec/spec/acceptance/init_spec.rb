@@ -17,7 +17,12 @@ describe 'install task' do
   end
 
   def bolt_inventory
-    hosts_to_inventory
+    host_data = hosts_to_inventory
+    host_data['nodes'].each do |node_data|
+      node_data['config']['winrm']['connect-timeout'] = 120 if target_platform =~ %r{win}
+    end
+
+    host_data
   end
 
   def target_platform
@@ -42,6 +47,10 @@ describe 'install task' do
                        else
                          '6.17.0'
                        end
+
+    # extra request is needed on windows hosts
+    # this will fail with "execution expired"
+    run_task('puppet_agent::version', 'target', {}) if target_platform =~ %r{win}
 
     # Test the agent isn't already installed and that the version task works
     results = run_task('puppet_agent::version', 'target', {})
