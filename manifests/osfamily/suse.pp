@@ -143,21 +143,36 @@ fi
             }
 
             $repo_settings.each |String $setting, String $value| {
-              ini_setting { "zypper ${repo_name} ${setting}":
-                ensure  => present,
-                path    => $repo_file,
-                section => $repo_name,
-                setting => $setting,
-                value   => $value,
-                before  => Exec["refresh-${repo_name}"],
+              if $_package_version =~ /^present$|^latest$/ {
+                ini_setting { "zypper ${repo_name} ${setting}":
+                  ensure  => present,
+                  path    => $repo_file,
+                  section => $repo_name,
+                  setting => $setting,
+                  value   => $value,
+                }
+              } else {
+                ini_setting { "zypper ${repo_name} ${setting}":
+                  ensure  => present,
+                  path    => $repo_file,
+                  section => $repo_name,
+                  setting => $setting,
+                  value   => $value,
+                  before  => Exec["refresh-${repo_name}"],
+                }
               }
             }
 
-            exec { "refresh-${repo_name}":
-              path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-              unless    => "zypper search -r ${repo_name} -s | grep puppet-agent | awk '{print \$7}' | grep \"^${_package_version}\"",
-              command   => "zypper refresh ${repo_name}",
-              logoutput => 'on_failure',
+            # If the requested package is "latest" we don't know the exact version yet,
+            # so we can't reliably refresh the repo. If "present", the repo contents don't
+            # matter at all if a version is already installed.
+            unless $_package_version =~ /^present$|^latest$/ {
+              exec { "refresh-${repo_name}":
+                path      => '/bin:/usr/bin:/sbin:/usr/sbin',
+                unless    => "zypper search -r ${repo_name} -s | grep puppet-agent | awk '{print \$7}' | grep \"^${_package_version}\"",
+                command   => "zypper refresh ${repo_name}",
+                logoutput => 'on_failure',
+              }
             }
           }
         }

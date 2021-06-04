@@ -139,6 +139,10 @@ class puppet_agent (
     fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
   }
 
+  if $package_version == 'latest' and $::osfamily =~ /^(?i:windows|solaris|aix|darwin)$/ {
+    fail("Setting package_version to 'latest' is not supported on ${::osfamily.capitalize()}")
+  }
+
   if $source != undef and $absolute_source != undef {
     fail('Only one of $source and $absolute_source can be set')
   }
@@ -166,12 +170,11 @@ class puppet_agent (
     }
 
     if $::osfamily == 'redhat' {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$/ {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
-    }
-    else {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+    } else {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
     }
@@ -180,13 +183,21 @@ class puppet_agent (
     if $master_or_package_version =~ /.g/ {
       $_expected_package_version = split($master_or_package_version, /[.-]g.*/)[0]
     } elsif $::osfamily == 'redhat' {
-      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+/)[0]
+      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+|^latest$|^present$/)[0]
     } else {
       $_expected_package_version = $master_or_package_version
     }
 
-    $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
-    $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
+    if $_expected_package_version == 'latest' {
+      $aio_upgrade_required = true
+      $aio_downgrade_required = false
+    } elsif $_expected_package_version == 'present' {
+      $aio_upgrade_required = false
+      $aio_downgrade_required = false
+    } else {
+      $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
+      $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
+    }
 
     if $aio_upgrade_required {
       if any_resources_of_type('filebucket', { path => false }) {

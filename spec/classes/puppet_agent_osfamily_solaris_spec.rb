@@ -111,7 +111,7 @@ EOF
 
       # Ensure we get a versionable package provider
       pkg = Puppet::Type.type(:package)
-      pkg.stubs(:defaultprovider).returns(pkg.provider(:pkg))
+      allow(pkg).to receive(:defaultprovider).and_return(pkg.provider(:pkg))
     end
 
     context "when Solaris 11 i386 and a custom source" do

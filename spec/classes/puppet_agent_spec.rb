@@ -62,7 +62,7 @@ describe 'puppet_agent' do
 
   context 'package version' do
     context 'valid' do
-      ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab'].each do |version|
+      ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab', 'present', 'latest'].each do |version|
 
         redhat_familly_supported_os.each do |os, facts|
           let(:facts) { global_facts(facts, os) }
@@ -88,6 +88,32 @@ describe 'puppet_agent' do
 
           context "on #{os}" do
             it { expect { catalogue }.to raise_error(%r{invalid version}) }
+          end
+        end
+      end
+    end
+
+    context 'latest' do
+      context 'on unsupported platform' do
+        on_supported_os.select { |platform, _| platform =~ /solaris|aix|windows|osx/ }.each do |os, facts|
+          let(:facts) { global_facts(facts, os) }
+          let(:params) { { package_version: 'latest' } }
+
+          context os do
+            it { is_expected.not_to compile }
+            it { expect { catalogue }.to raise_error(Puppet::Error, /Setting package_version to 'latest' is not supported/) }
+          end
+        end
+      end
+
+      context 'on supported platform' do
+        on_supported_os.reject { |platform, _| platform =~ /solaris|aix|windows|osx/ }.each do |os, facts|
+          let(:facts) { global_facts(facts, os) }
+          let(:params) { { package_version: 'latest' } }
+
+          context os do
+            it { is_expected.to compile.with_all_deps }
+            it { expect { catalogue }.not_to raise_error }
           end
         end
       end
