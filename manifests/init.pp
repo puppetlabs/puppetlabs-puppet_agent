@@ -166,12 +166,12 @@ class puppet_agent (
     }
 
     if $::osfamily == 'redhat' {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$/ {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
     }
     else {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
     }
@@ -180,18 +180,20 @@ class puppet_agent (
     if $master_or_package_version =~ /.g/ {
       $_expected_package_version = split($master_or_package_version, /[.-]g.*/)[0]
     } elsif $::osfamily == 'redhat' {
-      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+/)[0]
+      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+|^latest$|^present$/)[0]
     } else {
       $_expected_package_version = $master_or_package_version
     }
 
-    $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
-    $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
+    if $_expected_package_version !~ /^latest$|^present$/ {
+      $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
+      $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
 
-    if $aio_upgrade_required {
-      if any_resources_of_type('filebucket', { path => false }) {
-        if $settings::digest_algorithm != $::puppet_digest_algorithm {
-          fail("Remote filebuckets are enabled, but there was a agent/server digest algorithm mismatch. Server: ${settings::digest_algorithm}, agent: ${::puppet_digest_algorithm}. Either ensure the algorithms are matching, or disable remote filebuckets during the upgrade.")
+      if $aio_upgrade_required {
+        if any_resources_of_type('filebucket', { path => false }) {
+          if $settings::digest_algorithm != $::puppet_digest_algorithm {
+            fail("Remote filebuckets are enabled, but there was a agent/server digest algorithm mismatch. Server: ${settings::digest_algorithm}, agent: ${::puppet_digest_algorithm}. Either ensure the algorithms are matching, or disable remote filebuckets during the upgrade.")
+          }
         }
       }
     }

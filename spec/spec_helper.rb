@@ -10,6 +10,7 @@ if Puppet::Util::Package.versioncmp(Puppet.version, '4.5.0') >= 0
 end
 
 RSpec.configure do |c|
+  c.mock_with :rspec
   c.before :each do
     Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue, doc: '') do |args|
       '2018.1.0'

@@ -62,7 +62,7 @@ describe 'puppet_agent' do
 
   context 'package version' do
     context 'valid' do
-      ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab'].each do |version|
+      ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab', 'present', 'latest'].each do |version|
 
         redhat_familly_supported_os.each do |os, facts|
           let(:facts) { global_facts(facts, os) }
