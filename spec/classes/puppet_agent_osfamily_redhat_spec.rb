@@ -201,6 +201,18 @@ SCRIPT
             is_expected.to contain_yumrepo('pc_repo').with_proxy('_none_')
           }
         end
+        describe 'proxy' do
+          let(:params) {
+            {
+              :manage_repo     => true,
+              :package_version => package_version,
+              :proxy           => 'http://myrepo-proxy.example.com',
+            }
+          }
+          it {
+            is_expected.to contain_yumrepo('pc_repo').with_proxy('http://myrepo-proxy.example.com')
+          }
+        end
         describe 'skip repo if unavailable' do
           let(:params) {
             {

@@ -43,6 +43,8 @@
         - [`use_alternate_sources`](#use_alternate_sources)
         - [`alternate_pe_source`](#alternate_pe_source)
         - [`install_dir`](#install_dir)
+        - [`disable_proxy`](#disable_proxy)
+        - [`proxy`](#proxy)
         - [`install_options`](#install_options)
         - [`msi_move_locked_files`](#msi_move_locked_files)
         - [`wait_for_pxp_agent_exit`](#wait_for_pxp_agent_exit)
@@ -285,6 +287,20 @@ Base URL of a location where packages are located in the same structure that's s
 The directory the puppet agent should be installed to. This is only applicable for Windows operating systems and when upgrading the agent to a new version; it will not cause re-installation of the same version to a new location. This must use backslashes for the path separator, and be an absolute path, for example:
 ``` puppet
   install_dir => 'D:\Program Files\Puppet Labs'
+```
+
+##### `disable_proxy`
+
+This setting controls whether or not the Puppet repositories are configured with proxies. Currently this is only supported on RedHat-based OSes.
+``` puppet
+  disable_proxy => true
+```
+
+##### `proxy`
+
+This setting specifies the proxy with which to configure the Puppet repos. Currently this is only supported on RedHat-based OSes.
+``` puppet
+  proxy => 'http://myrepo-proxy.example.com'
 ```
 
 ##### `install_options`
