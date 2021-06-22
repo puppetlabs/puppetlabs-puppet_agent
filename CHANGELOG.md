@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.8.0] - 2021-06-22
+
+### Summary
+Add Fedora 34 support to module. Add macOS 11 support to `install` task. Fix `facts_diff` task argument parsing on Windows.
+
+### Features
+
+- ([MODULES-11085](https://tickets.puppetlabs.com/browse/MODULES-11085)) Add Fedora 34 support to module ([#564](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/564))
+- ([PE-31118](https://tickets.puppetlabs.com/browse/PE-31118)) Add macOS 11 support to `install` task ([#560](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/560))
+
+### Bug fixes
+
+- ([MODULES-11074](https://tickets.puppetlabs.com/browse/MODULES-11074)) Fix `facts_diff` task argument parsing on Windows ([#561](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/561))
+
 ## [4.7.0] - 2021-05-12
 
 ### Summary
