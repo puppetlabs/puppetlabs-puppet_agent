@@ -119,6 +119,7 @@ class puppet_agent (
   $alternate_pe_source     = undef,
   $install_dir             = undef,
   $disable_proxy           = false,
+  $proxy                   = undef,
   $install_options         = [],
   $skip_if_unavailable     = 'absent',
   $msi_move_locked_files   = false,
