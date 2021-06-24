@@ -71,8 +71,8 @@ group :system_tests do
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0.1')
   # Bundler fails on 2.1.9 even though this group is excluded
   if ENV['GEM_BOLT']
-    gem 'bolt', '~> 1.15', require: false
-    gem 'beaker-task_helper', '~> 1.5.2', require: false
+    gem 'bolt', '~> 3.0', require: false
+    gem 'beaker-task_helper', '~> 1.9', require: false
   end
 end
 
