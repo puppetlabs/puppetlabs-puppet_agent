@@ -19,7 +19,6 @@ jobs:
       GEM_BOLT: true
       BEAKER_debug: true
       BEAKER_set: docker/${{ matrix.os }}
-      BEAKER_BOLT_VERSION: 3.0.0
 
     runs-on: 'ubuntu-18.04'
     steps:
