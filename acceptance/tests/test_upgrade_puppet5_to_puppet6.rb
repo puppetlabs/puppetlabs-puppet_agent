@@ -14,7 +14,7 @@ test_name 'puppet_agent class: Upgrade agents from puppet5 to puppet6' do
     manifest = <<-PP
 node default {
   class { puppet_agent:
-    package_version => '#{latest_version}',
+    package_version => 'latest',
     apt_source      => 'http://nightlies.puppet.com/apt',
     yum_source      => 'http://nightlies.puppet.com/yum',
     windows_source  => 'http://nightlies.puppet.com/downloads',
