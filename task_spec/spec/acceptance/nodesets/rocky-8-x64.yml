@@ -1,0 +1,10 @@
+HOSTS:
+  rocky-8-x64:
+    roles:
+      - target
+      - default
+    platform: el-8-x86_64
+    hypervisor: vagrant
+    box: rockylinux/8
+CONFIG:
+  type: foss

@@ -9,6 +9,7 @@
 #             supports comma-separated lists. Available:
 #             - `ubuntu`
 #             - `centos`
+#             - `rocky`
 #             Default: `ubuntu`
 # - BEFORE: The puppet-agent package version that is installed prior to upgrade.
 #           Default: 1.10.14
