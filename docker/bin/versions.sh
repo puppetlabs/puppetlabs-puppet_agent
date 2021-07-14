@@ -8,13 +8,14 @@
 # - PLATFORM: The platform on which the upgrade should occur. Available:
 #             - `ubuntu`
 #             - `centos`
+#             - `rocky`
 #             Default: `ubuntu`
 set -e
 
 platform=${1:-ubuntu}
 
 case "${platform}" in
-    ubuntu|centos)
+    ubuntu|centos|rocky)
         ;;
     *) echo "Invalid platform: '${platform}'. Must be 'ubuntu' or 'centos'"
         exit 1

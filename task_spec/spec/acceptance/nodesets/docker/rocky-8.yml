@@ -1,0 +1,14 @@
+HOSTS:
+  rocky-8-x64:
+    roles:
+      - target
+    platform: el-8-x86_64
+    hypervisor: docker
+    image: rockylinux/rockylinux:8
+    docker_preserve_image: true
+    docker_cmd: '["/usr/sbin/init"]'
+    # install various tools required to get the image up to usable levels
+    docker_image_commands:
+      - 'dnf install -y crontabs tar wget openssl iproute which initscripts'
+CONFIG:
+  trace_limit: 200

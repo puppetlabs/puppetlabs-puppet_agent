@@ -12,10 +12,10 @@ jobs:
     name: On ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'centos-7', 'ubuntu-18.04' ]
+        os: [ 'centos-7', 'ubuntu-18.04', 'rocky-8' ]
 
     env:
-      ruby_version: 2.5
+      ruby_version: 2.5.9
       GEM_BOLT: true
       BEAKER_debug: true
       BEAKER_set: docker/${{ matrix.os }}

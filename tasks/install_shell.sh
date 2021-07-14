@@ -174,6 +174,10 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
   if test "x$platform" = "xCentOS"; then
     platform="el"
 
+  # Handle Rocky
+  elif test "x$platform" = "xRocky"; then
+    platform="el"
+
   # Handle Oracle
   elif test "x$platform" = "xOracle Linux Server"; then
     platform="el"
