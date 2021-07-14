@@ -26,7 +26,7 @@ class puppet_agent::install::suse(
     $_source = undef
   }
 
-  $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?/)[0]
+  $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?|^latest$|^present$/)[0]
   package { $::puppet_agent::package_name:
     ensure          => $package_version,
     install_options => $install_options,
