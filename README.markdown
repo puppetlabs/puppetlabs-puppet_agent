@@ -72,7 +72,7 @@ Previous releases of this module, now unsupported, upgraded agents from later ve
 
 The puppet_agent module installs the appropriate official Puppet package repository (on systems that support repositories); migrates configuration required by Puppet to new locations used by puppet-agent; and installs the puppet-agent package, removing the previous Puppet installation.
 
-If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package, also this parameter can be set to "auto", ensuring that agent version matches the version on the master without having to manually update package_version after upgrading the master(s).
+If a package_version parameter is provided, it will ensure that puppet-agent version is installed. The package_version parameter is required to perform upgrades starting from a puppet-agent package, also this parameter can be set to "auto", ensuring that agent version matches the version on the master without having to manually update package_version after upgrading the master(s). On platforms that install packages through repos (EL, Fedora, Debian, Ubuntu, SLES), the parameter can be set to "latest" in order to install the latest available package. To only ensure the presence of the package, the parameter can be set to "present".
 
 If a config parameter is provided, it will manage the defined agent configuration settings.
 
@@ -190,6 +190,14 @@ The package version to upgrade to. This must be explicitly specified.
 or
 ``` puppet
   package_version => 'auto'
+```
+or
+``` puppet
+  package_version => 'latest'
+```
+or
+``` puppet
+  package_version => 'present'
 ```
 
 ##### `service_names`
