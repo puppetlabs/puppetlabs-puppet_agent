@@ -13,8 +13,14 @@ test_name 'puppet_agent class: Upgrade agents from puppet5 to puppet6' do
   step "Create new site.pp with upgrade manifest" do
     manifest = <<-PP
 node default {
+  if $::osfamily =~ /^(?i:windows|solaris|aix|darwin)$/ {
+    $_package_version = '#{latest_version}'
+  } else {
+    $_package_version = 'latest'
+  }
+
   class { puppet_agent:
-    package_version => '#{latest_version}',
+    package_version => $_package_version,
     apt_source      => 'http://nightlies.puppet.com/apt',
     yum_source      => 'http://nightlies.puppet.com/yum',
     windows_source  => 'http://nightlies.puppet.com/downloads',

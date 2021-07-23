@@ -40,7 +40,7 @@ group :development do
   gem "rake", '~> 12',                                       require: false
   gem "parallel_tests", '>= 2.14.1', '< 2.14.3',             require: false
   gem "metadata-json-lint", '>= 2.0.2', '< 3.0.0',           require: false
-  gem "rspec-puppet-facts", '~> 1.10.0',                     require: false
+  gem "rspec-puppet-facts", '~> 2.0.1',                      require: false
   gem "rspec_junit_formatter", '~> 0.2',                     require: false
   gem "rubocop", '~> 0.49.0',                                require: false
   gem "rubocop-rspec", '~> 1.16.0',                          require: false
@@ -48,7 +48,7 @@ group :development do
   gem "puppetlabs_spec_helper", '>= 2.9.0', '< 3.0.0',       require: false
   gem "puppet-module-posix-default-r#{minor_version}",       require: false, platforms: "ruby"
   gem "puppet-module-win-default-r#{minor_version}",         require: false, platforms: ["mswin", "mingw", "x64_mingw"]
-  gem "rspec-puppet",                                        require: true, git: "https://github.com/rodjek/rspec-puppet", tag: "v2.7.9"
+  gem "rspec-puppet",                                        require: true
   gem 'rspec-expectations', '~> 3.9.0',                      require: false
   gem "json_pure", '<= 2.0.1',                               require: false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')
   gem "fast_gettext", '1.1.0',                               require: false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')

@@ -43,7 +43,7 @@ class puppet_agent::install(
     }
   } elsif $::osfamily == 'suse' {
     # Prevent re-running the batch install
-    if ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
+    if ($package_version =~ /^latest$|^present$/) or ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
       class { 'puppet_agent::install::suse':
         package_version => $package_version,
         install_options => $install_options,
@@ -67,7 +67,7 @@ class puppet_agent::install(
         $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
       } else {
         # any other type of source means we use apt with no 'source' defined in the package resource below
-        if $package_version == 'present' {
+        if $package_version =~ /^latest$|^present$/ {
           $_package_version = $package_version
         } else {
           $_package_version = "${package_version}-1${::lsbdistcodename}"
@@ -91,7 +91,7 @@ class puppet_agent::install(
         $_source = undef
       }
     }
-    $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?/)[0]
+    $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?|^latest$|^present$/)[0]
     package { $::puppet_agent::package_name:
       ensure          => $_package_version,
       install_options => $_install_options,
