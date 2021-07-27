@@ -6,6 +6,12 @@ Facter.add('puppet_ssldir') do
   end
 end
 
+Facter.add('puppet_digest_algorithm') do
+  setcode do
+    Puppet.settings['digest_algorithm']
+  end
+end
+
 Facter.add('puppet_config') do
   setcode do
     Puppet.settings['config']

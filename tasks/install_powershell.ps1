@@ -4,7 +4,9 @@ Param(
   [String]$collection = 'puppet',
   [String]$windows_source = 'https://downloads.puppet.com',
   [String]$install_options = 'REINSTALLMODE="amus"',
-  [Bool]$stop_service = $False
+  [Bool]$stop_service = $False,
+  [Int]$retry = 5,
+  [Bool]$_noop = $False
 )
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
@@ -104,20 +106,32 @@ $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"
 $install_log = Join-Path ([System.IO.Path]::GetTempPath()) "$date_time_stamp-puppet-install.log"
 
 function DownloadPuppet {
-  Write-Verbose "Downloading the Puppet Agent for Puppet Enterprise on $env:COMPUTERNAME..."
-
+  Write-Output "Downloading the Puppet Agent installer on $env:COMPUTERNAME..."
   $webclient = New-Object system.net.webclient
 
   try {
     $webclient.DownloadFile($msi_source,$msi_dest)
   }
   catch [System.Net.WebException] {
-    # If we can't find the msi, then we may not be configured correctly
-    if($_.Exception.Response.StatusCode -eq [system.net.httpstatuscode]::NotFound) {
-        Throw "Failed to download the Puppet Agent installer: $msi_source"
+    For ($attempt_number = 1; $attempt_number -le $retry; $attempt_number++) {
+      try {
+        Write-Output "Retrying... [$attempt_number/$retry]"
+        $webclient.DownloadFile($msi_source,$msi_dest)
+        break
+      }
+      catch [System.Net.WebException] {
+        if($attempt_number -eq $retry) {
+          # If we can't find the msi, then we may not be configured correctly
+          if($_.Exception.Response.StatusCode -eq [system.net.httpstatuscode]::NotFound) {
+            Throw "Failed to download the Puppet Agent installer: $msi_source"
+          }
+
+          # Throw all other WebExceptions
+          Throw $_
+        }
+        Start-Sleep -s 1
+      }
     }
-    # Throw all other WebExceptions
-    Throw $_
   }
 }
 
@@ -140,8 +154,11 @@ function Cleanup {
     Remove-Item -Force $install_log
 }
 
-DownloadPuppet
-InstallPuppet
-Cleanup
-
-Write-Output "Puppet Agent installed on $env:COMPUTERNAME"
+if($_noop -eq 'true') {
+  Exit
+} else {
+  DownloadPuppet
+  InstallPuppet
+  Cleanup
+  Write-Output "Puppet Agent installed on $env:COMPUTERNAME" 
+}

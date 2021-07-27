@@ -58,9 +58,13 @@ class puppet_agent::params{
     elsif versioncmp($_pe_version, '2018.2') < 0 {
       $collection = 'puppet5'
     }
-    # pe_version >= 2018.2, use puppet6
-    else {
+    # 2018.2 <= pe_version < 2021.0 use puppet6
+    elsif versioncmp($_pe_version, '2021.0') < 0 {
       $collection = 'puppet6'
+    }
+    # pe_version >= 2021.0, use puppet7
+    else {
+      $collection = 'puppet7'
     }
     # The aio puppet-agent version currently installed on the compiling master
     # (only used in PE)

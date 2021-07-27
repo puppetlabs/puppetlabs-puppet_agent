@@ -2,6 +2,8 @@ require 'puppetlabs_spec_helper/module_spec_helper'
 require 'rspec-puppet-facts'
 include RspecPuppetFacts
 
+location = File.expand_path('/dev/null')
+
 RSpec.configure do |c|
   c.default_facts = {
     :aio_agent_version           => '5.5.10',
@@ -22,31 +24,31 @@ RSpec.configure do |c|
     :system32                    => nil,
     :fips_enabled                => false,
 
-    :puppet_ssldir   => '/dev/null/ssl',
-    :puppet_config   => '/dev/null/puppet.conf',
+    :puppet_ssldir   => "#{location}/ssl",
+    :puppet_config   => "#{location}/puppet.conf",
     :puppet_sslpaths => {
       'privatedir'    => {
-        'path'   => '/dev/null/ssl/private',
+        'path'   => "#{location}/ssl/private",
         'path_exists' => true,
       },
       'privatekeydir' => {
-        'path'   => '/dev/null/ssl/private_keys',
+        'path'   => "#{location}/ssl/private_keys",
         'path_exists' => true,
       },
       'publickeydir'  => {
-        'path'   => '/dev/null/ssl/public_keys',
+        'path'   => "#{location}/ssl/public_keys",
         'path_exists' => true,
       },
       'certdir'       => {
-        'path'   => '/dev/null/ssl/certs',
+        'path'   => "#{location}/ssl/certs",
         'path_exists' => true,
       },
       'requestdir'    => {
-        'path'   => '/dev/null/ssl/certificate_requests',
+        'path'   => "#{location}/ssl/certificate_requests",
         'path_exists' => true,
       },
       'hostcrl'       => {
-        'path'   => '/dev/null/ssl/crl.pem',
+        'path'   => "#{location}/ssl/crl.pem",
         'path_exists' => true,
       },
     },

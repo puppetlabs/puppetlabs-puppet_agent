@@ -43,13 +43,17 @@ RUN if [[ ${before} == 1.* ]]; then \
         wget -O puppet-pc1.rpm http://yum.puppet.com/puppetlabs-release-pc1-el-7.noarch.rpm && \
         rpm -i puppet-pc1.rpm; \
     elif [[ ${before} == 5.* ]]; then \
-        echo Installing PC1 repo; \
+        echo Installing puppet5 repo; \
         wget -O puppet5.rpm http://yum.puppet.com/puppet5-release-el-7.noarch.rpm && \
         rpm -i puppet5.rpm; \
     elif [[ ${before} == 6.* ]]; then \
-        echo Installing PC1 repo; \
+        echo Installing puppet6 repo; \
         wget -O puppet6.rpm http://yum.puppet.com/puppet6-release-el-7.noarch.rpm && \
         rpm -i puppet6.rpm; \
+    elif [[ ${before} == 7.* ]]; then \
+        echo Installing puppet7 repo; \
+        wget -O puppet7.rpm http://yum.puppet.com/puppet7-release-el-7.noarch.rpm && \
+        rpm -i puppet7.rpm; \
     else echo no; \
     fi
 

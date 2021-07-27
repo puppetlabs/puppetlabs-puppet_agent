@@ -67,7 +67,7 @@ describe 'puppet_agent' do
     end
 
     it {
-      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.aix6.1.ppc.rpm').with_source("https://fake-pe-master.com/packages/2000.0.0/aix-6.1-power/puppet-agent-5.10.100.1-1.aix6.1.ppc.rpm")
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.aix7.1.ppc.rpm').with_source("https://fake-pe-master.com/packages/2000.0.0/aix-7.1-power/puppet-agent-5.10.100.1-1.aix7.1.ppc.rpm")
     }
   end
 
@@ -87,31 +87,82 @@ describe 'puppet_agent' do
   end
 
   context 'with a puppet5 collection' do
-    let(:params) {
-      {
-        package_version: '5.4.3',
-        collection: 'puppet5',
+    context 'with versions up to 5.5.22' do
+      let(:params) {
+        {
+          package_version: '5.4.3',
+          collection: 'puppet5',
+        }
       }
-    }
 
-    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
-      context "aix #{aixver}" do
-        include_examples 'aix', aixver, pkg_aixver, powerver
+      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
+        context "aix #{aixver}" do
+          include_examples 'aix', aixver, pkg_aixver, powerver
+        end
+      end
+    end
+
+    context 'with versions higher than 5.5.22' do
+      let(:params) {
+        {
+          package_version: '5.5.23',
+          collection: 'puppet5',
+        }
+      }
+
+      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '7.1', '7']].each do |aixver, pkg_aixver, powerver|
+        context "aix #{aixver}" do
+          include_examples 'aix', aixver, pkg_aixver, powerver
+        end
       end
     end
   end
 
   context 'with a puppet6 collection' do
-    let(:params) {
-      {
-        package_version: '6.0.0',
-        collection: 'puppet6',
+    context 'with versions up to 6.19.1' do
+      let(:params) {
+        {
+          package_version: '6.0.0',
+          collection: 'puppet6',
+        }
       }
-    }
 
-    [['7.2', '6.1', '8'], ['7.1', '6.1', '8'], ['7.1', '6.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
-      context "aix #{aixver}" do
-        include_examples 'aix', aixver, pkg_aixver, powerver
+      [['7.2', '6.1', '8'], ['7.1', '6.1', '8'], ['7.1', '6.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
+        context "aix #{aixver}" do
+          include_examples 'aix', aixver, pkg_aixver, powerver
+        end
+      end
+    end
+
+    context 'with versions higher than 6.19.1' do
+      let(:params) {
+        {
+          package_version: '6.20.0',
+          collection: 'puppet6',
+        }
+      }
+
+      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '7.1', '7']].each do |aixver, pkg_aixver, powerver|
+        context "aix #{aixver}" do
+          include_examples 'aix', aixver, pkg_aixver, powerver
+        end
+      end
+    end
+  end
+
+  context 'with a puppet7 collection' do
+    context 'with versions higher than 7.0.0' do
+      let(:params) {
+        {
+          package_version: '7.0.1',
+          collection: 'puppet7',
+        }
+      }
+
+      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '7.1', '7']].each do |aixver, pkg_aixver, powerver|
+        context "aix #{aixver}" do
+          include_examples 'aix', aixver, pkg_aixver, powerver
+        end
       end
     end
   end

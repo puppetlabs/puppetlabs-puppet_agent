@@ -29,7 +29,12 @@ describe 'puppet_agent' do
       if os =~ %r{sles}
         {
           is_pe: true,
+          env_temp_variable: '/tmp',
           operatingsystemmajrelease: facts[:operatingsystemrelease].split('.')[0],
+        }
+      elsif os =~ %r{redhat|centos|fedora|scientific|oracle}
+        {
+          env_temp_variable: '/tmp',
         }
       elsif os =~ %r{solaris}
         {
@@ -57,7 +62,7 @@ describe 'puppet_agent' do
 
   context 'package version' do
     context 'valid' do
-      ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab'].each do |version|
+      ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab', 'present', 'latest'].each do |version|
 
         redhat_familly_supported_os.each do |os, facts|
           let(:facts) { global_facts(facts, os) }
@@ -69,6 +74,7 @@ describe 'puppet_agent' do
             it { expect { catalogue }.not_to raise_error }
             it { is_expected.to contain_class('puppet_agent::prepare').with_package_version(version) }
             it { is_expected.to contain_class('puppet_agent::install').with_package_version(version) }
+            it { is_expected.to contain_class('puppet_agent::configure').that_requires('Class[puppet_agent::install]') }
           end
         end
       end
@@ -86,6 +92,32 @@ describe 'puppet_agent' do
         end
       end
     end
+
+    context 'latest' do
+      context 'on unsupported platform' do
+        on_supported_os.select { |platform, _| platform =~ /solaris|aix|windows|osx/ }.each do |os, facts|
+          let(:facts) { global_facts(facts, os) }
+          let(:params) { { package_version: 'latest' } }
+
+          context os do
+            it { is_expected.not_to compile }
+            it { expect { catalogue }.to raise_error(Puppet::Error, /Setting package_version to 'latest' is not supported/) }
+          end
+        end
+      end
+
+      context 'on supported platform' do
+        on_supported_os.reject { |platform, _| platform =~ /solaris|aix|windows|osx/ }.each do |os, facts|
+          let(:facts) { global_facts(facts, os) }
+          let(:params) { { package_version: 'latest' } }
+
+          context os do
+            it { is_expected.to compile.with_all_deps }
+            it { expect { catalogue }.not_to raise_error }
+          end
+        end
+      end
+    end
   end
 
   context 'supported_operating systems' do
@@ -93,6 +125,47 @@ describe 'puppet_agent' do
       context "on #{os}" do
         let(:facts) do
           global_facts(facts, os)
+        end
+
+        context 'when remote filebuckets are enabled' do
+          let(:pre_condition) { 'filebucket { "main": path => false }' }
+
+          before(:each) { Puppet.settings[:digest_algorithm] = 'sha256' }
+
+          context 'when an upgrade is required' do
+            let(:params) { { :package_version => '6.18.0' } }
+
+            context 'with mismatching digest algorithms' do
+              let(:facts) do
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'md5')
+              end
+
+              it { is_expected.not_to compile }
+              it { expect { catalogue }.to raise_error(%r{Server: sha256, agent: md5}) }
+            end
+
+            context 'with matching digest algorithms' do
+              let(:facts) do
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'sha256')
+              end
+
+              it { is_expected.to compile.with_all_deps }
+              it { expect { catalogue }.not_to raise_error }
+            end
+          end
+
+          context 'when no upgrade is required' do
+            let(:params) { { :package_version => '6.17.0' } }
+
+            context 'with mismatching digest algorithms' do
+              let(:facts) do
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'md5', aio_agent_version: '6.17.0')
+              end
+
+              it { is_expected.to compile }
+              it { expect { catalogue }.not_to raise_error }
+            end
+          end
         end
 
         # Windows, Solaris 10 and OS X use scripts for upgrading agents
@@ -280,7 +353,7 @@ describe 'puppet_agent' do
 
             unless os =~ %r{windows}
               if os !~ %r{sles|solaris|aix}
-                it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::install]') }
+                it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::configure]') }
               end
             end
 

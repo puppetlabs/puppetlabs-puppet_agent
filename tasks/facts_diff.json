@@ -1,0 +1,10 @@
+{
+  "description": "Run the Puppet agent facts diff action",
+  "parameters": {
+    "exclude": {
+      "description": "Regex used to exclude specific facts from diff",
+      "type": "Optional[String]"
+    }
+  },
+  "files": ["puppet_agent/files/rb_task_helper.rb"]
+}

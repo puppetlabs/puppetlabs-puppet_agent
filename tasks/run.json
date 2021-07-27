@@ -1,0 +1,6 @@
+{
+  "description": "Run the Puppet agent. This task may cause problems if run in Puppet Enterprise.",
+  "parameters": {},
+  "files": ["puppet_agent/files/rb_task_helper.rb"],
+  "private": true
+}

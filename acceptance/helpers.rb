@@ -55,7 +55,7 @@ module Beaker
       # end
       #
       # test_name 'an agent upgrade test' do
-      #   require_master_collection max: 'puppet6'
+      #   require_master_collection max: 'puppet7'
       # end
       #
       # The first restriction will only run the test if the master's puppetserver is from
@@ -86,7 +86,9 @@ module Beaker
 
         if args.is_a?(Symbol)
           collection = args.to_s
-          unless server_collection == collection
+
+          # puppet_collection_for doesn't know about nightly collections
+          unless collection.include?(server_collection)
             skip_test(msg_prefix + "\nThis test requires a puppetserver from the #{collection} collection. Skipping the test ...")
           end
 
@@ -143,7 +145,7 @@ module Beaker
         confine :to, {} do |host|
           next true if host['roles'].include?('master')
 
-          ! %w[aix amazon sles solaris osx].include?(host['platform'])
+          ! %w[aix amazon solaris].include?(host['platform'])
         end
       end
     end
@@ -344,8 +346,10 @@ module Beaker
           return
         end
 
-        step "(Agent) waiting for upgrade pid file to be created..." do
-          retry_on(host, "cat #{upgrade_pidfile}", {:max_retries => 5, :retry_interval => 2})
+        unless host['platform'] =~ /windows/
+          step "(Agent) waiting for upgrade pid file to be created..." do
+            retry_on(host, "cat #{upgrade_pidfile}", {:max_retries => 5, :retry_interval => 2})
+          end
         end
 
         step "(Agent) waiting for upgrade to complete..." do
@@ -364,9 +368,11 @@ module Beaker
 
         step "Teardown: (Agent) Uninstall the puppet-agent package on agent #{host_to_info_s(host)}" do
           if host['platform'] =~ /windows/
+            install_dir = on(host, "facter.bat env_windows_installdir").output.tr('\\', '/').chomp
             scp_to(host, "#{SUPPORTING_FILES}/uninstall.ps1", "uninstall.ps1")
             on(host, 'rm -rf C:/ProgramData/PuppetLabs')
             on(host, 'powershell.exe -File uninstall.ps1 < /dev/null')
+            on(host, "rm -rf '#{install_dir}'")
           else
             manifest_lines = []
             # Remove pc_repo:

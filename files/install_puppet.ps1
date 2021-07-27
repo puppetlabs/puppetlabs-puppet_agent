@@ -43,8 +43,14 @@ param(
   [AllowEmptyString()]
   [String] $InstallArgs,
   [switch] $UseLockedFilesWorkaround,
-  [Int32] $WaitForPXPAgentExit=120000
+  [Int32] $WaitForPXPAgentExit=120000,
+  [Int32] $WaitForPuppetRun=120000
 )
+
+# $PSScript is only available in Powershell >= 3.
+if(!$PSScriptRoot){ $PSScriptRoot = Split-Path $MyInvocation.MyCommand.Path -Parent }
+. "$PSScriptRoot\helpers.ps1"
+
 # Find-InstallDir, Move-PuppetresDLL and Reset-PuppetresDLL serve as a workaround for older
 # installations of puppet: we used to need to move puppetres.dll out of the way during puppet
 # upgrades because the file would lock and cause network stack restarts.
@@ -80,7 +86,7 @@ function Script:Move-PuppetresDLL {
     # for the already installed package
     $InstallDir = Find-InstallDir
     if (Test-Path "$InstallDir\puppet\bin\puppetres.dll") {
-      Write-Log "Moving puppetres.dll to $temp_puppetres"
+      Write-Log "Moving puppetres.dll to $temp_puppetres" $Logfile
       Move-Item -Path "$InstallDir\puppet\bin\puppetres.dll" -Destination $temp_puppetres
       # Remove-Item -Path $temp_puppetres
     }
@@ -103,7 +109,7 @@ function Script:Reset-PuppetresDLL {
   )
   begin {
     if (!$temp_puppetres) {
-      Write-Log "puppetres.dll Never moved, continuing..."
+      Write-Log "puppetres.dll Never moved, continuing..." $Logfile
       return
     }
     # _Never_ use the $InstallDir top-level parameter to try and find the InstallDir
@@ -113,25 +119,9 @@ function Script:Reset-PuppetresDLL {
     # for the already installed package
     $InstallDir = Find-InstallDir
     if ((Test-Path $temp_puppetres) -and -not (Test-Path "$InstallDir\puppet\bin\puppetres.dll")) {
-      Write-Log "Restoring puppetres.dll"
+      Write-Log "Restoring puppetres.dll" $Logfile
       Move-Item -Path $temp_puppetres -Destination "$InstallDir\puppet\bin\puppetres.dll"
     }
-  }
-}
-
-<#
-.Synopsis
-  Write message to location of $Logfile
-.Parameter message
-  String containing the message to write
-#>
-function Script:Write-Log {
-  param(
-    [Parameter(Mandatory=$true)]
-    [String] $message
-  )
-  begin {
-    "$(Get-Date -Format g) $message" | Out-File -FilePath $Logfile -Append
   }
 }
 
@@ -148,21 +138,21 @@ function Script:Lock-Installation {
     [String] $install_pid_lock
   )
   begin {
-    Write-Log "Locking installation"
+    Write-Log "Locking installation" $Logfile
     if (Test-Path $install_pid_lock) {
       # if the PID found in $install_pid_lock file is not running, this means
       # the installation can take control of the file, and assign the new running PID
       if((Get-Process -Id (Get-Content $install_pid_lock) -ErrorAction SilentlyContinue) -eq $null){
-        Write-Log "Process with PID found in $install_pid_lock is no longer running! Continuing installation and assigning new PID!"
+        Write-Log "Process with PID found in $install_pid_lock is no longer running! Continuing installation and assigning new PID!" $Logfile
         $PID | Out-File -FilePath $install_pid_lock
       }else{
-        Write-Log "Another process has control of $install_pid_lock! Cannot lock, exiting..."
+        Write-Log "Another process has control of $install_pid_lock! Cannot lock, exiting..." $Logfile
         throw
       }
     } else {
       $PID | Out-File -NoClobber -FilePath $install_pid_lock
     }
-    Write-Log "Locked"
+    Write-Log "Locked" $Logfile
   }
 }
 
@@ -178,16 +168,16 @@ function Script:Unlock-Installation {
     [String] $install_pid_lock
   )
   begin {
-    Write-Log "Unlocking installation"
+    Write-Log "Unlocking installation" $Logfile
     if (Test-Path $install_pid_lock) {
       if ((Get-Content $install_pid_lock) -ne $PID) {
-        Write-Log "Another process has control of $install_pid_lock! Cannot unlock, exiting..."
+        Write-Log "Another process has control of $install_pid_lock! Cannot unlock, exiting..." $Logfile
       } else {
         try {
           Remove-Item -Force $install_pid_lock | Out-Null
-          Write-Log "Unlocked"
+          Write-Log "Unlocked" $Logfile
         } catch {
-          Write-Log $_
+          Write-Log $_ $Logfile
         }
       }
     }
@@ -215,10 +205,10 @@ function Script:Read-PuppetServices {
       # we need to use WMI to fetch it for older versions of windows
       if ($service_entry) {
         $start_type = (Get-WmiObject -Class Win32_Service -Property StartMode -Filter "Name='$service_name'").StartMode.Replace('Auto', 'Automatic')
-        Write-Log "Fetched Service $service_name status: $($service_entry.Status), StartType: $start_type"
+        Write-Log "Fetched Service $service_name status: $($service_entry.Status), StartType: $start_type" $Logfile
         $services += @{ 'Name' = $service_name; 'Status' = $service_entry.Status; 'StartType' = $start_type }
       } else {
-        Write-Log "Service $service_name does not exist, continuing..."
+        Write-Log "Service $service_name does not exist, continuing..." $Logfile
       }
     }
     return $services
@@ -240,7 +230,7 @@ function Script:Reset-PuppetServices {
   )
   begin{
     if (!$services) {
-      Write-Log "Services to reset is empty..."
+      Write-Log "Services to reset is empty..." $Logfile
       return
     }
     foreach ($service in $services) {
@@ -248,15 +238,15 @@ function Script:Reset-PuppetServices {
       # an upgrade from agent < 6 to agent >= 6 will have an mcollective
       # service before upgrade, but no mcollective service after
       if (Get-Service $service.Name -ErrorAction SilentlyContinue) {
-        Write-Log "Restoring service state for $($service.Name)"
+        Write-Log "Restoring service state for $($service.Name)" $Logfile
         try {
           Set-Service $service.Name -StartupType $service.StartType -ErrorAction Stop
           Set-Service $service.Name -Status $service.Status -ErrorAction Stop
         } catch {
-          Write-Log "Could not restore service state for $($service.Name). $_"
+          Write-Log "Could not restore service state for $($service.Name). $_" $Logfile
         }
       } else {
-        Write-Log "Get-Service failed to fetch $($service.Name), continuing..."
+        Write-Log "Get-Service failed to fetch $($service.Name), continuing..." $Logfile
       }
     }
   }
@@ -271,7 +261,7 @@ $service_names=@(
 )
 try {
   $state_dir = (puppet.bat config print statedir --environment production)
-  Write-Log "Installation PID:$PID"
+  Write-Log "Installation PID:$PID" $Logfile
   $install_pid_lock = Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade.pid'
   Lock-Installation $install_pid_lock
   if ($PuppetPID) {
@@ -281,15 +271,15 @@ try {
     # stop all of our services. Otherwise if the catalog has additional resources
     # that manage our services (e.g. such as those from the PE module), then the
     # install will fail to proceed.
-    Write-Log "Waiting for puppet to stop, PID:$PuppetPID"
+    Write-Log "Waiting for puppet to stop, PID:$PuppetPID" $Logfile
     $pup_process = Get-Process -ID $PuppetPID -ErrorAction SilentlyContinue
     if ($pup_process) {
-      if (!$pup_process.WaitForExit(120000)){
-        Write-Log "ERROR: Timed out waiting for puppet!"
+      if (!$pup_process.WaitForExit($WaitForPuppetRun)){
+        Write-Log "ERROR: Timed out waiting for puppet!" $Logfile
         throw
       }
     } else {
-      Write-Log "Puppet Already finished"
+      Write-Log "Puppet Already finished" $Logfile
     }
   }
   $services_before = Read-PuppetServices $service_names
@@ -298,7 +288,7 @@ try {
   foreach($service in $service_names) {
     $serv_exists = Get-Service -Name $service -ErrorAction SilentlyContinue
     if ($serv_exists) {
-      Write-Log "Stopping $($service) before upgrade"
+      Write-Log "Stopping $($service) before upgrade" $Logfile
       Stop-Service $service
     }
   }
@@ -307,12 +297,12 @@ try {
   # There is a known problem for pxp-agent shutdown: there are cases where after service
   # shutdown pxp-agent processes are still open. See https://tickets.puppetlabs.com/browse/FM-7628
   # for more details on the symptoms of this.
-  Write-Log "Waiting for pxp-agent processes to stop"
+  Write-Log "Waiting for pxp-agent processes to stop" $Logfile
   Get-Process -Name "pxp-agent" -ErrorAction SilentlyContinue | ForEach-Object {
     if ($_) {
       # Wait for each PXP agent process default wait time is 2 minutes.
       if (!$_.WaitForExit($WaitForPXPAgentExit)){
-        Write-Log "ERROR: Timed out waiting for pxp-agent!"
+        Write-Log "ERROR: Timed out waiting for pxp-agent!" $Logfile
         throw
       }
     }
@@ -331,8 +321,8 @@ try {
     $msi_arguments += " PUPPET_AGENT_STARTUP_MODE=`"$PuppetStartType`""
   }
   $msi_arguments += " $InstallArgs"
-  Write-Log "Beginning MSI installation with Arguments: $msi_arguments"
-  Write-Log "****************************** Begin msiexec.exe output ******************************"
+  Write-Log "Beginning MSI installation with Arguments: $msi_arguments" $Logfile
+  Write-Log "****************************** Begin msiexec.exe output ******************************" $Logfile
   $startInfo = New-Object System.Diagnostics.ProcessStartInfo('msiexec.exe', $msi_arguments)
   $startInfo.UseShellExecute = $false
   $startInfo.CreateNoWindow = $true
@@ -345,15 +335,15 @@ try {
   # park current thread until the PS event is signaled upon process exit
   # OR the timeout has elapsed
   $waitResult = Wait-Event -SourceIdentifier $invocationId
-  Write-Log "****************************** End msiexec.exe output ******************************"
+  Write-Log "****************************** End msiexec.exe output ******************************" $Logfile
   if (($msi_process.ExitCode -eq 3010) -or ($msi_process.ExitCode -eq 1641) ){
-    Write-Log "WARNING: msiexec.exe returned $($msi_process.ExitCode) and has flagged the system for restart!!!"
+    Write-Log "WARNING: msiexec.exe returned $($msi_process.ExitCode) and has flagged the system for restart!!!" $Logfile
   } elseif ($msi_process.ExitCode -ne 0){
-    Write-Log "ERROR: msiexec.exe installation failed!!! Return code $($msi_process.ExitCode)"
+    Write-Log "ERROR: msiexec.exe installation failed!!! Return code $($msi_process.ExitCode)" $Logfile
     throw
   }
 } catch {
-  Write-Log "ERROR: $_"
+  Write-Log "ERROR: $_" $Logfile
   if ($UseLockedFilesWorkaround) {
     Reset-PuppetresDLL $temp_puppetres
   }

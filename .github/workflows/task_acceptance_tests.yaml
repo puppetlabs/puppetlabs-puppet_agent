@@ -1,0 +1,47 @@
+---
+name: Task Acceptance Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  task_acceptance_tests:
+    name: On ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ 'centos-7', 'ubuntu-18.04', 'rocky-8' ]
+
+    env:
+      ruby_version: 2.5.9
+      GEM_BOLT: true
+      BEAKER_debug: true
+      BEAKER_set: docker/${{ matrix.os }}
+
+    runs-on: 'ubuntu-18.04'
+    steps:
+      - name: Checkout current PR code
+        uses: actions/checkout@v2
+
+      - name: Install docker
+        uses: docker/setup-buildx-action@v1
+        id: buildx
+        with:
+          install: true
+
+      - name: Install ruby version ${{ env.ruby_version }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.ruby_version }}
+
+      - name: Prepare testing environment with bundler
+        run: |
+          git config --global core.longpaths true
+          bundle update --jobs 4 --retry 3
+
+      - name: Run task acceptance tests
+        run: |
+          cd task_spec
+          bundle exec rake task_acceptance

@@ -42,7 +42,7 @@ unless ENV['BEAKER_provision'] == 'no'
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on master, {:version => ENV['PUPPET_CLIENT_VERSION'] || "5.5.14", :puppet_collection => 'puppet5'}
+  install_puppet_agent_on master, {:version => ENV['PUPPET_CLIENT_VERSION'] || "5.5.16", :puppet_collection => 'puppet5'}
 
   install_modules_on master
 
@@ -127,7 +127,7 @@ def setup_puppet_on(host, opts = {})
 
   puts "Setup aio puppet on #{host}"
   configure_type_defaults_on host
-  install_puppet_agent_on host, {:version => ENV['PUPPET_CLIENT_VERSION'] || '5.5.14', :puppet_collection => 'puppet5'}
+  install_puppet_agent_on host, {:version => ENV['PUPPET_CLIENT_VERSION'] || '5.5.16', :puppet_collection => 'puppet5'}
 
   puppet_opts = agent_opts(master.to_s)
   if host['platform'] =~ /windows/i
@@ -202,17 +202,22 @@ def teardown_puppet_on(host)
       clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
     when /fedora|el|centos/
       clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
-    when /sles|osx/
+    when /osx/
       ensure_type = 'absent'
+    when /sles/
+      ensure_type = 'absent'
+      clean_repo = "file { '/etc/zypp/repos.d/pc_repo.repo': ensure => absent, notify => Package['puppet-agent'] }"
     else
       logger.notify("Not sure how to remove repos on #{host['platform']}")
       clean_repo = ''
   end
 
   if host['platform'] =~ /windows/
+    install_dir = on(host, "facter.bat env_windows_installdir").output.tr('\\', '/').chomp
     scp_to host, "#{TEST_FILES}/uninstall.ps1", "uninstall.ps1"
     on host, 'rm -rf C:/ProgramData/PuppetLabs'
     on host, 'powershell.exe -File uninstall.ps1 < /dev/null'
+    on host, "rm -rf '#{install_dir}'"
   else
     pp = <<-EOS
 #{clean_repo}

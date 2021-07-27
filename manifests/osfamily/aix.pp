@@ -14,34 +14,39 @@ class puppet_agent::osfamily::aix{
   # in puppet versions later than 4 we began using single agent packages for
   # multiple version of AIX. The support sequence is as follows:
   #
-  # puppet 4:
-  #     * AIX verison 6.1 < aix-6.1-power package
-  #     * AIX verison 7.1 < aix-7.1-power package
-  #
-  # puppet 5:
+  # puppet 5 up to 5.5.22:
   #     * AIX verison 6.1 < aix-6.1-power package
   #     * AIX verison 7.1 < aix-7.1-power package
   #     * AIX verison 7.2 < aix-7.1-power package
   #
-  # puppet 6:
-  #     * AIX verison 6.1 < aix-6.1-power package
-  #     * AIX verison 7.1 < aix-6.1-power package
-  #     * AIX verison 7.2 < aix-6.1-power package
+  # puppet 6 up to 6.19.1 and puppet 7.0.0 (not released in PE):
+  #     * AIX verison 6.1 < aix-7.1-power package
+  #     * AIX verison 7.1 < aix-7.1-power package
+  #     * AIX verison 7.2 < aix-7.1-power package
   #
-  # For puppet > 6 everything will now _only_ use the aix-6.1-power packages (i.e. we now only ship
+  # All other versions will now _only_ use the aix-7.1-power packages (i.e. we now only ship
   # one package to support all aix versions).
   #
   # The following will update the aix_ver_number variable to identify which package to install based
-  # on puppet collection and version of AIX.
+  # on puppet collection, package version and AIX version.
   $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
   if $_aix_ver_number {
     if $::puppet_agent::collection =~ /(PC1|puppet5)/ {
-      $aix_ver_number = $_aix_ver_number ? {
-        /^7\.2$/ => '7.1',
-        default  => $_aix_ver_number,
+      # 5.5.22 is the last puppet5 release that ships AIX 6.1 packages
+      if versioncmp($::puppet_agent::prepare::package_version, '5.5.22') > 0 {
+        $aix_ver_number = '7.1'
+      } else {
+        $aix_ver_number = $_aix_ver_number ? {
+          /^7\.2$/ => '7.1',
+          default  => $_aix_ver_number,
+        }
       }
     } else {
-      $aix_ver_number = '6.1'
+      # 6.19.1 is the last puppet6 release that ships AIX 6.1 packages
+      $aix_ver_number = versioncmp($::puppet_agent::prepare::package_version, '6.19.1') ? {
+        1       => '7.1',
+        default => '6.1'
+      }
     }
   }
 

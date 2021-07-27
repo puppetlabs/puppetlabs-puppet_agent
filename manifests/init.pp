@@ -89,6 +89,15 @@
 #   This parameter is only applicable for Windows operating systems and pertains to the 
 #   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
 #   for the PXP agent to end successfully. The default value is set 2 minutes.
+# [wait_for_puppet_run]
+#   This parameter is only applicable for Windows operating systems and pertains to the
+#   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
+#   for the current puppet agent run to end successfully. The default value is set 2 minutes.
+# [config]
+#   An array of configuration data to enforce. Each configuration data item must be a
+#   Puppet_agent::Config hash, which has keys for puppet.conf section, setting, and value.
+#   This parameter is constrained to managing only a predetermined set of configuration
+#   settings, e.g. runinterval.
 class puppet_agent (
   $arch                    = $::architecture,
   $collection              = $::puppet_agent::params::collection,
@@ -110,14 +119,28 @@ class puppet_agent (
   $alternate_pe_source     = undef,
   $install_dir             = undef,
   $disable_proxy           = false,
+  $proxy                   = undef,
   $install_options         = [],
   $skip_if_unavailable     = 'absent',
   $msi_move_locked_files   = false,
   $wait_for_pxp_agent_exit = undef,
+  $wait_for_puppet_run     = undef,
+  Array[Puppet_agent::Config] $config = [],
 ) inherits ::puppet_agent::params {
+
+  # The configure class uses $puppet_agent::config to manage settings in
+  # puppet.conf, and will always be present. It does not require management of
+  # the agent package. Dependencies for configure will be declared later if the
+  # puppet_agent::prepare and puppet_agent::install are also added to the
+  # catalog.
+  contain('puppet_agent::configure')
 
   if (getvar('::aio_agent_version') == undef) {
     fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
+  }
+
+  if $package_version == 'latest' and $::osfamily =~ /^(?i:windows|solaris|aix|darwin)$/ {
+    fail("Setting package_version to 'latest' is not supported on ${::osfamily.capitalize()}")
   }
 
   if $source != undef and $absolute_source != undef {
@@ -147,12 +170,11 @@ class puppet_agent (
     }
 
     if $::osfamily == 'redhat' {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$/ {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
-    }
-    else {
-      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$/ {
+    } else {
+      if $master_or_package_version !~ /^\d+\.\d+\.\d+([.-]?\d*|\.\d+\.g[0-9a-f]+)$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
     }
@@ -161,12 +183,29 @@ class puppet_agent (
     if $master_or_package_version =~ /.g/ {
       $_expected_package_version = split($master_or_package_version, /[.-]g.*/)[0]
     } elsif $::osfamily == 'redhat' {
-      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+/)[0]
+      $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+|^latest$|^present$/)[0]
     } else {
       $_expected_package_version = $master_or_package_version
     }
 
-    $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
+    if $_expected_package_version == 'latest' {
+      $aio_upgrade_required = true
+      $aio_downgrade_required = false
+    } elsif $_expected_package_version == 'present' {
+      $aio_upgrade_required = false
+      $aio_downgrade_required = false
+    } else {
+      $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
+      $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
+    }
+
+    if $aio_upgrade_required {
+      if any_resources_of_type('filebucket', { path => false }) {
+        if $settings::digest_algorithm != $::puppet_digest_algorithm {
+          fail("Remote filebuckets are enabled, but there was a agent/server digest algorithm mismatch. Server: ${settings::digest_algorithm}, agent: ${::puppet_digest_algorithm}. Either ensure the algorithms are matching, or disable remote filebuckets during the upgrade.")
+        }
+      }
+    }
 
     if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
@@ -180,14 +219,15 @@ class puppet_agent (
     class { '::puppet_agent::prepare':
       package_version => $_package_version,
     }
-    -> class { '::puppet_agent::install':
+    class { '::puppet_agent::install':
       package_version => $_package_version,
       install_dir     => $install_dir,
       install_options => $install_options,
     }
 
-    contain '::puppet_agent::prepare'
-    contain '::puppet_agent::install'
+    contain('puppet_agent::prepare')
+    -> contain('puppet_agent::install')
+    -> Class['puppet_agent::configure']
 
     # Service management:
     # - Under Puppet Enterprise, the agent nodegroup is managed by PE, and we don't need to manage services here.
@@ -195,10 +235,8 @@ class puppet_agent (
     # ...but outside of PE, on other platforms, we must make sure the services are restarted. We do that with the
     # ::puppet_agent::service class. Make sure it's applied after the install process finishes if needed:
     if $::osfamily != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
-      class { '::puppet_agent::service':
-        require => Class['::puppet_agent::install'],
-      }
-      contain '::puppet_agent::service'
+      Class['puppet_agent::configure']
+      ~> contain('puppet_agent::service')
     }
   }
 }

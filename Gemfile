@@ -2,28 +2,13 @@
 
 source ENV['GEM_SOURCE'] || "https://rubygems.org"
 
-# Determines what type of gem is requested based on place_or_version.
-def gem_type(place_or_version)
-  if place_or_version =~ /^git:/
-    :git
-  elsif place_or_version =~ /^file:/
-    :file
-  else
-    :gem
-  end
-end
-
-# Find a location or specific version for a gem. place_or_version can be a
-# version, which is most often used. It can also be git, which is specified as
-# `git://somewhere.git#branch`. You can also use a file source location, which
-# is specified as `file://some/location/on/disk`.
-def location_for(place_or_version, fake_version = nil)
-  if place_or_version =~ /^(git[:@][^#]*)#(.*)/
+def location_for(place, fake_version = nil)
+  if place.is_a?(String) && place =~ /^(git[:@][^#]*)#(.*)/
     [fake_version, { :git => $1, :branch => $2, :require => false }].compact
-  elsif place_or_version =~ /^file:\/\/(.*)/
+  elsif place.is_a?(String) && place =~ /^file:\/\/(.*)/
     ['>= 0', { :path => File.expand_path($1), :require => false }]
   else
-    [place_or_version, { :require => false }]
+    [place, { :require => false }]
   end
 end
 
@@ -42,19 +27,38 @@ minor_version = "#{ruby_version_segments[0]}.#{ruby_version_segments[1]}"
 #end
 
 group :development do
+  gem "facterdb", '~> 1.4',                                  require: false
+  gem "mocha", '~> 1.1',                                     require: false
+  gem "parser", '~> 2.5',                                    require: false
+  gem "puppet-syntax", '~> 2.6',                             require: false
+  gem "specinfra", '2.82.2',                                 require: false
+  gem "diff-lcs", '~> 1.3',                                  require: false
+  gem "faraday", '~> 0.17',                                  require: false
+  gem "pry-byebug", '~> 3.8',                                require: false
+  gem "pry", '~> 0.10',                                      require: false
+  gem "method_source", '~> 0.8',                             require: false
+  gem "rake", '~> 12',                                       require: false
+  gem "parallel_tests", '>= 2.14.1', '< 2.14.3',             require: false
+  gem "metadata-json-lint", '>= 2.0.2', '< 3.0.0',           require: false
+  gem "rspec-puppet-facts", '~> 2.0.1',                      require: false
+  gem "rspec_junit_formatter", '~> 0.2',                     require: false
+  gem "rubocop", '~> 0.49.0',                                require: false
+  gem "rubocop-rspec", '~> 1.16.0',                          require: false
+  gem "rubocop-i18n", '~> 1.2.0',                            require: false
+  gem "puppetlabs_spec_helper", '>= 2.9.0', '< 3.0.0',       require: false
+  gem "puppet-module-posix-default-r#{minor_version}",       require: false, platforms: "ruby"
+  gem "puppet-module-win-default-r#{minor_version}",         require: false, platforms: ["mswin", "mingw", "x64_mingw"]
+  gem "rspec-puppet",                                        require: true
+  gem 'rspec-expectations', '~> 3.9.0',                      require: false
+  gem "json_pure", '<= 2.0.1',                               require: false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')
+  gem "fast_gettext", '1.1.0',                               require: false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')
+  gem "fast_gettext",                                        require: false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.1.0')
   gem "puppet-lint", '2.3.6'
-  gem "puppet-module-posix-default-r#{minor_version}",       :require => false, :platforms => "ruby"
-  gem "puppet-module-win-default-r#{minor_version}",         :require => false, :platforms => ["mswin", "mingw", "x64_mingw"]
-  gem "puppet-module-posix-dev-r#{minor_version}", '~> 0.3', :require => false, :platforms => "ruby"
-  gem "puppet-module-win-dev-r#{minor_version}", '~> 0.0.7', :require => false, :platforms => ["mswin", "mingw", "x64_mingw"]
-  gem "json_pure", '<= 2.0.1',                               :require => false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')
-  gem "fast_gettext", '1.1.0',                               :require => false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')
-  gem "fast_gettext",                                        :require => false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.1.0')
 end
 
 group :system_tests do
-  gem "puppet-module-posix-system-r#{minor_version}",                            :require => false, :platforms => "ruby"
-  gem "puppet-module-win-system-r#{minor_version}",                              :require => false, :platforms => ["mswin", "mingw", "x64_mingw"]
+  gem "puppet-module-posix-system-r#{minor_version}", '~> 0.5',                  require: false, platforms: [:ruby]
+  gem "puppet-module-win-system-r#{minor_version}", '~> 0.5',                    require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 4')
   gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || ["~> 1.0", ">= 1.0.1"])
   gem "beaker-docker", '~> 0.3'
@@ -62,15 +66,20 @@ group :system_tests do
   gem "beaker-vmpooler", '~> 1.3'
   gem "serverspec", '~> 2.39'
   gem "beaker-pe",                                                               :require => false
-  gem "beaker-rspec", *location_for(ENV['BEAKER_RSPEC_VERSION'] || '~> 6.2')
+  gem "beaker-rspec", *location_for(ENV['BEAKER_RSPEC_VERSION'])
   gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'])
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0.1')
-  gem "puppet-blacksmith", '~> 3.4',                                             :require => false
   # Bundler fails on 2.1.9 even though this group is excluded
   if ENV['GEM_BOLT']
-    gem 'bolt', '~> 1.15', require: false
-    gem 'beaker-task_helper', '~> 1.5.2', require: false
+    gem 'bolt', '~> 3.0', require: false
+    gem 'beaker-task_helper', '~> 1.9', require: false
   end
+end
+
+group :release do
+  gem 'pdk', *location_for(ENV['PDK_GEM_VERSION'] || '~> 2')
+  gem "puppet-blacksmith", '~> 3.4',                                             require: false if Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.7.0')
+  gem "puppet-blacksmith", '~> 6',                                               require: false if Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.7.0')
 end
 
 gem 'puppet', *location_for(ENV['PUPPET_GEM_VERSION'])

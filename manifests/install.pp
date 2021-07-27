@@ -34,12 +34,21 @@ class puppet_agent::install(
     }
   } elsif $::osfamily == 'windows' {
     # Prevent re-running the batch install
-    if $puppet_agent::aio_upgrade_required {
+    if ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
       class { 'puppet_agent::install::windows':
         install_dir     => $install_dir,
         install_options => $install_options,
       }
       contain '::puppet_agent::install::windows'
+    }
+  } elsif $::osfamily == 'suse' {
+    # Prevent re-running the batch install
+    if ($package_version =~ /^latest$|^present$/) or ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
+      class { 'puppet_agent::install::suse':
+        package_version => $package_version,
+        install_options => $install_options,
+      }
+      contain '::puppet_agent::install::suse'
     }
   } else {
     if $::operatingsystem == 'AIX' {
@@ -58,7 +67,7 @@ class puppet_agent::install(
         $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
       } else {
         # any other type of source means we use apt with no 'source' defined in the package resource below
-        if $package_version == 'present' {
+        if $package_version =~ /^latest$|^present$/ {
           $_package_version = $package_version
         } else {
           $_package_version = "${package_version}-1${::lsbdistcodename}"
@@ -66,27 +75,23 @@ class puppet_agent::install(
         $_provider = 'apt'
         $_source = undef
       }
-    } else { # RPM platforms: EL and SUSE
+    } else { # RPM platforms: EL
       $_install_options = $install_options
       if $::puppet_agent::absolute_source {
-        # absolute_source means we use rpm on EL/suse based platforms
+        # absolute_source means we use rpm on EL based platforms
         $_package_version = $package_version
         $_provider = 'rpm'
         # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
         $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
       } else {
-        # any other type of source means we use a package manager (yum or zypper) with no 'source' parameter in the
+        # any other type of source means we use a package manager (yum) with no 'source' parameter in the
         # package resource below
         $_package_version = $package_version
-        if $::osfamily == 'suse' {
-          $_provider = 'zypper'
-        } else {
-          $_provider = 'yum'
-        }
+        $_provider = 'yum'
         $_source = undef
       }
     }
-    $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?/)[0]
+    $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?|^latest$|^present$/)[0]
     package { $::puppet_agent::package_name:
       ensure          => $_package_version,
       install_options => $_install_options,

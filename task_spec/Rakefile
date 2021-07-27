@@ -10,4 +10,8 @@ PuppetLint.configuration.send('disable_single_quote_string_with_variables')
 PuppetLint.configuration.send('disable_only_variable_string')
 PuppetLint.configuration.ignore_paths = ['spec/**/*.pp', 'pkg/**/*.pp']
 
-task task_acceptance: [:spec_prep, :beaker]
+task 'task_acceptance' do
+  ENV['BEAKER_BOLT_VERSION'] = '3.0.0'
+  Rake::Task['spec_prep'].invoke
+  Rake::Task['beaker'].invoke
+end
