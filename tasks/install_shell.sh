@@ -614,6 +614,7 @@ case $platform in
       "8") deb_codename="jessie";;
       "9") deb_codename="stretch";;
       "10") deb_codename="buster";;
+      "11"|"testing") deb_codename="bullseye";; # FIXME: testing to be removed when Debian is released and major_version is changed to 11
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
