@@ -316,8 +316,13 @@ This setting specifies the proxy with which to configure the Puppet repos. Curre
 An array of additional options to pass when installing puppet-agent. Each option in the array can be either a string or a hash. Each option is automatically quoted when passed to the install command.
 
 With Windows packages, note that file paths in `install_options` must use backslashes. (Since install options are passed directly to the installation command, forward slashes aren't automatically converted like they are in `file` resources.) Backslashes in double-quoted strings _must_ be escaped, while backslashes in single-quoted strings _can_ be escaped. The default value for Windows packages is `REINSTALLMODE="amus"`.
+
+The full list of supported MSI properties can be found [here](https://puppet.com/docs/puppet/latest/install_agents.html#msi_properties).
+
+The Puppet installer can disable the [Windows path length limit](https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation) (260 character `MAX_PATH` limitation, requires Windows 10 1607 or later). This behavior is opt-in and can be controlled by the presence of the `ENABLE_LONG_PATHS` install option (the value does not matter). (*requires Puppet >= 6.25.0/7.10.0*)
+
 ``` puppet
-  install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp','PUPPET_AGENT_ACCOUNT_USER=bob','PUPPET_AGENT_ACCOUNT_PASSWORD=password']
+  install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp', 'PUPPET_AGENT_ACCOUNT_USER=bob', 'PUPPET_AGENT_ACCOUNT_PASSWORD=password', 'ENABLE_LONG_PATHS=true']
 ```
 
 ##### `msi_move_locked_files`
@@ -416,11 +421,11 @@ The task returns the output of the installation script.
 
 #### `puppet_agent::facts_diff`
 
-Executes `puppet facts diff` action to check if there are differences between Facter 3 and Facter 4 outputs.(*requires Puppet >= 6.21.0*)
+Executes `puppet facts diff` action to check if there are differences between Facter 3 and Facter 4 outputs. (*requires Puppet >= 6.21.0*)
 
 **Parameters**
 
-- `exclude`: Regex used to exclude specific facts from diff.(*requires Puppet >= 6.22.0*)
+- `exclude`: Regex used to exclude specific facts from diff. (*requires Puppet >= 6.22.0*)
 
 **Return value**
 
