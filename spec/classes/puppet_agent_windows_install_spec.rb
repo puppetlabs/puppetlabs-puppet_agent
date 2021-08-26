@@ -82,7 +82,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
             {:package_version => '5.6.7'})
           }
           it {
-            is_expected.to contain_exec('install_puppet.ps1').with_unless(/\-Command {\$CurrentVersion = \[string\]\(facter.bat \-p aio_agent_version\);/)
+            is_expected.to contain_exec('install_puppet.ps1').with_unless(/\-Command {\$CurrentVersion = \[string\]\(facter.bat aio_agent_version\);/)
             is_expected.to contain_exec('install_puppet.ps1').with_unless(/\-Command.*if \(\$CurrentVersion \-eq '5\.6\.7'\) { +exit 0; *} *exit 1; }\.Invoke\(\)/)
           }
         end
