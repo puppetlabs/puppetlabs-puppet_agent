@@ -137,7 +137,7 @@ describe 'puppet_agent' do
 
             context 'with mismatching digest algorithms' do
               let(:facts) do
-                global_facts(facts, os).merge(puppet_digest_algorithm: 'md5')
+                global_facts(facts, os).merge(puppet_digest_algorithm: 'md5', aio_agent_version: '6.17.0')
               end
 
               it { is_expected.not_to compile }
