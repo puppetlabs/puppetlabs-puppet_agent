@@ -109,7 +109,7 @@ class puppet_agent::install::windows(
                   -NoProfile \
                   -NoLogo \
                   -NonInteractive \
-                  -Command {\$CurrentVersion = [string](facter.bat -p aio_agent_version); \
+                  -Command {\$CurrentVersion = [string](facter.bat aio_agent_version); \
                             if (\$CurrentVersion -eq '${::puppet_agent::_expected_package_version}') { \
                               exit 0; \
                             } \
