@@ -2,6 +2,34 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.9.0] - 2021-09-09
+
+### Summary
+Add Debian 11 support. Add Rocky Linux support for the `install` task. Allow `present` and `latest` as `package_version`. Other fixes and improvements.
+
+### Features
+
+- ([MODULES-11085](https://tickets.puppetlabs.com/browse/MODULES-11085)) Add Fedora 34 support to module ([#564](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/564))
+- Update GPG-KEY-puppet ([#579](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/579))
+- Allow stdlib 8.0.0 ([#576](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/576))
+- ([MODULES-11060](https://tickets.puppetlabs.com/browse/MODULES-11060)) Add Debian 11 to puppet_agent module ([#575](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/575))
+- ([MODULES-11148](https://tickets.puppetlabs.com/browse/MODULES-11148)) Document Windows long paths support ([#573](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/573))
+- Update readme for clarification on Windows agent updates ([#502](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/502))
+- ([MODULES-11113](https://tickets.puppetlabs.com/browse/MODULES-11113)) Allow present and latest as package version ([#565](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/565))
+- ([MODULES-11135](https://tickets.puppetlabs.com/browse/MODULES-11135)) Add Rocky as EL platform in task install_shell.sh ([#571](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/571))
+- ([MODULES-11078](https://tickets.puppetlabs.com/browse/MODULES-11078)) Bump Bolt to 3.x ([#566](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/566))
+- ([MODULES-11112](https://tickets.puppetlabs.com/browse/MODULES-11112)) Add parameter puppet_agent::proxy ([#567](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/567))
+
+
+### Bug fixes
+
+- ([MODULES-11123](https://tickets.puppetlabs.com/browse/MODULES-11123)) Avoid loading puppet facts in `install/windows.pp` ([#577](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/577))
+- ([MODULES-11077](https://tickets.puppetlabs.com/browse/MODULES-11077)) Allow all settings to be managed ([#569](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/569))
+
+### Acknowledgements
+
+Thanks to [smortex](https://github.com/smortex), [murdok5](https://github.com/murdok5), [relearnshuffle](https://github.com/relearnshuffle), [Guillaume001](https://github.com/Guillaume001) and [chrekh](https://github.com/chrekh) who have contributed to this release 🎉!
+
 ## [4.8.0] - 2021-06-22
 
 ### Summary
