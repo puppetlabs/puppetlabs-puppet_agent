@@ -194,6 +194,14 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
   elif test "x$platform" = "xRedHat"; then
     platform="el"
 
+  # Handle Rocky
+  elif test "x$platform" = "xRocky"; then
+    platform="el"
+
+  # Handle AlmaLinux
+  elif test "x$platform" = "xAlmalinux"; then
+    platform="el"
+
   # If facts task return "Linux" for platform, investigate.
   elif test "x$platform" = "xLinux"; then
     if test -f "/etc/SuSE-release"; then
