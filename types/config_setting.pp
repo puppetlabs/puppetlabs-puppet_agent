@@ -220,6 +220,8 @@ type Puppet_agent::Config_setting = Enum[
   transactionstorefile,
   trusted_external_command,
   trusted_oid_mapping_file,
+  top_level_facts_soft_limit,
+  number_of_facts_soft_limit,
   use_cached_catalog,
   use_srv_records,
   usecacheonfailure,
