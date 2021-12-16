@@ -1,4 +1,4 @@
-FROM centos:7
+FROM centos:8
 
 # Install some other dependencies for ease of life.
 RUN  yum update -y \
