@@ -24,7 +24,7 @@
 # Arguments:
 # - before: The version to do upgrade FROM. Default: "1.10.14"
 
-FROM centos:7
+FROM centos:8
 
 # Use this to force a cache reset (e.g. for output purposes)
 #COPY $0 /tmp/Dockerfile
