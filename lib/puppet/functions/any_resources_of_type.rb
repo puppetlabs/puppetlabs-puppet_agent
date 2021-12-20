@@ -1,4 +1,4 @@
-Puppet::Functions.create_function(:any_resources_of_type, Puppet::Functions::InternalFunction) do 
+Puppet::Functions.create_function(:any_resources_of_type, Puppet::Functions::InternalFunction) do
   dispatch :any_resources_of_type do
     scope_param
 
@@ -22,4 +22,3 @@ Puppet::Functions.create_function(:any_resources_of_type, Puppet::Functions::Int
     end
   end
 end
-

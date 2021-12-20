@@ -19,7 +19,7 @@ describe 'install task' do
   def bolt_inventory
     host_data = hosts_to_inventory
     host_data['targets'].each do |node_data|
-      node_data['config']['winrm']['connect-timeout'] = 120 if target_platform =~ %r{win}
+      node_data['config']['winrm']['connect-timeout'] = 120 if %r{win}.match?(target_platform)
     end
 
     host_data
@@ -50,7 +50,7 @@ describe 'install task' do
 
     # extra request is needed on windows hosts
     # this will fail with "execution expired"
-    run_task('puppet_agent::version', 'target', {}) if target_platform =~ %r{win}
+    run_task('puppet_agent::version', 'target', {}) if %r{win}.match?(target_platform)
 
     # Test the agent isn't already installed and that the version task works
     results = run_task('puppet_agent::version', 'target', {})
@@ -63,9 +63,7 @@ describe 'install task' do
     results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6',
                                                             'version' => puppet_6_version,
                                                             'stop_service' => true })
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-    end
+    expect(results).to all(include('status' => 'success'))
 
     # It installed a version older than latest puppet6
     results = run_task('puppet_agent::version', 'target', {})
@@ -76,7 +74,7 @@ describe 'install task' do
     end
 
     # Check that puppet agent service has been stopped due to 'stop_service' parameter set to true
-    service = if target_platform =~ %r{win}
+    service = if %r{win}.match?(target_platform)
                 run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet', 'target')
               else
                 run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
@@ -102,9 +100,7 @@ describe 'install task' do
 
     # Upgrade to latest puppet6 version
     results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-    end
+    expect(results).to all(include('status' => 'success'))
 
     # Verify that it upgraded
     results = run_task('puppet_agent::version', 'target', {})
@@ -116,7 +112,7 @@ describe 'install task' do
     end
 
     # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
-    if target_platform =~ %r{win}
+    if %r{win}.match?(target_platform)
       # Try to upgrade from puppet6 to puppet7 but fail due to puppet agent service already running
       results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
       results.each do |res|
@@ -132,9 +128,7 @@ describe 'install task' do
 
     # Succesfully upgrade from puppet6 to puppet7
     results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-    end
+    expect(results).to all(include('status' => 'success'))
 
     # Verify that it upgraded
     installed_version = nil

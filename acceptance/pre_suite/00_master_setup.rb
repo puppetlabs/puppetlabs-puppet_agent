@@ -30,14 +30,14 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
 
   step 'Install puppetserver' do
     # puppetserver is distributed in "release streams" instead of collections.
-    if install_options[:puppet_collection] =~ /^pc1$/i
-      # There is no release stream that's equivalent to the PC1 (puppet-agent
-      # 1.y.z/puppet 4) collection; This version is fine.
-      opts = { version: '2.8.1' }
-    else
-      # puppet collections _do_ match with server release streams from puppet 5 onward.
-      opts = { release_stream: install_options[:puppet_collection] }
-    end
+    opts = if %r{^pc1$}i.match?(install_options[:puppet_collection])
+             # There is no release stream that's equivalent to the PC1 (puppet-agent
+             # 1.y.z/puppet 4) collection; This version is fine.
+             { version: '2.8.1' }
+           else
+             # puppet collections _do_ match with server release streams from puppet 5 onward.
+             { release_stream: install_options[:puppet_collection] }
+           end
 
     install_puppetserver_on(master, opts)
 
@@ -54,12 +54,12 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
       'dns_alt_names' => "puppet,#{master_hostname},#{master_fqdn}",
       'server'        => master_fqdn,
       'verbose'       => true,
-    }}
+    } }
 
     lay_down_new_puppet_conf(master, puppet_conf, create_tmpdir_on(master))
 
     unless version_is_less(server_version, '6.0.0')
-      tk_config = { 'certificate-authority' => { 'allow-subject-alt-names' => true }}
+      tk_config = { 'certificate-authority' => { 'allow-subject-alt-names' => true } }
       path = '/etc/puppetlabs/puppetserver/conf.d/puppetserver.conf'
       modify_tk_config(master, path, tk_config)
     end
@@ -72,7 +72,6 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
     # DO NOT RUN 'puppetserver ca setup': this will create the new intermediate certs that
     # will not work when installing the old version of agents.
   end
-
 
   step 'Start puppetserver' do
     on(master, puppet('resource', 'service', master['puppetservice'], 'ensure=running', 'enable=true'))

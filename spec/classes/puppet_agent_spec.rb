@@ -14,7 +14,7 @@ def redhat_familly_supported_os
     supported_os: [
       {
         'operatingsystem' => 'RedHat',
-        "operatingsystemrelease": %w[5 6 7 8],
+        "operatingsystemrelease": ['5', '6', '7', '8'],
       },
     ],
   )
@@ -26,27 +26,27 @@ describe 'puppet_agent' do
 
   def global_facts(facts, os)
     facts.merge(
-      if os =~ %r{sles}
+      if %r{sles}.match?(os)
         {
           is_pe: true,
           env_temp_variable: '/tmp',
           operatingsystemmajrelease: facts[:operatingsystemrelease].split('.')[0],
         }
-      elsif os =~ %r{redhat|centos|fedora|scientific|oracle}
+      elsif %r{redhat|centos|fedora|scientific|oracle}.match?(os)
         {
           env_temp_variable: '/tmp',
         }
-      elsif os =~ %r{solaris}
+      elsif %r{solaris}.match?(os)
         {
           is_pe: true,
           puppet_agent_pid: 298,
         }
-      elsif os =~ %r{aix}
+      elsif %r{aix}.match?(os)
         {
           is_pe: true,
           platform_tag: "aix-#{AIX_VERSION[facts.dig(:os, 'release', 'major')]}-power",
         }
-      elsif os =~ %r{windows}
+      elsif %r{windows}.match?(os)
         {
           puppet_agent_appdata: 'C:\\ProgramData',
           puppet_confdir: 'C:\\ProgramData\\Puppetlabs\\puppet\\etc',
@@ -63,7 +63,6 @@ describe 'puppet_agent' do
   context 'package version' do
     context 'valid' do
       ['5.5.15-1.el7', '5.5.15.el7', '6.0.9.3.g886c5ab', 'present', 'latest'].each do |version|
-
         redhat_familly_supported_os.each do |os, facts|
           let(:facts) { global_facts(facts, os) }
 
@@ -95,19 +94,19 @@ describe 'puppet_agent' do
 
     context 'latest' do
       context 'on unsupported platform' do
-        on_supported_os.select { |platform, _| platform =~ /solaris|aix|windows|osx/ }.each do |os, facts|
+        on_supported_os.select { |platform, _| platform =~ %r{solaris|aix|windows|osx} }.each do |os, facts|
           let(:facts) { global_facts(facts, os) }
           let(:params) { { package_version: 'latest' } }
 
           context os do
             it { is_expected.not_to compile }
-            it { expect { catalogue }.to raise_error(Puppet::Error, /Setting package_version to 'latest' is not supported/) }
+            it { expect { catalogue }.to raise_error(Puppet::Error, %r{Setting package_version to 'latest' is not supported}) }
           end
         end
       end
 
       context 'on supported platform' do
-        on_supported_os.reject { |platform, _| platform =~ /solaris|aix|windows|osx/ }.each do |os, facts|
+        on_supported_os.reject { |platform, _| platform =~ %r{solaris|aix|windows|osx} }.each do |os, facts|
           let(:facts) { global_facts(facts, os) }
           let(:params) { { package_version: 'latest' } }
 
@@ -133,7 +132,7 @@ describe 'puppet_agent' do
           before(:each) { Puppet.settings[:digest_algorithm] = 'sha256' }
 
           context 'when an upgrade is required' do
-            let(:params) { { :package_version => '6.18.0' } }
+            let(:params) { { package_version: '6.18.0' } }
 
             context 'with mismatching digest algorithms' do
               let(:facts) do
@@ -155,7 +154,7 @@ describe 'puppet_agent' do
           end
 
           context 'when no upgrade is required' do
-            let(:params) { { :package_version => '6.17.0' } }
+            let(:params) { { package_version: '6.17.0' } }
 
             context 'with mismatching digest algorithms' do
               let(:facts) do
@@ -170,14 +169,16 @@ describe 'puppet_agent' do
 
         # Windows, Solaris 10 and OS X use scripts for upgrading agents
         # We test Solaris 11 in its own class
-        if os !~ %r{windows|solaris|darwin}
+        unless %r{windows|solaris|darwin}.match?(os)
           context 'when using a dev build' do
-            let(:params) { { :package_version => '5.2.0.100.g23e53f2' } }
+            let(:params) { { package_version: '5.2.0.100.g23e53f2' } }
+
             it { is_expected.to contain_puppet_agent_end_run('5.2.0.100') }
           end
 
           context 'when using a release build' do
-            let(:params) { { :package_version => '5.2.0' } }
+            let(:params) { { package_version: '5.2.0' } }
+
             it { is_expected.to contain_puppet_agent_end_run('5.2.0') }
           end
         end
@@ -190,7 +191,7 @@ describe 'puppet_agent' do
           it { is_expected.not_to compile }
         end
 
-        if os !~ %r{sles|solaris|aix}
+        unless %r{sles|solaris|aix}.match?(os)
           context 'package_version is undef by default' do
             let(:facts) do
               global_facts(facts, os).merge(is_pe: false)
@@ -255,7 +256,7 @@ describe 'puppet_agent' do
         end
 
         before(:each) do
-          if os =~ %r{sles|solaris|aix}
+          if %r{sles|solaris|aix}.match?(os)
             # Need to mock the PE functions
             Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
               '2000.0.0'
@@ -293,7 +294,7 @@ describe 'puppet_agent' do
             end
 
             let(:expected_package_install_options) do
-              if os =~ %r{aix}
+              if %r{aix}.match?(os)
                 ['--ignoreos', 'OPTION1=value1', 'OPTION2=value2']
               else
                 ['OPTION1=value1', 'OPTION2=value2']
@@ -305,11 +306,11 @@ describe 'puppet_agent' do
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to contain_class('puppet_agent::install').with_install_options(expected_class_install_options) }
 
-            if os !~ %r{windows|solaris-10}
+            unless %r{windows|solaris-10}.match?(os)
               it { is_expected.to contain_package('puppet-agent') .with_install_options(expected_package_install_options) }
             end
 
-            if os =~ %r{solaris-10}
+            if %r{solaris-10}.match?(os)
               it do
                 is_expected.to contain_exec('solaris_install script')
                   .with_command(
@@ -351,8 +352,8 @@ describe 'puppet_agent' do
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }
             end
 
-            unless os =~ %r{windows}
-              if os !~ %r{sles|solaris|aix}
+            unless %r{windows}.match?(os)
+              unless %r{sles|solaris|aix}.match?(os)
                 it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::configure]') }
               end
             end

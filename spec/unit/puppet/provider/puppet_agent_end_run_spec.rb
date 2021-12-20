@@ -3,20 +3,20 @@ require 'spec_helper'
 describe Puppet::Type.type(:puppet_agent_end_run).provider(:puppet_agent_end_run) do
   let(:catalog) { Puppet::Resource::Catalog.new }
 
-  before do
+  before(:each) do
     allow(Facter).to receive(:value)
   end
 
   context 'when package_version is latest' do
     let(:resource) do
-      Puppet::Type.type(:puppet_agent_end_run).new(:name => 'latest', :provider => :puppet_agent_end_run)
+      Puppet::Type.type(:puppet_agent_end_run).new(name: 'latest', provider: :puppet_agent_end_run)
     end
 
     let(:agent_latest_package) do
-      Puppet::Type.type(:package).new(:name => 'puppet-agent', :ensure => 'latest', :provider => :yum)
+      Puppet::Type.type(:package).new(name: 'puppet-agent', ensure: 'latest', provider: :yum)
     end
 
-    before do
+    before(:each) do
       catalog.add_resource(agent_latest_package)
       resource.catalog = catalog
     end
@@ -48,7 +48,6 @@ describe Puppet::Type.type(:puppet_agent_end_run).provider(:puppet_agent_end_run
         resource.provider.stop
       end
 
-
       it 'stops the run if the current and desired versions differ' do
         catalog.resource('package', 'puppet-agent').parameters[:ensure].latest = '7.9.0-1.el8'
         allow(Facter).to receive(:value).with('aio_agent_version').and_return('7.8.0')
@@ -61,7 +60,7 @@ describe Puppet::Type.type(:puppet_agent_end_run).provider(:puppet_agent_end_run
 
   context 'when package_version is present' do
     let(:resource) do
-      Puppet::Type.type(:puppet_agent_end_run).new(:name => 'present', :provider => :puppet_agent_end_run)
+      Puppet::Type.type(:puppet_agent_end_run).new(name: 'present', provider: :puppet_agent_end_run)
     end
 
     it 'never stops the run' do
@@ -72,7 +71,7 @@ describe Puppet::Type.type(:puppet_agent_end_run).provider(:puppet_agent_end_run
 
   context 'when package_version is a released version' do
     let(:resource) do
-      Puppet::Type.type(:puppet_agent_end_run).new(:name => '7.8.0', :provider => :puppet_agent_end_run)
+      Puppet::Type.type(:puppet_agent_end_run).new(name: '7.8.0', provider: :puppet_agent_end_run)
     end
 
     it 'does not stop the run if current and desired versions match' do
@@ -92,7 +91,7 @@ describe Puppet::Type.type(:puppet_agent_end_run).provider(:puppet_agent_end_run
 
   context 'when package_version is a nightly version' do
     let(:resource) do
-      Puppet::Type.type(:puppet_agent_end_run).new(:name => '7.8.0.32', :provider => :puppet_agent_end_run)
+      Puppet::Type.type(:puppet_agent_end_run).new(name: '7.8.0.32', provider: :puppet_agent_end_run)
     end
 
     it 'does not stop the run if current and desired versions match' do

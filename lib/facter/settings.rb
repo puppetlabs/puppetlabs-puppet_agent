@@ -32,8 +32,8 @@ Facter.add('puppet_sslpaths') do
       path = Puppet.settings[setting]
       exists = File.exist? path
       result[setting] = {
-        'path'    => path,
-        'path_exists'  => exists,
+        'path' => path,
+        'path_exists' => exists,
       }
     end
     result
@@ -70,6 +70,6 @@ end
 
 Facter.add('mco_confdir') do
   setcode do
-    File.expand_path(File.join(Puppet.settings['confdir'],'../../mcollective/etc'))
+    File.expand_path(File.join(Puppet.settings['confdir'], '../../mcollective/etc'))
   end
 end
