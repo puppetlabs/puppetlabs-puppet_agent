@@ -11,10 +11,7 @@ require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spe
 
 include RspecPuppetFacts
 
-default_facts = {
-  puppetversion: Puppet.version,
-  facterversion: Facter.version,
-}
+default_facts = {}
 
 default_fact_files = [
   File.expand_path(File.join(File.dirname(__FILE__), 'default_facts.yml')),
@@ -31,9 +28,9 @@ default_fact_files.each do |f|
   end
 end
 
-# read default_facts and merge them over what is provided by facterdb
-default_facts.each do |fact, value|
-  add_custom_fact fact, value
+# check if default_module_facts is defined and merge them if the case
+if @default_module_facts.is_a?(Hash)
+  default_facts.merge!(@default_module_facts)
 end
 
 RSpec.configure do |c|
