@@ -16,6 +16,8 @@ Gemfile:
       - gem: beaker-abs
         from_env: BEAKER_ABS_VERSION
         version: '~> 0.9'
+      - gem: beaker-docker
+        version: '~> 0.3'
       - gem: beaker-pe
       - gem: beaker-hostgenerator
         from_env: BEAKER_HOSTGENERATOR_VERSION
@@ -28,7 +30,12 @@ Gemfile:
       - gem: beaker-module_install_helper
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
-
+      - gem: 'bolt'
+        version: '~> 3.0'
+        condition: 'ENV["GEM_BOLT"]'
+      - gem: 'beaker-task_helper'
+        version: '~> 1.9'
+        condition: 'ENV["GEM_BOLT"]'
 appveyor.yml:
   delete: true
 .travis.yml:
@@ -39,3 +46,7 @@ appveyor.yml:
   unmanaged: false
 .gitlab-ci.yml:
   delete: true
+spec/default_facts.yml:
+  delete: true
+spec/spec_helper.rb:
+  unmanaged: true

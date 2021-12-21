@@ -26,6 +26,7 @@ group :development do
   gem "puppet-module-win-dev-r#{minor_version}", '~> 1.0',                       require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 4.30')
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0.9')
+  gem "beaker-docker", '~> 0.3',                                                 require: false
   gem "beaker-pe",                                                               require: false
   gem "beaker-hostgenerator"
   gem "beaker-rspec"
@@ -34,6 +35,8 @@ group :development do
   gem "beaker-module_install_helper",                                            require: false
   gem "beaker-puppet_install_helper",                                            require: false
   gem "nokogiri",                                                                require: false
+  gem "bolt", '~> 3.0',                                                          require: false if ENV["GEM_BOLT"]
+  gem "beaker-task_helper", '~> 1.9',                                            require: false if ENV["GEM_BOLT"]
 end
 group :system_tests do
   gem "puppet-module-posix-system-r#{minor_version}", '~> 1.0', require: false, platforms: [:ruby]
