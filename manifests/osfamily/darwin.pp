@@ -20,7 +20,7 @@ class puppet_agent::osfamily::darwin{
       $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
     }
   } else {
-    $source = "${::puppet_agent::mac_source}/mac/${::puppet_agent::collection}/${::macosx_productversion_major}/${::puppet_agent::arch}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
+    $source = "${::puppet_agent::mac_source}/mac/${::puppet_agent::collection}/${productversion_major}/${::puppet_agent::arch}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
   }
 
   class { '::puppet_agent::prepare::package':

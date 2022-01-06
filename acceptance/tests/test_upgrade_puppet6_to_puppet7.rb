@@ -23,6 +23,7 @@ node default {
     package_version => $_package_version,
     apt_source      => 'http://nightlies.puppet.com/apt',
     yum_source      => 'http://nightlies.puppet.com/yum',
+    mac_source      => 'http://nightlies.puppet.com/downloads',
     windows_source  => 'http://nightlies.puppet.com/downloads',
     collection      => 'puppet7-nightly',
     service_names   => []
