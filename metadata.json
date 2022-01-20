@@ -7,6 +7,24 @@
   "source": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "project_page": "https://github.com/puppetlabs/puppetlabs-puppet_agent",
   "issues_url": "http://tickets.puppetlabs.com/browse/MODULES",
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "version_requirement": ">= 5.1.0 < 9.0.0"
+    },
+    {
+      "name": "puppetlabs-inifile",
+      "version_requirement": ">= 2.4.0 < 6.0.0"
+    },
+    {
+      "name": "puppetlabs-apt",
+      "version_requirement": ">= 7.0.1 < 9.0.0"
+    },
+    {
+      "name": "puppetlabs-facts",
+      "version_requirement": ">= 0.5.0 < 2.0.0"
+    }
+  ],
   "operatingsystem_support": [
     {
       "operatingsystem": "RedHat",
@@ -114,7 +132,7 @@
         "10.14",
         "10.15",
         "11"
-       ]
+      ]
     },
     {
       "operatingsystem": "AlmaLinux",
@@ -135,10 +153,7 @@
       "version_requirement": ">= 5.0.0 < 8.0.0"
     }
   ],
-  "dependencies": [
-    {"name":"puppetlabs-stdlib","version_requirement":">= 5.1.0 < 9.0.0"},
-    {"name":"puppetlabs-inifile","version_requirement":">= 2.4.0 < 6.0.0"},
-    {"name":"puppetlabs-apt","version_requirement":">= 7.0.1 < 9.0.0"},
-    {"name":"puppetlabs-facts","version_requirement":">= 0.5.0 < 2.0.0"}
-  ]
+  "pdk-version": "2.2.0",
+  "template-url": "https://github.com/puppetlabs/pdk-templates#2.2.0",
+  "template-ref": "tags/2.2.0-0-g2381db6"
 }

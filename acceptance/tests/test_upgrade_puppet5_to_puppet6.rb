@@ -10,7 +10,7 @@ test_name 'puppet_agent class: Upgrade agents from puppet5 to puppet6' do
 
   puppet_testing_environment = new_puppet_testing_environment
 
-  step "Create new site.pp with upgrade manifest" do
+  step 'Create new site.pp with upgrade manifest' do
     manifest = <<-PP
 node default {
   if $::osfamily =~ /^(?i:windows|solaris|aix|darwin)$/ {
@@ -39,22 +39,22 @@ node default {
     set_up_initial_agent_on(agent, 'puppet5') do
       step '(Agent) Change agent environment to testing environment' do
         on(agent, puppet("config --section agent set environment #{puppet_testing_environment}"))
-        on(agent, puppet("config --section user set environment production"))
+        on(agent, puppet('config --section user set environment production'))
       end
     end
   end
 
-  step "Upgrade the agents from Puppet 5 to Puppet 6..." do
+  step 'Upgrade the agents from Puppet 5 to Puppet 6...' do
     agents_only.each do |agent|
-      on(agent, puppet("agent -t --debug"), acceptable_exit_codes: 2)
+      on(agent, puppet('agent -t --debug'), acceptable_exit_codes: 2)
       wait_for_installation_pid(agent)
-      assert_agent_version_on(agent, latest_version.scan(/6\.\d*\.\d*\.\d*/).first)
+      assert_agent_version_on(agent, latest_version.scan(%r{6\.\d*\.\d*\.\d*}).first)
     end
   end
 
-  step "Run again for idempotency" do
+  step 'Run again for idempotency' do
     agents_only.each do |agent|
-      on(agent, puppet("agent -t --debug"), acceptable_exit_codes: 0)
+      on(agent, puppet('agent -t --debug'), acceptable_exit_codes: 0)
     end
   end
 end

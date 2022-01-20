@@ -5,6 +5,7 @@ describe 'settings' do
 
   describe 'puppet_digest_algorithm fact' do
     subject { Facter.fact(:puppet_digest_algorithm).value }
+
     after(:each) { Facter.clear }
 
     describe 'should be one of md5/sha256' do
@@ -14,6 +15,7 @@ describe 'settings' do
 
   describe 'puppet_ssldir fact' do
     subject { Facter.fact(:puppet_ssldir).value }
+
     after(:each) { Facter.clear }
 
     describe 'should point to an existing directory' do
@@ -23,6 +25,7 @@ describe 'settings' do
 
   describe 'puppet_config fact' do
     subject { Facter.fact(:puppet_config).value }
+
     after(:each) { Facter.clear }
 
     describe 'should point to an existing file' do
@@ -30,8 +33,9 @@ describe 'settings' do
     end
   end
 
-  describe "puppet_stringify_facts fact" do
-    subject { Facter.fact("puppet_stringify_facts".to_sym).value }  
+  describe 'puppet_stringify_facts fact' do
+    subject { Facter.fact('puppet_stringify_facts'.to_sym).value }
+
     after(:each) { Facter.clear }
 
     describe 'should always be false' do
@@ -39,8 +43,9 @@ describe 'settings' do
     end
   end
 
-  describe "puppet_sslpaths fact" do
-    subject { Facter.fact("puppet_sslpaths".to_sym).value }
+  describe 'puppet_sslpaths fact' do
+    subject { Facter.fact('puppet_sslpaths'.to_sym).value }
+
     after(:each) { Facter.clear }
 
     { 'privatedir'    => 'ssl/private',
@@ -48,10 +53,9 @@ describe 'settings' do
       'publickeydir'  => 'ssl/public_keys',
       'certdir'       => 'ssl/certs',
       'requestdir'    => 'ssl/certificate_requests',
-      'hostcrl'       => 'ssl/crl.pem',
-    }.each_pair do |name, path|
+      'hostcrl'       => 'ssl/crl.pem', }.each_pair do |name, path|
       describe name do
-        it { is_expected.to include(name => { 'path' => "#{location}/#{path}", 'path_exists' => false})}
+        it { is_expected.to include(name => { 'path' => "#{location}/#{path}", 'path_exists' => false }) }
       end
     end
   end

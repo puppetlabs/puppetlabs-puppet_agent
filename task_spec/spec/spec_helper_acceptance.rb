@@ -8,7 +8,7 @@ require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 require 'beaker/module_install_helper'
 
-UNSUPPORTED_PLATFORMS = %w[Solaris AIX].freeze
+UNSUPPORTED_PLATFORMS = ['Solaris', 'AIX'].freeze
 
 base_dir = File.dirname(File.expand_path(__FILE__))
 

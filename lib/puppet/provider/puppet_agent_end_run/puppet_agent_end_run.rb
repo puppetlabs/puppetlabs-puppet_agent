@@ -4,21 +4,21 @@ Puppet::Type.type(:puppet_agent_end_run).provide :puppet_agent_end_run do
   end
 
   def stop
-    if needs_upgrade?
-      run_mode = Puppet.run_mode.name
+    return unless needs_upgrade?
 
-      # Handle CLI runs of `puppet agent` and `apply`
-      if Puppet[:onetime] || run_mode != :agent
-        Puppet.notice("Stopping run after puppet-agent upgrade. Run puppet agent -t or apply your manifest again to finish the transaction.")
-      end
+    run_mode = Puppet.run_mode.name
 
-      Puppet::Application.stop!
-
-      # Sending the HUP signal to the daemon causes it to restart and finish applying the catalog
-      if Puppet[:daemonize] && run_mode == :agent
-        at_exit { Process.kill(:HUP, Process.pid) }
-      end
+    # Handle CLI runs of `puppet agent` and `apply`
+    if Puppet[:onetime] || run_mode != :agent
+      Puppet.notice('Stopping run after puppet-agent upgrade. Run puppet agent -t or apply your manifest again to finish the transaction.')
     end
+
+    Puppet::Application.stop!
+
+    # Sending the HUP signal to the daemon causes it to restart and finish applying the catalog
+    return unless Puppet[:daemonize] && run_mode == :agent
+
+    at_exit { Process.kill(:HUP, Process.pid) }
   end
 
   private

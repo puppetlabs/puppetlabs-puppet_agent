@@ -1,101 +1,58 @@
 ---
-  .gitignore:
-    paths:
-      - '.*.sw?'
-
-  # The Travis and Appveyor configurations for puppet_agent don't fit
-  # in the module_sync model yet
-  .travis.yml:
-    unmanaged: true
-
-  # Requires the bundler_args to be supported.
-  # .travis.yml:
-  #   dist: trusty
-  #   script: 'bundle exec rake $CHECK'
-  #   before_install:
-  #     - bundle -v
-  #     - rm Gemfile.lock || true
-  #     - gem update --system
-  #     - gem --version
-  #     - bundle -v
-  #   docker_sets:
-  #   includes:
-  #     # Disabling 1.8.7 as it no longer plays nice
-  #     # - rvm: 1.8.7
-  #     #   env: PUPPET_GEM_VERSION="~> 3.7.5"
-  #     # - rvm: 1.8.7
-  #     #   env: PUPPET_GEM_VERSION="~> 3.8.1"
-  #     # Disabling as puppet-module-gems only supports ruby >= 2.1.X
-  #     # - rvm: 1.9.3
-  #     #   env: PUPPET_GEM_VERSION="~> 3.8.1"  FUTURE_PARSER="yes"
-
-  #     - rvm: 2.4.1
-  #       env: CHECK="validate lint"
-  #     - rvm: 2.1.0
-  #       env: PUPPET_GEM_VERSION="~> 3.8" FUTURE_PARSER="yes" CHECK=spec
-  #     - rvm: 2.1.5
-  #       env: PUPPET_GEM_VERSION="~> 4.0.0" CHECK=spec
-  #     - rvm: 2.1.9
-  #       env: PUPPET_GEM_VERSION="4.7.1" HIERA_GEM_VERSION="3.2.2" CHECK=spec
-  #     - rvm: 2.1.9
-  #       env: PUPPET_GEM_VERSION="~> 4.10" CHECK=spec
-  #     - rvm: 2.4.1
-  #       env: PUPPET_GEM_VERSION="~> 5.0" CHECK=spec
-
-  Gemfile:
-    required:
-      ':development':
-        # Gems built using puppet-module-gems utility
-        - gem: 'puppet-module-posix-default-r#{minor_version}'
-          platforms: 'ruby'
-        - gem: 'puppet-module-win-default-r#{minor_version}'
-          platforms:
-            - 'mswin'
-            - 'mingw'
-            - 'x64_mingw'
-        - gem: 'puppet-module-posix-dev-r#{minor_version}'
-          platforms: 'ruby'
-        - gem: 'puppet-module-win-dev-r#{minor_version}'
-          platforms:
-            - 'mswin'
-            - 'mingw'
-            - 'x64_mingw'
-          version: '0.0.7'
-        # json_pure 2.0.2 added a requirement on ruby >= 2. We pin to json_pure <= 2.0.1
-        # if using ruby 1.x
-        - gem: json_pure
-          version: '<= 2.0.1'
-          condition: "Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.0.0')"
-        - gem: fast_gettext
-          version: '1.1.0'
-          condition: "Gem::Version.new(RUBY_VERSION.dup) < Gem::Version.new('2.1.0')"
-        - gem: fast_gettext
-          condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.1.0')"
-
-  appveyor.yml:
-    unmanaged: true
-
-  # The default.yml file should not be updated yet as it doesn't fit
-  # in the module_sync model yet
-  'spec/acceptance/nodesets/default.yml':
-    unmanaged: true
-
-  Rakefile:
-    extra_disabled_lint_checks:
-    - 'disable_140chars'
-    - 'disable_puppet_url_without_modules'
-    - 'disable_class_inherits_from_params_class'
-    - 'disable_documentation'
-    - 'disable_single_quote_string_with_variables'
-    - 'disable_only_variable_string'
-
-  .gitattributes:
-    # Currently the only ERB template is for the Windows install
-    # batch file and should always be CRLF
-    exclude:
-    - "*.erb"
-
-  NOTICE:
-    copyright_holders:
-      - name: 'Puppet, Inc.'
-        begin: 2015
+.rubocop.yml:
+  default_configs:
+    Layout/LineLength:
+      Max: 260
+    RSpec/NamedSubject:
+      Enabled: false
+    RSpec/SubjectStub:
+      Enabled: false
+Gemfile:
+  optional:
+    ":development":
+      - gem: beaker
+        version: '~> 4.30'
+        from_env: BEAKER_VERSION
+      - gem: beaker-abs
+        from_env: BEAKER_ABS_VERSION
+        version: '~> 0.9'
+      - gem: beaker-docker
+        version: '~> 0.3'
+      - gem: beaker-pe
+      - gem: beaker-hostgenerator
+        from_env: BEAKER_HOSTGENERATOR_VERSION
+      - gem: beaker-rspec
+        from_env: BEAKER_RSPEC_VERSION
+      - gem: beaker-puppet
+        from_env: BEAKER_PUPPET_VERSION
+        version: '~> 1.22'
+      - gem: github_changelog_generator
+      - gem: beaker-module_install_helper
+      - gem: beaker-puppet_install_helper
+      - gem: nokogiri
+      - gem: 'bolt'
+        version: '~> 3.0'
+        condition: 'ENV["GEM_BOLT"]'
+      - gem: 'beaker-task_helper'
+        version: '~> 1.9'
+        condition: 'ENV["GEM_BOLT"]'
+      - gem: octokit
+        version: '4.21.0' # due to https://github.com/octokit/octokit.rb/issues/1391
+      - gem: async
+        version: '~> 1.30' # otherwise async 2.0.0(needs ruby >=3.1.0) is wrongly selected by bundler on jenkins while running with ruby 2.7.1
+appveyor.yml:
+  delete: true
+.travis.yml:
+  delete: true
+.github/workflows/auto_release.yml:
+  unmanaged: false
+.github/workflows/release.yml:
+  unmanaged: false
+.gitlab-ci.yml:
+  delete: true
+spec/default_facts.yml:
+  delete: true
+spec/spec_helper.rb:
+  unmanaged: true
+Rakefile:
+  changelog_since_tag: 4.9.0

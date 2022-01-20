@@ -14,7 +14,7 @@ describe 'puppet_agent::params' do
   end
 
   before(:each) do
-    Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue, doc: '') do |args|
+    Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue, doc: '') do |_args|
       lookupvar('::custom_fact__pe_version')
     end
   end

@@ -6,13 +6,11 @@ and raise an error with the contents of the log if it exists
 DOC
 
   newproperty(:ensure_notexist) do
-    desc "whether or not the error log exists"
+    desc 'whether or not the error log exists'
     def insync?(not_exist)
-      if not_exist
-        true
-      else
-        raise Puppet::Error.new("Failed previous installation with: #{provider.read_content_and_delete_file(@resource[:name])}")
-      end
+      raise Puppet::Error, "Failed previous installation with: #{provider.read_content_and_delete_file(@resource[:name])}" unless not_exist
+
+      true
     end
 
     defaultto { true }

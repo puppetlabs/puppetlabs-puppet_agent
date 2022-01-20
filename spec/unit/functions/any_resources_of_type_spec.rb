@@ -3,7 +3,9 @@ require 'puppet/pops'
 require 'puppet/loaders'
 
 describe "the 'any_resources_of_type' function" do
+  # rubocop:disable RSpec/BeforeAfterAll
   after(:all) { Puppet::Pops::Loaders.clear }
+  # rubocop:enable RSpec/BeforeAfterAll
 
   # This loads the function once and makes it easy to call it
   # It does not matter that it is not bound to the env used later since the function
@@ -15,12 +17,12 @@ describe "the 'any_resources_of_type' function" do
 
   # A fresh environment is needed for each test since tests create resources
   let(:environment) { Puppet::Node::Environment.create(:testing, [File.expand_path(fixtures('modules'))]) }
-  let(:node) { Puppet::Node.new('yaynode', :environment => environment) }
+  let(:node) { Puppet::Node.new('yaynode', environment: environment) }
   let(:compiler) { Puppet::Parser::Compiler.new(node) }
   let(:scope) { Puppet::Parser::Scope.new(compiler) }
 
   def newresource(type, title, parameters = {})
-    resource = Puppet::Resource.new(type, title, :parameters => parameters)
+    resource = Puppet::Resource.new(type, title, parameters: parameters)
     compiler.add_resource(scope, resource)
     resource
   end
@@ -30,7 +32,7 @@ describe "the 'any_resources_of_type' function" do
   end
 
   it 'allows an optional "parameters" argument' do
-    expect { func.call(scope, 'title', { :param1 => 'value1' }) }.not_to raise_error
+    expect { func.call(scope, 'title', { param1: 'value1' }) }.not_to raise_error
   end
 
   it 'raises if the "parameters" argument is not a hash' do
@@ -43,7 +45,7 @@ describe "the 'any_resources_of_type' function" do
         newresource('filebucket', 'bucket_1')
         newresource('filebucket', 'bucket_2')
         newresource('filebucket', 'bucket_3')
-        expect(func.call(scope, 'filebucket', :name => 'bucket_3')).to be_truthy
+        expect(func.call(scope, 'filebucket', name: 'bucket_3')).to be_truthy
       end
     end
 
@@ -57,19 +59,19 @@ describe "the 'any_resources_of_type' function" do
       expect(func.call(scope, 'Filebucket')).to be_truthy
     end
 
-    it 'finds by type name and a parameter'  do
+    it 'finds by type name and a parameter' do
       newresource('filebucket', 'my_filebucket')
-      expect(func.call(scope, 'filebucket', :name => 'my_filebucket')).to be_truthy
+      expect(func.call(scope, 'filebucket', name: 'my_filebucket')).to be_truthy
     end
 
-    it 'finds by type name and multiple parameters'  do
-      newresource('filebucket', 'my_filebucket', :path => false)
-      expect(func.call(scope, 'filebucket', :name => 'my_filebucket', :path => false)).to be_truthy
+    it 'finds by type name and multiple parameters' do
+      newresource('filebucket', 'my_filebucket', path: false)
+      expect(func.call(scope, 'filebucket', name: 'my_filebucket', path: false)).to be_truthy
     end
 
-    it 'finds by type name and multiple parameters in any order'  do
-      newresource('filebucket', 'my_filebucket', :path => false)
-      expect(func.call(scope, 'filebucket', :path => false, :name => 'my_filebucket')).to be_truthy
+    it 'finds by type name and multiple parameters in any order' do
+      newresource('filebucket', 'my_filebucket', path: false)
+      expect(func.call(scope, 'filebucket', path: false, name: 'my_filebucket')).to be_truthy
     end
   end
 
@@ -80,13 +82,12 @@ describe "the 'any_resources_of_type' function" do
 
     it 'matches the type but not the parameters' do
       newresource 'filebucket', 'my_filebucket'
-      expect(func.call(scope, 'filebucket', :name => 'not_my_filebucket')).to be_falsey
+      expect(func.call(scope, 'filebucket', name: 'not_my_filebucket')).to be_falsey
     end
 
-    it 'matches the type but not all parameters'  do
-      newresource 'filebucket', 'my_filebucket', :path => false
-      expect(func.call(scope, 'filebucket', :name => 'my_filebucket', :path => '/path/to/bucket')).to be_falsey
+    it 'matches the type but not all parameters' do
+      newresource 'filebucket', 'my_filebucket', path: false
+      expect(func.call(scope, 'filebucket', name: 'my_filebucket', path: '/path/to/bucket')).to be_falsey
     end
   end
 end
-

@@ -12,10 +12,10 @@ Platforms that shell out to external scripts for upgrading (Windows,
 macOS, and Solaris 10) do not need to use this type.
 DOC
 
-  newproperty(:end_run, :boolean => true, parent: Puppet::Property::Boolean) do
-    desc "Stops the current puppet run"
+  newproperty(:end_run, boolean: true, parent: Puppet::Property::Boolean) do
+    desc 'Stops the current puppet run'
 
-    def insync?(is)
+    def insync?(_is)
       provider.stop
       true
     end
@@ -24,7 +24,7 @@ DOC
   end
 
   newparam(:name) do
-    desc "The desired puppet-agent version"
+    desc 'The desired puppet-agent version'
     isnamevar
   end
 end
