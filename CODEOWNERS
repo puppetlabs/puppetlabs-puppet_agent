@@ -1,5 +1,5 @@
-# default to night-s-watch
-* @puppetlabs/night-s-watch
+# default to phoenix
+* @puppetlabs/phoenix
 
 # tasks
 /tasks @puppetlabs/bolt
