@@ -23,7 +23,7 @@ class puppet_agent::osfamily::redhat{
         }
         $platform_and_version = "el/${amz_el_version}"
       }
-      'XCP-ng', 'XenServer' {
+      'XCP-ng', 'XenServer': {
         $platform_and_version = "el/7"
       }
       default: {
