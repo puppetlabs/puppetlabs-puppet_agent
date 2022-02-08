@@ -7,6 +7,10 @@ describe 'puppet_agent' do
     lsbdistcodename: 'stretch',
     os: {
       'name'    => 'Debian',
+      'distro'  => {
+        'codename' => 'stretch',
+        'id'       => 'Debian'
+      },
       'release' => {
         'full'  => '9.0',
         'major' => '9',
@@ -102,6 +106,9 @@ describe 'puppet_agent' do
                       lsbdistcodename: 'xenial',
                       os: {
                         'name'    => 'Ubuntu',
+                        'distro'  => {
+                          'codename' => 'xenial',
+                        },
                         'release' => {
                           'full'  => '16.04',
                         },

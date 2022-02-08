@@ -70,7 +70,7 @@ class puppet_agent::install(
         if $package_version =~ /^latest$|^present$/ {
           $_package_version = $package_version
         } else {
-          $_package_version = "${package_version}-1${::lsbdistcodename}"
+          $_package_version = "${package_version}-1${facts['os']['distro']['codename']}"
         }
         $_provider = 'apt'
         $_source = undef
