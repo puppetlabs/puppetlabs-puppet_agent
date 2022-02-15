@@ -45,7 +45,7 @@ jobs:
 
       - name: Install the latest nightly build of puppet${{ matrix.puppet_version }} gem
         run: |
-          curl http://nightlies.puppet.com/downloads/gems/puppet${{ matrix.puppet_version }}-nightly/${{ matrix.gem_file }} --output puppet.gem
+          curl https://nightlies.puppet.com/downloads/gems/puppet${{ matrix.puppet_version }}-nightly/${{ matrix.gem_file }} --output puppet.gem --location
           gem install puppet.gem -N
 
       - name: Prepare testing environment with bundler
