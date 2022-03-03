@@ -48,7 +48,7 @@ node default {
     agents_only.each do |agent|
       on(agent, puppet('agent -t --debug'), acceptable_exit_codes: 2)
       wait_for_installation_pid(agent)
-      assert_agent_version_on(agent, latest_version.scan(%r{6\.\d*\.\d*\.\d*}).first)
+      assert(puppet_agent_version_on(agent) =~ %r{^6\.\d+\.\d+.*})
     end
   end
 
