@@ -4,12 +4,12 @@ source ENV['GEM_SOURCE'] || "https://rubygems.org"
 #
 # @param place_or_version can be one of:
 #   - A specific version,
-#   - A git branch, as `git://<your-repo>.git#<branch-name>`
+#   - A git branch, as `https://<your-repo>.git#<branch-name>`
 #   - A file URI, as `file:///absolute/file/path`
 def location_for(place, fake_version = nil)
-  if place =~ /^(git[:@][^#]*)#(.*)/
+  if place.is_a?(String) && place =~ /^((?:git[:@]|https:)[^#]*)#(.*)/
     [fake_version, { git: $1, branch: $2, require: false }].compact
-  elsif place =~ /^file:\/\/(.*)/
+  elsif place.is_a?(String) && place =~ /^file:\/\/(.*)/
     ['>= 0', { path: File.expand_path($1), require: false }]
   else
     [place, { require: false }]
@@ -19,7 +19,7 @@ end
 gem "rake", "~> 12.3"
 
 gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 4')
-gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || 'git://github.com/voxpupuli/beaker-puppet#master')
+gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || 'https://github.com/voxpupuli/beaker-puppet#master')
 
 gem "beaker-docker", *location_for(ENV['BEAKER_DOCKER_VERSION'] || '~> 0')
 gem "beaker-vagrant", *location_for(ENV['BEAKER_VAGRANT_VERSION'] || '~> 0')
