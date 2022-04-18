@@ -325,6 +325,12 @@ The Puppet installer can disable the [Windows path length limit](https://docs.mi
   install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=ExampleCorp', 'PUPPET_AGENT_ACCOUNT_USER=bob', 'PUPPET_AGENT_ACCOUNT_PASSWORD=password', 'ENABLE_LONG_PATHS=true']
 ```
 
+For [gMSAs](https://docs.microsoft.com/en-us/windows-server/security/group-managed-service-accounts/group-managed-service-accounts-overview), you must specify the domain and gMSA user, such as:
+
+``` puppet
+  install_options => ['PUPPET_AGENT_ACCOUNT_DOMAIN=<AGENT_DOMAIN_NAME>', 'PUPPET_AGENT_ACCOUNT_USER=<gMSA_USER>']
+```  
+
 ##### `msi_move_locked_files`
 
 This is only applicable for Windows operating systems and for Puppet 5 prior to 5.5.17 or Puppet 6 prior to 6.8.0. There may be instances where file locks cause unnecessary service restarts.  By setting to true, the module will move files prior to installation that are known to cause file locks. By default this is set to false.
