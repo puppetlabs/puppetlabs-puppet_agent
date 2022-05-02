@@ -31,7 +31,7 @@ describe 'puppet_agent' do
     let(:params) { { package_version: package_version } }
 
     context 'when running a supported OSX' do
-      ['osx-10.12-x86_64', 'osx-10.13-x86_64', 'osx-10.14-x86_64', 'osx-10.15-x86_64', 'osx-11-x86_64'].each do |tag|
+      ['osx-10.15-x86_64', 'osx-11-x86_64', 'osx-12-x86_64'].each do |tag|
         context "on #{tag} with no aio_version" do
           let(:osmajor) { tag.split('-')[1] }
 
