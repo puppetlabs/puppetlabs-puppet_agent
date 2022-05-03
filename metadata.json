@@ -27,124 +27,46 @@
   ],
   "operatingsystem_support": [
     {
-      "operatingsystem": "RedHat",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7",
-        "8"
-      ]
+      "operatingsystem": "RedHat"
     },
     {
-      "operatingsystem": "CentOS",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7",
-        "8"
-      ]
+      "operatingsystem": "CentOS"
     },
     {
-      "operatingsystem": "OracleLinux",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
+      "operatingsystem": "OracleLinux"
     },
     {
-      "operatingsystem": "Scientific",
-      "operatingsystemrelease": [
-        "5",
-        "6",
-        "7"
-      ]
+      "operatingsystem": "Scientific"
     },
     {
-      "operatingsystem": "SLES",
-      "operatingsystemrelease": [
-        "11",
-        "12",
-        "15"
-      ]
+      "operatingsystem": "SLES"
     },
     {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "8",
-        "9",
-        "10",
-        "11"
-      ]
+      "operatingsystem": "Debian"
     },
     {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "14.04",
-        "16.04",
-        "18.04",
-        "20.04"
-      ]
+      "operatingsystem": "Ubuntu"
     },
     {
-      "operatingsystem": "Fedora",
-      "operatingsystemrelease": [
-        "28",
-        "29",
-        "30",
-        "31",
-        "32",
-        "34"
-      ]
+      "operatingsystem": "Fedora"
     },
     {
-      "operatingsystem": "Solaris",
-      "operatingsystemrelease": [
-        "10",
-        "11"
-      ]
+      "operatingsystem": "Solaris"
     },
     {
-      "operatingsystem": "Windows",
-      "operatingsystemrelease": [
-        "Server 2008",
-        "Server 2008 R2",
-        "Server 2012",
-        "Server 2012 R2",
-        "Server 2016",
-        "Server 2019",
-        "7",
-        "8",
-        "8.1",
-        "10"
-      ]
+      "operatingsystem": "Windows"
     },
     {
-      "operatingsystem": "AIX",
-      "operatingsystemrelease": [
-        "7.1",
-        "7.2"
-      ]
+      "operatingsystem": "AIX"
     },
     {
-      "operatingsystem": "OSX",
-      "operatingsystemrelease": [
-        "10.14",
-        "10.15",
-        "11"
-      ]
+      "operatingsystem": "OSX"
     },
     {
-      "operatingsystem": "AlmaLinux",
-      "operatingsystemrelease": [
-        "8"
-      ]
+      "operatingsystem": "AlmaLinux"
     },
     {
-      "operatingsystem": "Rocky",
-      "operatingsystemrelease": [
-        "8"
-      ]
+      "operatingsystem": "Rocky"
     }
   ],
   "requirements": [

@@ -44,9 +44,19 @@ describe 'install task' do
                          '6.15.0'
                        when %r{osx-11}
                          '6.23.0'
+                       when %r{osx-12}
+                         '6.27.1'
                        else
                          '6.17.0'
                        end
+
+    # we can only tests puppet 6.x -> 6.y upgrades if there multiple versions
+    multiple_puppet6_versions = case target_platform
+                                when %r{osx-12}
+                                  false
+                                else
+                                  true
+                                end
 
     # extra request is needed on windows hosts
     # this will fail with "execution expired"
@@ -98,17 +108,22 @@ describe 'install task' do
       expect(res['value']['source']).to be
     end
 
-    # Upgrade to latest puppet6 version
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
-    expect(results).to all(include('status' => 'success'))
+    # An OS needs to be supported for more than one 6.x release to test the
+    # upgrade from puppet_6_version to latest
+    if multiple_puppet6_versions
 
-    # Verify that it upgraded
-    results = run_task('puppet_agent::version', 'target', {})
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-      expect(res['value']['version']).not_to eq(puppet_6_version)
-      expect(res['value']['version']).to match(%r{^6\.\d+\.\d+})
-      expect(res['value']['source']).to be
+      # Upgrade to latest puppet6 version
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
+      expect(results).to all(include('status' => 'success'))
+
+      # Verify that it upgraded
+      results = run_task('puppet_agent::version', 'target', {})
+      results.each do |res|
+        expect(res).to include('status' => 'success')
+        expect(res['value']['version']).not_to eq(puppet_6_version)
+        expect(res['value']['version']).to match(%r{^6\.\d+\.\d+})
+        expect(res['value']['source']).to be
+      end
     end
 
     # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
