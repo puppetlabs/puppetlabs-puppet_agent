@@ -5,6 +5,7 @@ describe 'puppet_agent' do
   pe_version = '2000.0.0'
 
   let(:params) { { package_version: package_version } }
+  let(:version_file) { '/opt/puppetlabs/puppet/VERSION' }
 
   before(:each) do
     # Need to mock the PE functions
@@ -15,6 +16,13 @@ describe 'puppet_agent' do
     Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
       package_version
     end
+
+    allow(Puppet::Util).to receive(:absolute_path?).and_call_original
+    allow(Puppet::Util).to receive(:absolute_path?).with(version_file).and_return true
+    allow(Puppet::FileSystem).to receive(:exist?).and_call_original
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
+    allow(Puppet::FileSystem).to receive(:exist?).with(version_file).and_return true
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with(version_file).and_return "1.10.100\n"
   end
 
   [['x64', 'x86_64'], ['x86', 'i386']].each do |arch, tag|

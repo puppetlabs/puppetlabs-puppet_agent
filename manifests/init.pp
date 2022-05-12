@@ -163,8 +163,10 @@ class puppet_agent (
       fail('Unable to install x64 on a x86 system')
     }
 
+    # The AIO package version and Puppet version can, on rare occasion, diverge.
+    # This logic checks for the AIO version of the server, since that's what the package manager cares about.
     if $package_version == 'auto' {
-      $master_or_package_version = $::serverversion
+      $master_or_package_version = chomp(file('/opt/puppetlabs/puppet/VERSION'))
     } else {
       $master_or_package_version = $package_version
     }
