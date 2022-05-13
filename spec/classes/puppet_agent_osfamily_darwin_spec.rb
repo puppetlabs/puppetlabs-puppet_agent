@@ -11,6 +11,11 @@ describe 'puppet_agent' do
     Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
       master_package_version
     end
+
+    allow(Puppet::FileSystem).to receive(:exist?).and_call_original
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
+    allow(Puppet::FileSystem).to receive(:exist?).with('/opt/puppetlabs/puppet/VERSION').and_return true
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with('/opt/puppetlabs/puppet/VERSION').and_return "5.10.200\n"
   end
 
   package_version = '1.10.100'

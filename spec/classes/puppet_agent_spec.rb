@@ -213,6 +213,13 @@ describe 'puppet_agent' do
           let(:params) { { package_version: 'auto' } }
           let(:node_params) { { serverversion: '7.6.5' } }
 
+          before :each do
+            allow(Puppet::FileSystem).to receive(:exist?).and_call_original
+            allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
+            allow(Puppet::FileSystem).to receive(:exist?).with('/opt/puppetlabs/puppet/VERSION').and_return true
+            allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with('/opt/puppetlabs/puppet/VERSION').and_return "7.6.5\n"
+          end
+
           it { is_expected.to contain_class('puppet_agent::prepare').with_package_version('7.6.5') }
           it { is_expected.to contain_class('puppet_agent::install').with_package_version('7.6.5') }
         end

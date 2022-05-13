@@ -13,6 +13,13 @@ describe 'puppet_agent' do
     }
   end
 
+  before(:each) do
+    allow(Puppet::FileSystem).to receive(:exist?).and_call_original
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
+    allow(Puppet::FileSystem).to receive(:exist?).with('/opt/puppetlabs/puppet/VERSION').and_return true
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with('/opt/puppetlabs/puppet/VERSION').and_return "5.10.200\n"
+  end
+
   shared_examples 'aix' do |aixver, pkg_aixver, powerver|
     let(:rpmname) { "puppet-agent-#{params[:package_version]}-1.aix#{pkg_aixver}.ppc.rpm" }
     let(:tag) { "aix-#{pkg_aixver}-power" }
