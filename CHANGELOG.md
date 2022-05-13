@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.11.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.11.0) (2022-05-13)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.10.0...v4.11.0)
+
+### Added
+
+- \(maint\) Add macOS 12 [\#602](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/602) ([joshcooper](https://github.com/joshcooper))
+
+### Fixed
+
+- \(MODULES-11315\) Updates AIO auto version logic [\#604](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/604) ([mhashizume](https://github.com/mhashizume))
+- DOC-5213 install\_options for gMSAs [\#601](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/601) ([aimurphy](https://github.com/aimurphy))
+
 ## [v4.10.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.10.0) (2022-01-26)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/4.9.0...v4.10.0)
