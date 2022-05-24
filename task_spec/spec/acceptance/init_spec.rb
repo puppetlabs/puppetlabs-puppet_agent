@@ -34,10 +34,16 @@ describe 'install task' do
 
   it 'works with version and install tasks' do
     puppet_6_version = case target_platform
+                       when %r{debian-11}
+                         '6.24.0'
+                       when %r{el-9}
+                         '6.26.0'
                        when %r{fedora-30}
                          '6.19.1'
                        when %r{fedora-31}
                          '6.20.0'
+                       when %r{fedora-34}
+                         '6.23.0'
                        when %r{osx-10.14}
                          '6.18.0'
                        when %r{osx-10.15}
