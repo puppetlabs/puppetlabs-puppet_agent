@@ -76,9 +76,15 @@ describe 'install task' do
     end
 
     # Try to install an older puppet6 version
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6',
-                                                            'version' => puppet_6_version,
-                                                            'stop_service' => true })
+    results = if %r{ubuntu-22.04}.match?(target_platform)
+                run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6_nightly',
+                                                              'version' => puppet_6_version,
+                                                              'stop_service' => true })
+              else
+                run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6',
+                                                              'version' => puppet_6_version,
+                                                              'stop_service' => true })
+              end
     expect(results).to all(include('status' => 'success'))
 
     # It installed a version older than latest puppet6
