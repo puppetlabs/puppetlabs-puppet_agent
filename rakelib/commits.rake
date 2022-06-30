@@ -7,7 +7,7 @@ task(:commits) do
   %x{git log --no-merges --pretty=%s #{commit_range}}.each_line do |commit_summary|
     # This regex tests for the currently supported commit summary tokens.
     # The exception tries to explain it in more full.
-    if /^\((maint|packaging|doc|docs|fm|modules-\d+)\)|revert/i.match(commit_summary).nil?
+    if /^\((maint|packaging|doc|docs|fm-\d+|modules-\d+)\)|revert/i.match(commit_summary).nil?
       raise "\n\n\n\tThis commit summary didn't match CONTRIBUTING.md guidelines:\n" \
         "\n\t\t#{commit_summary}\n" \
         "\tThe commit summary (i.e. the first line of the commit message) should start with one of:\n"  \
