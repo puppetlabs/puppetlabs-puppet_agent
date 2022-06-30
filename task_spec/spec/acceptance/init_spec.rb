@@ -77,7 +77,7 @@ describe 'install task' do
 
     # Try to install an older puppet6 version
     results = if %r{ubuntu-22.04}.match?(target_platform)
-                run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6_nightly',
+                run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6-nightly',
                                                               'version' => puppet_6_version,
                                                               'stop_service' => true })
               else
