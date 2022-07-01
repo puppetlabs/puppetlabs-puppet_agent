@@ -52,13 +52,27 @@ describe 'install task' do
                          '6.23.0'
                        when %r{osx-12}
                          '6.27.1'
+                       when %r{ubuntu-22.04}
+                         'latest'
                        else
                          '6.17.0'
                        end
 
+    # platforms that only have nightly builds available
+    case target_platform
+    when %r{ubuntu-22.04}
+      puppet_6_collection = 'puppet6-nightly'
+      puppet_7_collection = 'puppet7-nightly'
+    else
+      puppet_6_collection = 'puppet6'
+      puppet_7_collection = 'puppet7'
+    end
+
     # we can only tests puppet 6.x -> 6.y upgrades if there multiple versions
     multiple_puppet6_versions = case target_platform
                                 when %r{osx-12}
+                                  false
+                                when %r{ubuntu-22.04}
                                   false
                                 else
                                   true
@@ -76,22 +90,21 @@ describe 'install task' do
     end
 
     # Try to install an older puppet6 version
-    results = if %r{ubuntu-22.04}.match?(target_platform)
-                run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6-nightly',
-                                                              'version' => puppet_6_version,
-                                                              'stop_service' => true })
-              else
-                run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6',
-                                                              'version' => puppet_6_version,
-                                                              'stop_service' => true })
-              end
+    results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_6_collection,
+                                                            'version' => puppet_6_version,
+                                                            'stop_service' => true })
+
     expect(results).to all(include('status' => 'success'))
 
     # It installed a version older than latest puppet6
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
       expect(res).to include('status' => 'success')
-      expect(res['value']['version']).to eq(puppet_6_version)
+      if puppet_6_version == 'latest'
+        expect(res['value']['version']).to match(%r{^6\.\d+\.\d+})
+      else
+        expect(res['value']['version']).to eq(puppet_6_version)
+      end
       expect(res['value']['source']).to be
     end
 
@@ -106,7 +119,8 @@ describe 'install task' do
 
     # Try to upgrade with no specific version given in parameter
     # Expect nothing to happen and receive a message regarding this
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6' })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_6_collection })
+
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['value']['_output']).to match(%r{Version parameter not defined and agent detected. Nothing to do.})
@@ -116,7 +130,11 @@ describe 'install task' do
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
       expect(res).to include('status' => 'success')
-      expect(res['value']['version']).to eq(puppet_6_version)
+      if puppet_6_version == 'latest'
+        expect(res['value']['version']).to match(%r{^6\.\d+\.\d+})
+      else
+        expect(res['value']['version']).to eq(puppet_6_version)
+      end
       expect(res['value']['source']).to be
     end
 
@@ -154,7 +172,7 @@ describe 'install task' do
     end
 
     # Succesfully upgrade from puppet6 to puppet7
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_7_collection, 'version' => 'latest' })
     expect(results).to all(include('status' => 'success'))
 
     # Verify that it upgraded
@@ -170,7 +188,8 @@ describe 'install task' do
 
     # Try installing the same version again
     # Expect nothing to happen and receive a message regarding this
-    results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => installed_version })
+    results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_7_collection, 'version' => installed_version })
+
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['value']['_output']).to match(%r{Puppet Agent #{installed_version} detected. Nothing to do.})
