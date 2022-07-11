@@ -105,8 +105,23 @@ $date_time_stamp = (Get-Date -format s) -replace ':', '-'
 $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"
 $install_log = Join-Path ([System.IO.Path]::GetTempPath()) "$date_time_stamp-puppet-install.log"
 
+# Most modern sites either require or are starting to require TLS 1.2.
+# On older Windows systems the default security protocols for PowerShell 5 are SSL3 and TLS 1.0.
+# When communicating with a site that has a higher TLS requirement requests will fail with the following error:
+# `Could not create SSL/TLS secure channel`.`
+# Set-Tls12 will add TLS 1.2 to the list of available security protocols if it is not already present.
+function Set-Tls12 {
+  $Tls12 = [System.Net.SecurityProtocolType]::Tls12
+  $CurrentSecurityProtocolList = [System.Net.ServicePointManager]::SecurityProtocol
+  if (!$CurrentSecurityProtocolList.HasFlag($Tls12)) {
+    [System.Net.ServicePointManager]::SecurityProtocol = $CurrentSecurityProtocolList, [System.Net.SecurityProtocolType]::Tls12
+  }
+}
+
 function DownloadPuppet {
   Write-Output "Downloading the Puppet Agent installer on $env:COMPUTERNAME..."
+  Set-Tls12
+
   $webclient = New-Object system.net.webclient
 
   try {
