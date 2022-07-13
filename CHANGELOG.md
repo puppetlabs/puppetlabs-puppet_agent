@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.12.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.12.0) (2022-07-13)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.11.0...v4.12.0)
+
+### Added
+
+- \(FM-8943\) Add Ubuntu 22.04 to puppet\_agent module [\#610](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/610) ([AriaXLi](https://github.com/AriaXLi))
+- \(maint\) Adds cases for newly-supported OSes [\#607](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/607) ([mhashizume](https://github.com/mhashizume))
+
+### Fixed
+
+- \(MODULES-11334\) Handle TLS 1.2 on older Windows systems [\#611](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/611) ([chelnak](https://github.com/chelnak))
+
 ## [v4.11.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.11.0) (2022-05-13)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.10.0...v4.11.0)
