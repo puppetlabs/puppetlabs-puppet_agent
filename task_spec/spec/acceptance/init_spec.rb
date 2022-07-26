@@ -39,6 +39,10 @@ describe 'install task' do
   end
 
   it 'works with version and install tasks' do
+    # Specify the first released version for each target platform. When adding a new
+    # OS, you'll typically want to specify 'latest' to install from nightlies, since
+    # official packages won't be released until later. During the N+1 release, you'll
+    # want to change `target_platform` to be the first version (N) that added the OS.
     puppet_6_version = case target_platform
                        when %r{debian-11}
                          '6.24.0'
@@ -56,7 +60,7 @@ describe 'install task' do
                          '6.15.0'
                        when %r{osx-11}
                          '6.23.0'
-                       when %r{osx-12}
+                       when %r{osx-12-x86_64}
                          '6.27.1'
                        when %r{ubuntu-22.04}
                          'latest'
@@ -64,7 +68,8 @@ describe 'install task' do
                          '6.17.0'
                        end
 
-    # platforms that only have nightly builds available
+    # platforms that only have nightly builds available. Once a platform
+    # is released, it should be removed from this list.
     case target_platform
     when %r{ubuntu-22.04}
       puppet_6_collection = 'puppet6-nightly'
@@ -75,8 +80,10 @@ describe 'install task' do
     end
 
     # we can only tests puppet 6.x -> 6.y upgrades if there multiple versions
+    # Once there a platform has been released more than once, it can be removed
+    # from this list.
     multiple_puppet6_versions = case target_platform
-                                when %r{osx-12}
+                                when %r{osx-12-x86_64}
                                   false
                                 when %r{ubuntu-22.04}
                                   false
