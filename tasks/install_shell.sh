@@ -675,7 +675,12 @@ case $platform in
     else
       filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
     fi
-    download_url="${mac_source}/mac/${collection}/${platform_version}/x86_64/${filename}"
+
+    arch="x86_64"
+    if [[ $(uname -p) == "arm" ]]; then
+        arch="arm64"
+    fi
+    download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
     ;;
   *)
     critical "Sorry $platform is not supported yet!"
