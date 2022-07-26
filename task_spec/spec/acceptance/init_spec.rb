@@ -32,6 +32,12 @@ describe 'install task' do
     hosts.first[:platform]
   end
 
+  def log_output_errors(result)
+    return if result['status'] == 'success'
+    out = result.dig('value', '_output') || 'Unknown result output'
+    puts logger.info(out)
+  end
+
   it 'works with version and install tasks' do
     puppet_6_version = case target_platform
                        when %r{debian-11}
@@ -94,6 +100,11 @@ describe 'install task' do
                                                             'version' => puppet_6_version,
                                                             'stop_service' => true })
 
+    results.each do |result|
+      logger.info("Installed puppet-agent on #{result['target']}: #{result['status']}")
+      log_output_errors(result)
+    end
+
     expect(results).to all(include('status' => 'success'))
 
     # It installed a version older than latest puppet6
@@ -121,6 +132,11 @@ describe 'install task' do
     # Expect nothing to happen and receive a message regarding this
     results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_6_collection })
 
+    results.each do |result|
+      logger.info("Ensuring installed puppet-agent on #{result['target']}: #{result['status']}")
+      log_output_errors(result)
+    end
+
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['value']['_output']).to match(%r{Version parameter not defined and agent detected. Nothing to do.})
@@ -144,6 +160,12 @@ describe 'install task' do
 
       # Upgrade to latest puppet6 version
       results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
+
+      results.each do |result|
+        logger.info("Upgraded puppet-agent to latest puppet6 on #{result['target']}: #{result['status']}")
+        log_output_errors(result)
+      end
+
       expect(results).to all(include('status' => 'success'))
 
       # Verify that it upgraded
@@ -173,6 +195,12 @@ describe 'install task' do
 
     # Succesfully upgrade from puppet6 to puppet7
     results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_7_collection, 'version' => 'latest' })
+
+    results.each do |result|
+      logger.info("Upgraded puppet-agent to puppet7 on #{result['target']}: #{result['status']}")
+      log_output_errors(result)
+    end
+
     expect(results).to all(include('status' => 'success'))
 
     # Verify that it upgraded
