@@ -97,10 +97,10 @@ bundle exec beaker-hostgenerator -t docker centos7-64mcda-debian9-64a > ./hosts.
 
 Decide on a collection or version of puppet-agent to use on your master, and
 run the `prepare` rake task to set it up. This example installs the latest
-puppet-agent and puppetserver in the puppet 5 series on the master:
+puppet-agent and puppetserver in the puppet 7 series on the master:
 
 ```sh
-MASTER_COLLECTION=puppet5 bundle exec rake prepare
+MASTER_COLLECTION=puppet7 bundle exec rake prepare
 ````
 
 ### Run and re-run the tests

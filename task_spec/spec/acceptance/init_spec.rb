@@ -32,7 +32,17 @@ describe 'install task' do
     hosts.first[:platform]
   end
 
+  def log_output_errors(result)
+    return if result['status'] == 'success'
+    out = result.dig('value', '_output') || 'Unknown result output'
+    puts logger.info(out)
+  end
+
   it 'works with version and install tasks' do
+    # Specify the first released version for each target platform. When adding a new
+    # OS, you'll typically want to specify 'latest' to install from nightlies, since
+    # official packages won't be released until later. During the N+1 release, you'll
+    # want to change `target_platform` to be the first version (N) that added the OS.
     puppet_6_version = case target_platform
                        when %r{debian-11}
                          '6.24.0'
@@ -50,17 +60,20 @@ describe 'install task' do
                          '6.15.0'
                        when %r{osx-11}
                          '6.23.0'
-                       when %r{osx-12}
+                       when %r{osx-12-x86_64}
                          '6.27.1'
+                       when %r{osx-12-arm}
+                         'latest'
                        when %r{ubuntu-22.04}
                          'latest'
                        else
                          '6.17.0'
                        end
 
-    # platforms that only have nightly builds available
+    # platforms that only have nightly builds available. Once a platform
+    # is released, it should be removed from this list.
     case target_platform
-    when %r{ubuntu-22.04}
+    when %r{ubuntu-22.04}, %r{osx-12-arm}
       puppet_6_collection = 'puppet6-nightly'
       puppet_7_collection = 'puppet7-nightly'
     else
@@ -69,8 +82,10 @@ describe 'install task' do
     end
 
     # we can only tests puppet 6.x -> 6.y upgrades if there multiple versions
+    # Once there a platform has been released more than once, it can be removed
+    # from this list.
     multiple_puppet6_versions = case target_platform
-                                when %r{osx-12}
+                                when %r{osx-12-x86_64}, %r{osx-12-arm}
                                   false
                                 when %r{ubuntu-22.04}
                                   false
@@ -93,6 +108,11 @@ describe 'install task' do
     results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_6_collection,
                                                             'version' => puppet_6_version,
                                                             'stop_service' => true })
+
+    results.each do |result|
+      logger.info("Installed puppet-agent on #{result['target']}: #{result['status']}")
+      log_output_errors(result)
+    end
 
     expect(results).to all(include('status' => 'success'))
 
@@ -121,6 +141,11 @@ describe 'install task' do
     # Expect nothing to happen and receive a message regarding this
     results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_6_collection })
 
+    results.each do |result|
+      logger.info("Ensuring installed puppet-agent on #{result['target']}: #{result['status']}")
+      log_output_errors(result)
+    end
+
     results.each do |res|
       expect(res).to include('status' => 'success')
       expect(res['value']['_output']).to match(%r{Version parameter not defined and agent detected. Nothing to do.})
@@ -144,6 +169,12 @@ describe 'install task' do
 
       # Upgrade to latest puppet6 version
       results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet6', 'version' => 'latest' })
+
+      results.each do |result|
+        logger.info("Upgraded puppet-agent to latest puppet6 on #{result['target']}: #{result['status']}")
+        log_output_errors(result)
+      end
+
       expect(results).to all(include('status' => 'success'))
 
       # Verify that it upgraded
@@ -173,6 +204,12 @@ describe 'install task' do
 
     # Succesfully upgrade from puppet6 to puppet7
     results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_7_collection, 'version' => 'latest' })
+
+    results.each do |result|
+      logger.info("Upgraded puppet-agent to puppet7 on #{result['target']}: #{result['status']}")
+      log_output_errors(result)
+    end
+
     expect(results).to all(include('status' => 'success'))
 
     # Verify that it upgraded
