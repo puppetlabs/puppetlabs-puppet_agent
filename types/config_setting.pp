@@ -226,6 +226,7 @@ type Puppet_agent::Config_setting = Enum[
   trusted_external_command,
   trusted_oid_mapping_file,
   use_cached_catalog,
+  use_last_environment,
   use_srv_records,
   usecacheonfailure,
   user,
