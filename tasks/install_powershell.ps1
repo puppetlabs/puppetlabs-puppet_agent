@@ -2,6 +2,7 @@
 Param(
 	[String]$version,
   [String]$collection = 'puppet',
+  [String]$absolute_source,
   [String]$windows_source = 'https://downloads.puppet.com',
   [String]$install_options = 'REINSTALLMODE="amus"',
   [Bool]$stop_service = $False,
@@ -99,7 +100,12 @@ if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('w
   $windows_source = 'https://nightlies.puppet.com/downloads'
 }
 
-$msi_source = "$windows_source/windows/${collection}/${msi_name}"
+if ($absolute_source) {
+    $msi_source = "$absolute_source"
+}
+else {
+    $msi_source = "$windows_source/windows/${collection}/${msi_name}"
+}
 
 $date_time_stamp = (Get-Date -format s) -replace ':', '-'
 $msi_dest = Join-Path ([System.IO.Path]::GetTempPath()) "puppet-agent-$arch.msi"

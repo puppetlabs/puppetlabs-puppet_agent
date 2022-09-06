@@ -584,7 +584,7 @@ info "Downloading Puppet $version for ${platform}..."
 case $platform in
   "SLES")
     info "SLES platform! Lets get you an RPM..."
-    
+
     if [[ $PT__noop != true ]]; then
       for key in "puppet" "puppet-20250406"; do
         gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
@@ -687,6 +687,10 @@ case $platform in
     exit 1
     ;;
 esac
+
+if [[ -n "$PT_absolute_source" ]]; then
+  download_url=$PT_absolute_source
+fi
 
 if [[ $PT__noop != true ]]; then
   download_filename="${tmp_dir}/${filename}"
