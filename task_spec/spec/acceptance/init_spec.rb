@@ -62,10 +62,8 @@ describe 'install task' do
                          '6.23.0'
                        when %r{osx-12-x86_64}
                          '6.27.1'
-                       when %r{osx-12-arm}
-                         'latest'
-                       when %r{ubuntu-22.04}
-                         'latest'
+                       when %r{osx-12-arm}, %r{ubuntu-22.04}
+                         '6.28.0'
                        else
                          '6.17.0'
                        end
@@ -73,7 +71,7 @@ describe 'install task' do
     # platforms that only have nightly builds available. Once a platform
     # is released, it should be removed from this list.
     case target_platform
-    when %r{ubuntu-22.04}, %r{osx-12-arm}
+    when false
       puppet_6_collection = 'puppet6-nightly'
       puppet_7_collection = 'puppet7-nightly'
     else
@@ -85,7 +83,7 @@ describe 'install task' do
     # Once there a platform has been released more than once, it can be removed
     # from this list.
     multiple_puppet6_versions = case target_platform
-                                when %r{osx-12-x86_64}, %r{osx-12-arm}
+                                when %r{osx-12-arm}
                                   false
                                 when %r{ubuntu-22.04}
                                   false
