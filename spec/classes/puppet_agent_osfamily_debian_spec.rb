@@ -93,23 +93,23 @@ describe 'puppet_agent' do
       it { is_expected.not_to contain_apt__setting('list-puppet-enterprise-installer') }
     end
 
-    context 'xenial' do
+    context 'focal' do
       let(:facts) do
         facts.merge({
                       is_pe: true,
-                      platform_tag: 'ubuntu-1604-x86_64',
+                      platform_tag: 'ubuntu-2004-x86_64',
                       operatingsystem: 'Ubuntu',
-                      lsbdistcodename: 'xenial',
+                      lsbdistcodename: 'focal',
                       os: {
                         'name'    => 'Ubuntu',
                         'release' => {
-                          'full'  => '16.04',
+                          'full'  => '20.04',
                         },
                       },
                     })
       end
 
-      context 'when managing debian xenial apt repo' do
+      context 'when managing debian focal apt repo' do
         let(:params) do
           {
             manage_repo: true,
@@ -133,7 +133,7 @@ describe 'puppet_agent' do
         }
       end
 
-      context 'when not managing debian xenial apt repo' do
+      context 'when not managing debian focal apt repo' do
         let(:params) do
           {
             manage_repo: false,
