@@ -19,7 +19,7 @@ describe 'puppet_agent' do
     }
   end
 
-  [['Rocky', 'el/8', 8], ['AlmaLinux', 'el/8', 8], ['Fedora', 'fedora/f34', 34], ['CentOS', 'el/7', 7], ['Amazon', 'el/6', 2017], ['Amazon', 'el/7', 2]].each do |os, urlbit, osmajor|
+  [['Rocky', 'el/8', 8], ['AlmaLinux', 'el/8', 8], ['Fedora', 'fedora/f36', 36], ['CentOS', 'el/7', 7], ['Amazon', 'el/6', 2017], ['Amazon', 'el/7', 2]].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
         super().merge(operatingsystem: os, operatingsystemmajrelease: osmajor)

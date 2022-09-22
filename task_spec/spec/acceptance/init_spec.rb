@@ -52,8 +52,6 @@ describe 'install task' do
                          '6.19.1'
                        when %r{fedora-31}
                          '6.20.0'
-                       when %r{fedora-34}
-                         '6.23.0'
                        when %r{osx-10.14}
                          '6.18.0'
                        when %r{osx-10.15}
