@@ -619,11 +619,6 @@ case $platform in
   "Debian")
     info "Debian platform! Lets get you a DEB..."
     case $major_version in
-      "5") deb_codename="lenny";;
-      "6") deb_codename="squeeze";;
-      "7") deb_codename="wheezy";;
-      "8") deb_codename="jessie";;
-      "9") deb_codename="stretch";;
       "10") deb_codename="buster";;
       "11") deb_codename="bullseye";;
     esac
