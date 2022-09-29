@@ -2,13 +2,13 @@ fixtures:
   forge_modules:
     stdlib:
       repo: "puppetlabs/stdlib"
-      ref: "6.0.0"
+      ref: "8.4.0"
     inifile:
       repo: "puppetlabs/inifile"
-      ref: "2.4.0"
+      ref: "5.3.0"
     apt:
       repo: "puppetlabs/apt"
-      ref: "7.7.1"
+      ref: "9.0.0"
     translate:
       repo: "puppetlabs/translate"
       ref: "1.2.0"
@@ -16,6 +16,6 @@ fixtures:
       repo: "puppetlabs/yumrepo_core"
     facts:
       repo: "puppetlabs/facts"
-      ref: "0.5.1"
+      ref: "1.4.0"
   symlinks:
     puppet_agent: "#{source_dir}"
