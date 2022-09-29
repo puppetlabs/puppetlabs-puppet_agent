@@ -15,7 +15,7 @@ jobs:
         os: [ 'centos-7', 'ubuntu-18.04', 'rocky-8' ]
 
     env:
-      ruby_version: 2.5.9
+      ruby_version: 2.5
       GEM_BOLT: true
       BEAKER_debug: true
       BEAKER_set: docker/${{ matrix.os }}
