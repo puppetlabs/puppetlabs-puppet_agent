@@ -113,8 +113,10 @@ class puppet_agent (
   $apt_source              = 'https://apt.puppet.com',
   $mac_source              = 'https://downloads.puppet.com',
   $windows_source          = 'https://downloads.puppet.com',
+  #lint:ignore:puppet_url_without_modules
   $solaris_source          = 'puppet:///pe_packages',
   $aix_source              = 'puppet:///pe_packages',
+  #lint:endignore
   $use_alternate_sources   = false,
   $alternate_pe_source     = undef,
   $install_dir             = undef,

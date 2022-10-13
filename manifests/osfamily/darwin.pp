@@ -17,7 +17,9 @@ class puppet_agent::osfamily::darwin{
     } elsif $::puppet_agent::source {
       $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
     } else {
+      #lint:ignore:puppet_url_without_modules
       $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
+      #lint:endignore
     }
   } else {
     $source = "${::puppet_agent::mac_source}/mac/${::puppet_agent::collection}/${productversion_major}/${::puppet_agent::arch}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"

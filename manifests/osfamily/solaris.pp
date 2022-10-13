@@ -52,7 +52,9 @@ class puppet_agent::osfamily::solaris{
         owner  => 0,
         group  => 0,
         mode   => '0644',
+        #lint:ignore:puppet_url_without_modules
         source => "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/solaris-noask",
+        #lint:endignore
       }
     }
     '11': {
