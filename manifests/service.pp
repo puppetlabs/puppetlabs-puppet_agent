@@ -7,13 +7,13 @@ class puppet_agent::service{
   assert_private()
 
   # Starting with puppet6 and up collections we no longer carry the mcollective service
-  if versioncmp("${::clientversion}", '6.0.0') >= 0 {
+  if versioncmp($clientversion, '6.0.0') >= 0 {
     $_service_names = delete($::puppet_agent::service_names, 'mcollective')
   } else {
     $_service_names = $::puppet_agent::service_names
   }
 
-  if $facts['os']['name'] == 'Solaris' and $facts['os']['release']['major'] == '10' and versioncmp("${::clientversion}", '5.0.0') < 0 {
+  if $facts['os']['name'] == 'Solaris' and $facts['os']['release']['major'] == '10' and versioncmp($clientversion, '5.0.0') < 0 {
     # Skip managing service, upgrade script will handle it.
   } elsif $facts['os']['name'] == 'Solaris' and $facts['os']['release']['major'] == '11' and $puppet_agent::aio_upgrade_required {
     # Only use script if we just performed an upgrade.

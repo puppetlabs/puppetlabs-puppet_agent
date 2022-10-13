@@ -16,7 +16,7 @@ class puppet_agent::osfamily::redhat{
         $platform_and_version = "fedora/${facts['os']['release']['major']}"
       }
       'Amazon': {
-        if ("${facts['os']['release']['major']}" == '2') {
+        if ($facts['os']['release']['major'] == '2') {
           $amz_el_version = '7'
         } else {
           $amz_el_version = '6'
