@@ -11,7 +11,7 @@ class puppet_agent::prepare(
   $package_version = undef
 ){
   include puppet_agent::params
-  $_windows_client = downcase($::osfamily) == 'windows'
+  $_windows_client = downcase($facts['os']['family']) == 'windows'
 
   # Manage /opt/puppetlabs for platforms. This is done before both config and prepare because,
   # on Windows, both can be in C:/ProgramData/Puppet Labs; doing it later creates a dependency
@@ -22,7 +22,7 @@ class puppet_agent::prepare(
     }
   }
 
-  $_osfamily_class = downcase("::puppet_agent::osfamily::${::osfamily}")
+  $_osfamily_class = downcase("::puppet_agent::osfamily::${facts['os']['family']}")
 
   # Manage deprecating configuration settings.
   class { 'puppet_agent::prepare::puppet_config':
@@ -35,12 +35,12 @@ class puppet_agent::prepare(
   # Break out the platform-specific configuration into subclasses, dependent on
   # the osfamily of the client being configured.
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'redhat', 'debian', 'windows', 'solaris', 'aix', 'suse', 'darwin': {
       contain $_osfamily_class
     }
     default: {
-      fail("puppet_agent not supported on ${::osfamily}")
+      fail("puppet_agent not supported on ${facts['os']['family']}")
     }
   }
 }

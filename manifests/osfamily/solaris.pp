@@ -1,8 +1,8 @@
 class puppet_agent::osfamily::solaris{
   assert_private()
 
-  if $::operatingsystem != 'Solaris' {
-    fail("${::operatingsystem} not supported")
+  if $facts['os']['name'] != 'Solaris' {
+    fail("${facts['os']['name']} not supported")
   }
 
   if $::puppet_agent::is_pe != true {
@@ -25,7 +25,7 @@ class puppet_agent::osfamily::solaris{
     default      => 'i386',
   }
 
-  case $::operatingsystemmajrelease {
+  case $facts['os']['release']['major'] {
     '10': {
       $package_file_name = "${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.${pkg_arch}.pkg.gz"
       if $::puppet_agent::absolute_source {
@@ -70,7 +70,7 @@ class puppet_agent::osfamily::solaris{
 
         $pkgrepo_dir = '/etc/puppetlabs/installer/solaris.repo'
         $publisher = 'puppetlabs.com'
-        $arch = $::architecture ? {
+        $arch = $facts['os']['architecture'] ? {
           /^sun4[uv]$/ => 'sparc',
           default      => 'i386',
         }
@@ -121,7 +121,7 @@ class puppet_agent::osfamily::solaris{
       }
     }
     default: {
-      fail("${::operatingsystem} ${::operatingsystemmajrelease} not supported")
+      fail("${facts['os']['name']} ${facts['os']['release']['major']} not supported")
     }
   }
 }

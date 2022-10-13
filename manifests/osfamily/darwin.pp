@@ -1,10 +1,10 @@
 class puppet_agent::osfamily::darwin{
   assert_private()
 
-  if $::macosx_productversion_major =~ /^10\./ {
-    $productversion_major = $::macosx_productversion_major
+  if $facts['os']['version']['major'] =~ /^10\./ {
+    $productversion_major = $facts['os']['version']['major']
   } else {
-    $productversion_array = split($::macosx_productversion_major, '[.]')
+    $productversion_array = split($facts['os']['version']['major'], '[.]')
     $productversion_major = $productversion_array[0]
   }
 

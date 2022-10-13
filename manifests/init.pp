@@ -99,7 +99,7 @@
 #   This parameter is constrained to managing only a predetermined set of configuration
 #   settings, e.g. runinterval.
 class puppet_agent (
-  $arch                    = $::architecture,
+  $arch                    = $facts['os']['architecture'],
   $collection              = $::puppet_agent::params::collection,
   $is_pe                   = $::puppet_agent::params::_is_pe,
   $manage_pki_dir          = true,
@@ -139,15 +139,15 @@ class puppet_agent (
     fail('The puppet_agent module does not support pre-Puppet 4 upgrades.')
   }
 
-  if $package_version == 'latest' and $::osfamily =~ /^(?i:windows|solaris|aix|darwin)$/ {
-    fail("Setting package_version to 'latest' is not supported on ${::osfamily.capitalize()}")
+  if $package_version == 'latest' and $facts['os']['family'] =~ /^(?i:windows|solaris|aix|darwin)$/ {
+    fail("Setting package_version to 'latest' is not supported on ${facts['os']['family'].capitalize()}")
   }
 
   if $source != undef and $absolute_source != undef {
     fail('Only one of $source and $absolute_source can be set')
   }
 
-  if $::osfamily == 'windows' and $install_dir != undef {
+  if $facts['os']['family'] == 'windows' and $install_dir != undef {
     validate_absolute_path($install_dir)
   }
 
@@ -159,7 +159,7 @@ class puppet_agent (
     # In this code-path, $package_version != undef AND we are not on a PE infrastructure
     # node since $::pe_server_version is not defined
 
-    if $::architecture == 'x86' and $arch == 'x64' {
+    if $facts['os']['architecture'] == 'x86' and $arch == 'x64' {
       fail('Unable to install x64 on a x86 system')
     }
 
@@ -171,7 +171,7 @@ class puppet_agent (
       $master_or_package_version = $package_version
     }
 
-    if $::osfamily == 'redhat' {
+    if $facts['os']['family'] == 'redhat' {
       if $master_or_package_version !~ /^\d+\.\d+\.\d+.*$|^latest$|^present$/ {
         fail("invalid version ${master_or_package_version} requested")
       }
@@ -184,7 +184,7 @@ class puppet_agent (
     # Strip git sha from dev builds
     if $master_or_package_version =~ /.g/ {
       $_expected_package_version = split($master_or_package_version, /[.-]g.*/)[0]
-    } elsif $::osfamily == 'redhat' {
+    } elsif $facts['os']['family'] == 'redhat' {
       $_expected_package_version = $master_or_package_version.match(/^\d+\.\d+\.\d+|^latest$|^present$/)[0]
     } else {
       $_expected_package_version = $master_or_package_version
@@ -209,7 +209,7 @@ class puppet_agent (
       }
     }
 
-    if $::operatingsystem == 'Solaris' and $::operatingsystemmajrelease == '11' {
+    if $facts['os']['name'] == 'Solaris' and $facts['os']['release']['major'] == '11' {
       # Strip letters from development builds. Unique to Solaris 11 packaging.
       $_version_without_letters = regsubst($master_or_package_version, '[a-zA-Z]', '', 'G')
       $_version_without_orphan_dashes = regsubst($_version_without_letters, '(^-|-$)', '', 'G')
@@ -236,7 +236,7 @@ class puppet_agent (
     # - On Windows, services are handled by the puppet-agent MSI packages themselves.
     # ...but outside of PE, on other platforms, we must make sure the services are restarted. We do that with the
     # ::puppet_agent::service class. Make sure it's applied after the install process finishes if needed:
-    if $::osfamily != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
+    if $facts['os']['family'] != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
       Class['puppet_agent::configure']
       ~> contain('puppet_agent::service')
     }
