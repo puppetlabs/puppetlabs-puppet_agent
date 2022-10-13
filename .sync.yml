@@ -40,6 +40,8 @@ Gemfile:
         version: '4.21.0' # due to https://github.com/octokit/octokit.rb/issues/1391
       - gem: async
         version: '~> 1.30' # otherwise async 2.0.0(needs ruby >=3.1.0) is wrongly selected by bundler on jenkins while running with ruby 2.7.1
+      - gem: puppet-lint-legacy_facts-check
+        version: '~> 1.0'
 appveyor.yml:
   delete: true
 .travis.yml:
@@ -56,3 +58,4 @@ spec/spec_helper.rb:
   unmanaged: true
 Rakefile:
   changelog_since_tag: 4.9.0
+
