@@ -56,6 +56,26 @@ describe 'puppet_agent' do
           'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
         )
       }
+
+      context 'when alternate_pe_source is supplied' do
+        let(:params) { super().merge(alternate_pe_source: 'https://fake-package-source.com') }
+
+        it {
+          is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
+            'source' => "https://fake-package-source.com/packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
+          )
+        }
+      end
+
+      context 'when alternate_pe_version is supplied' do
+        let(:params) { super().merge(alternate_pe_version: '2222.2.2') }
+
+        it {
+          is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
+            'source' => "puppet:///pe_packages/2222.2.2/windows-#{tag}/puppet-agent-#{arch}.msi",
+          )
+        }
+      end
     end
   end
 

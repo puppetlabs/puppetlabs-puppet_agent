@@ -15,7 +15,7 @@ class puppet_agent::osfamily::debian {
     if getvar('::puppet_agent::manage_repo') == true {
       include apt
       if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
-        $pe_server_version = pe_build_version()
+        $pe_server_version = $puppet_agent::alternate_pe_version.lest || { pe_build_version() }
         if $puppet_agent::source {
           $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } elsif $puppet_agent::alternate_pe_source {

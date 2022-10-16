@@ -216,6 +216,28 @@ describe 'puppet_agent' do
       }
     end
 
+    context 'when managing PE apt repo settings and using a user defined PE version' do
+      let(:params) do
+        {
+          manage_repo: true,
+          package_version: package_version,
+          alternate_pe_version: '2222.2.2'
+        }
+      end
+
+      it {
+        is_expected.to contain_apt__source('pc_repo')
+          .with({
+                  'location' => 'https://master.example.vm:8140/packages/2222.2.2/debian-7-x86_64',
+                  'repos'    => 'PC1',
+                  'key'      => {
+                    'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
+                    'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet-20250406',
+                  },
+                })
+      }
+    end
+
     context 'when not managing PE apt repo settings' do
       let(:params) do
         {

@@ -103,6 +103,12 @@
 # @param skip_if_unavailable
 #    For yum-based repositories, set the skip_if_unavailable option of the `yumrepo` type.
 # @param disable_proxy
+# @param alternate_pe_version
+#   When using a PE-based package source (e.g. "alternate_pe_source", "aix_source")
+#   this setting allows you to override the PE version number used when constructing the
+#   package source URL. Normally, this will be the running version of PE but this setting
+#   can be used to "hold back" the agents during an upgrade of PE if there is a need
+#   to upgrade the platform and agents on separate schedules.
 class puppet_agent (
   String                         $arch                    = $facts['os']['architecture'],
   String                         $collection              = $puppet_agent::params::collection,
@@ -131,7 +137,8 @@ class puppet_agent (
   Optional                       $wait_for_pxp_agent_exit = undef,
   Optional                       $wait_for_puppet_run     = undef,
   Array[Puppet_agent::Config]    $config                  = [],
-  String                         $version_file_path       = $facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION' }
+  String                         $version_file_path       = $facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION' },
+  Optional[String[1]]            $alternate_pe_version    = undef,
 ) inherits puppet_agent::params {
   # The configure class uses $puppet_agent::config to manage settings in
   # puppet.conf, and will always be present. It does not require management of

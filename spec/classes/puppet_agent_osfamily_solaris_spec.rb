@@ -125,6 +125,26 @@ EOF
       end
     end
 
+    context 'when Solaris 11 i386 and a user defined PE version' do
+      let(:facts) do
+        override_facts(facts, is_pe: true, os: { release: { major: '11', }, }, platform_tag: 'solaris-11-i386')
+      end
+      let(:params) do
+        {
+          package_version: package_version,
+          alternate_pe_version: '2222.2.2'
+        }
+      end
+
+      it do
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p")
+          .with({
+                  'ensure' => 'file',
+                  'source' => "puppet:///pe_packages/2222.2.2/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
+                })
+      end
+    end
+
     context 'when Solaris 11 i386' do
       let(:facts) do
         override_facts(facts, is_pe: true, os: { release: { major: '11', }, }, platform_tag: 'solaris-11-i386')
@@ -254,6 +274,26 @@ EOF
           .with({
                   'ensure' => 'file',
                   'source' => "http://fake-solaris-source.com/packages/2000.0.0/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz",
+                })
+      end
+    end
+
+    context 'when Solaris 10 i386 and a user defined PE version' do
+      let(:facts) do
+        override_facts(facts, is_pe: true, os: { release: { major: '10', }, }, platform_tag: 'solaris-10-i386')
+      end
+      let(:params) do
+        {
+          package_version: package_version,
+          alternate_pe_version: '2222.2.2'
+        }
+      end
+
+      it do
+        is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz")
+          .with({
+                  'ensure' => 'file',
+                  'source' => "puppet:///pe_packages/2222.2.2/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz",
                 })
       end
     end

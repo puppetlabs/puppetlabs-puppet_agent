@@ -84,6 +84,26 @@ describe 'puppet_agent' do
     it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg').with_source('https://fake-pe-master.com/packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.100.1-1.osx10.13.dmg') }
   end
 
+  describe 'when using a user defined PE version' do
+    let(:params) do
+      {
+        package_version: '5.10.100.1',
+        collection: 'puppet5',
+        alternate_pe_version: '2222.2.2',
+      }
+    end
+    let(:facts) do
+      facts.merge({
+                    is_pe: true,
+                    aio_agent_version: '1.10.99',
+                    platform_tag: 'osx-10.13-x86_64',
+                    macosx_productversion_major: '10.13'
+                  })
+    end
+
+    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg').with_source('puppet:///pe_packages/2222.2.2/osx-10.13-x86_64/puppet-agent-5.10.100.1-1.osx10.13.dmg') }
+  end
+
   describe 'when using package_version auto' do
     let(:params) do
       {

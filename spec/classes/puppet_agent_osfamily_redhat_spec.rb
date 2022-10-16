@@ -186,6 +186,18 @@ SCRIPT
         it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-pe-master.com/packages/2000.0.0/#{repodir}") }
       end
 
+      context 'when using a user defined PE version' do
+        let(:params) do
+          {
+            package_version: '5.2.0',
+            manage_repo: true,
+            alternate_pe_version: '2222.2.2'
+          }
+        end
+
+        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("https://master.example.vm:8140/packages/2222.2.2/#{repodir}") }
+      end
+
       context 'with manage_repo enabled' do
         let(:params) do
           {
