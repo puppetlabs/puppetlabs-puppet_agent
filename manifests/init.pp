@@ -117,7 +117,7 @@ class puppet_agent (
   $aix_source              = 'puppet:///pe_packages',
   $use_alternate_sources   = false,
   $alternate_pe_source     = undef,
-  $install_dir             = undef,
+  Optional[Stdlib::Absolutepath] $install_dir = undef,
   $disable_proxy           = false,
   $proxy                   = undef,
   $install_options         = [],
@@ -144,10 +144,6 @@ class puppet_agent (
 
   if $source != undef and $absolute_source != undef {
     fail('Only one of $source and $absolute_source can be set')
-  }
-
-  if $facts['os']['family'] == 'windows' and $install_dir != undef {
-    validate_absolute_path($install_dir)
   }
 
   if $package_version == undef {
