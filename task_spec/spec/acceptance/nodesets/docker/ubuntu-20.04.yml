@@ -1,0 +1,11 @@
+HOSTS:
+  ubuntu-2004-x64:
+    roles:
+      - target
+    platform: ubuntu-20.04-amd64
+    hypervisor: docker
+    image: ubuntu:20.04
+    docker_preserve_image: true
+    docker_cmd: '["/sbin/init"]'
+CONFIG:
+  trace_limit: 200

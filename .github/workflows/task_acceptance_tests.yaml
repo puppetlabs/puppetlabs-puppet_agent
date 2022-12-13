@@ -12,7 +12,7 @@ jobs:
     name: On ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'centos-7', 'ubuntu-18.04', 'rocky-8' ]
+        os: [ 'centos-7', 'ubuntu-20.04', 'rocky-8' ]
 
     env:
       ruby_version: 2.5
@@ -20,7 +20,7 @@ jobs:
       BEAKER_debug: true
       BEAKER_set: docker/${{ matrix.os }}
 
-    runs-on: 'ubuntu-18.04'
+    runs-on: 'ubuntu-20.04'
     steps:
       - name: Checkout current PR code
         uses: actions/checkout@v2
