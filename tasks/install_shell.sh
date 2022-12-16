@@ -265,6 +265,7 @@ case $platform in
   "Fedora")
     case $major_version in
       "23") platform_version="22";;
+      "33") platform_version="32";;
       *) platform_version=$major_version;;
     esac
     ;;
