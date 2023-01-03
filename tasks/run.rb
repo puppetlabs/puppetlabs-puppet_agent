@@ -138,12 +138,16 @@ module PuppetAgent
       end
     end
 
+    def noop(params)
+      params['noop'] == true ? '--noop' : ''
+    end
+
     # Attempts to run the Puppet agent, returning the mtime for the last run report
     # and the exit code from the Puppet agent run.
-    def try_run(last_run_report)
+    def try_run(last_run_report, params)
       start_time = get_start_time(last_run_report)
 
-      command = [puppet_bin, 'agent', '-t', '--color', 'false']
+      command = [puppet_bin, 'agent', '-t', '--color', 'false', noop(params)]
 
       options = {
         failonfail:         false,
@@ -151,13 +155,13 @@ module PuppetAgent
         override_locale:    false
       }
 
-      run_result = Puppet::Util::Execution.execute(command, options)
+      run_result = Puppet::Util::Execution.execute(command.reject(&:empty?), options)
 
       [start_time, run_result]
     end
 
     # Runs the Puppet agent and returns the last run report.
-    def run
+    def run(params)
       unless puppet_bin_present?
         return error_result(
           'puppet_agent/no-puppet-bin-error',
@@ -177,7 +181,7 @@ module PuppetAgent
 
       # Initially ignore the lockfile. It might be out-dated, so we give Puppet a chance
       # to clean it up and run.
-      start_time, run_result = try_run(last_run_report)
+      start_time, run_result = try_run(last_run_report, params)
       if run_result.nil?
         return error_result(
           'puppet_agent/fail-to-start-error',
@@ -204,7 +208,7 @@ module PuppetAgent
         if running?(lockfile)
           wait_for_lockfile(lockfile)
 
-          start_time, run_result = try_run(last_run_report)
+          start_time, run_result = try_run(last_run_report, params)
           if run_result.nil?
             return error_result(
               'puppet_agent/fail-to-start-error',
@@ -237,5 +241,5 @@ end
 
 if __FILE__ == $PROGRAM_NAME
   runner = PuppetAgent::Runner.new
-  puts JSON.dump(runner.run)
+  puts JSON.dump(runner.run(params))
 end
