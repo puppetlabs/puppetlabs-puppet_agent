@@ -142,12 +142,16 @@ module PuppetAgent
       params['noop'] == true ? '--noop' : ''
     end
 
+    def environment(params)
+      params['environment'].length > 1 ? "--environment=#{params['environment']}" : ''
+    end
+
     # Attempts to run the Puppet agent, returning the mtime for the last run report
     # and the exit code from the Puppet agent run.
     def try_run(last_run_report, params)
       start_time = get_start_time(last_run_report)
 
-      command = [puppet_bin, 'agent', '-t', '--color', 'false', noop(params)]
+      command = [puppet_bin, 'agent', '-t', '--color', 'false', noop(params), environment(params)]
 
       options = {
         failonfail:         false,
