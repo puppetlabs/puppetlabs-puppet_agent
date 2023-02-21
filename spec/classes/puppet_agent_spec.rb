@@ -340,7 +340,7 @@ describe 'puppet_agent' do
             it { is_expected.to contain_class('puppet_agent::install').that_requires('Class[puppet_agent::prepare]') }
 
             if facts[:osfamily] == 'Debian'
-              deb_package_version = package_version + '-1' + facts[:lsbdistcodename]
+              deb_package_version = package_version + '-1' + facts.dig(:os, 'distro', 'codename')
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
             elsif facts[:osfamily] == 'Solaris'
               if facts[:operatingsystemmajrelease] == '11'
