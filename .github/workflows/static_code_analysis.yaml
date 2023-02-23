@@ -12,12 +12,12 @@ jobs:
     name: Run checks
 
     env:
-      ruby_version: 2.6
+      ruby_version: '2.7'
 
     runs-on: 'ubuntu-20.04'
     steps:
       - name: Checkout current PR code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
