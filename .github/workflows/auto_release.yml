@@ -32,11 +32,13 @@ jobs:
       with:
         fetch-depth: 0
         persist-credentials: false
-
+    
+    # We use the dev tools image here because the PDK image does not have the
+    # build tools necessary to compile native extensions.
     - name: "PDK Release prep"
-      uses: docker://puppet/pdk:2.6.1.0
+      uses: docker://puppet/puppet-dev-tools:4.x
       with:
-        args: 'release prep --force'
+        args: 'pdk release prep --force --debug'
       env:
         CHANGELOG_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
