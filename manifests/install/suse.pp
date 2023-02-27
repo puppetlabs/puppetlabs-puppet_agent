@@ -10,7 +10,7 @@ class puppet_agent::install::suse(
 ){
   assert_private()
 
-  if ($::puppet_agent::absolute_source) or ($::operatingsystemmajrelease == '11' and $::puppet_agent::is_pe) {
+  if ($::puppet_agent::absolute_source) or ($facts['os']['release']['major'] == '11' and $::puppet_agent::is_pe) {
     $_provider = 'rpm'
     $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
 

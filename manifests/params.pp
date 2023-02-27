@@ -3,9 +3,9 @@
 # This class is meant to be called from puppet_agent
 # It sets variables according to platform.
 #
-class puppet_agent::params{
+class puppet_agent::params {
   # Which services should be started after the upgrade process?
-  if ($::osfamily == 'Solaris' and $::operatingsystemmajrelease == '11') {
+  if ($facts['os']['family'] == 'Solaris' and $facts['os']['release']['major'] == '11') {
     # Solaris 11 is a special case; it uses a custom script.
     $service_names = []
   } else {
@@ -13,7 +13,7 @@ class puppet_agent::params{
     # the puppet version is >= 6.0.0
     $service_names = ['puppet', 'mcollective']
   }
-  if $::osfamily == 'windows' {
+  if $facts['os']['family'] == 'windows' {
     $local_puppet_dir = windows_native_path("${::puppet_agent_appdata}/Puppetlabs")
     $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 

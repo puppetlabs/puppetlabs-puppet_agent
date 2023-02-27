@@ -4,14 +4,18 @@ describe 'puppet_agent' do
   package_version = '1.10.100'
 
   facts = {
-    is_pe: true,
-    osfamily: 'Suse',
-    operatingsystem: 'SLES',
-    operatingsystemmajrelease: '12',
-    architecture: 'x86_64',
-    puppet_master_server: 'master.example.vm',
-    env_temp_variable: '/tmp',
     clientcert: 'foo.example.vm',
+    env_temp_variable: '/tmp',
+    is_pe: true,
+    os: {
+      architecture: 'x86_64',
+      family: 'Suse',
+      name: 'SLES',
+      release: {
+        major: '12',
+      },
+    },
+    puppet_master_server: 'master.example.vm',
   }
 
   let(:params) do
@@ -23,9 +27,12 @@ describe 'puppet_agent' do
   describe 'unsupported environment' do
     context 'when not SLES' do
       let(:facts) do
-        facts.merge({
-                      operatingsystem: 'OpenSuse',
-                    })
+        override_facts(facts,
+        {
+          os: {
+            name: 'OpenSuse',
+          }
+        })
       end
 
       it { expect { catalogue }.to raise_error(%r{OpenSuse not supported}) }
@@ -34,15 +41,20 @@ describe 'puppet_agent' do
 
   context 'when FOSS' do
     describe 'supported environment' do
-      context 'when operatingsystemmajrelease is supported' do
+      context "when $facts['os']['release']['major'] is supported" do
         ['11', '12', '15'].each do |os_version|
           context "when SLES #{os_version}" do
             let(:facts) do
-              facts.merge({
-                            operatingsystemmajrelease: os_version,
-                            is_pe: false,
-                            platform_tag: "sles-#{os_version}-x86_64",
-                          })
+              override_facts(facts,
+                              {
+                                is_pe: false,
+                                os: {
+                                  release: {
+                                    major: os_version,
+                                  },
+                                },
+                                platform_tag: "sles-#{os_version}-x86_64",
+                              })
             end
 
             let(:params) do
@@ -231,14 +243,19 @@ SCRIPT
     end
 
     describe 'supported environment' do
-      context 'when operatingsystemmajrelease is supported' do
+      context "when $facts['os']['release']['major'] is supported" do
         ['11', '12', '15'].each do |os_version|
           context "when SLES #{os_version}" do
             let(:facts) do
-              facts.merge({
-                            operatingsystemmajrelease: os_version,
-                            platform_tag: "sles-#{os_version}-x86_64",
-                          })
+              override_facts(facts,
+              {
+                os: {
+                  release: {
+                    major: os_version,
+                  },
+                },
+                platform_tag: "sles-#{os_version}-x86_64",
+              })
             end
 
             context 'with manage_pki_dir => true' do

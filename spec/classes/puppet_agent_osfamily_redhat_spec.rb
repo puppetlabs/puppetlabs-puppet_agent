@@ -11,18 +11,27 @@ describe 'puppet_agent' do
 
   let(:facts) do
     {
-      osfamily: 'RedHat',
-      architecture: 'x64',
-      puppet_master_server: 'master.example.vm',
       clientcert: 'foo.example.vm',
       env_temp_variable: '/tmp',
+      os: {
+        architecture: 'x64',
+        family: 'RedHat',
+      },
+      puppet_master_server: 'master.example.vm',
     }
   end
 
   [['Rocky', 'el/8', 8], ['AlmaLinux', 'el/8', 8], ['Fedora', 'fedora/f36', 36], ['CentOS', 'el/7', 7], ['Amazon', 'el/6', 2017], ['Amazon', 'el/7', 2]].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
-        super().merge(operatingsystem: os, operatingsystemmajrelease: osmajor)
+        override_facts(super(), {
+                         os: {
+                           name: os,
+                           release: {
+                             major: osmajor,
+                           },
+                         },
+                       })
       end
 
       script = <<-SCRIPT
@@ -173,12 +182,16 @@ SCRIPT
       end
 
       let(:facts) do
-        super().merge(
-          operatingsystem: os,
-          operatingsystemmajrelease: osmajor,
+        override_facts(super(), {
+                         is_pe: true,
+          os: {
+            name: os,
+            release: {
+              major: osmajor,
+            },
+          },
           platform_tag: tag,
-          is_pe: true,
-        )
+                       })
       end
 
       context 'when using a custom source' do

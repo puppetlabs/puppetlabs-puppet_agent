@@ -22,10 +22,14 @@ describe 'puppet_agent' do
 
   facts = {
     is_pe: true,
-    osfamily: 'Darwin',
-    operatingsystem: 'Darwin',
-    macosx_productversion_major: '10.13',
-    architecture: 'x86_64',
+    os: {
+      architecture: 'x86_64',
+      name: 'Darwin',
+      family: 'Darwin',
+      version: {
+        major: '10.13',
+      },
+    },
     servername: 'master.example.vm',
     clientcert: 'foo.example.vm',
     env_temp_variable: '/tmp',
@@ -41,12 +45,17 @@ describe 'puppet_agent' do
           let(:osmajor) { tag.split('-')[1] }
 
           let(:facts) do
-            facts.merge({
-                          is_pe: true,
-                          aio_agent_version: '1.10.99',
-                          platform_tag: tag,
-                          macosx_productversion_major: osmajor
-                        })
+            override_facts(facts,
+                            {
+                              aio_agent_version: '1.10.99',
+                              is_pe: true,
+                              os: {
+                                version: {
+                                  major: osmajor,
+                                },
+                              },
+                              platform_tag: tag,
+                            })
           end
 
           it { is_expected.to compile.with_all_deps }
@@ -82,12 +91,16 @@ describe 'puppet_agent' do
       }
     end
     let(:facts) do
-      facts.merge({
-                    is_pe: true,
-                    aio_agent_version: '1.10.99',
-                    platform_tag: 'osx-10.13-x86_64',
-                    macosx_productversion_major: '10.13'
-                  })
+      override_facts(facts, {
+                       aio_agent_version: '1.10.99',
+        is_pe: true,
+        os: {
+          version: {
+            major: '10.13',
+          },
+        },
+        platform_tag: 'osx-10.13-x86_64',
+                     })
     end
 
     it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.osx10.13.dmg').with_source('https://fake-pe-master.com/packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.100.1-1.osx10.13.dmg') }
@@ -100,13 +113,17 @@ describe 'puppet_agent' do
       }
     end
     let(:facts) do
-      facts.merge({
-                    is_pe: true,
-                    aio_agent_version: '1.10.99',
-                    platform_tag: 'osx-10.13-x86_64',
-                    macosx_productversion_major: '10.13',
-                    serverversion: '5.10.200'
-                  })
+      override_facts(facts, {
+                       aio_agent_version: '1.10.99',
+        is_pe: true,
+        os: {
+          version: {
+            major: '10.13',
+          },
+        },
+        platform_tag: 'osx-10.13-x86_64',
+        serverversion: '5.10.200',
+                     })
     end
 
     it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx10.13.dmg').with_source('puppet:///pe_packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.200-1.osx10.13.dmg') }
@@ -119,13 +136,17 @@ describe 'puppet_agent' do
       }
     end
     let(:facts) do
-      facts.merge({
-                    is_pe: true,
-                    aio_agent_version: '1.10.99',
-                    platform_tag: 'osx-11-x86_64',
-                    macosx_productversion_major: '11.2',
-                    serverversion: '5.10.200'
-                  })
+      override_facts(facts, {
+                       aio_agent_version: '1.10.99',
+        is_pe: true,
+        os: {
+          version: {
+            major: '11.2',
+          },
+        },
+        platform_tag: 'osx-11-x86_64',
+        serverversion: '5.10.200'
+                     })
     end
 
     it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg').with_source('puppet:///pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
@@ -138,13 +159,17 @@ describe 'puppet_agent' do
       }
     end
     let(:facts) do
-      facts.merge({
-                    is_pe: true,
-                    aio_agent_version: '1.10.99',
-                    platform_tag: 'osx-11-x86_64',
-                    macosx_productversion_major: '11',
-                    serverversion: '5.10.200'
-                  })
+      override_facts(facts, {
+                       aio_agent_version: '1.10.99',
+        is_pe: true,
+        os: {
+          version: {
+            major: '11',
+          },
+        },
+        platform_tag: 'osx-11-x86_64',
+        serverversion: '5.10.200',
+                     })
     end
 
     it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg').with_source('puppet:///pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }

@@ -30,17 +30,22 @@ describe 'puppet_agent' do
       let(:appdata) { 'C:\ProgramData' }
       let(:facts) do
         {
-          is_pe: true,
-          osfamily: 'windows',
-          operatingsystem: 'windows',
-          architecture: arch,
-          servername: 'master.example.vm',
-          clientcert: 'foo.example.vm',
-          puppet_confdir: "#{appdata}\\Puppetlabs\\puppet\\etc",
-          puppet_agent_appdata: appdata,
-          env_temp_variable: 'C:/tmp',
-          puppet_agent_pid: 42,
           aio_agent_version: '1.0.0',
+          clientcert: 'foo.example.vm',
+          env_temp_variable: 'C:/tmp',
+          is_pe: true,
+          os: {
+            architecture: arch,
+            family: 'windows',
+            name: 'windows',
+            windows: {
+              system32: 'C:\\Windows\\System32',
+            },
+          },
+          puppet_agent_appdata: appdata,
+          puppet_agent_pid: 42,
+          puppet_confdir: "#{appdata}\\Puppetlabs\\puppet\\etc",
+          servername: 'master.example.vm',
         }
       end
 
@@ -61,17 +66,22 @@ describe 'puppet_agent' do
       let(:appdata) { 'C:\ProgramData' }
       let(:facts) do
         {
-          is_pe: true,
-          osfamily: 'windows',
-          operatingsystem: 'windows',
-          architecture: arch,
-          servername: 'master.example.vm',
-          clientcert: 'foo.example.vm',
-          puppet_confdir: "#{appdata}\\Puppetlabs\\puppet\\etc",
-          puppet_agent_appdata: appdata,
-          env_temp_variable: 'C:/tmp',
-          puppet_agent_pid: 42,
           aio_agent_version: '1.0.0',
+          clientcert: 'foo.example.vm',
+          env_temp_variable: 'C:/tmp',
+          is_pe: true,
+          os: {
+            architecture: arch,
+            family: 'windows',
+            name: 'windows',
+            windows: {
+              system32: 'C:\\Windows\\System32',
+            },
+          },
+          puppet_agent_appdata: appdata,
+          puppet_agent_pid: 42,
+          puppet_confdir: "#{appdata}\\Puppetlabs\\puppet\\etc",
+          servername: 'master.example.vm',
           serverversion: server_version
         }
       end
@@ -94,19 +104,24 @@ describe 'puppet_agent' do
     let(:appdata) { 'C:\ProgramData' }
     let(:facts) do
       {
-        is_pe: true,
-        osfamily: 'windows',
-        operatingsystem: 'windows',
-        architecture: arch,
-        servername: 'master.example.vm',
-        clientcert: 'foo.example.vm',
-        puppet_confdir: "#{appdata}\\Puppetlabs\\puppet\\etc",
-        puppet_agent_appdata: appdata,
-        env_temp_variable: 'C:/tmp',
-        puppet_agent_pid: 42,
         aio_agent_version: '1.0.0',
+        clientcert: 'foo.example.vm',
+        env_temp_variable: 'C:/tmp',
+        is_pe: true,
+        fips_enabled: true,
+        os: {
+          architecture: arch,
+          family: 'windows',
+          name: 'windows',
+          windows: {
+            system32: 'C:\\Windows\\System32',
+          },
+        },
+        puppet_agent_appdata: appdata,
+        puppet_agent_pid: 42,
+        puppet_confdir: "#{appdata}\\Puppetlabs\\puppet\\etc",
+        servername: 'master.example.vm',
         serverversion: server_version,
-        fips_enabled: true
       }
     end
 

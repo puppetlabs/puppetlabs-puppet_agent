@@ -1,8 +1,8 @@
 class puppet_agent::osfamily::suse{
   assert_private()
 
-  if $::operatingsystem != 'SLES' {
-    fail("${::operatingsystem} not supported")
+  if $facts['os']['name'] != 'SLES' {
+    fail("${facts['os']['name']} not supported")
   }
 
   if $::puppet_agent::absolute_source {
@@ -19,7 +19,7 @@ class puppet_agent::osfamily::suse{
       $pe_server_version = pe_build_version()
 
       # SLES 11 in PE can no longer install agents from pe_repo
-      if $::operatingsystemmajrelease == '11' {
+      if $facts['os']['release']['major'] == '11' {
         if $::puppet_agent::source {
           $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
         } elsif $::puppet_agent::alternate_pe_source {
@@ -48,13 +48,13 @@ class puppet_agent::osfamily::suse{
       }
     } else {
       if $::puppet_agent::collection == 'PC1' {
-        $source = "${::puppet_agent::yum_source}/sles/${::operatingsystemmajrelease}/${::puppet_agent::collection}/${::puppet_agent::arch}"
+        $source = "${::puppet_agent::yum_source}/sles/${facts['os']['release']['major']}/${::puppet_agent::collection}/${::puppet_agent::arch}"
       } else {
-        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/sles/${::operatingsystemmajrelease}/${::puppet_agent::arch}"
+        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/sles/${facts['os']['release']['major']}/${::puppet_agent::arch}"
       }
     }
 
-    case $::operatingsystemmajrelease {
+    case $facts['os']['release']['major'] {
       '11', '12', '15': {
         # Import the GPG key
         $legacy_keyname  = 'GPG-KEY-puppet'
@@ -122,7 +122,7 @@ fi
           logoutput => 'on_failure',
         }
 
-        unless $::operatingsystemmajrelease == '11' and $::puppet_agent::is_pe {
+        unless $facts['os']['release']['major'] == '11' and $::puppet_agent::is_pe {
           if getvar('::puppet_agent::manage_repo') == true {
             # Set up a zypper repository by creating a .repo file which mimics a ini file
             $repo_file = '/etc/zypp/repos.d/pc_repo.repo'
@@ -178,7 +178,7 @@ fi
         }
       }
       default: {
-        fail("${::operatingsystem} ${::operatingsystemmajrelease} not supported")
+        fail("${facts['os']['name']} ${facts['os']['release']['major']} not supported")
       }
     }
   }

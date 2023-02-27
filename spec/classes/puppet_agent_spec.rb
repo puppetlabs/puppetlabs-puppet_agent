@@ -385,11 +385,16 @@ describe 'puppet_agent' do
     describe 'puppet_agent class without any parameters on Solaris/Nexenta' do
       let(:facts) do
         {
-          osfamily: 'Solaris',
-          operatingsystem: 'Nexenta',
+          os: {
+            architecture: 'i386',
+            family: 'Solaris',
+            name: 'Nexenta',
+            release: {
+              major: '3',
+            },
+          },
           puppet_ssldir: '/dev/null/ssl',
           puppet_config: '/dev/null/puppet.conf',
-          architecture: 'i386',
         }
       end
       let(:params) { global_params }
