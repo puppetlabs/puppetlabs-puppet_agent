@@ -4,7 +4,7 @@ require:
 - rubocop-rspec
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: '2.4'
+  TargetRubyVersion: '2.5'
   Include:
   - "**/*.rb"
   Exclude:
@@ -37,7 +37,8 @@ Style/BlockDelimiters:
     be consistent then.
   EnforcedStyle: braces_for_chaining
 Style/ClassAndModuleChildren:
-  Enabled: false
+  Description: Compact style reduces the required amount of indentation.
+  EnforcedStyle: compact
 Style/EmptyElse:
   Description: Enforce against empty else clauses, but allow `nil` for clarity.
   EnforcedStyle: empty
@@ -78,10 +79,8 @@ RSpec/MessageSpies:
   EnforcedStyle: receive
 Style/Documentation:
   Exclude:
-  - files/*
   - lib/puppet/parser/functions/**/*
   - spec/**/*
-  - tasks/*
 Style/WordArray:
   EnforcedStyle: brackets
 Performance/AncestorsInclude:
