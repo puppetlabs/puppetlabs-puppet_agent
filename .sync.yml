@@ -28,6 +28,9 @@ Gemfile:
         version: '~> 1.22'
       - gem: github_changelog_generator
       - gem: beaker-module_install_helper
+        version: '= 1.16.4'
+      - gem: concurrent-ruby
+        version: '= 1.1.10'
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
       - gem: 'bolt'

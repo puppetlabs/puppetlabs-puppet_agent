@@ -41,7 +41,8 @@ group :development do
   gem "beaker-hostgenerator"
   gem "beaker-rspec"
   gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 1.22')
-  gem "github_changelog_generator",                                             require: false
+  gem "github_changelog_generator", '= 1.16.4',                                 require: false
+  gem "concurrent-ruby", '= 1.1.10',                                            require: false
   gem "beaker-module_install_helper",                                           require: false
   gem "beaker-puppet_install_helper",                                           require: false
   gem "nokogiri",                                                               require: false
