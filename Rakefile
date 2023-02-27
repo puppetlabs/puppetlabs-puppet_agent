@@ -7,6 +7,7 @@ require 'puppet-syntax/tasks/puppet-syntax'
 require 'puppet_blacksmith/rake_tasks' if Bundler.rubygems.find_name('puppet-blacksmith').any?
 require 'github_changelog_generator/task' if Bundler.rubygems.find_name('github_changelog_generator').any?
 require 'puppet-strings/tasks' if Bundler.rubygems.find_name('puppet-strings').any?
+require 'voxpupuli/acceptance/rake'
 
 def changelog_user
   return unless Rake.application.top_level_tasks.include? "changelog"

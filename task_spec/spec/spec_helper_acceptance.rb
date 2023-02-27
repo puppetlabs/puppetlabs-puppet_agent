@@ -7,6 +7,7 @@ Bolt::PAL.load_puppet
 require 'beaker-rspec'
 require 'beaker/puppet_install_helper'
 require 'beaker/module_install_helper'
+require 'voxpupuli/acceptance/spec_helper_acceptance'
 
 UNSUPPORTED_PLATFORMS = ['Solaris', 'AIX'].freeze
 
