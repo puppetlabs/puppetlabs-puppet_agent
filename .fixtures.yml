@@ -8,7 +8,7 @@ fixtures:
       ref: "2.4.0"
     apt:
       repo: "puppetlabs/apt"
-      ref: "7.4.2"
+      ref: "7.7.1"
     translate:
       repo: "puppetlabs/translate"
       ref: "1.2.0"
