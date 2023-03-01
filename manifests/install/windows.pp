@@ -4,7 +4,7 @@
 #
 # Manage the install process for windows specifically
 #
-class puppet_agent::install::windows(
+class puppet_agent::install::windows (
   $install_dir           = undef,
   $install_options       = [],
   ) {

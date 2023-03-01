@@ -15,5 +15,4 @@ class puppet_agent::configure {
       path    => $puppet_agent::params::config,
     }
   }
-
 }

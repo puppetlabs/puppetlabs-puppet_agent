@@ -1,4 +1,4 @@
-class puppet_agent::osfamily::darwin{
+class puppet_agent::osfamily::darwin {
   assert_private()
 
   if $facts['os']['version']['major'] =~ /^10\./ {

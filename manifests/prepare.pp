@@ -7,7 +7,7 @@
 # [version]
 #   The puppet-agent version to install.
 #
-class puppet_agent::prepare(
+class puppet_agent::prepare (
   $package_version = undef
 ) {
   include puppet_agent::params

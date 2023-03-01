@@ -4,10 +4,10 @@
 #
 # Manage the install process for SUSE OSes specifically
 #
-class puppet_agent::install::suse(
+class puppet_agent::install::suse (
   $package_version,
   $install_options = [],
-){
+) {
   assert_private()
 
   if ($::puppet_agent::absolute_source) or ($facts['os']['release']['major'] == '11' and $::puppet_agent::is_pe) {
