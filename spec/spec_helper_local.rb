@@ -11,7 +11,7 @@ location = File.expand_path('/dev/null')
         full: nil,
       },
     },
-    family: 'redhat',
+    family: nil,
     name: nil,
     product: nil,
     release: {
