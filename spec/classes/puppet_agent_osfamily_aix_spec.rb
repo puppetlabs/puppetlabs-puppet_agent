@@ -3,11 +3,13 @@ require 'spec_helper'
 describe 'puppet_agent' do
   let(:common_facts) do
     {
-      architecture:               'PowerPC_POWER7',
-      clientcert:                 'foo.example.vm',
+      clientcert: 'foo.example.vm',
       is_pe:                      true,
-      operatingsystem:            'AIX',
-      osfamily:                   'AIX',
+      os: {
+        architecture: 'PowerPC_POWER7',
+        family: 'AIX',
+        name: 'AIX',
+      },
       platform_tag:               'aix-7.2-power',
       servername:                 'master.example.vm',
     }
@@ -209,7 +211,9 @@ describe 'puppet_agent' do
     end
 
     context 'not AIX' do
-      let(:facts) { common_facts.merge({ operatingsystem: 'not-AIX' }) }
+      let(:facts) do
+        override_facts(common_facts, { os: { name: 'not-AIX', }, })
+      end
 
       it { expect { catalogue }.to raise_error(%r{not supported}) }
     end

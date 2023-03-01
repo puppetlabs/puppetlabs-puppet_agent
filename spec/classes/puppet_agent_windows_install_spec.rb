@@ -10,14 +10,18 @@ RSpec.describe 'puppet_agent', tag: 'win' do
   ['x86', 'x64'].each do |arch|
     context "Windows arch #{arch}" do
       facts = {
-        architecture: arch,
         env_temp_variable: 'C:/tmp',
-        osfamily: 'windows',
-        puppetversion: '4.10.100',
-        puppet_confdir: 'C:\ProgramData\Puppetlabs\puppet\etc',
-        puppet_agent_pid: 42,
-        system32: 'C:\windows\sysnative',
+        os: {
+          architecture: arch,
+          family: 'windows',
+          windows: {
+            system32: 'C:\windows\sysnative',
+          },
+        },
         puppet_agent_appdata: 'C:\ProgramData',
+        puppet_agent_pid: 42,
+        puppet_confdir: 'C:\ProgramData\Puppetlabs\puppet\etc',
+        puppetversion: '4.10.100',
       }
 
       let(:facts) { facts }
@@ -207,12 +211,16 @@ RSpec.describe 'puppet_agent', tag: 'win' do
         describe 'try x64 on x86 system' do
           let(:facts) do
             {
-              osfamily: 'windows',
+              os: {
+                architecture: 'x86',
+                family: 'windows',
+                windows: {
+                  system32: 'C:\windows\sysnative',
+                },
+              },
+              puppet_confdir: 'C:\\ProgramData\\Puppetlabs\\puppet\\etc',
               puppetversion: '4.10.100',
               tmpdir: 'C:\tmp',
-              architecture: 'x86',
-              system32: 'C:\windows\sysnative',
-              puppet_confdir: 'C:\\ProgramData\\Puppetlabs\\puppet\\etc',
             }
           end
 
@@ -375,18 +383,22 @@ RSpec.describe 'puppet_agent', tag: 'win' do
 
     context 'rubyplatform' do
       facts = {
-        architecture: 'x64',
         env_temp_variable: 'C:/tmp',
-        osfamily: 'windows',
-        puppetversion: '3.8.0',
-        puppet_confdir: 'C:/ProgramData/PuppetLabs/puppet/etc',
+        os: {
+          architecture: 'x64',
+          family: 'windows',
+          windows: {
+            system32: 'C:\windows\sysnative',
+          },
+        },
         puppet_agent_pid: 42,
-        system32: 'C:\windows\sysnative',
+        puppet_confdir: 'C:/ProgramData/PuppetLabs/puppet/etc',
+        puppetversion: '3.8.0',
         tmpdir: 'C:\tmp',
       }
 
       describe 'i386-ming32' do
-        let(:facts) { facts.merge({ rubyplatform: 'i386-ming32' }) }
+        let(:facts) { facts.merge({ ruby: { platform: 'i386-ming32', }, }) }
         let(:params) { global_params }
 
         it {
@@ -400,7 +412,7 @@ RSpec.describe 'puppet_agent', tag: 'win' do
       end
 
       describe 'x86' do
-        let(:facts) { facts.merge({ rubyplatform: 'x86_64' }) }
+        let(:facts) { facts.merge({ ruby: { platform: 'x86_64', }, }) }
         let(:params) { global_params }
 
         it {

@@ -9,7 +9,7 @@ class puppet_agent::install::solaris(
   $install_options = [],
 ){
   assert_private()
-  if $::operatingsystemmajrelease == '10' {
+  if $facts['os']['release']['major'] == '10' {
     $_unzipped_package_name = regsubst($::puppet_agent::prepare::package::package_file_name, '\.gz$', '')
     $install_script = 'solaris_install.sh.erb'
 

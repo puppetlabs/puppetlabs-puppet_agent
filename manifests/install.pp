@@ -17,13 +17,13 @@ class puppet_agent::install(
   # Solaris, MacOS, Windows platforms will require more than just a package
   # resource to install correctly. These will call to other classes that
   # define how the installations work.
-  if $::operatingsystem == 'Solaris' {
+  if $facts['os']['name'] == 'Solaris' {
     class { 'puppet_agent::install::solaris':
       package_version => $package_version,
       install_options => $install_options,
     }
     contain '::puppet_agent::install::solaris'
-  } elsif $::operatingsystem == 'Darwin' {
+  } elsif $facts['os']['name'] == 'Darwin' {
     # Prevent re-running the script install
     if $puppet_agent::aio_upgrade_required {
       class { 'puppet_agent::install::darwin':
@@ -32,7 +32,7 @@ class puppet_agent::install(
       }
       contain '::puppet_agent::install::darwin'
     }
-  } elsif $::osfamily == 'windows' {
+  } elsif $facts['os']['family'] == 'windows' {
     # Prevent re-running the batch install
     if ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
       class { 'puppet_agent::install::windows':
@@ -41,7 +41,7 @@ class puppet_agent::install(
       }
       contain '::puppet_agent::install::windows'
     }
-  } elsif $::osfamily == 'suse' {
+  } elsif $facts['os']['family'] == 'suse' {
     # Prevent re-running the batch install
     if ($package_version =~ /^latest$|^present$/) or ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
       class { 'puppet_agent::install::suse':
@@ -51,13 +51,13 @@ class puppet_agent::install(
       contain '::puppet_agent::install::suse'
     }
   } else {
-    if $::operatingsystem == 'AIX' {
+    if $facts['os']['name'] == 'AIX' {
       # AIX installations always use RPM directly since no there isn't any default package manager for rpms
       $_package_version = $package_version
       $_install_options = concat(['--ignoreos'],$install_options)
       $_provider = 'rpm'
       $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
-    } elsif $::osfamily == 'Debian' {
+    } elsif $facts['os']['family'] == 'Debian' {
       $_install_options = $install_options
       if $::puppet_agent::absolute_source {
         # absolute_source means we use dpkg on debian based platforms

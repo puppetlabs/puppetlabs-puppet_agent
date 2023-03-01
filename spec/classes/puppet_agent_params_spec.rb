@@ -3,10 +3,12 @@ require 'spec_helper'
 describe 'puppet_agent::params' do
   let(:facts) do
     {
-      is_pe:           true,
       clientversion:   '5.5.3',
-      osfamily:        'Debian',
-      operatingsystem: 'Debian',
+      is_pe:           true,
+      os: {
+        family: 'Debian',
+        name: 'Debian',
+      },
       servername:      'server',
       # custom fact meant to be used only for tests in this file
       custom_fact__pe_version: '2018.1.3'

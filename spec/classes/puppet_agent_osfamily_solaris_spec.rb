@@ -61,15 +61,19 @@ EOF
   end
 
   facts = {
-    osfamily: 'Solaris',
-    operatingsystem: 'Solaris',
-    operatingsystemmajrelease: '10',
-    architecture: 'i86pc',
-    servername: 'master.example.vm',
+    aio_agent_version: '1.10.100.90',
     clientcert: 'foo.example.vm',
     env_temp_variable: '/tmp',
+    os: {
+      architecture: 'i86pc',
+      name: 'Solaris',
+      family: 'Solaris',
+      release: {
+        major: '10',
+      },
+    },
     puppet_agent_pid: 42,
-    aio_agent_version: '1.10.100.90',
+    servername: 'master.example.vm',
   }
   # Strips out strings in the version string on Solaris 11,
   # because pkg doesn't accept strings in version numbers. This
@@ -81,9 +85,7 @@ EOF
   describe 'unsupported environment' do
     context 'when not PE' do
       let(:facts) do
-        facts.merge({
-                      is_pe: false,
-                    })
+        override_facts(facts, is_pe: false)
       end
 
       # FOSS requires the package_version because the pe_compiling_server_version
@@ -116,11 +118,15 @@ EOF
 
     context 'when Solaris 11 i386 and a custom source' do
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'solaris-11-i386',
-                      operatingsystemmajrelease: '11',
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+                                os: {
+                                  release: {
+                                    major: '11',
+                                  },
+                                },
+                                platform_tag: 'solaris-11-i386',
+                       })
       end
       let(:params) do
         {
@@ -140,11 +146,15 @@ EOF
 
     context 'when Solaris 11 i386' do
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'solaris-11-i386',
-                      operatingsystemmajrelease: '11',
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+          os: {
+            release: {
+              major: '11',
+            },
+          },
+          platform_tag: 'solaris-11-i386',
+                       })
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -201,12 +211,16 @@ EOF
 
     context 'when Solaris 11 sparc sun4u' do
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'solaris-11-sparc',
-                      operatingsystemmajrelease: '11',
-                      architecture: 'sun4u',
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+          os: {
+            architecture: 'sun4u',
+            release: {
+              major: '11',
+            },
+          },
+          platform_tag: 'solaris-11-sparc',
+                       })
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -262,11 +276,15 @@ EOF
 
     context 'when Solaris 10 i386 and a custom source' do
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'solaris-10-i386',
-                      operatingsystemmajrelease: '10',
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+          os: {
+            release: {
+              major: '10',
+            },
+          },
+          platform_tag: 'solaris-10-i386',
+                       })
       end
       let(:params) do
         {
@@ -286,11 +304,15 @@ EOF
 
     context 'when Solaris 10 i386' do
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'solaris-10-i386',
-                      operatingsystemmajrelease: '10',
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+          os: {
+            release: {
+              major: '10',
+            },
+          },
+          platform_tag: 'solaris-10-i386',
+                       })
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -315,12 +337,16 @@ EOF
 
       context 'with older aio_agent_version' do
         let(:facts) do
-          facts.merge({
-                        is_pe: true,
-                        platform_tag: 'solaris-10-i386',
-                        operatingsystemmajrelease: '10',
-                        aio_agent_version: '1.0.0',
-                      })
+          override_facts(facts, {
+                           aio_agent_version: '1.0.0',
+            is_pe: true,
+            os: {
+              release: {
+                major: '10',
+              },
+            },
+            platform_tag: 'solaris-10-i386',
+                         })
         end
 
         it do
@@ -348,12 +374,16 @@ EOF
       end
 
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'solaris-10-sparc',
-                      operatingsystemmajrelease: '10',
-                      architecture: 'sun4u',
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+          os: {
+            architecture: 'sun4u',
+            release: {
+              major: '10',
+            },
+          },
+          platform_tag: 'solaris-10-sparc',
+                       })
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -377,13 +407,17 @@ EOF
 
       context 'with older aio_agent_version' do
         let(:facts) do
-          facts.merge({
-                        is_pe: true,
-                        platform_tag: 'solaris-10-sparc',
-                        operatingsystemmajrelease: '10',
-                        architecture: 'sun4u',
-                        aio_agent_version: '1.0.0',
-                      })
+          override_facts(facts, {
+                           aio_agent_version: '1.0.0',
+            is_pe: true,
+            os: {
+              architecture: 'sun4u',
+              release: {
+                major: '10',
+              },
+            },
+            platform_tag: 'solaris-10-sparc',
+                         })
         end
 
         it do

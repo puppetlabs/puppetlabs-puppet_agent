@@ -2,24 +2,21 @@ require 'spec_helper'
 
 describe 'puppet_agent' do
   facts = {
-    lsbdistid: 'Debian',
-    osfamily: 'Debian',
-    lsbdistcodename: 'stretch',
+    clientcert: 'foo.example.vm',
     os: {
-      'name'    => 'Debian',
-      'distro'  => {
-        'codename' => 'stretch',
-        'id'       => 'Debian',
+      architecture: 'x64',
+      family: 'Debian',
+      name: 'Debian',
+      distro: {
+        codename: 'stretch',
+        id: 'Debian',
       },
-      'release' => {
-        'full'  => '9.0',
-        'major' => '9',
+      release: {
+        full: '9.0',
+        major: '9',
       },
     },
-    operatingsystem: 'Debian',
-    architecture: 'x64',
     puppet_master_server: 'master.example.vm',
-    clientcert: 'foo.example.vm',
   }
 
   # All FOSS and all Puppet 4+ upgrades require the package_version
@@ -48,10 +45,10 @@ describe 'puppet_agent' do
     end
 
     let(:facts) do
-      facts.merge({
-                    is_pe: true,
-                    platform_tag: 'debian-7-x86_64',
-                  })
+      override_facts(facts, {
+                       is_pe: true,
+        platform_tag: 'debian-7-x86_64',
+                     })
     end
 
     context 'when managing PE debian apt repo' do
@@ -99,21 +96,19 @@ describe 'puppet_agent' do
 
     context 'focal' do
       let(:facts) do
-        facts.merge({
-                      is_pe: true,
-                      platform_tag: 'ubuntu-2004-x86_64',
-                      operatingsystem: 'Ubuntu',
-                      lsbdistcodename: 'focal',
-                      os: {
-                        'name'    => 'Ubuntu',
-                        'distro'  => {
-                          'codename' => 'focal',
-                        },
-                        'release' => {
-                          'full'  => '20.04',
-                        },
-                      },
-                    })
+        override_facts(facts, {
+                         is_pe: true,
+          os: {
+            distro: {
+              codename: 'focal',
+            },
+            name: 'Ubuntu',
+            release: {
+              full: '20.04',
+            },
+          },
+          platform_tag: 'ubuntu-2004-x86_64',
+                       })
       end
 
       context 'when managing debian focal apt repo' do

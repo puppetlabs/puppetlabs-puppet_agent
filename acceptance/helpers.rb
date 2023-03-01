@@ -180,7 +180,7 @@ module Beaker::DSL
     def install_puppet_agent_module_on(host, environment)
       on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '5.1.0', '--environment', environment), { acceptable_exit_codes: [0] })
       on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '2.4.0', '--environment', environment), { acceptable_exit_codes: [0] })
-      on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '6.0.0', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '7.7.1', '--environment', environment), { acceptable_exit_codes: [0] })
 
       install_dev_puppet_module_on(host,
                                    source: File.join(File.dirname(__FILE__), '..'),

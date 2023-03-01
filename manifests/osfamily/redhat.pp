@@ -11,12 +11,12 @@ class puppet_agent::osfamily::redhat{
     }
     contain puppet_agent::prepare::package
   } else {
-    case $::operatingsystem {
+    case $facts['os']['name'] {
       'Fedora': {
-        $platform_and_version = "fedora/${::operatingsystemmajrelease}"
+        $platform_and_version = "fedora/${facts['os']['release']['major']}"
       }
       'Amazon': {
-        if ("${::operatingsystemmajrelease}" == '2') {
+        if ("${facts['os']['release']['major']}" == '2') {
           $amz_el_version = '7'
         } else {
           $amz_el_version = '6'
@@ -24,14 +24,14 @@ class puppet_agent::osfamily::redhat{
         $platform_and_version = "el/${amz_el_version}"
       }
       default: {
-        $platform_and_version = "el/${::operatingsystemmajrelease}"
+        $platform_and_version = "el/${facts['os']['release']['major']}"
       }
     }
     if ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
       $pe_server_version = pe_build_version()
       # Treat Amazon Linux just like Enterprise Linux
-      $pe_repo_dir = ($::operatingsystem == 'Amazon') ? {
-        true    => "el-${amz_el_version}-${::architecture}",
+      $pe_repo_dir = ($facts['os']['name'] == 'Amazon') ? {
+        true    => "el-${amz_el_version}-${facts['os']['architecture']}",
         default =>  $::platform_tag,
       }
       if $::puppet_agent::source {

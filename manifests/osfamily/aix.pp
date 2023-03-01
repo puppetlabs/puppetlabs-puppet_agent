@@ -1,8 +1,8 @@
 class puppet_agent::osfamily::aix{
   assert_private()
 
-  if $::operatingsystem != 'AIX' {
-    fail("${::operatingsystem} not supported")
+  if $facts['os']['name'] != 'AIX' {
+    fail("${facts['os']['name']} not supported")
   }
 
   if $::puppet_agent::is_pe != true {

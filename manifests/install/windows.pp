@@ -75,7 +75,7 @@ class puppet_agent::install::windows(
   }
 
   exec { 'prerequisites_check.ps1':
-    command => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+    command => "${facts['os']['windows']['system32']}\\WindowsPowerShell\\v1.0\\powershell.exe \
                   -ExecutionPolicy Bypass \
                   -NoProfile \
                   -NoLogo \
@@ -88,7 +88,7 @@ class puppet_agent::install::windows(
     # The powershell execution uses -Command and not -File because -File will interpolate the quotes
     # in a context like cmd.exe: https://docs.microsoft.com/en-us/powershell/scripting/components/console/powershell.exe-command-line-help?view=powershell-6#-file--
     # Because of this it's much cleaner to use -Command and use single quotes for each powershell param
-    command => "${::system32}\\cmd.exe /S /c start /b ${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+    command => "${facts['os']['windows']['system32']}\\cmd.exe /S /c start /b ${facts['os']['windows']['system32']}\\WindowsPowerShell\\v1.0\\powershell.exe \
                   -ExecutionPolicy Bypass \
                   -NoProfile \
                   -NoLogo \
@@ -104,7 +104,7 @@ class puppet_agent::install::windows(
                           ${_move_dll_workaround} \
                           ${_pxp_agent_wait} \
                           ${_puppet_run_wait}",
-    unless  => "${::system32}\\WindowsPowerShell\\v1.0\\powershell.exe \
+    unless  => "${facts['os']['windows']['system32']}\\WindowsPowerShell\\v1.0\\powershell.exe \
                   -ExecutionPolicy Bypass \
                   -NoProfile \
                   -NoLogo \
@@ -124,8 +124,8 @@ class puppet_agent::install::windows(
 
   # PUP-5480/PE-15037 Cache dir loses inheritable SYSTEM perms
   exec { 'fix inheritable SYSTEM perms':
-    command => "${::system32}\\icacls.exe \"${::puppet_client_datadir}\" /grant \"SYSTEM:(OI)(CI)(F)\"",
-    unless  => "${::system32}\\cmd.exe /c ${::system32}\\icacls.exe \"${::puppet_client_datadir}\" | findstr \"SYSTEM:(OI)(CI)(F)\"",
+    command => "${facts['os']['windows']['system32']}\\icacls.exe \"${::puppet_client_datadir}\" /grant \"SYSTEM:(OI)(CI)(F)\"",
+    unless  => "${facts['os']['windows']['system32']}\\cmd.exe /c ${facts['os']['windows']['system32']}\\icacls.exe \"${::puppet_client_datadir}\" | findstr \"SYSTEM:(OI)(CI)(F)\"",
     require => Exec['install_puppet.ps1'],
   }
 }
