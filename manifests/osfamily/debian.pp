@@ -1,6 +1,5 @@
-class puppet_agent::osfamily::debian{
+class puppet_agent::osfamily::debian {
   assert_private()
-
 
   if $::puppet_agent::absolute_source {
     # Absolute sources are expected to be actual packages (not repos)
@@ -48,7 +47,6 @@ class puppet_agent::osfamily::debian{
           $_ca_cert_verification,
           $_proxy_host)
 
-
         apt::setting { 'conf-pc_repo':
           content  => $_apt_settings.join(''),
           priority => 90,
@@ -59,7 +57,7 @@ class puppet_agent::osfamily::debian{
         # a 404 on subsequent runs.
 
         # Pass in an empty content string since apt requires it even though we are removing it
-        apt::setting {'list-puppet-enterprise-installer':
+        apt::setting { 'list-puppet-enterprise-installer':
           ensure  => absent,
           content => '',
         }

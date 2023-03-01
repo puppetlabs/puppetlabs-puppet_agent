@@ -1,4 +1,4 @@
-class puppet_agent::osfamily::aix{
+class puppet_agent::osfamily::aix {
   assert_private()
 
   if $facts['os']['name'] != 'AIX' {

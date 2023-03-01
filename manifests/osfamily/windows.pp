@@ -1,4 +1,4 @@
-class puppet_agent::osfamily::windows{
+class puppet_agent::osfamily::windows {
   assert_private()
 
   if $::puppet_agent::absolute_source {
@@ -20,7 +20,7 @@ class puppet_agent::osfamily::windows{
       $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${::puppet_agent::package_name}-${::puppet_agent::arch}.msi"
     }
   } else {
-    if $::puppet_agent::collection == 'PC1'{
+    if $::puppet_agent::collection == 'PC1' {
       $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-${::puppet_agent::arch}.msi"
     } else {
       $source = "${::puppet_agent::windows_source}/windows/${::puppet_agent::collection}/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-${::puppet_agent::arch}.msi"

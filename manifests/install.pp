@@ -7,7 +7,7 @@
 # [version]
 #   The puppet-agent version to install.
 #
-class puppet_agent::install(
+class puppet_agent::install (
   $package_version   = 'present',
   $install_dir       = undef,
   $install_options   = [],
@@ -34,7 +34,7 @@ class puppet_agent::install(
     }
   } elsif $facts['os']['family'] == 'windows' {
     # Prevent re-running the batch install
-    if ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
+    if ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required) {
       class { 'puppet_agent::install::windows':
         install_dir     => $install_dir,
         install_options => $install_options,
@@ -43,7 +43,7 @@ class puppet_agent::install(
     }
   } elsif $facts['os']['family'] == 'suse' {
     # Prevent re-running the batch install
-    if ($package_version =~ /^latest$|^present$/) or ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required){
+    if ($package_version =~ /^latest$|^present$/) or ($puppet_agent::aio_upgrade_required) or ($puppet_agent::aio_downgrade_required) {
       class { 'puppet_agent::install::suse':
         package_version => $package_version,
         install_options => $install_options,

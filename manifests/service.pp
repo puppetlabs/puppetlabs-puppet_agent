@@ -3,7 +3,7 @@
 # This class is meant to be called from puppet_agent.
 # It ensures that managed services are running.
 #
-class puppet_agent::service{
+class puppet_agent::service {
   assert_private()
 
   # Starting with puppet6 and up collections we no longer carry the mcollective service

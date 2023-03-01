@@ -7,9 +7,9 @@
 # [package_file_name]
 #   The puppet-agent package file to retrieve from the master.
 #
-class puppet_agent::prepare::package(
+class puppet_agent::prepare::package (
   $source,
-){
+) {
   assert_private()
 
   file { $::puppet_agent::params::local_packages_dir:

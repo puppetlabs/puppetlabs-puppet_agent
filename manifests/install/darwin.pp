@@ -4,10 +4,10 @@
 #
 # Manage the install process for Darwin OSes specifically
 #
-class puppet_agent::install::darwin(
+class puppet_agent::install::darwin (
   $package_version,
   $install_options = [],
-){
+) {
   assert_private()
   $install_script = 'osx_install.sh.erb'
 

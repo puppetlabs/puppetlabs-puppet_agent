@@ -1,4 +1,4 @@
-class puppet_agent::osfamily::redhat{
+class puppet_agent::osfamily::redhat {
   assert_private()
 
   if $::puppet_agent::absolute_source {
@@ -32,7 +32,7 @@ class puppet_agent::osfamily::redhat{
       # Treat Amazon Linux just like Enterprise Linux
       $pe_repo_dir = ($facts['os']['name'] == 'Amazon') ? {
         true    => "el-${amz_el_version}-${facts['os']['architecture']}",
-        default =>  $::platform_tag,
+        default => $::platform_tag,
       }
       if $::puppet_agent::source {
         $source = "${::puppet_agent::source}/packages/${pe_server_version}/${pe_repo_dir}"
@@ -48,7 +48,6 @@ class puppet_agent::osfamily::redhat{
         $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/${platform_and_version}/${::puppet_agent::arch}"
       }
     }
-
 
     if ($::puppet_agent::is_pe  and (!$::puppet_agent::use_alternate_sources)) {
       # In Puppet Enterprise, agent packages are served by the same server

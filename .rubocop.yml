@@ -4,7 +4,7 @@ require:
 - rubocop-rspec
 AllCops:
   DisplayCopNames: true
-  TargetRubyVersion: '2.4'
+  TargetRubyVersion: '2.5'
   Include:
   - "**/*.rb"
   Exclude:
@@ -78,10 +78,12 @@ RSpec/MessageSpies:
   EnforcedStyle: receive
 Style/Documentation:
   Exclude:
-  - files/*
+  - files/rb_task_helper.rb
   - lib/puppet/parser/functions/**/*
   - spec/**/*
-  - tasks/*
+  - tasks/delete_local_filebucket.rb
+  - tasks/facts_diff.rb
+  - tasks/run.rb
 Style/WordArray:
   EnforcedStyle: brackets
 Performance/AncestorsInclude:

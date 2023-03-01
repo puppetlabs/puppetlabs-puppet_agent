@@ -1,4 +1,4 @@
-class puppet_agent::osfamily::suse{
+class puppet_agent::osfamily::suse {
   assert_private()
 
   if $facts['os']['name'] != 'SLES' {

@@ -1,4 +1,4 @@
-class puppet_agent::osfamily::solaris{
+class puppet_agent::osfamily::solaris {
   assert_private()
 
   if $facts['os']['name'] != 'Solaris' {

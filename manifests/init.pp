@@ -127,7 +127,6 @@ class puppet_agent (
   $wait_for_puppet_run     = undef,
   Array[Puppet_agent::Config] $config = [],
 ) inherits ::puppet_agent::params {
-
   # The configure class uses $puppet_agent::config to manage settings in
   # puppet.conf, and will always be present. It does not require management of
   # the agent package. Dependencies for configure will be declared later if the
