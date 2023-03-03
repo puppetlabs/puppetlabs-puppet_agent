@@ -1,6 +1,16 @@
 {
   "description": "Run the Puppet agent. This task may cause problems if run in Puppet Enterprise.",
-  "parameters": {},
+  "parameters": {
+    "noop": {
+      "description": "run the puppet agent with --noop",
+      "type": "Boolean",
+      "default": false
+    },
+    "environment": {
+      "description": "The desired puppet code environment to use",
+      "type": "Optional[String[1]]"
+    }
+  },
   "files": ["puppet_agent/files/rb_task_helper.rb"],
   "private": true
 }

@@ -1,8 +1,12 @@
 # Starts a Puppet agent run on the specified targets.
 # Note: This plan may cause issues when run in Puppet Enterprise.
 # @param targets The targets to start a Puppet agent run on.
+# @param noop if true, all runs will use --noop
+# @param environment the desired puppet code environment
 plan puppet_agent::run (
-  TargetSpec $targets
+  TargetSpec $targets,
+  Boolean $noop = false,
+  Optional[String[1]] $environment = undef,
 ) {
   # Check which targets have the agent installed by checking
   # the version of the agent. No point in trying to run the
@@ -21,8 +25,8 @@ plan puppet_agent::run (
       '_error' => {
         'msg'     => "The task puppet_agent::version failed: ${result.error.message}. Unable to determine if the Puppet agent is installed.",
         'kind'    => 'puppet_agent/agent-version-error',
-        'details' => {}
-      }
+        'details' => {},
+      },
     }
 
     Result.new($result.target, $err)
@@ -45,19 +49,28 @@ plan puppet_agent::run (
       '_error' => {
         'msg'     => 'Puppet agent is not installed on the target. Run the puppet_agent::install task on these targets to install the Puppet agent.',
         'kind'    => 'puppet_agent/agent-not-installed',
-        'details' => {}
-      }
+        'details' => {},
+      },
     }
 
     Result.new($result.target, $err)
   }
 
   # Run the agent on all targets that have the agent installed.
+  $arg_env = $environment ? {
+    Undef   => {},
+    default => { 'environment' => $environment, },
+  }
+  $arg_noop = $noop ? {
+    true    => { 'noop' => true, },
+    default => {},
+  }
+  $args = $arg_env + $arg_noop + { '_catch_errors' => true }
   $run_results = run_task(
     'puppet_agent::run',
     $agent_results.targets,
     'Run Puppet agent',
-    '_catch_errors' => true
+    $args,
   )
 
   # Merge all of the results into a single ResultSet so each
