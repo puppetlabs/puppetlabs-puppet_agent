@@ -25,8 +25,8 @@ plan puppet_agent::run (
       '_error' => {
         'msg'     => "The task puppet_agent::version failed: ${result.error.message}. Unable to determine if the Puppet agent is installed.",
         'kind'    => 'puppet_agent/agent-version-error',
-        'details' => {}
-      }
+        'details' => {},
+      },
     }
 
     Result.new($result.target, $err)
@@ -49,8 +49,8 @@ plan puppet_agent::run (
       '_error' => {
         'msg'     => 'Puppet agent is not installed on the target. Run the puppet_agent::install task on these targets to install the Puppet agent.',
         'kind'    => 'puppet_agent/agent-not-installed',
-        'details' => {}
-      }
+        'details' => {},
+      },
     }
 
     Result.new($result.target, $err)
@@ -59,13 +59,13 @@ plan puppet_agent::run (
   # Run the agent on all targets that have the agent installed.
   $arg_env = $environment ? {
     Undef   => {},
-    default => {'environment' => $environment, },
+    default => { 'environment' => $environment, },
   }
   $arg_noop = $noop ? {
     true    => { 'noop' => true, },
     default => {},
   }
-  $args = $arg_env + $arg_noop + {'_catch_errors' => true }
+  $args = $arg_env + $arg_noop + { '_catch_errors' => true }
   $run_results = run_task(
     'puppet_agent::run',
     $agent_results.targets,
