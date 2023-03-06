@@ -30,12 +30,12 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
 
   step 'Install puppetserver' do
     # puppetserver is distributed in "release streams" instead of collections.
-    opts = if %r{^pc1$}i.match?(install_options[:puppet_collection])
-             # There is no release stream that's equivalent to the PC1 (puppet-agent
-             # 1.y.z/puppet 4) collection; This version is fine.
-             { version: '2.8.1' }
+
+    # Dirty, temporary workaround for when we have puppet8 agent nightlies but not server nightlies
+    # Once we have puppet8 server releases, pare down to just what's in the else statement
+    opts = if install_options[:puppet_collection].include?('nightly')
+             { release_stream: 'puppet7' }
            else
-             # puppet collections _do_ match with server release streams from puppet 5 onward.
              { release_stream: install_options[:puppet_collection] }
            end
 
