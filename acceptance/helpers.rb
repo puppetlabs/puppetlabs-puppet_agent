@@ -252,8 +252,6 @@ module Beaker::DSL
           on(host, puppet('resource', 'service', 'puppet', 'ensure=stopped'))
         end
 
-        server_version = puppetserver_version_on(master)
-
         step '(Agent) configure server setting on agent' do
           on(host, puppet("config set server #{master}"))
         end
@@ -264,11 +262,7 @@ module Beaker::DSL
 
         agent_certname = fact_on(host, 'fqdn')
         step '(Master) Sign certs' do
-          if version_is_less('5.99.99', server_version)
-            on(master, "puppetserver ca sign --certname #{agent_certname}")
-          else
-            on(master, puppet("cert sign #{agent_certname}"))
-          end
+          on(master, "puppetserver ca sign --certname #{agent_certname}")
         end
 
         teardowns << -> do
@@ -401,11 +395,7 @@ module Beaker::DSL
     # @param [String] agent_certname The name of the cert to remove from the master
     def clean_agent_certificate(agent_certname)
       step "Teardown: (Master) Clean agent #{agent_certname} cert" do
-        if version_is_less('5.99.99', puppetserver_version_on(master))
-          on(master, "puppetserver ca clean --certname #{agent_certname}")
-        else
-          on(master, puppet("cert clean #{agent_certname}"))
-        end
+        on(master, "puppetserver ca clean --certname #{agent_certname}")
       end
     end
   end
