@@ -26,8 +26,10 @@ describe 'puppet_agent' do
       architecture: 'x86_64',
       name: 'Darwin',
       family: 'Darwin',
-      version: {
-        major: '10.13',
+      macosx: {
+        version: {
+          major: '10.13',
+        },
       },
     },
     servername: 'master.example.vm',
@@ -50,8 +52,10 @@ describe 'puppet_agent' do
                               aio_agent_version: '1.10.99',
                               is_pe: true,
                               os: {
-                                version: {
-                                  major: osmajor,
+                                macosx: {
+                                  version: {
+                                    major: osmajor,
+                                  },
                                 },
                               },
                               platform_tag: tag,
@@ -95,8 +99,10 @@ describe 'puppet_agent' do
                        aio_agent_version: '1.10.99',
         is_pe: true,
         os: {
-          version: {
-            major: '10.13',
+          macosx: {
+            version: {
+              major: '10.13',
+            },
           },
         },
         platform_tag: 'osx-10.13-x86_64',
@@ -117,8 +123,10 @@ describe 'puppet_agent' do
                        aio_agent_version: '1.10.99',
         is_pe: true,
         os: {
-          version: {
-            major: '10.13',
+          macosx: {
+            version: {
+              major: '10.13',
+            },
           },
         },
         platform_tag: 'osx-10.13-x86_64',
@@ -140,8 +148,10 @@ describe 'puppet_agent' do
                        aio_agent_version: '1.10.99',
         is_pe: true,
         os: {
-          version: {
-            major: '11.2',
+          macosx: {
+            version: {
+              major: '11.2',
+            },
           },
         },
         platform_tag: 'osx-11-x86_64',
@@ -163,8 +173,10 @@ describe 'puppet_agent' do
                        aio_agent_version: '1.10.99',
         is_pe: true,
         os: {
-          version: {
-            major: '11',
+          macosx: {
+            version: {
+              major: '11',
+            },
           },
         },
         platform_tag: 'osx-11-x86_64',
