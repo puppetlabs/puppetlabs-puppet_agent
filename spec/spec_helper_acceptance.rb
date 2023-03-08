@@ -199,7 +199,7 @@ def teardown_puppet_on(host)
   # the machine after each run.
   case host['platform']
   when %r{debian|ubuntu}
-    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt --version 7.7.1', { acceptable_exit_codes: [0, 1] }
+    on host, '/opt/puppetlabs/bin/puppet module install puppetlabs-apt --version 9.0.0', { acceptable_exit_codes: [0, 1] }
     clean_repo = "include apt\napt::source { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
   when %r{fedora|el|centos}
     clean_repo = "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
