@@ -87,8 +87,9 @@ module Beaker::DSL
       if args.is_a?(Symbol)
         collection = args.to_s
 
-        # puppet_collection_for doesn't know about nightly collections
-        unless collection.include?(server_collection)
+        # Dirty, temporary workaround for when we have puppet8 agent nightlies but not server nightlies
+        # Once we have puppet8 server releases, remove the second conditional
+        unless collection.include?(server_collection) || collection == 'puppet8-nightly'
           skip_test(msg_prefix + "\nThis test requires a puppetserver from the #{collection} collection. Skipping the test ...")
         end
 
@@ -178,9 +179,9 @@ module Beaker::DSL
     # @param [String] environment The puppet environment to install the modules to, this must
     #   be a valid environment in the puppet install on the host.
     def install_puppet_agent_module_on(host, environment)
-      on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '5.1.0', '--environment', environment), { acceptable_exit_codes: [0] })
-      on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '2.4.0', '--environment', environment), { acceptable_exit_codes: [0] })
-      on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '7.7.1', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '8.4.0', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '5.3.0', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '9.0.0', '--environment', environment), { acceptable_exit_codes: [0] })
 
       install_dev_puppet_module_on(host,
                                    source: File.join(File.dirname(__FILE__), '..'),
@@ -251,8 +252,6 @@ module Beaker::DSL
           on(host, puppet('resource', 'service', 'puppet', 'ensure=stopped'))
         end
 
-        server_version = puppetserver_version_on(master)
-
         step '(Agent) configure server setting on agent' do
           on(host, puppet("config set server #{master}"))
         end
@@ -263,11 +262,7 @@ module Beaker::DSL
 
         agent_certname = fact_on(host, 'fqdn')
         step '(Master) Sign certs' do
-          if version_is_less('5.99.99', server_version)
-            on(master, "puppetserver ca sign --certname #{agent_certname}")
-          else
-            on(master, puppet("cert sign #{agent_certname}"))
-          end
+          on(master, "puppetserver ca sign --certname #{agent_certname}")
         end
 
         teardowns << -> do
@@ -400,11 +395,7 @@ module Beaker::DSL
     # @param [String] agent_certname The name of the cert to remove from the master
     def clean_agent_certificate(agent_certname)
       step "Teardown: (Master) Clean agent #{agent_certname} cert" do
-        if version_is_less('5.99.99', puppetserver_version_on(master))
-          on(master, "puppetserver ca clean --certname #{agent_certname}")
-        else
-          on(master, puppet("cert clean #{agent_certname}"))
-        end
+        on(master, "puppetserver ca clean --certname #{agent_certname}")
       end
     end
   end
