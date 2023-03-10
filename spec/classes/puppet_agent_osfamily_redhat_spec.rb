@@ -24,14 +24,7 @@ describe 'puppet_agent' do
   [['Rocky', 'el/8', 8], ['AlmaLinux', 'el/8', 8], ['Fedora', 'fedora/f36', 36], ['CentOS', 'el/7', 7], ['Amazon', 'el/6', 2017], ['Amazon', 'el/7', 2]].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
-        override_facts(super(), {
-                         os: {
-                           name: os,
-                           release: {
-                             major: osmajor,
-                           },
-                         },
-                       })
+        override_facts(super(), os: { name: os, release: { major: osmajor, }, })
       end
 
       script = <<-SCRIPT
@@ -182,16 +175,7 @@ SCRIPT
       end
 
       let(:facts) do
-        override_facts(super(), {
-                         is_pe: true,
-          os: {
-            name: os,
-            release: {
-              major: osmajor,
-            },
-          },
-          platform_tag: tag,
-                       })
+        override_facts(super(), is_pe: true, os: { name: os, release: { major: osmajor, }, }, platform_tag: tag)
       end
 
       context 'when using a custom source' do

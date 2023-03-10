@@ -45,10 +45,7 @@ describe 'puppet_agent' do
     end
 
     let(:facts) do
-      override_facts(facts, {
-                       is_pe: true,
-        platform_tag: 'debian-7-x86_64',
-                     })
+      override_facts(facts, is_pe: true, platform_tag: 'debian-7-x86_64')
     end
 
     context 'when managing PE debian apt repo' do
@@ -96,19 +93,7 @@ describe 'puppet_agent' do
 
     context 'focal' do
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-          os: {
-            distro: {
-              codename: 'focal',
-            },
-            name: 'Ubuntu',
-            release: {
-              full: '20.04',
-            },
-          },
-          platform_tag: 'ubuntu-2004-x86_64',
-                       })
+        override_facts(facts, is_pe: true, os: { distro: { codename: 'focal', }, name: 'Ubuntu', release: { full: '20.04', }, }, platform_tag: 'ubuntu-2004-x86_64')
       end
 
       context 'when managing debian focal apt repo' do

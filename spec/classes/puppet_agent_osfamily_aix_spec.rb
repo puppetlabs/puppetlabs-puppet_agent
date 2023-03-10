@@ -4,14 +4,14 @@ describe 'puppet_agent' do
   let(:common_facts) do
     {
       clientcert: 'foo.example.vm',
-      is_pe:                      true,
+      is_pe: true,
       os: {
         architecture: 'PowerPC_POWER7',
         family: 'AIX',
         name: 'AIX',
       },
-      platform_tag:               'aix-7.2-power',
-      servername:                 'master.example.vm',
+      platform_tag: 'aix-7.2-power',
+      servername: 'master.example.vm',
     }
   end
 
@@ -212,7 +212,7 @@ describe 'puppet_agent' do
 
     context 'not AIX' do
       let(:facts) do
-        override_facts(common_facts, { os: { name: 'not-AIX', }, })
+        override_facts(common_facts, os: { name: 'not-AIX' })
       end
 
       it { expect { catalogue }.to raise_error(%r{not supported}) }
