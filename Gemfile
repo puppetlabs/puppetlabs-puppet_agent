@@ -52,7 +52,9 @@ group :development do
   gem "async", '~> 1.30',                                                       require: false
 end
 group :system_tests do
-  gem "puppet_litmus", '< 1.0.0', require: false, platforms: [:ruby, :x64_mingw]
+  # Pin Litmus to the last version that doens't pin r10k
+  # We need later versions of r10k for Ruby 3.2 compatibility
+  gem "puppet_litmus", '= 0.34.5', require: false, platforms: [:ruby, :x64_mingw]
   gem "serverspec", '~> 2.41',    require: false
   gem "voxpupuli-acceptance"
 end

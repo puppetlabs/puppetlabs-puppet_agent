@@ -13,12 +13,12 @@ jobs:
     strategy:
       matrix:
         os: [ 'ubuntu-20.04', 'macos-latest', 'windows-2022' ]
-        puppet_version: [ 6, 7 ]
+        puppet_version: [ '7', '8' ]
         include:
-          - puppet_version: 6
-            ruby: 2.5
-          - puppet_version: 7
-            ruby: 2.7
+          - puppet_version: '7'
+            ruby: '2.7'
+          - puppet_version: '8'
+            ruby: '3.2'
 
           - os: 'ubuntu-20.04'
             os_type: 'Linux'
@@ -31,7 +31,11 @@ jobs:
           - os: 'windows-2022'
             os_type: 'Windows'
             env_set_cmd: '$env:'
-            gem_file: 'puppet-latest-x64-mingw32.gem'
+            # setup-ruby uses ucrt for newer Rubies, but we only support mingw
+            # in our Windows Puppet nightly gems. For now, we'll just install
+            # the universal gem and manually install the ffi dependency
+            gem_file: 'puppet-latest.gem'
+            extra_steps: 'gem install ffi --version 1.15.5'
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -45,6 +49,7 @@ jobs:
 
       - name: Install the latest nightly build of puppet${{ matrix.puppet_version }} gem
         run: |
+          ${{ matrix.extra_steps }}
           curl https://nightlies.puppet.com/downloads/gems/puppet${{ matrix.puppet_version }}-nightly/${{ matrix.gem_file }} --output puppet.gem --location
           gem install puppet.gem -N
 

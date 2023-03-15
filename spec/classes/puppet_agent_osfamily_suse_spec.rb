@@ -27,12 +27,7 @@ describe 'puppet_agent' do
   describe 'unsupported environment' do
     context 'when not SLES' do
       let(:facts) do
-        override_facts(facts,
-        {
-          os: {
-            name: 'OpenSuse',
-          }
-        })
+        override_facts(facts, os: { name: 'OpenSuse', })
       end
 
       it { expect { catalogue }.to raise_error(%r{OpenSuse not supported}) }
@@ -45,16 +40,7 @@ describe 'puppet_agent' do
         ['11', '12', '15'].each do |os_version|
           context "when SLES #{os_version}" do
             let(:facts) do
-              override_facts(facts,
-                              {
-                                is_pe: false,
-                                os: {
-                                  release: {
-                                    major: os_version,
-                                  },
-                                },
-                                platform_tag: "sles-#{os_version}-x86_64",
-                              })
+              override_facts(facts, is_pe: false, os: { release: { major: os_version, }, }, platform_tag: "sles-#{os_version}-x86_64")
             end
 
             let(:params) do
@@ -247,15 +233,7 @@ SCRIPT
         ['11', '12', '15'].each do |os_version|
           context "when SLES #{os_version}" do
             let(:facts) do
-              override_facts(facts,
-              {
-                os: {
-                  release: {
-                    major: os_version,
-                  },
-                },
-                platform_tag: "sles-#{os_version}-x86_64",
-              })
+              override_facts(facts, os: { release: { major: os_version, }, }, platform_tag: "sles-#{os_version}-x86_64")
             end
 
             context 'with manage_pki_dir => true' do

@@ -118,15 +118,7 @@ EOF
 
     context 'when Solaris 11 i386 and a custom source' do
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-                                os: {
-                                  release: {
-                                    major: '11',
-                                  },
-                                },
-                                platform_tag: 'solaris-11-i386',
-                       })
+        override_facts(facts, is_pe: true, os: { release: { major: '11', }, }, platform_tag: 'solaris-11-i386')
       end
       let(:params) do
         {
@@ -146,15 +138,7 @@ EOF
 
     context 'when Solaris 11 i386' do
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-          os: {
-            release: {
-              major: '11',
-            },
-          },
-          platform_tag: 'solaris-11-i386',
-                       })
+        override_facts(facts, is_pe: true, os: { release: { major: '11', }, }, platform_tag: 'solaris-11-i386')
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -211,16 +195,7 @@ EOF
 
     context 'when Solaris 11 sparc sun4u' do
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-          os: {
-            architecture: 'sun4u',
-            release: {
-              major: '11',
-            },
-          },
-          platform_tag: 'solaris-11-sparc',
-                       })
+        override_facts(facts, is_pe: true, os: { architecture: 'sun4u', release: { major: '11', }, }, platform_tag: 'solaris-11-sparc')
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -276,15 +251,7 @@ EOF
 
     context 'when Solaris 10 i386 and a custom source' do
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-          os: {
-            release: {
-              major: '10',
-            },
-          },
-          platform_tag: 'solaris-10-i386',
-                       })
+        override_facts(facts, is_pe: true, os: { release: { major: '10', }, }, platform_tag: 'solaris-10-i386')
       end
       let(:params) do
         {
@@ -304,15 +271,7 @@ EOF
 
     context 'when Solaris 10 i386' do
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-          os: {
-            release: {
-              major: '10',
-            },
-          },
-          platform_tag: 'solaris-10-i386',
-                       })
+        override_facts(facts, is_pe: true, os: { release: { major: '10', }, }, platform_tag: 'solaris-10-i386')
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -337,16 +296,7 @@ EOF
 
       context 'with older aio_agent_version' do
         let(:facts) do
-          override_facts(facts, {
-                           aio_agent_version: '1.0.0',
-            is_pe: true,
-            os: {
-              release: {
-                major: '10',
-              },
-            },
-            platform_tag: 'solaris-10-i386',
-                         })
+          override_facts(facts, aio_agent_version: '1.0.0', is_pe: true, os: { release: { major: '10', }, }, platform_tag: 'solaris-10-i386')
         end
 
         it do
@@ -374,16 +324,7 @@ EOF
       end
 
       let(:facts) do
-        override_facts(facts, {
-                         is_pe: true,
-          os: {
-            architecture: 'sun4u',
-            release: {
-              major: '10',
-            },
-          },
-          platform_tag: 'solaris-10-sparc',
-                       })
+        override_facts(facts, is_pe: true, os: { architecture: 'sun4u', release: { major: '10', }, }, platform_tag: 'solaris-10-sparc')
       end
 
       it { is_expected.to compile.with_all_deps }
@@ -407,17 +348,7 @@ EOF
 
       context 'with older aio_agent_version' do
         let(:facts) do
-          override_facts(facts, {
-                           aio_agent_version: '1.0.0',
-            is_pe: true,
-            os: {
-              architecture: 'sun4u',
-              release: {
-                major: '10',
-              },
-            },
-            platform_tag: 'solaris-10-sparc',
-                         })
+          override_facts(facts, aio_agent_version: '1.0.0', is_pe: true, os: { architecture: 'sun4u', release: { major: '10', }, }, platform_tag: 'solaris-10-sparc')
         end
 
         it do
