@@ -26,7 +26,7 @@
 #   The package version to upgrade to. Explicitly specify the version to upgrade to,
 #   or set to 'auto' to specify the version of the compiling master.
 # [service_names]
-#   An array of services to start, normally `puppet` and `mcollective`.
+#   An array of services to start, normally `puppet`.
 #   None will be started if the array is empty.
 # [source]
 #   **INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute_source",

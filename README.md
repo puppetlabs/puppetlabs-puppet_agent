@@ -64,9 +64,7 @@
 
 ## Overview
 
-A module for installing, running, upgrading, and managing the configuration of Puppet agents. Supports upgrading from Puppet 4 puppet-agent packages to later versions including Puppet 4, Puppet 5, and Puppet 6.
-
-Previous releases of this module, now unsupported, upgraded agents from later versions of Puppet 3 to Puppet 4.
+A module for installing, running, upgrading, and managing the configuration of Puppet agents. Supports upgrading from Puppet 6 puppet-agent packages to later versions including Puppet 7 and Puppet 8.
 
 ## Module Description
 
@@ -80,13 +78,13 @@ If a config parameter is provided, it will manage the defined agent configuratio
 
 ### What puppet_agent affects
 
-* Puppet, Facter, Hiera, and MCollective (MCollective is no longer included in Puppet 6 installs).
+* Puppet, Facter, and Hiera.
 * Puppet's SSL directory and puppet.conf.
 * Removes deprecated settings from puppet.conf.
 
 ### Setup requirements
 
-Your agents must be running a minimum version of Puppet 4. They should already be pointed at a master running Puppet Server 2.1 or greater, and thus successfully applying catalogs compiled with the Puppet 4 or newer language.
+Your agents must be running a minimum version of Puppet 6. They should already be pointed at a master running Puppet Server 6 or greater, and thus successfully applying catalogs compiled with the Puppet 6 or newer language.
 
 ### Beginning with puppet_agent
 
@@ -96,13 +94,13 @@ Install the puppet_agent module with `puppet module install puppetlabs-puppet_ag
 
 Add the class to agents you want to upgrade, specifying the desired puppet-agent version:
 
-~~~puppet
+``` puppet
 class {'::puppet_agent':
-  package_version => '1.4.0',
+  package_version => '7.23.0',
 }
-~~~
+```
 
-This will ensure the version `1.4.0` of the puppet-agent package is installed. For version `1.4.0` and later, it will also remove the deprecated `pluginsync` setting from `puppet.conf`, unless explicitly managed elsewhere.
+This will ensure the version `7.23.0` of the puppet-agent package is installed.
 
 ## Using alternate sources
 
@@ -153,16 +151,16 @@ If you are using puppetlabs-pe_repo to serve packages, but want to provide a loc
 
 ##### `arch`
 
-The architecture version you wish to install. Defaults to `$::facts['architecture']`.
+The architecture version you wish to install. Defaults to `$facts['os']['architecture']`.
 ``` puppet
   arch => 'x86_64'
 ```
 
 ##### `collection`
 
-The Puppet Collection to track, should be one of `puppet5`, `puppet6` or `puppet7`.  Puppet collections contain the latest agents included in the collection's series, so `puppet5` will pull in the most recent Puppet 5 release (for example: 5.5.10) as also will `puppet6` for Puppet 6 (for example: 6.3.0).  **This parameter is required for installations not connected to Puppet Enterprise**
+The Puppet Collection to track, should be a supported collection  (e.g. `puppet7` or `puppet8`).  Puppet collections contain the latest agents included in the collection's series, so `puppet7` will pull in the most recent Puppet 5 release (for example: 7.23.0).  **This parameter is required for installations not connected to Puppet Enterprise**
 ``` puppet
-  collection => 'puppet6'
+  collection => 'puppet7'
 ```
 
 ##### `is_pe`
@@ -185,7 +183,7 @@ and the native package providers will be used to query pre-configured repos on t
 
 The package version to upgrade to. This must be explicitly specified.
 ``` puppet
-  package_version => '5.5.10'
+  package_version => '7.23.0'
 ```
 or
 ``` puppet
@@ -221,14 +219,14 @@ Unix/MacOS
 
 Windows
 ``` puppet
-  source => 'C:/packages/puppet-agent-6.0.0-x64.msi'
+  source => 'C:/packages/puppet-agent-7.23.0-x64.msi'
 ```
 
 ##### `absolute_source`
 
 Absolute ("fully qualified") source path from which you wish to download the latest version of Puppet. No path structure or package name is assumed: the fully qualified path to the package itself must be provided.
 ``` puppet
-  absolute_source => 'C:/packages/puppet-agent-6.0.0-x64.msi'
+  absolute_source => 'C:/packages/puppet-agent-7.23.0-x64.msi'
 ```
 
 ##### `yum_source`

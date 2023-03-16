@@ -376,7 +376,7 @@ module Beaker::DSL
             manifest_lines << "yumrepo { 'pc_repo': ensure => absent, notify => Package['puppet-agent'] }"
           end
 
-          manifest_lines << "file { ['/etc/puppet', '/etc/puppetlabs', '/etc/mcollective']: ensure => absent, force => true, backup => false }"
+          manifest_lines << "file { ['/etc/puppet', '/etc/puppetlabs']: ensure => absent, force => true, backup => false }"
 
           manifest_lines << if %r{^(osx|sles|solaris)}.match?(host['platform'])
                               # The macOS pkgdmg, SLES zypper, and Solaris sun providers don't support 'purged':

@@ -372,7 +372,6 @@ describe 'puppet_agent' do
                 it { is_expected.to contain_service('puppet') }
               else
                 it { is_expected.not_to contain_service('puppet') }
-                it { is_expected.not_to contain_service('mcollective') }
               end
             end
           end

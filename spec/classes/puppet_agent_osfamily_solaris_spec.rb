@@ -30,10 +30,6 @@ puppet_was_running = false
 if /opt/puppetlabs/bin/puppet resource service "puppet" | grep "ensure => 'running'" ; then
   puppet_was_running = true
 fi
-mcollective_was_running = false
-if /opt/puppetlabs/bin/puppet resource service "mcollective" | grep "ensure => 'running'" ; then
-  mcollective_was_running = true
-fi
 
 # Remove old package
 /opt/puppetlabs/bin/puppet resource package puppet-agent ensure=absent adminfile=/opt/puppetlabs/packages/solaris-noask
@@ -47,9 +43,6 @@ pkgadd -a /opt/puppetlabs/packages/solaris-noask -d /opt/puppetlabs/packages/pup
 
 if $puppet_was_running ; then
   start_service puppet
-fi
-if $mcollective_was_running ; then
-  start_service mcollective
 fi
 
 

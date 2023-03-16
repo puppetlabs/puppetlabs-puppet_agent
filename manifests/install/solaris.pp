@@ -16,12 +16,8 @@ class puppet_agent::install::solaris (
     # The following are expected to be available in the solaris_install.sh.erb template:
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
-    # Starting with puppet6 and up collections we no longer carry the mcollective service
-    if $::puppet_agent::collection != 'PC1' and $::puppet_agent::collection != 'puppet5' {
-      $service_names = delete($::puppet_agent::service_names, 'mcollective')
-    } else {
-      $service_names = $::puppet_agent::service_names
-    }
+
+    $service_names = $::puppet_agent::service_names
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
