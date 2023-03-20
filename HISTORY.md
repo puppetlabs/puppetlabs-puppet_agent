@@ -1,3 +1,63 @@
+## [v4.12.1] - 2022-07-13
+
+### Summary
+
+Bug fix release.
+
+### Bug Fixes
+
+- Unnest module and class names in Ruby tasks ([#613](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/613))
+
+## [v4.12.0] - 2022-07-13
+
+### Summary
+
+Add support for Ubuntu 22.04, Debian 11, Red Hat Enterprise Linux 9, and Fedora 34. Handle TLS 1.2 on older Windows systems.
+### Features
+
+- ([FM-8943](https://tickets.puppetlabs.com/browse/FM-8943)) Add Ubuntu 22.04 support. ([#610](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/610))
+- Add support for Debian 11, Red Hat Enterprise Linux 9, and Fedora 34. ([#607](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/607))
+
+### Bug Fixes
+
+- ([MODULES-11334](https://tickets.puppetlabs.com/browse/MODULES-11334)) Handle TLS 1.2 on older Windows systems. ([#611](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/611))
+
+## [v4.11.0] - 2022-05-13
+
+### Summary
+
+Add support for macOS 12. Allow module to function properly if there is a discrepancy between the AIO puppet-agent and Puppet versions.
+
+### Features
+
+- Add additional configuration options for puppet.conf ([#602](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/602))
+
+### Bug Fixes
+
+- ([MODULES-11315](https://tickets.puppetlabs.com/browse/MODULES-11315)) Allow module to function properly if there is a discrepancy between the AIO puppet-agent and Puppet versions. ([#604](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/604))
+- ([MODULES-11262](https://tickets.puppetlabs.com/browse/MODULES-11262)) Fix issue with version check on acceptance upgrade tests. ([#599](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/599))
+
+## [v4.10.0] - 2022-01-26
+
+### Summary
+
+Improve AlmaLinux and Rocky Linux support. Converted this module to be PDK-compliant. Other fixes and improvements
+
+### Features
+
+- ([MODULES-11168](https://tickets.puppetlabs.com/browse/MODULES-11168), [MODULES-11192](https://tickets.puppetlabs.com/browse/MODULES-11192)) Add AlmaLinux and Rocky to the puppet-agent module ([#582](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/582), [#583](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/583))
+- ([MODULES-11244](https://tickets.puppetlabs.com/browse/MODULES-11244)) Convert puppet_agent module to PDK ([#588](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/588))
+- Allow detection of non-AIO Ppuppet ([#581](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/581))
+- Add additional configuration options for puppet.conf ([#584](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/584))
+
+### Bug fixes
+
+- ([MODULES-11214](https://tickets.puppetlabs.com/browse/MODULES-11214)) Fix wrong URL generated for macOS 11 ([#586](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/586))
+
+### Acknowledgements
+
+Thanks to [smortex](https://github.com/smortex) and [Heidistein](https://github.com/Heidistein) who have contributed to this release 🎉!
+
 ## [4.9.0] - 2021-09-09
 
 ### Summary
