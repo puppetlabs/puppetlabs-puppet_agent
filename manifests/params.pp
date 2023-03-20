@@ -9,9 +9,7 @@ class puppet_agent::params {
     # Solaris 11 is a special case; it uses a custom script.
     $service_names = []
   } else {
-    # Mcollective will be removed from this list in the service manifest if
-    # the puppet version is >= 6.0.0
-    $service_names = ['puppet', 'mcollective']
+    $service_names = ['puppet']
   }
   if $facts['os']['family'] == 'windows' {
     $local_puppet_dir = windows_native_path("${::puppet_agent_appdata}/Puppetlabs")

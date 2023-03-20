@@ -256,8 +256,7 @@ function Script:Reset-PuppetServices {
 $ErrorActionPreference = "Stop"
 $service_names=@(
   "puppet",
-  "pxp-agent",
-  "mcollective"
+  "pxp-agent"
 )
 try {
   $state_dir = (puppet.bat config print statedir --environment production)
