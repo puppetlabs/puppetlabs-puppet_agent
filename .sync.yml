@@ -60,4 +60,4 @@ spec/default_facts.yml:
 spec/spec_helper.rb:
   unmanaged: true
 Rakefile:
-  changelog_since_tag: 4.9.0
+  changelog_since_tag: 'v4.12.1'
