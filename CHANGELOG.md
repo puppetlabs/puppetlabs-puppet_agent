@@ -2,54 +2,85 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.12.1](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.12.1) (2022-07-13)
+## [v4.13.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.13.0) (2023-03-21)
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.12.0...v4.12.1)
-
-### Fixed
-
-- \(maint\) Unnest module and class names in Ruby tasks [\#613](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/613) ([beechtom](https://github.com/beechtom))
-
-## [v4.12.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.12.0) (2022-07-13)
-
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.11.0...v4.12.0)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.12.1...v4.13.0)
 
 ### Added
 
-- \(FM-8943\) Add Ubuntu 22.04 to puppet\_agent module [\#610](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/610) ([AriaXLi](https://github.com/AriaXLi))
-- \(maint\) Adds cases for newly-supported OSes [\#607](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/607) ([mhashizume](https://github.com/mhashizume))
+- \(PA-5242\) Updates install tasks for puppet8 [\#642](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/642) ([mhashizume](https://github.com/mhashizume))
+- \(MODULES-11365\) Enable rspec tests on Ruby 3.2 [\#641](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/641) ([mhashizume](https://github.com/mhashizume))
+- \(MODULES-11392\) Add Puppet 7 to 8 upgrade test [\#639](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/639) ([mhashizume](https://github.com/mhashizume))
+- \(MODULES-11361\) Updates legacy facts [\#637](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/637) ([mhashizume](https://github.com/mhashizume))
+- \(MODULES-11361\) Puppet 8 compatibility work [\#636](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/636) ([mhashizume](https://github.com/mhashizume))
+- \(MODULES-11348\) Replace lsbdistcodename with os.distro.codename [\#634](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/634) ([AriaXLi](https://github.com/AriaXLi))
+- run task/plan: Allow noop and environment option [\#632](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/632) ([bastelfreak](https://github.com/bastelfreak))
+- \(maint\) replace legacy validate function with datatype [\#628](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/628) ([bastelfreak](https://github.com/bastelfreak))
+- \(MODULES-11346\) Update dependency for APT module [\#624](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/624) ([MartyEwings](https://github.com/MartyEwings))
+- \(FM-8983\) Add Fedora 36 [\#619](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/619) ([joshcooper](https://github.com/joshcooper))
+- Support for Linux Mint 21 [\#616](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/616) ([luckyraul](https://github.com/luckyraul))
+- \(FM-8969\) Add support for macOS 12 ARM [\#615](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/615) ([joshcooper](https://github.com/joshcooper))
+- Add support for absolute\_source in puppet\_agent::install task [\#484](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/484) ([scbjans](https://github.com/scbjans))
 
-### Fixed
+## [v4.12.1] - 2022-07-13
 
-- \(MODULES-11334\) Handle TLS 1.2 on older Windows systems [\#611](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/611) ([chelnak](https://github.com/chelnak))
+### Summary
 
-## [v4.11.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.11.0) (2022-05-13)
+Bug fix release.
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.10.0...v4.11.0)
+### Bug Fixes
 
-### Added
+- Unnest module and class names in Ruby tasks ([#613](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/613))
 
-- \(maint\) Add macOS 12 [\#602](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/602) ([joshcooper](https://github.com/joshcooper))
+## [v4.12.0] - 2022-07-13
 
-### Fixed
+### Summary
 
-- \(MODULES-11315\) Updates AIO auto version logic [\#604](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/604) ([mhashizume](https://github.com/mhashizume))
-- DOC-5213 install\_options for gMSAs [\#601](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/601) ([aimurphy](https://github.com/aimurphy))
+Add support for Ubuntu 22.04, Debian 11, Red Hat Enterprise Linux 9, and Fedora 34. Handle TLS 1.2 on older Windows systems.
+### Features
 
-## [v4.10.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.10.0) (2022-01-26)
+- ([FM-8943](https://tickets.puppetlabs.com/browse/FM-8943)) Add Ubuntu 22.04 support. ([#610](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/610))
+- Add support for Debian 11, Red Hat Enterprise Linux 9, and Fedora 34. ([#607](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/607))
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/4.9.0...v4.10.0)
+### Bug Fixes
 
-### Added
+- ([MODULES-11334](https://tickets.puppetlabs.com/browse/MODULES-11334)) Handle TLS 1.2 on older Windows systems. ([#611](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/611))
 
-- \(maint\). Add fact-limit configuration options to list. [\#584](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/584) ([Heidistein](https://github.com/Heidistein))
-- \(MODULES-11192\)\(MODULES-11168\) Add AlmaLinux and Rocky to the puppet-agent module [\#583](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/583) ([BobosilaVictor](https://github.com/BobosilaVictor))
-- \(IAC-1751/IAC-1753\) Add Rocky and AlmaLinux support to the install agent task [\#582](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/582) ([david22swan](https://github.com/david22swan))
-- Allow detection of non-AIO Puppet [\#581](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/581) ([smortex](https://github.com/smortex))
+## [v4.11.0] - 2022-05-13
 
-### Fixed
+### Summary
 
-- \(MODULES-11214\) Wrong url generated for darwin 11 [\#586](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/586) ([BobosilaVictor](https://github.com/BobosilaVictor))
+Add support for macOS 12. Allow module to function properly if there is a discrepancy between the AIO puppet-agent and Puppet versions.
+
+### Features
+
+- Add additional configuration options for puppet.conf ([#602](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/602))
+
+### Bug Fixes
+
+- ([MODULES-11315](https://tickets.puppetlabs.com/browse/MODULES-11315)) Allow module to function properly if there is a discrepancy between the AIO puppet-agent and Puppet versions. ([#604](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/604))
+- ([MODULES-11262](https://tickets.puppetlabs.com/browse/MODULES-11262)) Fix issue with version check on acceptance upgrade tests. ([#599](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/599))
+
+## [v4.10.0] - 2022-01-26
+
+### Summary
+
+Improve AlmaLinux and Rocky Linux support. Converted this module to be PDK-compliant. Other fixes and improvements
+
+### Features
+
+- ([MODULES-11168](https://tickets.puppetlabs.com/browse/MODULES-11168), [MODULES-11192](https://tickets.puppetlabs.com/browse/MODULES-11192)) Add AlmaLinux and Rocky to the puppet-agent module ([#582](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/582), [#583](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/583))
+- ([MODULES-11244](https://tickets.puppetlabs.com/browse/MODULES-11244)) Convert puppet_agent module to PDK ([#588](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/588))
+- Allow detection of non-AIO Ppuppet ([#581](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/581))
+- Add additional configuration options for puppet.conf ([#584](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/584))
+
+### Bug fixes
+
+- ([MODULES-11214](https://tickets.puppetlabs.com/browse/MODULES-11214)) Fix wrong URL generated for macOS 11 ([#586](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/586))
+
+### Acknowledgements
+
+Thanks to [smortex](https://github.com/smortex) and [Heidistein](https://github.com/Heidistein) who have contributed to this release 🎉!
 
 ## [4.9.0] - 2021-09-09
 
