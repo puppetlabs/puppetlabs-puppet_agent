@@ -7,24 +7,24 @@
 ### Classes
 
 * [`puppet_agent`](#puppet_agent): == Class: puppet_agent  Upgrades Puppet 4 and newer to the requested version.  === Parameters  [arch]   The package architecture. Defaults to
-* [`puppet_agent::configure`](#puppet_agentconfigure)
-* [`puppet_agent::install`](#puppet_agentinstall): == Class puppet_agent::install  This class is called from puppet_agent for install.  === Parameters  [version]   The puppet-agent version to 
-* [`puppet_agent::install::darwin`](#puppet_agentinstalldarwin): == Class puppet_agent::install::darwin  Private class called from puppet_agent class  Manage the install process for Darwin OSes specifically
-* [`puppet_agent::install::solaris`](#puppet_agentinstallsolaris): == Class puppet_agent::install::solaris  Private class called from puppet_agent class  Manage the install process for solaris specifically
-* [`puppet_agent::install::suse`](#puppet_agentinstallsuse): == Class puppet_agent::install::suse  Private class called from puppet_agent class  Manage the install process for SUSE OSes specifically
-* [`puppet_agent::install::windows`](#puppet_agentinstallwindows): == Class puppet_agent::install::windows  Private class called from puppet_agent class  Manage the install process for windows specifically
-* [`puppet_agent::osfamily::aix`](#puppet_agentosfamilyaix)
-* [`puppet_agent::osfamily::darwin`](#puppet_agentosfamilydarwin)
-* [`puppet_agent::osfamily::debian`](#puppet_agentosfamilydebian)
-* [`puppet_agent::osfamily::redhat`](#puppet_agentosfamilyredhat)
-* [`puppet_agent::osfamily::solaris`](#puppet_agentosfamilysolaris)
-* [`puppet_agent::osfamily::suse`](#puppet_agentosfamilysuse)
-* [`puppet_agent::osfamily::windows`](#puppet_agentosfamilywindows)
-* [`puppet_agent::params`](#puppet_agentparams): == Class puppet_agent::params  This class is meant to be called from puppet_agent It sets variables according to platform.
-* [`puppet_agent::prepare`](#puppet_agentprepare): == Class puppet_agent::prepare  This class is called from puppet_agent to prepare for the upgrade.  === Parameters  [version]   The puppet-ag
-* [`puppet_agent::prepare::package`](#puppet_agentpreparepackage): == Class puppet_agent::prepare::package  The only job this class has is to ensure that the correct puppet-agent package is downloaded locally
-* [`puppet_agent::prepare::puppet_config`](#puppet_agentpreparepuppet_config): == Class puppet_agent::prepare::puppet_config  Private class called from puppet_agent::prepare class
-* [`puppet_agent::service`](#puppet_agentservice): == Class puppet_agent::service  This class is meant to be called from puppet_agent. It ensures that managed services are running.
+* [`puppet_agent::configure`](#puppet_agent--configure)
+* [`puppet_agent::install`](#puppet_agent--install): == Class puppet_agent::install  This class is called from puppet_agent for install.  === Parameters  [version]   The puppet-agent version to 
+* [`puppet_agent::install::darwin`](#puppet_agent--install--darwin): == Class puppet_agent::install::darwin  Private class called from puppet_agent class  Manage the install process for Darwin OSes specifically
+* [`puppet_agent::install::solaris`](#puppet_agent--install--solaris): == Class puppet_agent::install::solaris  Private class called from puppet_agent class  Manage the install process for solaris specifically
+* [`puppet_agent::install::suse`](#puppet_agent--install--suse): == Class puppet_agent::install::suse  Private class called from puppet_agent class  Manage the install process for SUSE OSes specifically
+* [`puppet_agent::install::windows`](#puppet_agent--install--windows): == Class puppet_agent::install::windows  Private class called from puppet_agent class  Manage the install process for windows specifically
+* [`puppet_agent::osfamily::aix`](#puppet_agent--osfamily--aix)
+* [`puppet_agent::osfamily::darwin`](#puppet_agent--osfamily--darwin)
+* [`puppet_agent::osfamily::debian`](#puppet_agent--osfamily--debian)
+* [`puppet_agent::osfamily::redhat`](#puppet_agent--osfamily--redhat)
+* [`puppet_agent::osfamily::solaris`](#puppet_agent--osfamily--solaris)
+* [`puppet_agent::osfamily::suse`](#puppet_agent--osfamily--suse)
+* [`puppet_agent::osfamily::windows`](#puppet_agent--osfamily--windows)
+* [`puppet_agent::params`](#puppet_agent--params): == Class puppet_agent::params  This class is meant to be called from puppet_agent It sets variables according to platform.
+* [`puppet_agent::prepare`](#puppet_agent--prepare): == Class puppet_agent::prepare  This class is called from puppet_agent to prepare for the upgrade.  === Parameters  [version]   The puppet-ag
+* [`puppet_agent::prepare::package`](#puppet_agent--prepare--package): == Class puppet_agent::prepare::package  The only job this class has is to ensure that the correct puppet-agent package is downloaded locally
+* [`puppet_agent::prepare::puppet_config`](#puppet_agent--prepare--puppet_config): == Class puppet_agent::prepare::puppet_config  Private class called from puppet_agent::prepare class
+* [`puppet_agent::service`](#puppet_agent--service): == Class puppet_agent::service  This class is meant to be called from puppet_agent. It ensures that managed services are running.
 
 ### Resource types
 
@@ -40,9 +40,9 @@
 
 ### Data types
 
-* [`Puppet_agent::Arch`](#puppet_agentarch)
-* [`Puppet_agent::Config`](#puppet_agentconfig)
-* [`Puppet_agent::Config_setting`](#puppet_agentconfig_setting): An enumerated list of settings which are permitted to be managed by this module.
+* [`Puppet_agent::Arch`](#Puppet_agent--Arch)
+* [`Puppet_agent::Config`](#Puppet_agent--Config)
+* [`Puppet_agent::Config_setting`](#Puppet_agent--Config_setting): An enumerated list of settings which are permitted to be managed by this module.
 
 ### Tasks
 
@@ -58,7 +58,7 @@
 
 ### Plans
 
-* [`puppet_agent::run`](#puppet_agentrun): Starts a Puppet agent run on the specified targets. Note: This plan may cause issues when run in Puppet Enterprise.
+* [`puppet_agent::run`](#puppet_agent--run): Starts a Puppet agent run on the specified targets. Note: This plan may cause issues when run in Puppet Enterprise.
 
 ## Classes
 
@@ -92,7 +92,7 @@ Upgrades Puppet 4 and newer to the requested version.
   The package version to upgrade to. Explicitly specify the version to upgrade to,
   or set to 'auto' to specify the version of the compiling master.
 [service_names]
-  An array of services to start, normally `puppet` and `mcollective`.
+  An array of services to start, normally `puppet`.
   None will be started if the array is empty.
 [source]
   **INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute_source",
@@ -169,43 +169,43 @@ Upgrades Puppet 4 and newer to the requested version.
 
 The following parameters are available in the `puppet_agent` class:
 
-* [`arch`](#arch)
-* [`collection`](#collection)
-* [`is_pe`](#is_pe)
-* [`manage_pki_dir`](#manage_pki_dir)
-* [`manage_repo`](#manage_repo)
-* [`package_name`](#package_name)
-* [`package_version`](#package_version)
-* [`service_names`](#service_names)
-* [`source`](#source)
-* [`absolute_source`](#absolute_source)
-* [`yum_source`](#yum_source)
-* [`apt_source`](#apt_source)
-* [`mac_source`](#mac_source)
-* [`windows_source`](#windows_source)
-* [`solaris_source`](#solaris_source)
-* [`aix_source`](#aix_source)
-* [`use_alternate_sources`](#use_alternate_sources)
-* [`alternate_pe_source`](#alternate_pe_source)
-* [`install_dir`](#install_dir)
-* [`disable_proxy`](#disable_proxy)
-* [`proxy`](#proxy)
-* [`install_options`](#install_options)
-* [`skip_if_unavailable`](#skip_if_unavailable)
-* [`msi_move_locked_files`](#msi_move_locked_files)
-* [`wait_for_pxp_agent_exit`](#wait_for_pxp_agent_exit)
-* [`wait_for_puppet_run`](#wait_for_puppet_run)
-* [`config`](#config)
+* [`arch`](#-puppet_agent--arch)
+* [`collection`](#-puppet_agent--collection)
+* [`is_pe`](#-puppet_agent--is_pe)
+* [`manage_pki_dir`](#-puppet_agent--manage_pki_dir)
+* [`manage_repo`](#-puppet_agent--manage_repo)
+* [`package_name`](#-puppet_agent--package_name)
+* [`package_version`](#-puppet_agent--package_version)
+* [`service_names`](#-puppet_agent--service_names)
+* [`source`](#-puppet_agent--source)
+* [`absolute_source`](#-puppet_agent--absolute_source)
+* [`yum_source`](#-puppet_agent--yum_source)
+* [`apt_source`](#-puppet_agent--apt_source)
+* [`mac_source`](#-puppet_agent--mac_source)
+* [`windows_source`](#-puppet_agent--windows_source)
+* [`solaris_source`](#-puppet_agent--solaris_source)
+* [`aix_source`](#-puppet_agent--aix_source)
+* [`use_alternate_sources`](#-puppet_agent--use_alternate_sources)
+* [`alternate_pe_source`](#-puppet_agent--alternate_pe_source)
+* [`install_dir`](#-puppet_agent--install_dir)
+* [`disable_proxy`](#-puppet_agent--disable_proxy)
+* [`proxy`](#-puppet_agent--proxy)
+* [`install_options`](#-puppet_agent--install_options)
+* [`skip_if_unavailable`](#-puppet_agent--skip_if_unavailable)
+* [`msi_move_locked_files`](#-puppet_agent--msi_move_locked_files)
+* [`wait_for_pxp_agent_exit`](#-puppet_agent--wait_for_pxp_agent_exit)
+* [`wait_for_puppet_run`](#-puppet_agent--wait_for_puppet_run)
+* [`config`](#-puppet_agent--config)
 
-##### <a name="arch"></a>`arch`
+##### <a name="-puppet_agent--arch"></a>`arch`
 
 Data type: `Any`
 
 
 
-Default value: `$::architecture`
+Default value: `$facts['os']['architecture']`
 
-##### <a name="collection"></a>`collection`
+##### <a name="-puppet_agent--collection"></a>`collection`
 
 Data type: `Any`
 
@@ -213,7 +213,7 @@ Data type: `Any`
 
 Default value: `$::puppet_agent::params::collection`
 
-##### <a name="is_pe"></a>`is_pe`
+##### <a name="-puppet_agent--is_pe"></a>`is_pe`
 
 Data type: `Any`
 
@@ -221,23 +221,23 @@ Data type: `Any`
 
 Default value: `$::puppet_agent::params::_is_pe`
 
-##### <a name="manage_pki_dir"></a>`manage_pki_dir`
+##### <a name="-puppet_agent--manage_pki_dir"></a>`manage_pki_dir`
 
 Data type: `Any`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="manage_repo"></a>`manage_repo`
+##### <a name="-puppet_agent--manage_repo"></a>`manage_repo`
 
 Data type: `Any`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="package_name"></a>`package_name`
+##### <a name="-puppet_agent--package_name"></a>`package_name`
 
 Data type: `Any`
 
@@ -245,15 +245,15 @@ Data type: `Any`
 
 Default value: `'puppet-agent'`
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--package_version"></a>`package_version`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="service_names"></a>`service_names`
+##### <a name="-puppet_agent--service_names"></a>`service_names`
 
 Data type: `Any`
 
@@ -261,23 +261,23 @@ Data type: `Any`
 
 Default value: `$::puppet_agent::params::service_names`
 
-##### <a name="source"></a>`source`
+##### <a name="-puppet_agent--source"></a>`source`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="absolute_source"></a>`absolute_source`
+##### <a name="-puppet_agent--absolute_source"></a>`absolute_source`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="yum_source"></a>`yum_source`
+##### <a name="-puppet_agent--yum_source"></a>`yum_source`
 
 Data type: `Any`
 
@@ -285,7 +285,7 @@ Data type: `Any`
 
 Default value: `'http://yum.puppet.com'`
 
-##### <a name="apt_source"></a>`apt_source`
+##### <a name="-puppet_agent--apt_source"></a>`apt_source`
 
 Data type: `Any`
 
@@ -293,7 +293,7 @@ Data type: `Any`
 
 Default value: `'https://apt.puppet.com'`
 
-##### <a name="mac_source"></a>`mac_source`
+##### <a name="-puppet_agent--mac_source"></a>`mac_source`
 
 Data type: `Any`
 
@@ -301,7 +301,7 @@ Data type: `Any`
 
 Default value: `'https://downloads.puppet.com'`
 
-##### <a name="windows_source"></a>`windows_source`
+##### <a name="-puppet_agent--windows_source"></a>`windows_source`
 
 Data type: `Any`
 
@@ -309,7 +309,7 @@ Data type: `Any`
 
 Default value: `'https://downloads.puppet.com'`
 
-##### <a name="solaris_source"></a>`solaris_source`
+##### <a name="-puppet_agent--solaris_source"></a>`solaris_source`
 
 Data type: `Any`
 
@@ -317,7 +317,7 @@ Data type: `Any`
 
 Default value: `'puppet:///pe_packages'`
 
-##### <a name="aix_source"></a>`aix_source`
+##### <a name="-puppet_agent--aix_source"></a>`aix_source`
 
 Data type: `Any`
 
@@ -325,47 +325,47 @@ Data type: `Any`
 
 Default value: `'puppet:///pe_packages'`
 
-##### <a name="use_alternate_sources"></a>`use_alternate_sources`
+##### <a name="-puppet_agent--use_alternate_sources"></a>`use_alternate_sources`
 
 Data type: `Any`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="alternate_pe_source"></a>`alternate_pe_source`
-
-Data type: `Any`
-
-
-
-Default value: ``undef``
-
-##### <a name="install_dir"></a>`install_dir`
+##### <a name="-puppet_agent--alternate_pe_source"></a>`alternate_pe_source`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="disable_proxy"></a>`disable_proxy`
+##### <a name="-puppet_agent--install_dir"></a>`install_dir`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+
+
+Default value: `undef`
+
+##### <a name="-puppet_agent--disable_proxy"></a>`disable_proxy`
 
 Data type: `Any`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="proxy"></a>`proxy`
+##### <a name="-puppet_agent--proxy"></a>`proxy`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="install_options"></a>`install_options`
+##### <a name="-puppet_agent--install_options"></a>`install_options`
 
 Data type: `Any`
 
@@ -373,7 +373,7 @@ Data type: `Any`
 
 Default value: `[]`
 
-##### <a name="skip_if_unavailable"></a>`skip_if_unavailable`
+##### <a name="-puppet_agent--skip_if_unavailable"></a>`skip_if_unavailable`
 
 Data type: `Any`
 
@@ -381,31 +381,31 @@ Data type: `Any`
 
 Default value: `'absent'`
 
-##### <a name="msi_move_locked_files"></a>`msi_move_locked_files`
+##### <a name="-puppet_agent--msi_move_locked_files"></a>`msi_move_locked_files`
 
 Data type: `Any`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="wait_for_pxp_agent_exit"></a>`wait_for_pxp_agent_exit`
-
-Data type: `Any`
-
-
-
-Default value: ``undef``
-
-##### <a name="wait_for_puppet_run"></a>`wait_for_puppet_run`
+##### <a name="-puppet_agent--wait_for_pxp_agent_exit"></a>`wait_for_pxp_agent_exit`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="config"></a>`config`
+##### <a name="-puppet_agent--wait_for_puppet_run"></a>`wait_for_puppet_run`
+
+Data type: `Any`
+
+
+
+Default value: `undef`
+
+##### <a name="-puppet_agent--config"></a>`config`
 
 Data type: `Array[Puppet_agent::Config]`
 
@@ -413,11 +413,11 @@ Data type: `Array[Puppet_agent::Config]`
 
 Default value: `[]`
 
-### <a name="puppet_agentconfigure"></a>`puppet_agent::configure`
+### <a name="puppet_agent--configure"></a>`puppet_agent::configure`
 
 The puppet_agent::configure class.
 
-### <a name="puppet_agentinstall"></a>`puppet_agent::install`
+### <a name="puppet_agent--install"></a>`puppet_agent::install`
 
 == Class puppet_agent::install
 
@@ -432,11 +432,11 @@ This class is called from puppet_agent for install.
 
 The following parameters are available in the `puppet_agent::install` class:
 
-* [`package_version`](#package_version)
-* [`install_dir`](#install_dir)
-* [`install_options`](#install_options)
+* [`package_version`](#-puppet_agent--install--package_version)
+* [`install_dir`](#-puppet_agent--install--install_dir)
+* [`install_options`](#-puppet_agent--install--install_options)
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--install--package_version"></a>`package_version`
 
 Data type: `Any`
 
@@ -444,15 +444,15 @@ Data type: `Any`
 
 Default value: `'present'`
 
-##### <a name="install_dir"></a>`install_dir`
+##### <a name="-puppet_agent--install--install_dir"></a>`install_dir`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="install_options"></a>`install_options`
+##### <a name="-puppet_agent--install--install_options"></a>`install_options`
 
 Data type: `Any`
 
@@ -460,7 +460,7 @@ Data type: `Any`
 
 Default value: `[]`
 
-### <a name="puppet_agentinstalldarwin"></a>`puppet_agent::install::darwin`
+### <a name="puppet_agent--install--darwin"></a>`puppet_agent::install::darwin`
 
 == Class puppet_agent::install::darwin
 
@@ -472,16 +472,16 @@ Manage the install process for Darwin OSes specifically
 
 The following parameters are available in the `puppet_agent::install::darwin` class:
 
-* [`package_version`](#package_version)
-* [`install_options`](#install_options)
+* [`package_version`](#-puppet_agent--install--darwin--package_version)
+* [`install_options`](#-puppet_agent--install--darwin--install_options)
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--install--darwin--package_version"></a>`package_version`
 
 Data type: `Any`
 
 
 
-##### <a name="install_options"></a>`install_options`
+##### <a name="-puppet_agent--install--darwin--install_options"></a>`install_options`
 
 Data type: `Any`
 
@@ -489,7 +489,7 @@ Data type: `Any`
 
 Default value: `[]`
 
-### <a name="puppet_agentinstallsolaris"></a>`puppet_agent::install::solaris`
+### <a name="puppet_agent--install--solaris"></a>`puppet_agent::install::solaris`
 
 == Class puppet_agent::install::solaris
 
@@ -501,16 +501,16 @@ Manage the install process for solaris specifically
 
 The following parameters are available in the `puppet_agent::install::solaris` class:
 
-* [`package_version`](#package_version)
-* [`install_options`](#install_options)
+* [`package_version`](#-puppet_agent--install--solaris--package_version)
+* [`install_options`](#-puppet_agent--install--solaris--install_options)
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--install--solaris--package_version"></a>`package_version`
 
 Data type: `Any`
 
 
 
-##### <a name="install_options"></a>`install_options`
+##### <a name="-puppet_agent--install--solaris--install_options"></a>`install_options`
 
 Data type: `Any`
 
@@ -518,7 +518,7 @@ Data type: `Any`
 
 Default value: `[]`
 
-### <a name="puppet_agentinstallsuse"></a>`puppet_agent::install::suse`
+### <a name="puppet_agent--install--suse"></a>`puppet_agent::install::suse`
 
 == Class puppet_agent::install::suse
 
@@ -530,16 +530,16 @@ Manage the install process for SUSE OSes specifically
 
 The following parameters are available in the `puppet_agent::install::suse` class:
 
-* [`package_version`](#package_version)
-* [`install_options`](#install_options)
+* [`package_version`](#-puppet_agent--install--suse--package_version)
+* [`install_options`](#-puppet_agent--install--suse--install_options)
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--install--suse--package_version"></a>`package_version`
 
 Data type: `Any`
 
 
 
-##### <a name="install_options"></a>`install_options`
+##### <a name="-puppet_agent--install--suse--install_options"></a>`install_options`
 
 Data type: `Any`
 
@@ -547,7 +547,7 @@ Data type: `Any`
 
 Default value: `[]`
 
-### <a name="puppet_agentinstallwindows"></a>`puppet_agent::install::windows`
+### <a name="puppet_agent--install--windows"></a>`puppet_agent::install::windows`
 
 == Class puppet_agent::install::windows
 
@@ -559,18 +559,18 @@ Manage the install process for windows specifically
 
 The following parameters are available in the `puppet_agent::install::windows` class:
 
-* [`install_dir`](#install_dir)
-* [`install_options`](#install_options)
+* [`install_dir`](#-puppet_agent--install--windows--install_dir)
+* [`install_options`](#-puppet_agent--install--windows--install_options)
 
-##### <a name="install_dir"></a>`install_dir`
+##### <a name="-puppet_agent--install--windows--install_dir"></a>`install_dir`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="install_options"></a>`install_options`
+##### <a name="-puppet_agent--install--windows--install_options"></a>`install_options`
 
 Data type: `Any`
 
@@ -578,42 +578,42 @@ Data type: `Any`
 
 Default value: `[]`
 
-### <a name="puppet_agentosfamilyaix"></a>`puppet_agent::osfamily::aix`
+### <a name="puppet_agent--osfamily--aix"></a>`puppet_agent::osfamily::aix`
 
 The puppet_agent::osfamily::aix class.
 
-### <a name="puppet_agentosfamilydarwin"></a>`puppet_agent::osfamily::darwin`
+### <a name="puppet_agent--osfamily--darwin"></a>`puppet_agent::osfamily::darwin`
 
 The puppet_agent::osfamily::darwin class.
 
-### <a name="puppet_agentosfamilydebian"></a>`puppet_agent::osfamily::debian`
+### <a name="puppet_agent--osfamily--debian"></a>`puppet_agent::osfamily::debian`
 
 The puppet_agent::osfamily::debian class.
 
-### <a name="puppet_agentosfamilyredhat"></a>`puppet_agent::osfamily::redhat`
+### <a name="puppet_agent--osfamily--redhat"></a>`puppet_agent::osfamily::redhat`
 
 The puppet_agent::osfamily::redhat class.
 
-### <a name="puppet_agentosfamilysolaris"></a>`puppet_agent::osfamily::solaris`
+### <a name="puppet_agent--osfamily--solaris"></a>`puppet_agent::osfamily::solaris`
 
 The puppet_agent::osfamily::solaris class.
 
-### <a name="puppet_agentosfamilysuse"></a>`puppet_agent::osfamily::suse`
+### <a name="puppet_agent--osfamily--suse"></a>`puppet_agent::osfamily::suse`
 
 The puppet_agent::osfamily::suse class.
 
-### <a name="puppet_agentosfamilywindows"></a>`puppet_agent::osfamily::windows`
+### <a name="puppet_agent--osfamily--windows"></a>`puppet_agent::osfamily::windows`
 
 The puppet_agent::osfamily::windows class.
 
-### <a name="puppet_agentparams"></a>`puppet_agent::params`
+### <a name="puppet_agent--params"></a>`puppet_agent::params`
 
 == Class puppet_agent::params
 
 This class is meant to be called from puppet_agent
 It sets variables according to platform.
 
-### <a name="puppet_agentprepare"></a>`puppet_agent::prepare`
+### <a name="puppet_agent--prepare"></a>`puppet_agent::prepare`
 
 == Class puppet_agent::prepare
 
@@ -628,17 +628,17 @@ This class is called from puppet_agent to prepare for the upgrade.
 
 The following parameters are available in the `puppet_agent::prepare` class:
 
-* [`package_version`](#package_version)
+* [`package_version`](#-puppet_agent--prepare--package_version)
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--prepare--package_version"></a>`package_version`
 
 Data type: `Any`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="puppet_agentpreparepackage"></a>`puppet_agent::prepare::package`
+### <a name="puppet_agent--prepare--package"></a>`puppet_agent::prepare::package`
 
 == Class puppet_agent::prepare::package
 
@@ -653,15 +653,15 @@ without package managers capable of working with a remote https repository.
 
 The following parameters are available in the `puppet_agent::prepare::package` class:
 
-* [`source`](#source)
+* [`source`](#-puppet_agent--prepare--package--source)
 
-##### <a name="source"></a>`source`
+##### <a name="-puppet_agent--prepare--package--source"></a>`source`
 
 Data type: `Any`
 
 
 
-### <a name="puppet_agentpreparepuppet_config"></a>`puppet_agent::prepare::puppet_config`
+### <a name="puppet_agent--prepare--puppet_config"></a>`puppet_agent::prepare::puppet_config`
 
 == Class puppet_agent::prepare::puppet_config
 
@@ -671,15 +671,15 @@ Private class called from puppet_agent::prepare class
 
 The following parameters are available in the `puppet_agent::prepare::puppet_config` class:
 
-* [`package_version`](#package_version)
+* [`package_version`](#-puppet_agent--prepare--puppet_config--package_version)
 
-##### <a name="package_version"></a>`package_version`
+##### <a name="-puppet_agent--prepare--puppet_config--package_version"></a>`package_version`
 
 Data type: `Any`
 
 
 
-### <a name="puppet_agentservice"></a>`puppet_agent::service`
+### <a name="puppet_agent--service"></a>`puppet_agent::service`
 
 == Class puppet_agent::service
 
@@ -711,16 +711,16 @@ Stops the current puppet run
 
 The following parameters are available in the `puppet_agent_end_run` type.
 
-* [`name`](#name)
-* [`provider`](#provider)
+* [`name`](#-puppet_agent_end_run--name)
+* [`provider`](#-puppet_agent_end_run--provider)
 
-##### <a name="name"></a>`name`
+##### <a name="-puppet_agent_end_run--name"></a>`name`
 
 namevar
 
 The desired puppet-agent version
 
-##### <a name="provider"></a>`provider`
+##### <a name="-puppet_agent_end_run--provider"></a>`provider`
 
 The specific backend to use for this `puppet_agent_end_run` resource. You will seldom need to specify this --- Puppet
 will usually discover the appropriate provider for your platform.
@@ -743,16 +743,16 @@ whether or not the error log exists
 
 The following parameters are available in the `puppet_agent_upgrade_error` type.
 
-* [`name`](#name)
-* [`provider`](#provider)
+* [`name`](#-puppet_agent_upgrade_error--name)
+* [`provider`](#-puppet_agent_upgrade_error--provider)
 
-##### <a name="name"></a>`name`
+##### <a name="-puppet_agent_upgrade_error--name"></a>`name`
 
 namevar
 
 The name of the failure log to check for in puppet's $statedir. If this log exists the resource will fail.
 
-##### <a name="provider"></a>`provider`
+##### <a name="-puppet_agent_upgrade_error--provider"></a>`provider`
 
 The specific backend to use for this `puppet_agent_upgrade_error` resource. You will seldom need to specify this ---
 Puppet will usually discover the appropriate provider for your platform.
@@ -821,41 +821,33 @@ Returns: `Any`
 
 ## Data types
 
-### <a name="puppet_agentarch"></a>`Puppet_agent::Arch`
+### <a name="Puppet_agent--Arch"></a>`Puppet_agent::Arch`
 
 The Puppet_agent::Arch data type.
 
-Alias of
+Alias of `Pattern[/^x86$/, /^x64$/, /^i386$/, /^i86pc$/, /^amd64$/, /^x86_64$/, /^power$/, /^sun4[uv]$/, /^ppc64le$/, /^aarch64$/, /PowerPC_POWER/]`
 
-```puppet
-Pattern[/^x86$/, /^x64$/, /^i386$/, /^i86pc$/, /^amd64$/, /^x86_64$/, /^power$/, /^sun4[uv]$/, /^ppc64le$/, /^aarch64$/, /PowerPC_POWER/]
-```
-
-### <a name="puppet_agentconfig"></a>`Puppet_agent::Config`
+### <a name="Puppet_agent--Config"></a>`Puppet_agent::Config`
 
 The Puppet_agent::Config data type.
 
 Alias of
 
 ```puppet
-Variant[Struct[{section          => Enum[main, server, agent, user, master],
+Variant[Struct[{ section          => Enum[main, server, agent, user, master],
                                             setting          => Puppet_agent::Config_setting,
                                             value            => String,
-                                            Optional[ensure] => Enum[present, absent]}], Struct[{section          => Enum[main, server, agent, user, master],
+                                            Optional[ensure] => Enum[present, absent] }], Struct[{ section          => Enum[main, server, agent, user, master],
                                             setting          => Puppet_agent::Config_setting,
-                                            Optional[ensure] => Enum[absent]}]]
+                                            Optional[ensure] => Enum[absent] }]]
 ```
 
-### <a name="puppet_agentconfig_setting"></a>`Puppet_agent::Config_setting`
+### <a name="Puppet_agent--Config_setting"></a>`Puppet_agent::Config_setting`
 
 An enumerated list of settings which are permitted to be managed by this
 module.
 
-Alias of
-
-```puppet
-Enum[agent_catalog_run_lockfile, agent_disabled_lockfile, allow_duplicate_certs, always_retry_plugins, autoflush, autosign, basemodulepath, binder_config, bucketdir, ca_fingerprint, ca_name, ca_port, ca_server, ca_ttl, cacert, cacrl, cadir, cakey, capub, catalog_cache_terminus, catalog_terminus, cert_inventory, certdir, certificate_revocation, certname, ciphers, classfile, client_datadir, clientbucketdir, clientyamldir, code, codedir, color, confdir, config, config_file_name, config_version, configprint, crl_refresh_interval, csr_attributes, csrdir, daemonize, data_binding_terminus, default_file_terminus, default_manifest, default_schedules, deviceconfdir, deviceconfig, devicedir, diff, diff_args, digest_algorithm, disable_i18n, disable_per_environment_manifest, disable_warnings, dns_alt_names, document_all, environment, environment_data_provider, environment_timeout, environment_timeout_mode, environmentpath, evaltrace, external_nodes, fact_name_length_soft_limit, fact_value_length_soft_limit, facterng, factpath, facts_terminus, fileserverconfig, filetimeout, forge_authorization, freeze_main, func3x_check, future_features, genconfig, genmanifest, graph, graphdir, group, hiera_config, hostcert, hostcrl, hostcsr, hostprivkey, hostpubkey, http_connect_timeout, http_debug, http_extra_headers, http_keepalive_timeout, http_proxy_host, http_proxy_password, http_proxy_port, http_proxy_user, http_read_timeout, http_user_agent, ignore_plugin_errors, ignoremissingtypes, ignoreschedules, key_type, keylength, lastrunfile, lastrunreport, ldapattrs, ldapbase, ldapclassattrs, ldapparentattr, ldappassword, ldapport, ldapserver, ldapssl, ldapstackedattrs, ldapstring, ldaptls, ldapuser, libdir, localcacert, localedest, localesource, log_level, logdest, logdir, manage_internal_file_permissions, manifest, masterport, max_deprecations, max_errors, max_warnings, maximum_uid, maxwaitforcert, maxwaitforlock, merge_dependency_warnings, mkusers, module_groups, module_repository, module_working_dir, modulepath, name, named_curve, no_proxy, node_cache_terminus, node_name, node_name_fact, node_name_value, node_terminus, noop, number_of_facts_soft_limit, onetime, passfile, path, payload_soft_limit, pidfile, plugindest, pluginfactdest, pluginfactsource, pluginsignore, pluginsource, pluginsync, postrun_command, preferred_serialization_format, prerun_command, preview_outputdir, priority, privatedir, privatekeydir, profile, publickeydir, puppet_trace, puppetdlog, report, report_include_system_store, report_port, report_server, reportdir, reports, reporturl, requestdir, resourcefile, rest_authconfig, resubmit_facts, rich_data, route_file, rundir, runinterval, runtimeout, serial, server, server_datadir, server_list, serverport, show_diff, signeddir, skip_tags, sourceaddress, splay, splaylimit, srv_domain, ssl_client_ca_auth, ssl_client_header, ssl_client_verify_header, ssl_lockfile, ssl_server_ca_auth, ssl_trust_store, ssldir, statedir, statefile, statettl, static_catalogs, storeconfigs, storeconfigs_backend, strict, strict_environment_mode, strict_hostname_checking, strict_variables, summarize, supported_checksum_types, syslogfacility, tags, tasks, top_level_facts_soft_limit, trace, transactionstorefile, trusted_external_command, trusted_oid_mapping_file, use_cached_catalog, use_srv_records, usecacheonfailure, user, vardir, vendormoduledir, versioned_environment_dirs, waitforcert, waitforlock, yamldir]
-```
+Alias of `Enum[agent_catalog_run_lockfile, agent_disabled_lockfile, allow_duplicate_certs, always_retry_plugins, autoflush, autosign, basemodulepath, binder_config, bucketdir, ca_fingerprint, ca_name, ca_port, ca_server, ca_ttl, cacert, cacrl, cadir, cakey, capub, catalog_cache_terminus, catalog_terminus, cert_inventory, certdir, certificate_revocation, certname, ciphers, classfile, client_datadir, clientbucketdir, clientyamldir, code, codedir, color, confdir, config, config_file_name, config_version, configprint, crl_refresh_interval, csr_attributes, csrdir, daemonize, data_binding_terminus, default_file_terminus, default_manifest, default_schedules, deviceconfdir, deviceconfig, devicedir, diff, diff_args, digest_algorithm, disable_i18n, disable_per_environment_manifest, disable_warnings, dns_alt_names, document_all, environment, environment_data_provider, environment_timeout, environment_timeout_mode, environmentpath, evaltrace, external_nodes, fact_name_length_soft_limit, fact_value_length_soft_limit, facterng, factpath, facts_terminus, fileserverconfig, filetimeout, forge_authorization, freeze_main, func3x_check, future_features, genconfig, genmanifest, graph, graphdir, group, hiera_config, hostcert, hostcrl, hostcsr, hostprivkey, hostpubkey, http_connect_timeout, http_debug, http_extra_headers, http_keepalive_timeout, http_proxy_host, http_proxy_password, http_proxy_port, http_proxy_user, http_read_timeout, http_user_agent, ignore_plugin_errors, ignoremissingtypes, ignoreschedules, key_type, keylength, lastrunfile, lastrunreport, ldapattrs, ldapbase, ldapclassattrs, ldapparentattr, ldappassword, ldapport, ldapserver, ldapssl, ldapstackedattrs, ldapstring, ldaptls, ldapuser, libdir, localcacert, localedest, localesource, log_level, logdest, logdir, manage_internal_file_permissions, manifest, masterport, max_deprecations, max_errors, max_warnings, maximum_uid, maxwaitforcert, maxwaitforlock, merge_dependency_warnings, mkusers, module_groups, module_repository, module_working_dir, modulepath, name, named_curve, no_proxy, node_cache_terminus, node_name, node_name_fact, node_name_value, node_terminus, noop, number_of_facts_soft_limit, onetime, passfile, path, payload_soft_limit, pidfile, plugindest, pluginfactdest, pluginfactsource, pluginsignore, pluginsource, pluginsync, postrun_command, preferred_serialization_format, prerun_command, preview_outputdir, priority, privatedir, privatekeydir, profile, publickeydir, puppet_trace, puppetdlog, report, report_include_system_store, report_port, report_server, reportdir, reports, reporturl, requestdir, resourcefile, rest_authconfig, resubmit_facts, rich_data, route_file, rundir, runinterval, runtimeout, serial, server, server_datadir, server_list, serverport, show_diff, signeddir, skip_tags, sourceaddress, splay, splaylimit, srv_domain, ssl_client_ca_auth, ssl_client_header, ssl_client_verify_header, ssl_lockfile, ssl_server_ca_auth, ssl_trust_store, ssldir, statedir, statefile, statettl, static_catalogs, storeconfigs, storeconfigs_backend, strict, strict_environment_mode, strict_hostname_checking, strict_variables, summarize, supported_checksum_types, syslogfacility, tags, tasks, top_level_facts_soft_limit, trace, transactionstorefile, trusted_external_command, trusted_oid_mapping_file, use_cached_catalog, use_srv_records, usecacheonfailure, user, vardir, vendormoduledir, versioned_environment_dirs, waitforcert, waitforlock, yamldir]`
 
 ## Tasks
 
@@ -903,9 +895,15 @@ The version of puppet-agent to install (defaults to latest when no agent is inst
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet6, puppet7, puppet, puppet6-nightly, puppet7-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
+
+##### `absolute_source`
+
+Data type: `Optional[String]`
+
+The absolute source location to find the Puppet agent package
 
 ##### `yum_source`
 
@@ -965,9 +963,15 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet6, puppet7, puppet, puppet6-nightly, puppet7-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
+
+##### `absolute_source`
+
+Data type: `Optional[String]`
+
+The absolute source location to find the Puppet agent package
 
 ##### `yum_source`
 
@@ -1027,9 +1031,15 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet6, puppet7, puppet, puppet6-nightly, puppet7-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
+
+##### `absolute_source`
+
+Data type: `Optional[String]`
+
+The absolute source location to find the Puppet agent package
 
 ##### `yum_source`
 
@@ -1079,6 +1089,20 @@ Run the Puppet agent. This task may cause problems if run in Puppet Enterprise.
 
 **Supports noop?** false
 
+#### Parameters
+
+##### `noop`
+
+Data type: `Boolean`
+
+run the puppet agent with --noop
+
+##### `environment`
+
+Data type: `Optional[String[1]]`
+
+The desired puppet code environment to use
+
 ### <a name="version"></a>`version`
 
 Get the version of the Puppet agent package installed. Returns nothing if none present.
@@ -1099,7 +1123,7 @@ Get the version of the Puppet agent package installed. Returns nothing if none p
 
 ## Plans
 
-### <a name="puppet_agentrun"></a>`puppet_agent::run`
+### <a name="puppet_agent--run"></a>`puppet_agent::run`
 
 Starts a Puppet agent run on the specified targets.
 Note: This plan may cause issues when run in Puppet Enterprise.
@@ -1108,11 +1132,29 @@ Note: This plan may cause issues when run in Puppet Enterprise.
 
 The following parameters are available in the `puppet_agent::run` plan:
 
-* [`targets`](#targets)
+* [`targets`](#-puppet_agent--run--targets)
+* [`noop`](#-puppet_agent--run--noop)
+* [`environment`](#-puppet_agent--run--environment)
 
-##### <a name="targets"></a>`targets`
+##### <a name="-puppet_agent--run--targets"></a>`targets`
 
 Data type: `TargetSpec`
 
 The targets to start a Puppet agent run on.
+
+##### <a name="-puppet_agent--run--noop"></a>`noop`
+
+Data type: `Boolean`
+
+if true, all runs will use --noop
+
+Default value: `false`
+
+##### <a name="-puppet_agent--run--environment"></a>`environment`
+
+Data type: `Optional[String[1]]`
+
+the desired puppet code environment
+
+Default value: `undef`
 
