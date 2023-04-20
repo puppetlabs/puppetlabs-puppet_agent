@@ -30,14 +30,7 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
 
   step 'Install puppetserver' do
     # puppetserver is distributed in "release streams" instead of collections.
-
-    # Dirty, temporary workaround for when we have puppet8 agent nightlies but not server nightlies
-    # Once we have puppet8 server releases, pare down to just what's in the else statement
-    opts = if install_options[:puppet_collection].include?('nightly')
-             { release_stream: 'puppet7' }
-           else
-             { release_stream: install_options[:puppet_collection] }
-           end
+    opts = { release_stream: install_options[:puppet_collection] }
 
     install_puppetserver_on(master, opts)
 

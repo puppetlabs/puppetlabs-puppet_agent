@@ -87,9 +87,7 @@ module Beaker::DSL
       if args.is_a?(Symbol)
         collection = args.to_s
 
-        # Dirty, temporary workaround for when we have puppet8 agent nightlies but not server nightlies
-        # Once we have puppet8 server releases, remove the second conditional
-        unless collection.include?(server_collection) || collection == 'puppet8-nightly'
+        unless collection.include?(server_collection)
           skip_test(msg_prefix + "\nThis test requires a puppetserver from the #{collection} collection. Skipping the test ...")
         end
 
