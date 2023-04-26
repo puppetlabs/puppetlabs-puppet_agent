@@ -11,14 +11,10 @@ test_name 'puppet_agent class: Upgrade agents from puppet7 to puppet8' do
   puppet_testing_environment = new_puppet_testing_environment
 
   step 'Create new site.pp with upgrade manifest' do
-    # In previous versions of this manifest, Windows and macOS downloaded the package with the latest SHA
-    # Due to issues with versioning Puppet 8 in its prerelease stage, we'll use auto for now.
     manifest = <<-PP
 node default {
-  if $facts['os']['family'] in ['solaris', 'aix'] {
+  if $facts['os']['family'] =~ /^(?i:windows|solaris|aix|darwin)$/ {
     $_package_version = '#{latest_version}'
-  } elsif $facts['os']['family'] in ['darwin', 'windows'] {
-    $_package_version = 'auto'
   } else {
     $_package_version = 'latest'
   }
@@ -53,11 +49,7 @@ node default {
     agents_only.each do |agent|
       on(agent, puppet('agent -t --debug'), acceptable_exit_codes: 2)
       wait_for_installation_pid(agent)
-      # The aio_agent_version fact reports the wrong version for puppet8 prerelease nightlies
-      # Use this statement instead after the Puppet 8.0.0 release
-      # assert(puppet_agent_version_on(agent) =~ %r{^8\.\d+\.\d+.*})
-      puppet_version = on(agent, puppet('--version')).output
-      assert(puppet_version.start_with?('8.'))
+      assert(puppet_agent_version_on(agent) =~ %r{^8\.\d+\.\d+.*})
     end
   end
 
