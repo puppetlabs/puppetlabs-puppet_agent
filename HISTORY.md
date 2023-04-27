@@ -1,3 +1,28 @@
+## [v4.14.0] - 2023-04-27
+
+### Summary
+
+Add support for Puppet 8.
+
+### Features
+
+- (PA-5336) Update tests and tasks for puppet8 ([#650](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/650))
+
+## [v4.13.0] - 2023-03-21
+
+### Summary
+
+Add support for Puppet 8 nightlies, additional platform support, new features for run task/plan and install task.
+
+### Features
+
+- Add support for absolute_source in puppet_agent::install task ([#484](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/484))
+- (FM-8969) Add support for macOS 12 ARM ([#615](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/615))
+- Support for Linux Mint 21 ([#616](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/616))
+- (FM-8983) Add Fedora 36 ([#619](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/619))
+- run task/plan: Allow noop and environment option ([#632](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/632/))
+- (MODULES-11361) Puppet 8 compatibility work ([#636](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/636))
+
 ## [v4.12.1] - 2022-07-13
 
 ### Summary
