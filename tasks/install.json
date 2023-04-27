@@ -7,7 +7,7 @@
     },
     "collection": {
       "description": "The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)",
-      "type": "Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]"
+      "type": "Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]"
     },
     "absolute_source": {
       "description": "The absolute source location to find the Puppet agent package",

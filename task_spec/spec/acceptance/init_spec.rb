@@ -66,9 +66,7 @@ describe 'install task' do
     #   puppet_8_collection = 'puppet8-nightly'
     # else
     puppet_7_collection = 'puppet7'
-    # We currently only have nightly builds of puppet8 available. Update
-    # this to the normal collection once we have a release.
-    puppet_8_collection = 'puppet8-nightly'
+    puppet_8_collection = 'puppet8'
     # end
 
     # We can only test puppet 7 -> 7 upgrades if multiple Puppet releases
@@ -203,29 +201,13 @@ describe 'install task' do
 
     # Verify that it upgraded
     installed_version = nil
-    # With prerelease puppet8, the puppet_agent::version task returns the wrong
-    # output. To temporarily work around this, we'll run puppet --version.
-    # Revert this change once Puppet 8.0.0 has been released.
-    # results = run_task('puppet_agent::version', 'target', {})
-    results = if %r{win}.match?(target_platform)
-                run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet --version', 'target')
-              else
-                run_command('/opt/puppetlabs/bin/puppet --version', 'target')
-              end
-    results.each do |res|
-      expect(res).to include('status' => 'success')
-      installed_version = res['value']['stdout']
-      expect(installed_version).not_to match(%r{^7\.\d+\.\d+})
-      expect(installed_version).to match(%r{^8\.\d+\.\d+})
-      # We don't get the expected output with prerelease puppet8
-      # expect(res['value']['source']).to be
-    end
-
-    # More prerelease puppet8 workarounds, this block can also be deleted
-    # once Puppet 8.0.0 has been released.
     results = run_task('puppet_agent::version', 'target', {})
     results.each do |res|
+      expect(res).to include('status' => 'success')
       installed_version = res['value']['version']
+      expect(installed_version).not_to match(%r{^7\.\d+\.\d+})
+      expect(installed_version).to match(%r{^8\.\d+\.\d+})
+      expect(res['value']['source']).to be
     end
 
     # Try installing the same version again
