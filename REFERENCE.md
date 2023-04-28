@@ -895,7 +895,7 @@ The version of puppet-agent to install (defaults to latest when no agent is inst
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
@@ -963,7 +963,7 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
@@ -1031,7 +1031,7 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
