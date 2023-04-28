@@ -2,25 +2,38 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.13.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.13.0) (2023-03-21)
+## [v4.14.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.14.0) (2023-04-28)
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.12.1...v4.13.0)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.13.0...v4.14.0)
 
 ### Added
 
-- \(PA-5242\) Updates install tasks for puppet8 [\#642](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/642) ([mhashizume](https://github.com/mhashizume))
-- \(MODULES-11365\) Enable rspec tests on Ruby 3.2 [\#641](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/641) ([mhashizume](https://github.com/mhashizume))
-- \(MODULES-11392\) Add Puppet 7 to 8 upgrade test [\#639](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/639) ([mhashizume](https://github.com/mhashizume))
-- \(MODULES-11361\) Updates legacy facts [\#637](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/637) ([mhashizume](https://github.com/mhashizume))
-- \(MODULES-11361\) Puppet 8 compatibility work [\#636](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/636) ([mhashizume](https://github.com/mhashizume))
-- \(MODULES-11348\) Replace lsbdistcodename with os.distro.codename [\#634](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/634) ([AriaXLi](https://github.com/AriaXLi))
-- run task/plan: Allow noop and environment option [\#632](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/632) ([bastelfreak](https://github.com/bastelfreak))
-- \(maint\) replace legacy validate function with datatype [\#628](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/628) ([bastelfreak](https://github.com/bastelfreak))
-- \(MODULES-11346\) Update dependency for APT module [\#624](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/624) ([MartyEwings](https://github.com/MartyEwings))
-- \(FM-8983\) Add Fedora 36 [\#619](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/619) ([joshcooper](https://github.com/joshcooper))
-- Support for Linux Mint 21 [\#616](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/616) ([luckyraul](https://github.com/luckyraul))
-- \(FM-8969\) Add support for macOS 12 ARM [\#615](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/615) ([joshcooper](https://github.com/joshcooper))
-- Add support for absolute\_source in puppet\_agent::install task [\#484](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/484) ([scbjans](https://github.com/scbjans))
+- \(PA-5336\) Update tests and tasks for puppet8 [\#650](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/650) ([mhashizume](https://github.com/mhashizume))
+
+## [v4.14.0] - 2023-04-28
+
+### Summary
+
+Add support for Puppet 8.
+
+### Features
+
+- (PA-5336) Update tests and tasks for puppet8 ([#650](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/650))
+
+## [v4.13.0] - 2023-03-21
+
+### Summary
+
+Add support for Puppet 8 nightlies, additional platform support, new features for run task/plan and install task.
+
+### Features
+
+- Add support for absolute_source in puppet_agent::install task ([#484](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/484))
+- (FM-8969) Add support for macOS 12 ARM ([#615](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/615))
+- Support for Linux Mint 21 ([#616](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/616))
+- (FM-8983) Add Fedora 36 ([#619](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/619))
+- run task/plan: Allow noop and environment option ([#632](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/632/))
+- (MODULES-11361) Puppet 8 compatibility work ([#636](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/636))
 
 ## [v4.12.1] - 2022-07-13
 
