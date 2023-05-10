@@ -81,5 +81,17 @@ notify { "#{notify_title}":
 
       it { sets_collection_to('puppet7') }
     end
+
+    context '2023.3 > pe_version >= 2023.0' do
+      let(:facts) { super().merge(custom_fact__pe_version: '2023.0') }
+
+      it { sets_collection_to('puppet7') }
+    end
+
+    context 'pe_version >= 2023.3' do
+      let(:facts) { super().merge(custom_fact__pe_version: '2023.3') }
+
+      it { sets_collection_to('puppet8') }
+    end
   end
 end
