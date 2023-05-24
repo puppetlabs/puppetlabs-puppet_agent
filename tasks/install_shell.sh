@@ -227,17 +227,10 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
 
     major_version=`echo $platform_version | cut -d. -f1,2`
 
-    # Excepting macOS 10.x, the major version is the first number only
-    if ! echo "${major_version}" | grep -q '^10\.'; then
-        major_version=$(echo "${major_version}" | cut -d '.' -f 1);
-    fi
+    # The major version is the first number only
+    major_version=$(echo "${major_version}" | cut -d '.' -f 1);
 
     case $major_version in
-      "10.11") platform_version="10.11";;
-      "10.12") platform_version="10.12";;
-      "10.13") platform_version="10.13";;
-      "10.14") platform_version="10.14";;
-      "10.15") platform_version="10.15";;
       "11")    platform_version="11";;
       "12")    platform_version="12";;
       *) echo "No builds for platform: $major_version"
