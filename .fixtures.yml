@@ -17,5 +17,3 @@ fixtures:
     facts:
       repo: "puppetlabs/facts"
       ref: "1.4.0"
-  symlinks:
-    puppet_agent: "#{source_dir}"
