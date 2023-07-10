@@ -237,7 +237,7 @@ describe 'puppet_agent' do
         before(:each) do
           Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
           Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| '1.10.100' }
-          Puppet::Parser::Functions.newfunction(:pe_compiling_server_version, type: :rvalue) { |_args| '2.20.200' }
+          Puppet::Parser::Functions.newfunction(:defined, type: :rvalue) { |_args| true }
         end
 
         context 'package_version is initialized automatically' do

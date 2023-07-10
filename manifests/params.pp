@@ -43,8 +43,9 @@ class puppet_agent::params {
   # The `is_pe` fact currently works by echoing out the puppet version
   # and greping for "puppet enterprise". With Puppet 4 and PE 2015.2, there
   # is no longer a "PE Puppet", and so that fact will no longer work.
-  # Instead check for the `is_pe` fact or if a PE provided function is available
-  $_is_pe = (getvar('::is_pe') or is_function_available('pe_compiling_server_version'))
+  # Instead check for the `is_pe` fact or if the `pe_anchor` resource type
+  # provided by the puppet_enterprise module exist.
+  $_is_pe = (getvar('::is_pe') or defined('pe_anchor'))
   if $_is_pe {
     # Calculate the default collection
     $_pe_version = pe_build_version()
