@@ -168,10 +168,6 @@ SCRIPT
         Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
           '2000.0.0'
         end
-
-        Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-          '5.5.4'
-        end
       end
 
       let(:facts) do

@@ -69,17 +69,9 @@ class puppet_agent::params {
     else {
       $collection = 'puppet8'
     }
-    # The aio puppet-agent version currently installed on the compiling master
-    # (only used in PE)
-    if is_function_available('pe_compiling_server_aio_build') {
-      $master_agent_version = pe_compiling_server_aio_build()
-    } else {
-      $master_agent_version = undef
-    }
   } else {
     $_pe_version = undef
     $pe_repo_dir = undef
-    $master_agent_version = undef
     $collection = 'PC1'
   }
 }

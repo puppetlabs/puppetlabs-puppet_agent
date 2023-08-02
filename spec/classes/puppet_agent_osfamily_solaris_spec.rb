@@ -100,10 +100,6 @@ EOF
         pe_version
       end
 
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-        package_version
-      end
-
       # Ensure we get a versionable package provider
       pkg = Puppet::Type.type(:package)
       allow(pkg).to receive(:defaultprovider).and_return(pkg.provider(:pkg))
@@ -309,10 +305,6 @@ EOF
         # Need to mock the PE functions
         Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
           pe_version
-        end
-
-        Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-          package_version
         end
       end
 

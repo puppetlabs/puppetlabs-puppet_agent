@@ -222,10 +222,6 @@ SCRIPT
       Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
         '2000.0.0'
       end
-
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-        package_version
-      end
     end
 
     describe 'supported environment' do

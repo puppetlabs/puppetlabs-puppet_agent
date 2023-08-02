@@ -35,7 +35,6 @@ describe 'puppet_agent' do
 
     before(:each) do
       Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| '1.10.100' }
     end
 
     it { is_expected.to contain_file('/opt/puppetlabs') }
@@ -75,7 +74,6 @@ describe 'puppet_agent' do
 
     before(:each) do
       Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
-      Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| '1.10.100' }
     end
 
     it {

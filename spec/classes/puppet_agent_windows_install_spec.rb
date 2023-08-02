@@ -33,10 +33,6 @@ RSpec.describe 'puppet_agent', tag: 'win' do
           Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
             '4.10.100'
           end
-
-          Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-            package_version
-          end
         end
 
         let(:facts) { facts.merge({ is_pe: true }) }
