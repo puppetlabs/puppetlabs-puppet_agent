@@ -54,6 +54,8 @@ describe 'install task' do
                          '7.7.0'
                        when %r{osx-12}, %r{ubuntu-22.04}
                          '7.18.0'
+                       when %r{osx-13}
+                         'latest'
                        else
                          '7.18.0'
                        end
@@ -65,9 +67,15 @@ describe 'install task' do
     #   puppet_7_collection = 'puppet7-nightly'
     #   puppet_8_collection = 'puppet8-nightly'
     # else
-    puppet_7_collection = 'puppet7'
-    puppet_8_collection = 'puppet8'
     # end
+    case target_platform
+    when %r{osx-13}
+      puppet_7_collection = 'puppet7-nightly'
+      puppet_8_collection = 'puppet8-nightly'
+    else
+      puppet_7_collection = 'puppet7'
+      puppet_8_collection = 'puppet8'
+    end
 
     # We can only test puppet 7 -> 7 upgrades if multiple Puppet releases
     # have supported a given platform. Once a platform has been supported
@@ -78,7 +86,12 @@ describe 'install task' do
     #                             else
     #                               true
     #                             end
-    multiple_puppet7_versions = true
+    multiple_puppet7_versions = case target_platform
+                                when %r{osx-13}
+                                  false
+                                else
+                                  true
+                                end
 
     # extra request is needed on windows hosts
     # this will fail with "execution expired"
