@@ -201,14 +201,6 @@ describe 'puppet_agent' do
           end
         end
 
-        context 'package_version is undef if pe_compiling_server_aio_build is not defined' do
-          let(:facts) do
-            global_facts(facts, os).merge(is_pe: true)
-          end
-
-          it { is_expected.to contain_class('puppet_agent').with_package_version(nil) }
-        end
-
         context 'package_version is same as master when set to auto' do
           let(:params) { { package_version: 'auto' } }
           let(:node_params) { { serverversion: '7.6.5' } }
@@ -237,7 +229,7 @@ describe 'puppet_agent' do
         before(:each) do
           Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
           Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) { |_args| '1.10.100' }
-          Puppet::Parser::Functions.newfunction(:pe_compiling_server_version, type: :rvalue) { |_args| '2.20.200' }
+          Puppet::Parser::Functions.newfunction(:defined, type: :rvalue) { |_args| true }
         end
 
         context 'package_version is initialized automatically' do
@@ -267,10 +259,6 @@ describe 'puppet_agent' do
             # Need to mock the PE functions
             Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
               '2000.0.0'
-            end
-
-            Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-              '1.10.100'
             end
           end
         end

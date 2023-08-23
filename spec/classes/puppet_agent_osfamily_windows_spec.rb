@@ -13,10 +13,6 @@ describe 'puppet_agent' do
       pe_version
     end
 
-    Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-      package_version
-    end
-
     allow(Puppet::Util).to receive(:absolute_path?).and_call_original
     allow(Puppet::Util).to receive(:absolute_path?).with(version_file).and_return true
     allow(Puppet::FileSystem).to receive(:exist?).and_call_original

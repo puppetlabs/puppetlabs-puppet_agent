@@ -1,15 +1,10 @@
 require 'spec_helper'
 
 describe 'puppet_agent' do
-  master_package_version = '1.10.100'
   before(:each) do
     # Need to mock the PE functions
     Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) do |_args|
       '2000.0.0'
-    end
-
-    Puppet::Parser::Functions.newfunction(:pe_compiling_server_aio_build, type: :rvalue) do |_args|
-      master_package_version
     end
 
     allow(Puppet::FileSystem).to receive(:exist?).and_call_original
