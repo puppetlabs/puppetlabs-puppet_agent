@@ -44,7 +44,7 @@ class puppet_agent::params {
   # and greping for "puppet enterprise". With Puppet 4 and PE 2015.2, there
   # is no longer a "PE Puppet", and so that fact will no longer work.
   # Instead check for the `is_pe` fact or if a PE provided function is available
-  $_is_pe = (getvar('::is_pe') or is_function_available('pe_compiling_server_version'))
+  $_is_pe = (getvar('::is_pe') or stdlib::has_function('pe_compiling_server_version'))
   if $_is_pe {
     # Calculate the default collection
     $_pe_version = pe_build_version()
@@ -70,7 +70,7 @@ class puppet_agent::params {
     }
     # The aio puppet-agent version currently installed on the compiling master
     # (only used in PE)
-    if is_function_available('pe_compiling_server_aio_build') {
+    if stdlib::has_function('pe_compiling_server_aio_build') {
       $master_agent_version = pe_compiling_server_aio_build()
     } else {
       $master_agent_version = undef
