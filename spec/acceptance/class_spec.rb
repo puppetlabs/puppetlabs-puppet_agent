@@ -3,7 +3,11 @@ require 'spec_helper_acceptance'
 
 describe 'puppet_agent class' do
   context 'default parameters in apply' do
-    before(:all) { setup_puppet_on default }
+    before(:all) do
+      setup_puppet_on default
+      pp = "class { 'puppet_agent': package_version => 'auto'}"
+      apply_manifest(pp, catch_failures: true)
+    end
     after(:all) { teardown_puppet_on default }
 
     describe package(package_name(default)) do
@@ -34,9 +38,6 @@ describe 'puppet_agent class' do
     describe 'manage_repo parameter' do
       context 'when true (default)' do
         it 'creates repo config' do
-          pp = "class { 'puppet_agent': }"
-          apply_manifest(pp, catch_failures: true)
-          wait_for_finish_on default
           case default['platform']
           when %r{debian|ubuntu}
             pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'https://apt.puppet.com', repos => 'puppet5'}"
@@ -53,9 +54,6 @@ describe 'puppet_agent class' do
 
       context 'when false' do
         it 'ceases to manage repo config' do
-          pp = "class { 'puppet_agent': }"
-          apply_manifest(pp, catch_failures: true)
-          wait_for_finish_on default
           case default['platform']
           when %r{debian|ubuntu}
             pp = "include apt\napt::source { 'pc_repo': ensure => absent }"
