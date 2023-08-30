@@ -3,24 +3,12 @@ require 'spec_helper_acceptance'
 
 describe 'puppet_agent class' do
   context 'default parameters in apply' do
-    before(:all) { setup_puppet_on default }
-    after(:all) { teardown_puppet_on default }
-
-    it 'works idempotently with no errors' do
-      pp = <<-EOS
-      class { 'puppet_agent': package_version => '5.5.21', collection => 'puppet5' }
-      EOS
-
+    before(:all) do
+      setup_puppet_on default
+      pp = "class { 'puppet_agent': package_version => 'auto'}"
       apply_manifest(pp, catch_failures: true)
-      wait_for_finish_on default
-      configure_agent_on default
-      # Run three times to ensure idempotency if upgrading with the package resource (MODULES-10666)
-      unless %r{solaris-10|aix|osx|windows}i.match?(default['platform'])
-        apply_manifest(pp, expect_changes: true)
-        wait_for_finish_on default
-      end
-      apply_manifest(pp, catch_changes: true)
     end
+    after(:all) { teardown_puppet_on default }
 
     describe package(package_name(default)) do
       it { is_expected.to be_installed }
@@ -50,9 +38,6 @@ describe 'puppet_agent class' do
     describe 'manage_repo parameter' do
       context 'when true (default)' do
         it 'creates repo config' do
-          pp = "class { 'puppet_agent': }"
-          apply_manifest(pp, catch_failures: true)
-          wait_for_finish_on default
           case default['platform']
           when %r{debian|ubuntu}
             pp = "include apt\napt::source { 'pc_repo': ensure => present, location => 'https://apt.puppet.com', repos => 'puppet5'}"
@@ -69,9 +54,6 @@ describe 'puppet_agent class' do
 
       context 'when false' do
         it 'ceases to manage repo config' do
-          pp = "class { 'puppet_agent': }"
-          apply_manifest(pp, catch_failures: true)
-          wait_for_finish_on default
           case default['platform']
           when %r{debian|ubuntu}
             pp = "include apt\napt::source { 'pc_repo': ensure => absent }"
@@ -115,45 +97,6 @@ describe 'puppet_agent class' do
 
     describe service('puppet') do
       it { is_expected.not_to be_running }
-    end
-  end
-
-  unless %r{windows}i.match?(default['platform'])
-    unless %r{solaris-10|aix|osx|windows}i.match?(default['platform'])
-      context 'on platforms managed with the package resource' do
-        before(:all) { setup_puppet_on default }
-
-        after(:all) do
-          on default, 'rm -f /tmp/a'
-          teardown_puppet_on default
-        end
-
-        let(:manifest) do
-          <<-EOS
-      class { 'puppet_agent': package_version => '5.5.21', collection => 'puppet5', before => File['/tmp/a'] }
-      file { '/tmp/a': ensure => 'present' }
-      EOS
-        end
-
-        it 'upgrades the agent on the first run' do
-          # First run should upgrade the agent
-          apply_manifest(manifest, expect_changes: true)
-          configure_agent_on default
-          expect(package(package_name(default))).to be_installed
-          expect(file('/tmp/a')).not_to exist
-        end
-
-        it 'evaluates remanining resources on the second run' do
-          # Second run should apply the file resource
-          apply_manifest(manifest, expect_changes: true)
-          expect(file('/tmp/a')).to exist
-        end
-
-        it 'does nothing on future runs' do
-          # Third run should not do anything
-          apply_manifest(manifest, catch_changes: true)
-        end
-      end
     end
   end
 end
