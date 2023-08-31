@@ -6,6 +6,7 @@ describe 'puppet_agent' do
 
   let(:params) { { package_version: package_version } }
   let(:version_file) { '/opt/puppetlabs/puppet/VERSION' }
+  let(:windows_version_file) { 'C:\Program Files\Puppet Labs\Puppet\VERSION' }
 
   before(:each) do
     # Need to mock the PE functions
@@ -15,10 +16,13 @@ describe 'puppet_agent' do
 
     allow(Puppet::Util).to receive(:absolute_path?).and_call_original
     allow(Puppet::Util).to receive(:absolute_path?).with(version_file).and_return true
+    allow(Puppet::Util).to receive(:absolute_path?).with(windows_version_file).and_return true
     allow(Puppet::FileSystem).to receive(:exist?).and_call_original
     allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
     allow(Puppet::FileSystem).to receive(:exist?).with(version_file).and_return true
+    allow(Puppet::FileSystem).to receive(:exist?).with(windows_version_file).and_return true
     allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with(version_file).and_return "1.10.100\n"
+    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with(windows_version_file).and_return "1.10.100\n"
   end
 
   [['x64', 'x86_64'], ['x86', 'i386']].each do |arch, tag|
@@ -65,6 +69,7 @@ describe 'puppet_agent' do
           aio_agent_version: '1.0.0',
           clientcert: 'foo.example.vm',
           env_temp_variable: 'C:/tmp',
+          env_windows_installdir: windows_version_file.chomp('\VERSION'),
           is_pe: true,
           os: {
             architecture: arch,
@@ -104,6 +109,7 @@ describe 'puppet_agent' do
         clientcert: 'foo.example.vm',
         env_temp_variable: 'C:/tmp',
         is_pe: true,
+        env_windows_installdir: windows_version_file.chomp('\VERSION'),
         fips_enabled: true,
         os: {
           architecture: arch,

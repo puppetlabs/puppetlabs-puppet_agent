@@ -22,6 +22,7 @@ end
 # Project root
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
+PUPPET_COLLECTION = 'puppet7'.freeze
 
 def install_modules_on(host)
   install_ca_certs_on(host)
@@ -37,7 +38,7 @@ unless ENV['BEAKER_provision'] == 'no'
   master['puppetservice'] = 'puppetserver'
   master['puppetserver-confdir'] = '/etc/puppetlabs/puppetserver/conf.d'
   master['type'] = 'aio'
-  install_puppet_agent_on master, { version: ENV['PUPPET_CLIENT_VERSION'] || '7.23.0', puppet_collection: 'puppet7' }
+  install_puppet_agent_on master, { version: ENV['PUPPET_CLIENT_VERSION'] || '7.23.0', puppet_collection: PUPPET_COLLECTION }
   install_modules_on master
   stop_firewall_on master
 end
@@ -71,7 +72,7 @@ def setup_puppet_on(host, opts = {})
 
   puts "Setup aio puppet on #{host}"
   configure_type_defaults_on host
-  install_puppet_agent_on host, { version: ENV['PUPPET_CLIENT_VERSION'] || '7.23.0', puppet_collection: 'puppet7' }
+  install_puppet_agent_on host, { version: ENV['PUPPET_CLIENT_VERSION'] || '7.23.0', puppet_collection: PUPPET_COLLECTION }
 
   puppet_opts = agent_opts(master.to_s)
   if %r{windows}i.match?(host['platform'])

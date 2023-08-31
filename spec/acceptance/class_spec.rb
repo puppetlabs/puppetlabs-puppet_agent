@@ -5,7 +5,7 @@ describe 'puppet_agent class' do
   context 'default parameters in apply' do
     before(:all) do
       setup_puppet_on default
-      pp = "class { 'puppet_agent': package_version => 'auto'}"
+      pp = "class { 'puppet_agent': package_version => 'auto', collection => #{PUPPET_COLLECTION}}"
       apply_manifest(pp, catch_failures: true)
     end
     after(:all) { teardown_puppet_on default }
