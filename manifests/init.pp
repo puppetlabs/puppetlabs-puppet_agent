@@ -126,6 +126,7 @@ class puppet_agent (
   $wait_for_pxp_agent_exit = undef,
   $wait_for_puppet_run     = undef,
   Array[Puppet_agent::Config] $config = [],
+  $version_file_path       = $facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION' }
 ) inherits ::puppet_agent::params {
   # The configure class uses $puppet_agent::config to manage settings in
   # puppet.conf, and will always be present. It does not require management of
@@ -161,7 +162,7 @@ class puppet_agent (
     # The AIO package version and Puppet version can, on rare occasion, diverge.
     # This logic checks for the AIO version of the server, since that's what the package manager cares about.
     if $package_version == 'auto' {
-      $master_or_package_version = chomp(file('/opt/puppetlabs/puppet/VERSION'))
+      $master_or_package_version = chomp(file($version_file_path))
     } else {
       $master_or_package_version = $package_version
     }
