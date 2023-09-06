@@ -19,7 +19,6 @@ describe 'puppet_agent' do
     allow(Puppet::FileSystem).to receive(:exist?).and_call_original
     allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
     allow(Puppet::FileSystem).to receive(:exist?).with('/opt/puppetlabs/puppet/VERSION').and_return true
-    allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with('/opt/puppetlabs/puppet/VERSION').and_return "5.10.200\n"
   end
 
   shared_examples 'aix' do |aixver, pkg_aixver, powerver|
@@ -61,13 +60,13 @@ describe 'puppet_agent' do
     let(:facts) do
       common_facts.merge({
                            architecture: 'PowerPC_POWER8',
-                           platform_tag: 'aix-6.1-power',
+                           platform_tag: 'aix-7.1-power',
                          })
     end
     let(:params) do
       {
-        package_version: '5.10.100.1',
-        collection: 'puppet5',
+        package_version: '7.10.100.1',
+        collection: 'puppet7',
         source: 'https://fake-pe-master.com',
       }
     end
@@ -77,55 +76,8 @@ describe 'puppet_agent' do
     end
 
     it {
-      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.100.1-1.aix7.1.ppc.rpm').with_source('https://fake-pe-master.com/packages/2000.0.0/aix-7.1-power/puppet-agent-5.10.100.1-1.aix7.1.ppc.rpm')
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm').with_source('https://fake-pe-master.com/packages/2000.0.0/aix-7.1-power/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm')
     }
-  end
-
-  context 'with a PC1 collection' do
-    let(:params) do
-      {
-        package_version: '1.10.100',
-        collection: 'PC1',
-      }
-    end
-
-    [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
-      context "aix #{aixver}" do
-        include_examples 'aix', aixver, pkg_aixver, powerver
-      end
-    end
-  end
-
-  context 'with a puppet5 collection' do
-    context 'with versions up to 5.5.22' do
-      let(:params) do
-        {
-          package_version: '5.4.3',
-          collection: 'puppet5',
-        }
-      end
-
-      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
-        context "aix #{aixver}" do
-          include_examples 'aix', aixver, pkg_aixver, powerver
-        end
-      end
-    end
-
-    context 'with versions higher than 5.5.22' do
-      let(:params) do
-        {
-          package_version: '5.5.23',
-          collection: 'puppet5',
-        }
-      end
-
-      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '7.1', '7']].each do |aixver, pkg_aixver, powerver|
-        context "aix #{aixver}" do
-          include_examples 'aix', aixver, pkg_aixver, powerver
-        end
-      end
-    end
   end
 
   context 'with a puppet6 collection' do
@@ -185,16 +137,20 @@ describe 'puppet_agent' do
     end
     let(:facts) do
       common_facts.merge({
-                           serverversion: '5.10.200'
+                           serverversion: '7.10.200'
                          })
     end
-    let(:rpmname) { 'puppet-agent-5.10.200-1.aix7.1.ppc.rpm' }
+    let(:rpmname) { 'puppet-agent-7.10.200-1.aix7.1.ppc.rpm' }
+
+    before(:each) do
+      allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with('/opt/puppetlabs/puppet/VERSION').and_return "7.10.200\n"
+    end
 
     it {
       is_expected.to contain_package('puppet-agent')
         .with({
                 'source'    => "/opt/puppetlabs/packages/#{rpmname}",
-                'ensure'    => '5.10.200',
+                'ensure'    => '7.10.200',
                 'provider'  => 'rpm',
               })
     }

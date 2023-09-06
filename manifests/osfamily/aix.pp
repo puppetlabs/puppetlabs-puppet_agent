@@ -15,14 +15,14 @@ class puppet_agent::osfamily::aix {
   # multiple version of AIX. The support sequence is as follows:
   #
   # puppet 5 up to 5.5.22:
-  #     * AIX verison 6.1 < aix-6.1-power package
-  #     * AIX verison 7.1 < aix-7.1-power package
-  #     * AIX verison 7.2 < aix-7.1-power package
+  #     * AIX version 6.1 < aix-6.1-power package
+  #     * AIX version 7.1 < aix-7.1-power package
+  #     * AIX version 7.2 < aix-7.1-power package
   #
-  # puppet 6 up to 6.19.1 and puppet 7.0.0 (not released in PE):
-  #     * AIX verison 6.1 < aix-7.1-power package
-  #     * AIX verison 7.1 < aix-7.1-power package
-  #     * AIX verison 7.2 < aix-7.1-power package
+  # puppet 6 up to 6.19.1 and puppet 7.0.0:
+  #     * AIX version 6.1 < aix-7.1-power package
+  #     * AIX version 7.1 < aix-7.1-power package
+  #     * AIX version 7.2 < aix-7.1-power package
   #
   # All other versions will now _only_ use the aix-7.1-power packages (i.e. we now only ship
   # one package to support all aix versions).
@@ -31,16 +31,8 @@ class puppet_agent::osfamily::aix {
   # on puppet collection, package version and AIX version.
   $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
   if $_aix_ver_number {
-    if $::puppet_agent::collection =~ /(PC1|puppet5)/ {
-      # 5.5.22 is the last puppet5 release that ships AIX 6.1 packages
-      if versioncmp($::puppet_agent::prepare::package_version, '5.5.22') > 0 {
-        $aix_ver_number = '7.1'
-      } else {
-        $aix_ver_number = $_aix_ver_number ? {
-          /^7\.2$/ => '7.1',
-          default  => $_aix_ver_number,
-        }
-      }
+    if $::puppet_agent::collection =~ /^puppet7/ {
+      $aix_ver_number = '7.1'
     } else {
       # 6.19.1 is the last puppet6 release that ships AIX 6.1 packages
       $aix_ver_number = versioncmp($::puppet_agent::prepare::package_version, '6.19.1') ? {
