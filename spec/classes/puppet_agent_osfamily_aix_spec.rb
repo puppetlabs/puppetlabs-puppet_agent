@@ -129,6 +129,23 @@ describe 'puppet_agent' do
     end
   end
 
+  context 'with a puppet8 collection' do
+    context 'with versions greater than or equal to 8.0.0' do
+      let(:params) do
+        {
+          package_version: '8.0.0',
+          collection: 'puppet8',
+        }
+      end
+
+      [['7.2', '7.2', '7']].each do |aixver, pkg_aixver, powerver|
+        context "aix #{aixver}" do
+          include_examples 'aix', aixver, pkg_aixver, powerver
+        end
+      end
+    end
+  end
+
   context 'with package_version auto' do
     let(:params) do
       {

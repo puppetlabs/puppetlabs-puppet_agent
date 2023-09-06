@@ -24,6 +24,9 @@ class puppet_agent::osfamily::aix {
   #     * AIX version 7.1 < aix-7.1-power package
   #     * AIX version 7.2 < aix-7.1-power package
   #
+  # puppet 8:
+  #     * AIX version 7.2 < aix-7.2-power package
+  #
   # All other versions will now _only_ use the aix-7.1-power packages (i.e. we now only ship
   # one package to support all aix versions).
   #
@@ -31,7 +34,9 @@ class puppet_agent::osfamily::aix {
   # on puppet collection, package version and AIX version.
   $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
   if $_aix_ver_number {
-    if $::puppet_agent::collection =~ /^puppet7/ {
+    if $::puppet_agent::collection =~ /^puppet8/ {
+      $aix_ver_number = '7.2'
+    } elsif $::puppet_agent::collection =~ /^puppet7/ {
       $aix_ver_number = '7.1'
     } else {
       # 6.19.1 is the last puppet6 release that ships AIX 6.1 packages
