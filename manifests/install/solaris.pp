@@ -41,7 +41,7 @@ class puppet_agent::install::solaris (
       file { $_installsh:
         ensure  => file,
         mode    => '0755',
-        content => template('puppet_agent/do_install.sh.erb')
+        content => template('puppet_agent/do_install.sh.erb'),
       }
       -> exec { 'solaris_install script':
         command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",

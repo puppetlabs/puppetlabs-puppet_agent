@@ -66,20 +66,20 @@ class puppet_agent::install::windows (
   $_helpers = windows_native_path("${::env_temp_variable}/helpers.ps1")
   file { $_helpers:
     ensure  => file,
-    content => file('puppet_agent/helpers.ps1')
+    content => file('puppet_agent/helpers.ps1'),
   }
 
   $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
   puppet_agent_upgrade_error { 'puppet_agent_upgrade_failure.log': }
   file { $_installps1:
     ensure  => file,
-    content => file('puppet_agent/install_puppet.ps1')
+    content => file('puppet_agent/install_puppet.ps1'),
   }
 
   $_prerequisites_check = windows_native_path("${::env_temp_variable}/prerequisites_check.ps1")
   file { $_prerequisites_check:
     ensure  => file,
-    content => file('puppet_agent/prerequisites_check.ps1')
+    content => file('puppet_agent/prerequisites_check.ps1'),
   }
 
   exec { 'prerequisites_check.ps1':
@@ -89,7 +89,7 @@ class puppet_agent::install::windows (
                   -NoLogo \
                   -NonInteractive \
                   ${_prerequisites_check} ${::puppet_agent::_expected_package_version} ${_msi_location} ${_logfile}",
-    require => File[$_prerequisites_check]
+    require => File[$_prerequisites_check],
   }
 
   exec { 'install_puppet.ps1':
@@ -126,8 +126,8 @@ class puppet_agent::install::windows (
     require => [
       Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
       File[$_installps1],
-      Exec['prerequisites_check.ps1']
-    ]
+      Exec['prerequisites_check.ps1'],
+    ],
   }
 
   # PUP-5480/PE-15037 Cache dir loses inheritable SYSTEM perms

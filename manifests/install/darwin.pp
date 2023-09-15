@@ -25,7 +25,7 @@ class puppet_agent::install::darwin (
   file { $_installsh:
     ensure  => file,
     mode    => '0755',
-    content => template('puppet_agent/do_install.sh.erb')
+    content => template('puppet_agent/do_install.sh.erb'),
   }
   -> exec { 'osx_install script':
     command => "${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",

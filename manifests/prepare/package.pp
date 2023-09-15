@@ -32,7 +32,7 @@ class puppet_agent::prepare::package (
     group    => $::puppet_agent::params::group,
     mode     => $mode,
     source   => $source,
-    require  => File[$::puppet_agent::params::local_packages_dir],
-    checksum => sha256lite
+    require  => File[$puppet_agent::params::local_packages_dir],
+    checksum => sha256lite,
   }
 }

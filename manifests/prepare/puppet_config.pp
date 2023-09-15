@@ -17,7 +17,7 @@ class puppet_agent::prepare::puppet_config (
   # (minimum agent package version) => (list of deprecated settings)
   $_deprecations = {
     '1.4.0'     => ['pluginsync'],
-    '5.0.0'     => ['app_management', 'ignorecache', 'configtimeout', 'trusted_server_facts']
+    '5.0.0'     => ['app_management', 'ignorecache', 'configtimeout', 'trusted_server_facts'],
   }
 
   $_pkg_version = getvar('package_version')
