@@ -1,79 +1,75 @@
-# == Class: puppet_agent
+# @summary Upgrades Puppet 4 and newer to the requested version.
 #
-# Upgrades Puppet 4 and newer to the requested version.
-#
-# === Parameters
-#
-# [arch]
+# @param arch
 #   The package architecture. Defaults to the architecture fact.
-# [collection]
+# @param collection
 #   The Puppet Collection to track. Defaults to 'PC1'.
-# [is_pe]
+# @param is_pe
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
-# [manage_pki_dir]
+# @param manage_pki_dir
 #   Whether or not to manage the /etc/pki directory.  Defaults to true.
 #   Managing the /etc/pki directory inside the puppet_agent module can be problematic for
 #   organizations that manage gpg keys and settings in other modules.
-# [manage_repo]
+# @param manage_repo
 #   Boolean to determine whether to configure repositories
 #   This is intended to provide the ability to disable configuring a local repo
 #   in support of systems that manage external repositories (i.e. spacewalk/satellite)
 #   to enable users to add the proper packages to their internal repos
 #   and to utilize default package providers for the install
-# [package_name]
+# @param package_name
 #   The package to upgrade to, i.e. `puppet-agent`.
-# [package_version]
+# @param package_version
 #   The package version to upgrade to. Explicitly specify the version to upgrade to,
 #   or set to 'auto' to specify the version of the compiling master.
-# [service_names]
+# @param service_names
 #   An array of services to start, normally `puppet`.
 #   None will be started if the array is empty.
-# [source]
+# @param source
 #   **INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute_source",
 #   "apt_source", "deb_source" etc. OVER USE OF "source".**
 #
 #   The location to find packages. Replaces base URL for unix/MacOS agents, used as fully
 #   qualified path in windows
-# [absolute_source]
+# @param absolute_source
 #   The exact location of the package to install. The entire path to the package must be
 #   provided with this parameter.
-# [yum_source]
+# @param yum_source
 #   Base URL of the location of mirrors of yum.puppet.com downloads sites. Directories under
 #   the URL "yum_source" should match the structure of the yum.puppet.com
-# [apt_source]
+# @param apt_source
 #   Base URL of the location of mirrors of apt.puppet.com downloads sites. Directories under
 #   the URL "apt_source" should match the structure of the apt.puppet.com
-# [mac_source]
+# @param mac_source
 #   Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
 #   MacOS packages. Directories under the URL "mac_source" should match the structure of the
 #   downloads.puppet.com site
-# [windows_source]
+# @param windows_source
 #   Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
 #   Windows packages. Directories under the URL "windows_source" should match the structure of
 #   the downloads.puppet.com site
-# [solaris_source]
+# @param solaris_source
 #   Base URL of the location of a mirror for Solaris packages. Currently, solaris packages can
 #   only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
 #   PE master package serve.
-# [aix_source]
+# @param aix_source
 #   Base URL of the location of a mirror for AIX packages. Currently, AIX packages can
 #   only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
 #   PE master package serve.
-# [use_alternate_sources]
+# @param use_alternate_sources
 #   **ONLY APPLICABLE WHEN WORKING WITH PE INSTALLTIONS**
 #   When set to true will force downloads to come from the values of $apt_source, $deb_source
 #   $mac_source etc. rather than from the default PE master package serve. Note that this will
 #   also force downloads to ignore alternate_pe_source
-# [alternate_pe_source]
+# @param alternate_pe_source
 #   Base URL of the location where packages are located in the same structure that's served
 #   by a PE master (the directory structure in PE for serving packages is created by the
 #   puppetlabs-pe_repo module). The general structure served by PE is:
 #   /packages/${pe_server_version}/${platform_tag}/${package_name}
-# [install_dir]
+# @param install_dir
 #   The directory the puppet agent should be installed to. This is only applicable for
 #   windows operating systems. This only applies when upgrading the agent to a new
 #   version; it will not cause re-installation of the same version to a new location.
-# [install_options]
+# @param install_options
 #   An array of additional options to pass when installing puppet-agent. Each option in
 #   the array can either be a string or a hash. Each option will automatically be quoted
 #   when passed to the install command. With Windows packages, note that file paths in an
@@ -81,53 +77,61 @@
 #   the installation command, forward slashes won't be automatically converted like they
 #   are in `file` resources.) Note also that backslashes in double-quoted strings _must_
 #   be escaped and backslashes in single-quoted strings _can_ be escaped.
-# [msi_move_locked_files]
+# @param msi_move_locked_files
 #   This is only applicable for Windows operating systems. There may be instances where
 #   file locks cause unncessary service restarts.  By setting to true, the module
 #   will move files prior to installation that are known to cause file locks.
-# [wait_for_pxp_agent_exit]
+# @param wait_for_pxp_agent_exit
 #   This parameter is only applicable for Windows operating systems and pertains to the 
 #   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
 #   for the PXP agent to end successfully. The default value is set 2 minutes.
-# [wait_for_puppet_run]
+# @param wait_for_puppet_run
 #   This parameter is only applicable for Windows operating systems and pertains to the
 #   /files/install_agent.ps1 script. This parameterizes the module to define the wait time
 #   for the current puppet agent run to end successfully. The default value is set 2 minutes.
-# [config]
+# @param config
 #   An array of configuration data to enforce. Each configuration data item must be a
 #   Puppet_agent::Config hash, which has keys for puppet.conf section, setting, and value.
 #   This parameter is constrained to managing only a predetermined set of configuration
 #   settings, e.g. runinterval.
+# @param proxy
+#    This is to be able to configure yum-repo with proxy, needed for
+#   example for clients in dmz:s that need to use proxy to reach the repo
+#   provided by puppetserver.
+# @param version_file_path
+#    The default install path for the VERSION file
+# @param skip_if_unavailable
+# @param disable_proxy
 class puppet_agent (
-  $arch                    = $facts['os']['architecture'],
-  $collection              = $::puppet_agent::params::collection,
-  $is_pe                   = $::puppet_agent::params::_is_pe,
-  $manage_pki_dir          = true,
-  $manage_repo             = true,
-  $package_name            = 'puppet-agent',
-  $package_version         = undef,
-  $service_names           = $::puppet_agent::params::service_names,
-  $source                  = undef,
-  $absolute_source         = undef,
-  $yum_source              = 'http://yum.puppet.com',
-  $apt_source              = 'https://apt.puppet.com',
-  $mac_source              = 'https://downloads.puppet.com',
-  $windows_source          = 'https://downloads.puppet.com',
-  $solaris_source          = 'puppet:///pe_packages',
-  $aix_source              = 'puppet:///pe_packages',
-  $use_alternate_sources   = false,
-  $alternate_pe_source     = undef,
-  Optional[Stdlib::Absolutepath] $install_dir = undef,
-  $disable_proxy           = false,
-  $proxy                   = undef,
-  $install_options         = [],
-  $skip_if_unavailable     = 'absent',
-  $msi_move_locked_files   = false,
-  $wait_for_pxp_agent_exit = undef,
-  $wait_for_puppet_run     = undef,
-  Array[Puppet_agent::Config] $config = [],
-  $version_file_path       = $facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION' }
-) inherits ::puppet_agent::params {
+  String                         $arch                    = $facts['os']['architecture'],
+  String                         $collection              = $puppet_agent::params::collection,
+  Boolean                        $is_pe                   = $puppet_agent::params::_is_pe,
+  Boolean                        $manage_pki_dir          = true,
+  Boolean                        $manage_repo             = true,
+  String                         $package_name            = 'puppet-agent',
+  Optional                       $package_version         = undef,
+  Array                          $service_names           = $puppet_agent::params::service_names,
+  Optional                       $source                  = undef,
+  Optional                       $absolute_source         = undef,
+  String                         $yum_source              = 'http://yum.puppet.com',
+  String                         $apt_source              = 'https://apt.puppet.com',
+  String                         $mac_source              = 'https://downloads.puppet.com',
+  String                         $windows_source          = 'https://downloads.puppet.com',
+  String                         $solaris_source          = 'puppet:///modules/pe_packages',
+  String                         $aix_source              = 'puppet:///modules/pe_packages',
+  Boolean                        $use_alternate_sources   = false,
+  Optional                       $alternate_pe_source     = undef,
+  Optional[Stdlib::Absolutepath] $install_dir             = undef,
+  Boolean                        $disable_proxy           = false,
+  Optional                       $proxy                   = undef,
+  Array                          $install_options         = [],
+  String                         $skip_if_unavailable     = 'absent',
+  Boolean                        $msi_move_locked_files   = false,
+  Optional                       $wait_for_pxp_agent_exit = undef,
+  Optional                       $wait_for_puppet_run     = undef,
+  Array[Puppet_agent::Config]    $config                  = [],
+  String                         $version_file_path       = $facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION' }
+) inherits puppet_agent::params {
   # The configure class uses $puppet_agent::config to manage settings in
   # puppet.conf, and will always be present. It does not require management of
   # the agent package. Dependencies for configure will be declared later if the

@@ -1,14 +1,10 @@
-# == Class puppet_agent::prepare::package
+# @summary Ensures correct puppet-agent package is downloaded locally.
+# for installation. This is used on platforms without package managers capable of
+# working with a remote https repository.
 #
-# The only job this class has is to ensure that the correct puppet-agent
-# package is downloaded locally for installation.  This is used on platforms
-# without package managers capable of working with a remote https repository.
-#
-# [package_file_name]
-#   The puppet-agent package file to retrieve from the master.
-#
+# @param source
 class puppet_agent::prepare::package (
-  $source,
+  Optional $source,
 ) {
   assert_private()
 

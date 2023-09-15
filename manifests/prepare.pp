@@ -1,14 +1,8 @@
-# == Class puppet_agent::prepare
+# @summary This class is called from puppet_agent to prepare for the upgrade.
 #
-# This class is called from puppet_agent to prepare for the upgrade.
-#
-# === Parameters
-#
-# [version]
-#   The puppet-agent version to install.
-#
+# @param package_version The puppet-agent version to install.
 class puppet_agent::prepare (
-  $package_version = undef
+  Optional $package_version = undef
 ) {
   include puppet_agent::params
   $_windows_client = downcase($facts['os']['family']) == 'windows'

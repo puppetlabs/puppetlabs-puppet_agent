@@ -1,3 +1,4 @@
+# @summary Determines the puppet-agent package location for Debian OSes.
 class puppet_agent::osfamily::debian {
   assert_private()
 

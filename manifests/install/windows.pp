@@ -1,13 +1,21 @@
-# == Class puppet_agent::install::windows
+# @summary Manage the install process for Windows OSes specifically.
+# Private class called from puppet_agent class.
 #
-# Private class called from puppet_agent class
-#
-# Manage the install process for windows specifically
-#
+# @param install_options
+#   An array of additional options to pass when installing puppet-agent. Each option in
+#   the array can either be a string or a hash. Each option will automatically be quoted
+#   when passed to the install command. With Windows packages, note that file paths in an
+#   install option must use backslashes. (Since install options are passed directly to
+#   the installation command, forward slashes won't be automatically converted like they
+#   are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+#   be escaped and backslashes in single-quoted strings _can_ be escaped.
+# @param install_dir
+#   The directory the puppet agent should be installed to. This is only applicable for
+#   windows operating systems.
 class puppet_agent::install::windows (
-  $install_dir           = undef,
-  $install_options       = [],
-  ) {
+  Optional $install_dir           = undef,
+  Array    $install_options       = [],
+) {
   assert_private()
 
   $service_names         = $::puppet_agent::service_names

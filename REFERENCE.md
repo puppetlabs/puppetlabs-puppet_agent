@@ -6,25 +6,25 @@
 
 ### Classes
 
-* [`puppet_agent`](#puppet_agent): == Class: puppet_agent  Upgrades Puppet 4 and newer to the requested version.  === Parameters  [arch]   The package architecture. Defaults to
-* [`puppet_agent::configure`](#puppet_agent--configure)
-* [`puppet_agent::install`](#puppet_agent--install): == Class puppet_agent::install  This class is called from puppet_agent for install.  === Parameters  [version]   The puppet-agent version to 
-* [`puppet_agent::install::darwin`](#puppet_agent--install--darwin): == Class puppet_agent::install::darwin  Private class called from puppet_agent class  Manage the install process for Darwin OSes specifically
-* [`puppet_agent::install::solaris`](#puppet_agent--install--solaris): == Class puppet_agent::install::solaris  Private class called from puppet_agent class  Manage the install process for solaris specifically
-* [`puppet_agent::install::suse`](#puppet_agent--install--suse): == Class puppet_agent::install::suse  Private class called from puppet_agent class  Manage the install process for SUSE OSes specifically
-* [`puppet_agent::install::windows`](#puppet_agent--install--windows): == Class puppet_agent::install::windows  Private class called from puppet_agent class  Manage the install process for windows specifically
-* [`puppet_agent::osfamily::aix`](#puppet_agent--osfamily--aix)
-* [`puppet_agent::osfamily::darwin`](#puppet_agent--osfamily--darwin)
-* [`puppet_agent::osfamily::debian`](#puppet_agent--osfamily--debian)
-* [`puppet_agent::osfamily::redhat`](#puppet_agent--osfamily--redhat)
-* [`puppet_agent::osfamily::solaris`](#puppet_agent--osfamily--solaris)
-* [`puppet_agent::osfamily::suse`](#puppet_agent--osfamily--suse)
-* [`puppet_agent::osfamily::windows`](#puppet_agent--osfamily--windows)
-* [`puppet_agent::params`](#puppet_agent--params): == Class puppet_agent::params  This class is meant to be called from puppet_agent It sets variables according to platform.
-* [`puppet_agent::prepare`](#puppet_agent--prepare): == Class puppet_agent::prepare  This class is called from puppet_agent to prepare for the upgrade.  === Parameters  [version]   The puppet-ag
-* [`puppet_agent::prepare::package`](#puppet_agent--prepare--package): == Class puppet_agent::prepare::package  The only job this class has is to ensure that the correct puppet-agent package is downloaded locally
-* [`puppet_agent::prepare::puppet_config`](#puppet_agent--prepare--puppet_config): == Class puppet_agent::prepare::puppet_config  Private class called from puppet_agent::prepare class
-* [`puppet_agent::service`](#puppet_agent--service): == Class puppet_agent::service  This class is meant to be called from puppet_agent. It ensures that managed services are running.
+* [`puppet_agent`](#puppet_agent): Upgrades Puppet 4 and newer to the requested version.
+* [`puppet_agent::configure`](#puppet_agent--configure): Uses $puppet_agent::config to manage settings in puppet.conf.
+* [`puppet_agent::install`](#puppet_agent--install): This class is called from puppet_agent for install.
+* [`puppet_agent::install::darwin`](#puppet_agent--install--darwin): Manage the install process for Darwin OSes specifically.
+* [`puppet_agent::install::solaris`](#puppet_agent--install--solaris): Manage the install process for Solaris OSes specifically.
+* [`puppet_agent::install::suse`](#puppet_agent--install--suse): Manage the install process for SUSE OSes specifically.
+* [`puppet_agent::install::windows`](#puppet_agent--install--windows): Manage the install process for Windows OSes specifically.
+* [`puppet_agent::osfamily::aix`](#puppet_agent--osfamily--aix): Used to determine the puppet-agent package location for AIX OSes.
+* [`puppet_agent::osfamily::darwin`](#puppet_agent--osfamily--darwin): Used to determine the puppet-agent package location for Darwin OSes.
+* [`puppet_agent::osfamily::debian`](#puppet_agent--osfamily--debian): Determines the puppet-agent package location for Debian OSes.
+* [`puppet_agent::osfamily::redhat`](#puppet_agent--osfamily--redhat): Determines the puppet-agent package location for RedHat OSes.
+* [`puppet_agent::osfamily::solaris`](#puppet_agent--osfamily--solaris): Determines the puppet-agent package location for Solaris OSes.
+* [`puppet_agent::osfamily::suse`](#puppet_agent--osfamily--suse): Determines the puppet-agent package location for SUSE OSes.
+* [`puppet_agent::osfamily::windows`](#puppet_agent--osfamily--windows): Determines the puppet-agent package location for Windows OSes.
+* [`puppet_agent::params`](#puppet_agent--params): Sets variables according to platform.
+* [`puppet_agent::prepare`](#puppet_agent--prepare): This class is called from puppet_agent to prepare for the upgrade.
+* [`puppet_agent::prepare::package`](#puppet_agent--prepare--package): Ensures correct puppet-agent package is downloaded locally.
+* [`puppet_agent::prepare::puppet_config`](#puppet_agent--prepare--puppet_config): Private class called from puppet_agent::prepare class.
+* [`puppet_agent::service`](#puppet_agent--service): Ensures that managed services are running.
 
 ### Resource types
 
@@ -33,15 +33,15 @@
 
 ### Functions
 
-* [`any_resources_of_type`](#any_resources_of_type)
-* [`uri_host_from_string`](#uri_host_from_string): Return a uri host from a string
-* [`windows_msi_installargs`](#windows_msi_installargs): Return the $install_options parameter as a string usable in an msiexec command
-* [`windows_native_path`](#windows_native_path): Return a windows native path
+* [`any_resources_of_type`](#any_resources_of_type): A function used to determine if there are any
+* [`uri_host_from_string`](#uri_host_from_string)
+* [`windows_msi_installargs`](#windows_msi_installargs)
+* [`windows_native_path`](#windows_native_path)
 
 ### Data types
 
-* [`Puppet_agent::Arch`](#Puppet_agent--Arch)
-* [`Puppet_agent::Config`](#Puppet_agent--Config)
+* [`Puppet_agent::Arch`](#Puppet_agent--Arch): This type stores all possible architecture patterns
+* [`Puppet_agent::Config`](#Puppet_agent--Config): This Puppet type alias
 * [`Puppet_agent::Config_setting`](#Puppet_agent--Config_setting): An enumerated list of settings which are permitted to be managed by this module.
 
 ### Tasks
@@ -64,106 +64,8 @@
 
 ### <a name="puppet_agent"></a>`puppet_agent`
 
-== Class: puppet_agent
-
-Upgrades Puppet 4 and newer to the requested version.
-
-=== Parameters
-
-[arch]
-  The package architecture. Defaults to the architecture fact.
-[collection]
-  The Puppet Collection to track. Defaults to 'PC1'.
-[is_pe]
-  Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
-[manage_pki_dir]
-  Whether or not to manage the /etc/pki directory.  Defaults to true.
-  Managing the /etc/pki directory inside the puppet_agent module can be problematic for
-  organizations that manage gpg keys and settings in other modules.
-[manage_repo]
-  Boolean to determine whether to configure repositories
-  This is intended to provide the ability to disable configuring a local repo
-  in support of systems that manage external repositories (i.e. spacewalk/satellite)
-  to enable users to add the proper packages to their internal repos
-  and to utilize default package providers for the install
-[package_name]
-  The package to upgrade to, i.e. `puppet-agent`.
-[package_version]
-  The package version to upgrade to. Explicitly specify the version to upgrade to,
-  or set to 'auto' to specify the version of the compiling master.
-[service_names]
-  An array of services to start, normally `puppet`.
-  None will be started if the array is empty.
-[source]
-  **INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute_source",
-  "apt_source", "deb_source" etc. OVER USE OF "source".**
-
-  The location to find packages. Replaces base URL for unix/MacOS agents, used as fully
-  qualified path in windows
-[absolute_source]
-  The exact location of the package to install. The entire path to the package must be
-  provided with this parameter.
-[yum_source]
-  Base URL of the location of mirrors of yum.puppet.com downloads sites. Directories under
-  the URL "yum_source" should match the structure of the yum.puppet.com
-[apt_source]
-  Base URL of the location of mirrors of apt.puppet.com downloads sites. Directories under
-  the URL "apt_source" should match the structure of the apt.puppet.com
-[mac_source]
-  Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
-  MacOS packages. Directories under the URL "mac_source" should match the structure of the
-  downloads.puppet.com site
-[windows_source]
-  Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
-  Windows packages. Directories under the URL "windows_source" should match the structure of
-  the downloads.puppet.com site
-[solaris_source]
-  Base URL of the location of a mirror for Solaris packages. Currently, solaris packages can
-  only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
-  PE master package serve.
-[aix_source]
-  Base URL of the location of a mirror for AIX packages. Currently, AIX packages can
-  only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
-  PE master package serve.
-[use_alternate_sources]
-  **ONLY APPLICABLE WHEN WORKING WITH PE INSTALLTIONS**
-  When set to true will force downloads to come from the values of $apt_source, $deb_source
-  $mac_source etc. rather than from the default PE master package serve. Note that this will
-  also force downloads to ignore alternate_pe_source
-[alternate_pe_source]
-  Base URL of the location where packages are located in the same structure that's served
-  by a PE master (the directory structure in PE for serving packages is created by the
-  puppetlabs-pe_repo module). The general structure served by PE is:
-  /packages/${pe_server_version}/${platform_tag}/${package_name}
-[install_dir]
-  The directory the puppet agent should be installed to. This is only applicable for
-  windows operating systems. This only applies when upgrading the agent to a new
-  version; it will not cause re-installation of the same version to a new location.
-[install_options]
-  An array of additional options to pass when installing puppet-agent. Each option in
-  the array can either be a string or a hash. Each option will automatically be quoted
-  when passed to the install command. With Windows packages, note that file paths in an
-  install option must use backslashes. (Since install options are passed directly to
-  the installation command, forward slashes won't be automatically converted like they
-  are in `file` resources.) Note also that backslashes in double-quoted strings _must_
-  be escaped and backslashes in single-quoted strings _can_ be escaped.
-[msi_move_locked_files]
-  This is only applicable for Windows operating systems. There may be instances where
-  file locks cause unncessary service restarts.  By setting to true, the module
-  will move files prior to installation that are known to cause file locks.
-[wait_for_pxp_agent_exit]
-  This parameter is only applicable for Windows operating systems and pertains to the
-  /files/install_agent.ps1 script. This parameterizes the module to define the wait time
-  for the PXP agent to end successfully. The default value is set 2 minutes.
-[wait_for_puppet_run]
-  This parameter is only applicable for Windows operating systems and pertains to the
-  /files/install_agent.ps1 script. This parameterizes the module to define the wait time
-  for the current puppet agent run to end successfully. The default value is set 2 minutes.
-[config]
-  An array of configuration data to enforce. Each configuration data item must be a
-  Puppet_agent::Config hash, which has keys for puppet.conf section, setting, and value.
-  This parameter is constrained to managing only a predetermined set of configuration
-  settings, e.g. runinterval.
+example for clients in dmz:s that need to use proxy to reach the repo
+  provided by puppetserver.
 
 #### Parameters
 
@@ -188,156 +90,186 @@ The following parameters are available in the `puppet_agent` class:
 * [`use_alternate_sources`](#-puppet_agent--use_alternate_sources)
 * [`alternate_pe_source`](#-puppet_agent--alternate_pe_source)
 * [`install_dir`](#-puppet_agent--install_dir)
-* [`disable_proxy`](#-puppet_agent--disable_proxy)
-* [`proxy`](#-puppet_agent--proxy)
 * [`install_options`](#-puppet_agent--install_options)
-* [`skip_if_unavailable`](#-puppet_agent--skip_if_unavailable)
 * [`msi_move_locked_files`](#-puppet_agent--msi_move_locked_files)
 * [`wait_for_pxp_agent_exit`](#-puppet_agent--wait_for_pxp_agent_exit)
 * [`wait_for_puppet_run`](#-puppet_agent--wait_for_puppet_run)
 * [`config`](#-puppet_agent--config)
+* [`proxy`](#-puppet_agent--proxy)
+* [`version_file_path`](#-puppet_agent--version_file_path)
+* [`skip_if_unavailable`](#-puppet_agent--skip_if_unavailable)
+* [`disable_proxy`](#-puppet_agent--disable_proxy)
 
 ##### <a name="-puppet_agent--arch"></a>`arch`
 
-Data type: `Any`
+Data type: `String`
 
-
+The package architecture. Defaults to the architecture fact.
 
 Default value: `$facts['os']['architecture']`
 
 ##### <a name="-puppet_agent--collection"></a>`collection`
 
-Data type: `Any`
+Data type: `String`
 
+The Puppet Collection to track. Defaults to 'PC1'.
 
-
-Default value: `$::puppet_agent::params::collection`
+Default value: `$puppet_agent::params::collection`
 
 ##### <a name="-puppet_agent--is_pe"></a>`is_pe`
 
-Data type: `Any`
+Data type: `Boolean`
 
+Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 
-
-Default value: `$::puppet_agent::params::_is_pe`
+Default value: `$puppet_agent::params::_is_pe`
 
 ##### <a name="-puppet_agent--manage_pki_dir"></a>`manage_pki_dir`
 
-Data type: `Any`
+Data type: `Boolean`
 
-
+Whether or not to manage the /etc/pki directory.  Defaults to true.
+Managing the /etc/pki directory inside the puppet_agent module can be problematic for
+organizations that manage gpg keys and settings in other modules.
 
 Default value: `true`
 
 ##### <a name="-puppet_agent--manage_repo"></a>`manage_repo`
 
-Data type: `Any`
+Data type: `Boolean`
 
-
+Boolean to determine whether to configure repositories
+This is intended to provide the ability to disable configuring a local repo
+in support of systems that manage external repositories (i.e. spacewalk/satellite)
+to enable users to add the proper packages to their internal repos
+and to utilize default package providers for the install
 
 Default value: `true`
 
 ##### <a name="-puppet_agent--package_name"></a>`package_name`
 
-Data type: `Any`
+Data type: `String`
 
-
+The package to upgrade to, i.e. `puppet-agent`.
 
 Default value: `'puppet-agent'`
 
 ##### <a name="-puppet_agent--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The package version to upgrade to. Explicitly specify the version to upgrade to,
+or set to 'auto' to specify the version of the compiling master.
 
 Default value: `undef`
 
 ##### <a name="-puppet_agent--service_names"></a>`service_names`
 
-Data type: `Any`
+Data type: `Array`
 
+An array of services to start, normally `puppet`.
+None will be started if the array is empty.
 
-
-Default value: `$::puppet_agent::params::service_names`
+Default value: `$puppet_agent::params::service_names`
 
 ##### <a name="-puppet_agent--source"></a>`source`
 
-Data type: `Any`
+Data type: `Optional`
 
+**INCLUDED FOR COMPATIBILITY WITH MODULE VERSIONS 1.0/2.0. PREFER USE OF "absolute_source",
+"apt_source", "deb_source" etc. OVER USE OF "source".**
 
+The location to find packages. Replaces base URL for unix/MacOS agents, used as fully
+qualified path in windows
 
 Default value: `undef`
 
 ##### <a name="-puppet_agent--absolute_source"></a>`absolute_source`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The exact location of the package to install. The entire path to the package must be
+provided with this parameter.
 
 Default value: `undef`
 
 ##### <a name="-puppet_agent--yum_source"></a>`yum_source`
 
-Data type: `Any`
+Data type: `String`
 
-
+Base URL of the location of mirrors of yum.puppet.com downloads sites. Directories under
+the URL "yum_source" should match the structure of the yum.puppet.com
 
 Default value: `'http://yum.puppet.com'`
 
 ##### <a name="-puppet_agent--apt_source"></a>`apt_source`
 
-Data type: `Any`
+Data type: `String`
 
-
+Base URL of the location of mirrors of apt.puppet.com downloads sites. Directories under
+the URL "apt_source" should match the structure of the apt.puppet.com
 
 Default value: `'https://apt.puppet.com'`
 
 ##### <a name="-puppet_agent--mac_source"></a>`mac_source`
 
-Data type: `Any`
+Data type: `String`
 
-
+Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
+MacOS packages. Directories under the URL "mac_source" should match the structure of the
+downloads.puppet.com site
 
 Default value: `'https://downloads.puppet.com'`
 
 ##### <a name="-puppet_agent--windows_source"></a>`windows_source`
 
-Data type: `Any`
+Data type: `String`
 
-
+Base URL of the location of mirrors of downloads.puppet.com downloads site that serves
+Windows packages. Directories under the URL "windows_source" should match the structure of
+the downloads.puppet.com site
 
 Default value: `'https://downloads.puppet.com'`
 
 ##### <a name="-puppet_agent--solaris_source"></a>`solaris_source`
 
-Data type: `Any`
+Data type: `String`
 
+Base URL of the location of a mirror for Solaris packages. Currently, solaris packages can
+only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
+PE master package serve.
 
-
-Default value: `'puppet:///pe_packages'`
+Default value: `'puppet:///modules/pe_packages'`
 
 ##### <a name="-puppet_agent--aix_source"></a>`aix_source`
 
-Data type: `Any`
+Data type: `String`
 
+Base URL of the location of a mirror for AIX packages. Currently, AIX packages can
+only be made available by using puppetlabs-pe_repo. This means the mirror must be of a
+PE master package serve.
 
-
-Default value: `'puppet:///pe_packages'`
+Default value: `'puppet:///modules/pe_packages'`
 
 ##### <a name="-puppet_agent--use_alternate_sources"></a>`use_alternate_sources`
 
-Data type: `Any`
+Data type: `Boolean`
 
-
+**ONLY APPLICABLE WHEN WORKING WITH PE INSTALLTIONS**
+When set to true will force downloads to come from the values of $apt_source, $deb_source
+$mac_source etc. rather than from the default PE master package serve. Note that this will
+also force downloads to ignore alternate_pe_source
 
 Default value: `false`
 
 ##### <a name="-puppet_agent--alternate_pe_source"></a>`alternate_pe_source`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+Base URL of the location where packages are located in the same structure that's served
+by a PE master (the directory structure in PE for serving packages is created by the
+puppetlabs-pe_repo module). The general structure served by PE is:
+/packages/${pe_server_version}/${platform_tag}/${package_name}
 
 Default value: `undef`
 
@@ -345,63 +277,53 @@ Default value: `undef`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
-
-
-Default value: `undef`
-
-##### <a name="-puppet_agent--disable_proxy"></a>`disable_proxy`
-
-Data type: `Any`
-
-
-
-Default value: `false`
-
-##### <a name="-puppet_agent--proxy"></a>`proxy`
-
-Data type: `Any`
-
-
+The directory the puppet agent should be installed to. This is only applicable for
+windows operating systems. This only applies when upgrading the agent to a new
+version; it will not cause re-installation of the same version to a new location.
 
 Default value: `undef`
 
 ##### <a name="-puppet_agent--install_options"></a>`install_options`
 
-Data type: `Any`
+Data type: `Array`
 
-
+An array of additional options to pass when installing puppet-agent. Each option in
+the array can either be a string or a hash. Each option will automatically be quoted
+when passed to the install command. With Windows packages, note that file paths in an
+install option must use backslashes. (Since install options are passed directly to
+the installation command, forward slashes won't be automatically converted like they
+are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+be escaped and backslashes in single-quoted strings _can_ be escaped.
 
 Default value: `[]`
 
-##### <a name="-puppet_agent--skip_if_unavailable"></a>`skip_if_unavailable`
-
-Data type: `Any`
-
-
-
-Default value: `'absent'`
-
 ##### <a name="-puppet_agent--msi_move_locked_files"></a>`msi_move_locked_files`
 
-Data type: `Any`
+Data type: `Boolean`
 
-
+This is only applicable for Windows operating systems. There may be instances where
+file locks cause unncessary service restarts.  By setting to true, the module
+will move files prior to installation that are known to cause file locks.
 
 Default value: `false`
 
 ##### <a name="-puppet_agent--wait_for_pxp_agent_exit"></a>`wait_for_pxp_agent_exit`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+This parameter is only applicable for Windows operating systems and pertains to the
+/files/install_agent.ps1 script. This parameterizes the module to define the wait time
+for the PXP agent to end successfully. The default value is set 2 minutes.
 
 Default value: `undef`
 
 ##### <a name="-puppet_agent--wait_for_puppet_run"></a>`wait_for_puppet_run`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+This parameter is only applicable for Windows operating systems and pertains to the
+/files/install_agent.ps1 script. This parameterizes the module to define the wait time
+for the current puppet agent run to end successfully. The default value is set 2 minutes.
 
 Default value: `undef`
 
@@ -409,24 +331,52 @@ Default value: `undef`
 
 Data type: `Array[Puppet_agent::Config]`
 
-
+An array of configuration data to enforce. Each configuration data item must be a
+Puppet_agent::Config hash, which has keys for puppet.conf section, setting, and value.
+This parameter is constrained to managing only a predetermined set of configuration
+settings, e.g. runinterval.
 
 Default value: `[]`
 
+##### <a name="-puppet_agent--proxy"></a>`proxy`
+
+Data type: `Optional`
+
+This is to be able to configure yum-repo with proxy, needed for
+
+Default value: `undef`
+
+##### <a name="-puppet_agent--version_file_path"></a>`version_file_path`
+
+Data type: `String`
+
+The default install path for the VERSION file
+
+Default value: `$facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION'`
+
+##### <a name="-puppet_agent--skip_if_unavailable"></a>`skip_if_unavailable`
+
+Data type: `String`
+
+
+
+Default value: `'absent'`
+
+##### <a name="-puppet_agent--disable_proxy"></a>`disable_proxy`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
 ### <a name="puppet_agent--configure"></a>`puppet_agent::configure`
 
-The puppet_agent::configure class.
+It does not require management of the agent package.
 
 ### <a name="puppet_agent--install"></a>`puppet_agent::install`
 
-== Class puppet_agent::install
-
 This class is called from puppet_agent for install.
-
-=== Parameters
-
-[version]
-  The puppet-agent version to install.
 
 #### Parameters
 
@@ -438,35 +388,38 @@ The following parameters are available in the `puppet_agent::install` class:
 
 ##### <a name="-puppet_agent--install--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `String`
 
-
+The puppet-agent version to install.
 
 Default value: `'present'`
 
 ##### <a name="-puppet_agent--install--install_dir"></a>`install_dir`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The directory the puppet agent should be installed to. This is only applicable for
+windows operating systems.
 
 Default value: `undef`
 
 ##### <a name="-puppet_agent--install--install_options"></a>`install_options`
 
-Data type: `Any`
+Data type: `Array`
 
-
+An array of additional options to pass when installing puppet-agent. Each option in
+the array can either be a string or a hash. Each option will automatically be quoted
+when passed to the install command. With Windows packages, note that file paths in an
+install option must use backslashes. (Since install options are passed directly to
+the installation command, forward slashes won't be automatically converted like they
+are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+be escaped and backslashes in single-quoted strings _can_ be escaped.
 
 Default value: `[]`
 
 ### <a name="puppet_agent--install--darwin"></a>`puppet_agent::install::darwin`
 
-== Class puppet_agent::install::darwin
-
-Private class called from puppet_agent class
-
-Manage the install process for Darwin OSes specifically
+Private class called from puppet_agent class.
 
 #### Parameters
 
@@ -477,25 +430,27 @@ The following parameters are available in the `puppet_agent::install::darwin` cl
 
 ##### <a name="-puppet_agent--install--darwin--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The puppet-agent version to install.
 
 ##### <a name="-puppet_agent--install--darwin--install_options"></a>`install_options`
 
-Data type: `Any`
+Data type: `Array`
 
-
+An array of additional options to pass when installing puppet-agent. Each option in
+the array can either be a string or a hash. Each option will automatically be quoted
+when passed to the install command. With Windows packages, note that file paths in an
+install option must use backslashes. (Since install options are passed directly to
+the installation command, forward slashes won't be automatically converted like they
+are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+be escaped and backslashes in single-quoted strings _can_ be escaped.
 
 Default value: `[]`
 
 ### <a name="puppet_agent--install--solaris"></a>`puppet_agent::install::solaris`
 
-== Class puppet_agent::install::solaris
-
-Private class called from puppet_agent class
-
-Manage the install process for solaris specifically
+Private class called from puppet_agent class.
 
 #### Parameters
 
@@ -506,25 +461,27 @@ The following parameters are available in the `puppet_agent::install::solaris` c
 
 ##### <a name="-puppet_agent--install--solaris--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The puppet-agent version to install.
 
 ##### <a name="-puppet_agent--install--solaris--install_options"></a>`install_options`
 
-Data type: `Any`
+Data type: `Array`
 
-
+An array of additional options to pass when installing puppet-agent. Each option in
+the array can either be a string or a hash. Each option will automatically be quoted
+when passed to the install command. With Windows packages, note that file paths in an
+install option must use backslashes. (Since install options are passed directly to
+the installation command, forward slashes won't be automatically converted like they
+are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+be escaped and backslashes in single-quoted strings _can_ be escaped.
 
 Default value: `[]`
 
 ### <a name="puppet_agent--install--suse"></a>`puppet_agent::install::suse`
 
-== Class puppet_agent::install::suse
-
-Private class called from puppet_agent class
-
-Manage the install process for SUSE OSes specifically
+Private class called from puppet_agent class.
 
 #### Parameters
 
@@ -535,94 +492,94 @@ The following parameters are available in the `puppet_agent::install::suse` clas
 
 ##### <a name="-puppet_agent--install--suse--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The puppet-agent version to install.
 
 ##### <a name="-puppet_agent--install--suse--install_options"></a>`install_options`
 
-Data type: `Any`
+Data type: `Array`
 
-
+An array of additional options to pass when installing puppet-agent.
+Each option in the array can either be a string or a hash.
+Each option will automatically be quoted when passed to the install command.
+With Windows packages, note that file paths in an install option must use
+backslashes. (Since install options are passed directly to the installation
+command, forward slashes won't be automatically converted like they are in
+`file` resources.) Note also that backslashes in double-quoted strings
+_must_ be escaped and backslashes in single-quoted strings _can_ be escaped.
 
 Default value: `[]`
 
 ### <a name="puppet_agent--install--windows"></a>`puppet_agent::install::windows`
 
-== Class puppet_agent::install::windows
-
-Private class called from puppet_agent class
-
-Manage the install process for windows specifically
+Private class called from puppet_agent class.
 
 #### Parameters
 
 The following parameters are available in the `puppet_agent::install::windows` class:
 
-* [`install_dir`](#-puppet_agent--install--windows--install_dir)
 * [`install_options`](#-puppet_agent--install--windows--install_options)
-
-##### <a name="-puppet_agent--install--windows--install_dir"></a>`install_dir`
-
-Data type: `Any`
-
-
-
-Default value: `undef`
+* [`install_dir`](#-puppet_agent--install--windows--install_dir)
 
 ##### <a name="-puppet_agent--install--windows--install_options"></a>`install_options`
 
-Data type: `Any`
+Data type: `Array`
 
-
+An array of additional options to pass when installing puppet-agent. Each option in
+the array can either be a string or a hash. Each option will automatically be quoted
+when passed to the install command. With Windows packages, note that file paths in an
+install option must use backslashes. (Since install options are passed directly to
+the installation command, forward slashes won't be automatically converted like they
+are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+be escaped and backslashes in single-quoted strings _can_ be escaped.
 
 Default value: `[]`
 
+##### <a name="-puppet_agent--install--windows--install_dir"></a>`install_dir`
+
+Data type: `Optional`
+
+The directory the puppet agent should be installed to. This is only applicable for
+windows operating systems.
+
+Default value: `undef`
+
 ### <a name="puppet_agent--osfamily--aix"></a>`puppet_agent::osfamily::aix`
 
-The puppet_agent::osfamily::aix class.
+Used to determine the puppet-agent package location for AIX OSes.
 
 ### <a name="puppet_agent--osfamily--darwin"></a>`puppet_agent::osfamily::darwin`
 
-The puppet_agent::osfamily::darwin class.
+Used to determine the puppet-agent package location for Darwin OSes.
 
 ### <a name="puppet_agent--osfamily--debian"></a>`puppet_agent::osfamily::debian`
 
-The puppet_agent::osfamily::debian class.
+Determines the puppet-agent package location for Debian OSes.
 
 ### <a name="puppet_agent--osfamily--redhat"></a>`puppet_agent::osfamily::redhat`
 
-The puppet_agent::osfamily::redhat class.
+Determines the puppet-agent package location for RedHat OSes.
 
 ### <a name="puppet_agent--osfamily--solaris"></a>`puppet_agent::osfamily::solaris`
 
-The puppet_agent::osfamily::solaris class.
+Determines the puppet-agent package location for Solaris OSes.
 
 ### <a name="puppet_agent--osfamily--suse"></a>`puppet_agent::osfamily::suse`
 
-The puppet_agent::osfamily::suse class.
+Determines the puppet-agent package location for SUSE OSes.
 
 ### <a name="puppet_agent--osfamily--windows"></a>`puppet_agent::osfamily::windows`
 
-The puppet_agent::osfamily::windows class.
+Determines the puppet-agent package location for Windows OSes.
 
 ### <a name="puppet_agent--params"></a>`puppet_agent::params`
 
-== Class puppet_agent::params
-
-This class is meant to be called from puppet_agent
-It sets variables according to platform.
+This class is meant to be called from puppet_agent.
 
 ### <a name="puppet_agent--prepare"></a>`puppet_agent::prepare`
 
-== Class puppet_agent::prepare
-
 This class is called from puppet_agent to prepare for the upgrade.
-
-=== Parameters
-
-[version]
-  The puppet-agent version to install.
 
 #### Parameters
 
@@ -632,22 +589,16 @@ The following parameters are available in the `puppet_agent::prepare` class:
 
 ##### <a name="-puppet_agent--prepare--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The puppet-agent version to install.
 
 Default value: `undef`
 
 ### <a name="puppet_agent--prepare--package"></a>`puppet_agent::prepare::package`
 
-== Class puppet_agent::prepare::package
-
-The only job this class has is to ensure that the correct puppet-agent
-package is downloaded locally for installation.  This is used on platforms
-without package managers capable of working with a remote https repository.
-
-[package_file_name]
-  The puppet-agent package file to retrieve from the master.
+for installation. This is used on platforms without package managers capable of
+working with a remote https repository.
 
 #### Parameters
 
@@ -657,15 +608,13 @@ The following parameters are available in the `puppet_agent::prepare::package` c
 
 ##### <a name="-puppet_agent--prepare--package--source"></a>`source`
 
-Data type: `Any`
+Data type: `Optional`
 
 
 
 ### <a name="puppet_agent--prepare--puppet_config"></a>`puppet_agent::prepare::puppet_config`
 
-== Class puppet_agent::prepare::puppet_config
-
-Private class called from puppet_agent::prepare class
+Private class called from puppet_agent::prepare class.
 
 #### Parameters
 
@@ -675,16 +624,13 @@ The following parameters are available in the `puppet_agent::prepare::puppet_con
 
 ##### <a name="-puppet_agent--prepare--puppet_config--package_version"></a>`package_version`
 
-Data type: `Any`
+Data type: `Optional`
 
-
+The puppet-agent version to install.
 
 ### <a name="puppet_agent--service"></a>`puppet_agent::service`
 
-== Class puppet_agent::service
-
 This class is meant to be called from puppet_agent.
-It ensures that managed services are running.
 
 ## Resource types
 
@@ -763,73 +709,73 @@ Puppet will usually discover the appropriate provider for your platform.
 
 Type: Ruby 4.x API
 
-The any_resources_of_type function.
+Puppet::Parser::Resource instances of the passed in resource type
 
 #### `any_resources_of_type(String $resource_type, Optional[Hash[Any, Any]] $parameters)`
 
-The any_resources_of_type function.
+Puppet::Parser::Resource instances of the passed in resource type
 
-Returns: `Any`
+Returns: `Boolean` Whether there are any instances of resource_type
 
 ##### `resource_type`
 
 Data type: `String`
 
-
+Resource type that is being looked for
 
 ##### `parameters`
 
 Data type: `Optional[Hash[Any, Any]]`
 
-
+Optional parameters
 
 ### <a name="uri_host_from_string"></a>`uri_host_from_string`
 
 Type: Ruby 3.x API
 
-Return a uri host from a string
+The uri_host_from_string function.
 
 #### `uri_host_from_string()`
 
-Return a uri host from a string
+The uri_host_from_string function.
 
-Returns: `Any`
+Returns: `Any` Return a uri host from a string
 
 ### <a name="windows_msi_installargs"></a>`windows_msi_installargs`
 
 Type: Ruby 3.x API
 
-Return the $install_options parameter as a string usable in an msiexec command
+The windows_msi_installargs function.
 
 #### `windows_msi_installargs()`
 
-Return the $install_options parameter as a string usable in an msiexec command
+The windows_msi_installargs function.
 
-Returns: `Any`
+Returns: `String` Return the $install_options parameter as a string usable in an msiexec command
 
 ### <a name="windows_native_path"></a>`windows_native_path`
 
 Type: Ruby 3.x API
 
-Return a windows native path
+The windows_native_path function.
 
 #### `windows_native_path()`
 
-Return a windows native path
+The windows_native_path function.
 
-Returns: `Any`
+Returns: `Any` Return a windows native path
 
 ## Data types
 
 ### <a name="Puppet_agent--Arch"></a>`Puppet_agent::Arch`
 
-The Puppet_agent::Arch data type.
+This type stores all possible architecture patterns
 
 Alias of `Pattern[/^x86$/, /^x64$/, /^i386$/, /^i86pc$/, /^amd64$/, /^x86_64$/, /^power$/, /^sun4[uv]$/, /^ppc64le$/, /^aarch64$/, /PowerPC_POWER/]`
 
 ### <a name="Puppet_agent--Config"></a>`Puppet_agent::Config`
 
-The Puppet_agent::Config data type.
+This Puppet type alias
 
 Alias of
 
@@ -847,7 +793,7 @@ Variant[Struct[{ section          => Enum[main, server, agent, user, master],
 An enumerated list of settings which are permitted to be managed by this
 module.
 
-Alias of `Enum[agent_catalog_run_lockfile, agent_disabled_lockfile, allow_duplicate_certs, always_retry_plugins, autoflush, autosign, basemodulepath, binder_config, bucketdir, ca_fingerprint, ca_name, ca_port, ca_server, ca_ttl, cacert, cacrl, cadir, cakey, capub, catalog_cache_terminus, catalog_terminus, cert_inventory, certdir, certificate_revocation, certname, ciphers, classfile, client_datadir, clientbucketdir, clientyamldir, code, codedir, color, confdir, config, config_file_name, config_version, configprint, crl_refresh_interval, csr_attributes, csrdir, daemonize, data_binding_terminus, default_file_terminus, default_manifest, default_schedules, deviceconfdir, deviceconfig, devicedir, diff, diff_args, digest_algorithm, disable_i18n, disable_per_environment_manifest, disable_warnings, dns_alt_names, document_all, environment, environment_data_provider, environment_timeout, environment_timeout_mode, environmentpath, evaltrace, external_nodes, fact_name_length_soft_limit, fact_value_length_soft_limit, facterng, factpath, facts_terminus, fileserverconfig, filetimeout, forge_authorization, freeze_main, func3x_check, future_features, genconfig, genmanifest, graph, graphdir, group, hiera_config, hostcert, hostcrl, hostcsr, hostprivkey, hostpubkey, http_connect_timeout, http_debug, http_extra_headers, http_keepalive_timeout, http_proxy_host, http_proxy_password, http_proxy_port, http_proxy_user, http_read_timeout, http_user_agent, ignore_plugin_errors, ignoremissingtypes, ignoreschedules, key_type, keylength, lastrunfile, lastrunreport, ldapattrs, ldapbase, ldapclassattrs, ldapparentattr, ldappassword, ldapport, ldapserver, ldapssl, ldapstackedattrs, ldapstring, ldaptls, ldapuser, libdir, localcacert, localedest, localesource, log_level, logdest, logdir, manage_internal_file_permissions, manifest, masterport, max_deprecations, max_errors, max_warnings, maximum_uid, maxwaitforcert, maxwaitforlock, merge_dependency_warnings, mkusers, module_groups, module_repository, module_working_dir, modulepath, name, named_curve, no_proxy, node_cache_terminus, node_name, node_name_fact, node_name_value, node_terminus, noop, number_of_facts_soft_limit, onetime, passfile, path, payload_soft_limit, pidfile, plugindest, pluginfactdest, pluginfactsource, pluginsignore, pluginsource, pluginsync, postrun_command, preferred_serialization_format, prerun_command, preview_outputdir, priority, privatedir, privatekeydir, profile, publickeydir, puppet_trace, puppetdlog, report, report_include_system_store, report_port, report_server, reportdir, reports, reporturl, requestdir, resourcefile, rest_authconfig, resubmit_facts, rich_data, route_file, rundir, runinterval, runtimeout, serial, server, server_datadir, server_list, serverport, show_diff, signeddir, skip_tags, sourceaddress, splay, splaylimit, srv_domain, ssl_client_ca_auth, ssl_client_header, ssl_client_verify_header, ssl_lockfile, ssl_server_ca_auth, ssl_trust_store, ssldir, statedir, statefile, statettl, static_catalogs, storeconfigs, storeconfigs_backend, strict, strict_environment_mode, strict_hostname_checking, strict_variables, summarize, supported_checksum_types, syslogfacility, tags, tasks, top_level_facts_soft_limit, trace, transactionstorefile, trusted_external_command, trusted_oid_mapping_file, use_cached_catalog, use_srv_records, usecacheonfailure, user, vardir, vendormoduledir, versioned_environment_dirs, waitforcert, waitforlock, yamldir]`
+Alias of `Enum[agent_catalog_run_lockfile, agent_disabled_lockfile, allow_duplicate_certs, allow_pson_serialization, always_retry_plugins, autoflush, autosign, basemodulepath, binder_config, bucketdir, ca_fingerprint, ca_name, ca_port, ca_refresh_interval, ca_server, ca_ttl, cacert, cacrl, cadir, cakey, capub, catalog_cache_terminus, catalog_terminus, cert_inventory, certdir, certificate_revocation, certname, ciphers, classfile, client_datadir, clientbucketdir, clientyamldir, code, codedir, color, confdir, config, config_file_name, config_version, configprint, crl_refresh_interval, csr_attributes, csrdir, daemonize, data_binding_terminus, default_file_terminus, default_manifest, default_schedules, deviceconfdir, deviceconfig, devicedir, diff, diff_args, digest_algorithm, disable_i18n, disable_per_environment_manifest, disable_warnings, dns_alt_names, document_all, environment, environment_data_provider, environment_timeout, environment_timeout_mode, environmentpath, evaltrace, exclude_unchanged_resources, external_nodes, fact_name_length_soft_limit, fact_value_length_soft_limit, facterng, factpath, facts_terminus, fileserverconfig, filetimeout, forge_authorization, freeze_main, func3x_check, future_features, genconfig, genmanifest, graph, graphdir, group, hiera_config, hostcert, hostcert_renewal_interval, hostcrl, hostcsr, hostprivkey, hostpubkey, http_connect_timeout, http_debug, http_extra_headers, http_keepalive_timeout, http_proxy_host, http_proxy_password, http_proxy_port, http_proxy_user, http_read_timeout, http_user_agent, ignore_plugin_errors, ignoremissingtypes, ignoreschedules, include_legacy_facts, key_type, keylength, lastrunfile, lastrunreport, ldapattrs, ldapbase, ldapclassattrs, ldapparentattr, ldappassword, ldapport, ldapserver, ldapssl, ldapstackedattrs, ldapstring, ldaptls, ldapuser, libdir, localcacert, localedest, localesource, location_trusted, log_level, logdest, logdir, manage_internal_file_permissions, manifest, masterport, max_deprecations, max_errors, max_warnings, maximum_uid, maxwaitforcert, maxwaitforlock, merge_dependency_warnings, mkusers, module_groups, module_repository, module_working_dir, modulepath, name, named_curve, no_proxy, node_cache_terminus, node_name, node_name_fact, node_name_value, node_terminus, noop, number_of_facts_soft_limit, onetime, passfile, path, payload_soft_limit, pidfile, plugindest, pluginfactdest, pluginfactsource, pluginsignore, pluginsource, pluginsync, postrun_command, preferred_serialization_format, preprocess_deferred, prerun_command, preview_outputdir, priority, privatedir, privatekeydir, profile, publicdir, publickeydir, puppet_trace, puppetdlog, report, report_configured_environmentpath, report_include_system_store, report_port, report_server, reportdir, reports, reporturl, requestdir, resourcefile, rest_authconfig, resubmit_facts, rich_data, route_file, rundir, runinterval, runtimeout, serial, server, server_datadir, server_list, serverport, settings_catalog, show_diff, signeddir, skip_tags, sourceaddress, splay, splaylimit, srv_domain, ssl_client_ca_auth, ssl_client_header, ssl_client_verify_header, ssl_lockfile, ssl_server_ca_auth, ssl_trust_store, ssldir, statedir, statefile, statettl, static_catalogs, storeconfigs, storeconfigs_backend, strict, strict_environment_mode, strict_hostname_checking, strict_variables, summarize, supported_checksum_types, syslogfacility, tags, tasks, top_level_facts_soft_limit, trace, transactionstorefile, trusted_external_command, trusted_oid_mapping_file, use_cached_catalog, use_last_environment, use_srv_records, usecacheonfailure, user, vardir, vendormoduledir, versioned_environment_dirs, waitforcert, waitforlock, write_catalog_summary, yamldir]`
 
 ## Tasks
 

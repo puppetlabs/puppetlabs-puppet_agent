@@ -1,3 +1,4 @@
+# @summary Determines the puppet-agent package location for RedHat OSes.
 class puppet_agent::osfamily::redhat {
   assert_private()
 

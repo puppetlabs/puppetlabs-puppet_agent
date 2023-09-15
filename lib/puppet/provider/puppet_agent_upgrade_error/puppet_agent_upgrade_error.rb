@@ -1,4 +1,10 @@
 Puppet::Type.type(:puppet_agent_upgrade_error).provide :puppet_agent_upgrade_error do
+  desc <<-DESC
+  @summary This provider checks an error log from a previous puppet agent
+  installation and will fail if the error log exists. The provider will delete
+  the existing error log before failing so that after the failed puppet run the
+  user can attempt the upgrade again.
+  DESC
   def ensure_notexist
     logfile = File.join(Puppet['statedir'].to_s, @resource[:name])
     Puppet.debug "Checking for Error logfile #{logfile}"

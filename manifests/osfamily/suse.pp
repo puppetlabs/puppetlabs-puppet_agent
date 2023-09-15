@@ -1,3 +1,4 @@
+# @summary Determines the puppet-agent package location for SUSE OSes.
 class puppet_agent::osfamily::suse {
   assert_private()
 

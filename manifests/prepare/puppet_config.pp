@@ -1,9 +1,9 @@
-# == Class puppet_agent::prepare::puppet_config
+# @summary Private class called from puppet_agent::prepare class.
 #
-# Private class called from puppet_agent::prepare class
-#
+# @param package_version
+#   The puppet-agent version to install.
 class puppet_agent::prepare::puppet_config (
-  $package_version,
+  Optional $package_version,
 ) {
   assert_private()
   $puppetconf = $::puppet_agent::params::config

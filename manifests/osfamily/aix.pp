@@ -1,3 +1,4 @@
+# @summary Used to determine the puppet-agent package location for AIX OSes.
 class puppet_agent::osfamily::aix {
   assert_private()
 

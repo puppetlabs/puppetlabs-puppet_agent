@@ -1,3 +1,4 @@
+# @summary Determines the puppet-agent package location for Windows OSes.
 class puppet_agent::osfamily::windows {
   assert_private()
 

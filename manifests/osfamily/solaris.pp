@@ -1,3 +1,4 @@
+# @summary Determines the puppet-agent package location for Solaris OSes.
 class puppet_agent::osfamily::solaris {
   assert_private()
 

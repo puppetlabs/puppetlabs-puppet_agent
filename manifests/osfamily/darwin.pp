@@ -1,3 +1,4 @@
+# @summary Used to determine the puppet-agent package location for Darwin OSes.
 class puppet_agent::osfamily::darwin {
   assert_private()
 

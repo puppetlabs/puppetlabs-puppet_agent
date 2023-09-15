@@ -1,3 +1,5 @@
+# @summary Uses $puppet_agent::config to manage settings in puppet.conf.
+# It does not require management of the agent package.
 class puppet_agent::configure {
   assert_private()
 
