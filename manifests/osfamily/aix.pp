@@ -58,7 +58,7 @@ class puppet_agent::osfamily::aix {
     $source = "${::puppet_agent::aix_source}/${pe_server_version}/aix-${aix_ver_number}-power/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
   }
 
-  class { '::puppet_agent::prepare::package':
+  class { 'puppet_agent::prepare::package':
     source => $source,
   }
   contain puppet_agent::prepare::package

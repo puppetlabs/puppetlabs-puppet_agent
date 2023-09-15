@@ -24,7 +24,7 @@ class puppet_agent::osfamily::darwin {
     $source = "${::puppet_agent::mac_source}/mac/${::puppet_agent::collection}/${productversion_major}/${::puppet_agent::arch}/${puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
   }
 
-  class { '::puppet_agent::prepare::package':
+  class { 'puppet_agent::prepare::package':
     source => $source,
   }
 

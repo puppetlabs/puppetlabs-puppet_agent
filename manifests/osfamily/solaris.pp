@@ -34,7 +34,7 @@ class puppet_agent::osfamily::solaris {
       } else {
         $source = "${source_dir}/${package_file_name}"
       }
-      class { '::puppet_agent::prepare::package':
+      class { 'puppet_agent::prepare::package':
         source => $source,
       }
       contain puppet_agent::prepare::package
@@ -64,7 +64,7 @@ class puppet_agent::osfamily::solaris {
         } else {
           $source = "${source_dir}/${package_file_name}"
         }
-        class { '::puppet_agent::prepare::package':
+        class { 'puppet_agent::prepare::package':
           source => $source,
         }
         contain puppet_agent::prepare::package

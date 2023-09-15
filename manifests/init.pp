@@ -218,10 +218,10 @@ class puppet_agent (
       $_package_version = $master_or_package_version
     }
 
-    class { '::puppet_agent::prepare':
+    class { 'puppet_agent::prepare':
       package_version => $_package_version,
     }
-    class { '::puppet_agent::install':
+    class { 'puppet_agent::install':
       package_version => $_package_version,
       install_dir     => $install_dir,
       install_options => $install_options,

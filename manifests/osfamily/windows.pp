@@ -28,7 +28,7 @@ class puppet_agent::osfamily::windows {
     }
   }
 
-  class { '::puppet_agent::prepare::package':
+  class { 'puppet_agent::prepare::package':
     source => $source,
   }
 

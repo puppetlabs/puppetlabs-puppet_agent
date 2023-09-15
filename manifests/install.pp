@@ -28,7 +28,7 @@ class puppet_agent::install (
       package_version => $package_version,
       install_options => $install_options,
     }
-    contain '::puppet_agent::install::solaris'
+    contain 'puppet_agent::install::solaris'
   } elsif $facts['os']['name'] == 'Darwin' {
     # Prevent re-running the script install
     if $puppet_agent::aio_upgrade_required {
@@ -36,7 +36,7 @@ class puppet_agent::install (
         package_version => $package_version,
         install_options => $install_options,
       }
-      contain '::puppet_agent::install::darwin'
+      contain 'puppet_agent::install::darwin'
     }
   } elsif $facts['os']['family'] == 'windows' {
     # Prevent re-running the batch install
@@ -45,7 +45,7 @@ class puppet_agent::install (
         install_dir     => $install_dir,
         install_options => $install_options,
       }
-      contain '::puppet_agent::install::windows'
+      contain 'puppet_agent::install::windows'
     }
   } elsif $facts['os']['family'] == 'suse' {
     # Prevent re-running the batch install
@@ -54,7 +54,7 @@ class puppet_agent::install (
         package_version => $package_version,
         install_options => $install_options,
       }
-      contain '::puppet_agent::install::suse'
+      contain 'puppet_agent::install::suse'
     }
   } else {
     if $facts['os']['name'] == 'AIX' {

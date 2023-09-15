@@ -1,5 +1,5 @@
 node default {
-  class { '::puppet_agent':
+  class { 'puppet_agent':
     package_version => $facts['to_version'],
     # Upgrades in Docker cannot start the puppet service due to systemd
     # incompatibilities. Essentially, Docker expects an init system for

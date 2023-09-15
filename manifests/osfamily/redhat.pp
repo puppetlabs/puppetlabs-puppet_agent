@@ -6,8 +6,8 @@ class puppet_agent::osfamily::redhat {
     # Absolute sources are expected to be actual packages (not repos)
     # so when absolute_source is set just download the package to the
     # system and finish with this class.
-    $source = $::puppet_agent::absolute_source
-    class { '::puppet_agent::prepare::package':
+    $source = $puppet_agent::absolute_source
+    class { 'puppet_agent::prepare::package':
       source => $source,
     }
     contain puppet_agent::prepare::package
