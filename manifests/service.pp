@@ -1,12 +1,9 @@
-# == Class puppet_agent::service
-#
+# @summary Ensures that managed services are running.
 # This class is meant to be called from puppet_agent.
-# It ensures that managed services are running.
-#
 class puppet_agent::service {
   assert_private()
 
-  $_service_names = $::puppet_agent::service_names
+  $_service_names = $puppet_agent::service_names
 
   if $facts['os']['name'] == 'Solaris' and $facts['os']['release']['major'] == '10' and versioncmp($facts['clientversion'], '5.0.0') < 0 {
     # Skip managing service, upgrade script will handle it.

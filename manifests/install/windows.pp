@@ -18,24 +18,24 @@ class puppet_agent::install::windows (
 ) {
   assert_private()
 
-  $service_names         = $::puppet_agent::service_names
+  $service_names         = $puppet_agent::service_names
 
-  $_msi_location = $::puppet_agent::prepare::package::local_package_file_path
+  $_msi_location = $puppet_agent::prepare::package::local_package_file_path
 
   $_install_options = $install_options ? {
     []      => windows_msi_installargs(['REINSTALLMODE="amus"']),
     default => windows_msi_installargs($install_options)
   }
 
-  if (member($::puppet_agent::service_names, 'puppet')) {
+  if (member($puppet_agent::service_names, 'puppet')) {
     $_agent_startup_mode = 'Automatic'
   } else {
     $_agent_startup_mode = undef
   }
 
-  if $::puppet_agent::msi_move_locked_files {
-    if ($::puppet_agent::_expected_package_version.match(/^5.5/) and versioncmp($::puppet_agent::_expected_package_version, '5.5.17') < 0) or
-      ($::puppet_agent::_expected_package_version.match(/^6/) and versioncmp($::puppet_agent::_expected_package_version, '6.8.0') < 0) {
+  if $puppet_agent::msi_move_locked_files {
+    if ($puppet_agent::_expected_package_version.match(/^5.5/) and versioncmp($puppet_agent::_expected_package_version, '5.5.17') < 0) or
+    ($puppet_agent::_expected_package_version.match(/^6/) and versioncmp($puppet_agent::_expected_package_version, '6.8.0') < 0) {
       $_move_dll_workaround = '-UseLockedFilesWorkaround'
     } else {
       notify { 'Ignoring msi_move_locked_files setting as it is no longer needed with newer puppet-agent versions (puppet 5 >= 5.5.17 or puppet 6 >= 6.8.0)': }
@@ -45,13 +45,13 @@ class puppet_agent::install::windows (
     $_move_dll_workaround = undef
   }
 
-  if $::puppet_agent::wait_for_pxp_agent_exit {
+  if $puppet_agent::wait_for_pxp_agent_exit {
     $_pxp_agent_wait = "-WaitForPXPAgentExit ${puppet_agent::wait_for_pxp_agent_exit}"
   } else {
     $_pxp_agent_wait = undef
   }
 
-  if $::puppet_agent::wait_for_puppet_run {
+  if $puppet_agent::wait_for_puppet_run {
     $_puppet_run_wait = "-WaitForPuppetRun ${puppet_agent::wait_for_puppet_run}"
   } else {
     $_puppet_run_wait = undef

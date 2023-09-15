@@ -6,7 +6,7 @@ class puppet_agent::osfamily::solaris {
     fail("${facts['os']['name']} not supported")
   }
 
-  if $::puppet_agent::is_pe != true {
+  if $puppet_agent::is_pe != true {
     fail('Solaris upgrades are only supported on Puppet Enterprise')
   }
 
@@ -21,15 +21,15 @@ class puppet_agent::osfamily::solaris {
     $source_dir = "${puppet_agent::solaris_source}/${pe_server_version}/${facts['platform_tag']}"
   }
 
-  $pkg_arch = $::puppet_agent::arch ? {
+  $pkg_arch = $puppet_agent::arch ? {
     /^sun4[uv]$/ => 'sparc',
     default      => 'i386',
   }
 
   case $facts['os']['release']['major'] {
     '10': {
-      $package_file_name = "${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.${pkg_arch}.pkg.gz"
-      if $::puppet_agent::absolute_source {
+      $package_file_name = "${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.${pkg_arch}.pkg.gz"
+      if $puppet_agent::absolute_source {
         $source = $source_dir
       } else {
         $source = "${source_dir}/${package_file_name}"
@@ -57,9 +57,9 @@ class puppet_agent::osfamily::solaris {
       }
     }
     '11': {
-      if $::puppet_agent::manage_repo {
-        $package_file_name = "${::puppet_agent::package_name}@${::puppet_agent::prepare::package_version},5.11-1.${pkg_arch}.p5p"
-        if $::puppet_agent::absolute_source {
+      if $puppet_agent::manage_repo {
+        $package_file_name = "${puppet_agent::package_name}@${puppet_agent::prepare::package_version},5.11-1.${pkg_arch}.p5p"
+        if $puppet_agent::absolute_source {
           $source = $source_dir
         } else {
           $source = "${source_dir}/${package_file_name}"

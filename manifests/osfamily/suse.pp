@@ -6,7 +6,7 @@ class puppet_agent::osfamily::suse {
     fail("${facts['os']['name']} not supported")
   }
 
-  if $::puppet_agent::absolute_source {
+  if $puppet_agent::absolute_source {
     # Absolute sources are expected to be actual packages (not repos)
     # so when absolute_source is set just download the package to the
     # system and finish with this class.
@@ -16,7 +16,7 @@ class puppet_agent::osfamily::suse {
     }
     contain puppet_agent::prepare::package
   } else {
-    if ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
+    if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
       $pe_server_version = pe_build_version()
 
       # SLES 11 in PE can no longer install agents from pe_repo
@@ -48,10 +48,10 @@ class puppet_agent::osfamily::suse {
         }
       }
     } else {
-      if $::puppet_agent::collection == 'PC1' {
-        $source = "${::puppet_agent::yum_source}/sles/${facts['os']['release']['major']}/${::puppet_agent::collection}/${::puppet_agent::arch}"
+      if $puppet_agent::collection == 'PC1' {
+        $source = "${puppet_agent::yum_source}/sles/${facts['os']['release']['major']}/${puppet_agent::collection}/${puppet_agent::arch}"
       } else {
-        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/sles/${facts['os']['release']['major']}/${::puppet_agent::arch}"
+        $source = "${puppet_agent::yum_source}/${puppet_agent::collection}/sles/${facts['os']['release']['major']}/${puppet_agent::arch}"
       }
     }
 
@@ -125,7 +125,7 @@ fi
           logoutput => 'on_failure',
         }
 
-        unless $facts['os']['release']['major'] == '11' and $::puppet_agent::is_pe {
+        unless $facts['os']['release']['major'] == '11' and $puppet_agent::is_pe {
           if getvar('::puppet_agent::manage_repo') == true {
             # Set up a zypper repository by creating a .repo file which mimics a ini file
             $repo_file = '/etc/zypp/repos.d/pc_repo.repo'

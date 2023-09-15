@@ -6,7 +6,7 @@ class puppet_agent::osfamily::aix {
     fail("${facts['os']['name']} not supported")
   }
 
-  if $::puppet_agent::is_pe != true {
+  if $puppet_agent::is_pe != true {
     fail('AIX upgrades are only supported on Puppet Enterprise')
   }
 
@@ -35,27 +35,27 @@ class puppet_agent::osfamily::aix {
   # on puppet collection, package version and AIX version.
   $_aix_ver_number = regsubst($facts['platform_tag'],'aix-(\d+\.\d+)-power','\1')
   if $_aix_ver_number {
-    if $::puppet_agent::collection =~ /^puppet8/ {
+    if $puppet_agent::collection =~ /^puppet8/ {
       $aix_ver_number = '7.2'
-    } elsif $::puppet_agent::collection =~ /^puppet7/ {
+    } elsif $puppet_agent::collection =~ /^puppet7/ {
       $aix_ver_number = '7.1'
     } else {
       # 6.19.1 is the last puppet6 release that ships AIX 6.1 packages
-      $aix_ver_number = versioncmp($::puppet_agent::prepare::package_version, '6.19.1') ? {
+      $aix_ver_number = versioncmp($puppet_agent::prepare::package_version, '6.19.1') ? {
         1       => '7.1',
         default => '6.1'
       }
     }
   }
 
-  if $::puppet_agent::absolute_source {
-    $source = $::puppet_agent::absolute_source
-  } elsif $::puppet_agent::alternate_pe_source {
-    $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/aix-${aix_ver_number}-power/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
-  } elsif $::puppet_agent::source {
-    $source = "${::puppet_agent::source}/packages/${pe_server_version}/aix-${aix_ver_number}-power/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
+  if $puppet_agent::absolute_source {
+    $source = $puppet_agent::absolute_source
+  } elsif $puppet_agent::alternate_pe_source {
+    $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/aix-${aix_ver_number}-power/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
+  } elsif $puppet_agent::source {
+    $source = "${puppet_agent::source}/packages/${pe_server_version}/aix-${aix_ver_number}-power/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
   } else {
-    $source = "${::puppet_agent::aix_source}/${pe_server_version}/aix-${aix_ver_number}-power/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
+    $source = "${puppet_agent::aix_source}/${pe_server_version}/aix-${aix_ver_number}-power/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.aix${aix_ver_number}.ppc.rpm"
   }
 
   class { 'puppet_agent::prepare::package':

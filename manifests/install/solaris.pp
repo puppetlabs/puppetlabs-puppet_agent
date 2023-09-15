@@ -17,14 +17,14 @@ class puppet_agent::install::solaris (
 ) {
   assert_private()
   if $facts['os']['release']['major'] == '10' {
-    $_unzipped_package_name = regsubst($::puppet_agent::prepare::package::package_file_name, '\.gz$', '')
+    $_unzipped_package_name = regsubst($puppet_agent::prepare::package::package_file_name, '\.gz$', '')
     $install_script = 'solaris_install.sh.erb'
 
     # The following are expected to be available in the solaris_install.sh.erb template:
     $adminfile = '/opt/puppetlabs/packages/solaris-noask'
     $sourcefile = "/opt/puppetlabs/packages/${_unzipped_package_name}"
 
-    $service_names = $::puppet_agent::service_names
+    $service_names = $puppet_agent::service_names
 
     # Puppet prior to 5.0 would not use a separate process contract when forking from the Puppet
     # service. That resulted in service-initiated upgrades failing because trying to remove or
@@ -49,7 +49,7 @@ class puppet_agent::install::solaris (
     }
   } else {
     $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?/)[0]
-    package { $::puppet_agent::package_name:
+    package { $puppet_agent::package_name:
       ensure          => $package_version,
       install_options => $install_options,
       notify          => Puppet_agent_end_run[$_aio_package_version],

@@ -6,7 +6,7 @@ class puppet_agent::prepare::puppet_config (
   Optional $package_version,
 ) {
   assert_private()
-  $puppetconf = $::puppet_agent::params::config
+  $puppetconf = $puppet_agent::params::config
 
   if !defined(File[$puppetconf]) {
     file { $puppetconf:

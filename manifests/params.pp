@@ -1,8 +1,5 @@
-# == Class puppet_agent::params
-#
-# This class is meant to be called from puppet_agent
-# It sets variables according to platform.
-#
+# @summary Sets variables according to platform.
+# This class is meant to be called from puppet_agent.
 class puppet_agent::params {
   # Which services should be started after the upgrade process?
   if ($facts['os']['family'] == 'Solaris' and $facts['os']['release']['major'] == '11') {

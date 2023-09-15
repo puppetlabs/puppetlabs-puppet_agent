@@ -62,15 +62,15 @@ class puppet_agent::install (
       $_package_version = $package_version
       $_install_options = concat(['--ignoreos'],$install_options)
       $_provider = 'rpm'
-      $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+      $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
     } elsif $facts['os']['family'] == 'Debian' {
       $_install_options = $install_options
-      if $::puppet_agent::absolute_source {
+      if $puppet_agent::absolute_source {
         # absolute_source means we use dpkg on debian based platforms
         $_package_version = 'present'
         $_provider = 'dpkg'
         # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
-        $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+        $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
       } else {
         # any other type of source means we use apt with no 'source' defined in the package resource below
         if $package_version =~ /^latest$|^present$/ {
@@ -83,12 +83,12 @@ class puppet_agent::install (
       }
     } else { # RPM platforms: EL
       $_install_options = $install_options
-      if $::puppet_agent::absolute_source {
+      if $puppet_agent::absolute_source {
         # absolute_source means we use rpm on EL based platforms
         $_package_version = $package_version
         $_provider = 'rpm'
         # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
-        $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+        $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
       } else {
         # any other type of source means we use a package manager (yum) with no 'source' parameter in the
         # package resource below
@@ -98,7 +98,7 @@ class puppet_agent::install (
       }
     }
     $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?|^latest$|^present$/)[0]
-    package { $::puppet_agent::package_name:
+    package { $puppet_agent::package_name:
       ensure          => $_package_version,
       install_options => $_install_options,
       provider        => $_provider,

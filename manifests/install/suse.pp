@@ -18,16 +18,16 @@ class puppet_agent::install::suse (
 ) {
   assert_private()
 
-  if ($::puppet_agent::absolute_source) or ($facts['os']['release']['major'] == '11' and $::puppet_agent::is_pe) {
+  if ($puppet_agent::absolute_source) or ($facts['os']['release']['major'] == '11' and $puppet_agent::is_pe) {
     $_provider = 'rpm'
-    $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+    $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
 
     exec { 'GPG check the RPM file':
       path      => '/bin:/usr/bin:/sbin:/usr/sbin',
       command   => "rpm -K ${_source}",
       require   => File[$_source],
       logoutput => 'on_failure',
-      notify    => Package[$::puppet_agent::package_name],
+      notify    => Package[$puppet_agent::package_name],
     }
   } else {
     $_provider = 'zypper'
@@ -35,7 +35,7 @@ class puppet_agent::install::suse (
   }
 
   $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?|^latest$|^present$/)[0]
-  package { $::puppet_agent::package_name:
+  package { $puppet_agent::package_name:
     ensure          => $package_version,
     install_options => $install_options,
     provider        => $_provider,

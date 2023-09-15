@@ -2,7 +2,7 @@
 class puppet_agent::osfamily::debian {
   assert_private()
 
-  if $::puppet_agent::absolute_source {
+  if $puppet_agent::absolute_source {
     # Absolute sources are expected to be actual packages (not repos)
     # so when absolute_source is set just download the package to the
     # system and finish with this class.
@@ -13,8 +13,8 @@ class puppet_agent::osfamily::debian {
     contain puppet_agent::prepare::package
   } else {
     if getvar('::puppet_agent::manage_repo') == true {
-      include ::apt
-      if ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
+      include apt
+      if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
         $pe_server_version = pe_build_version()
         if $puppet_agent::source {
           $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
@@ -29,7 +29,7 @@ class puppet_agent::osfamily::debian {
         # to be configured to pass in the agents certificates. By the time this code is called,
         # the module has already moved the certs to $ssl_dir/{certs,private_keys}, which
         # happen to be the default in PE already.
-        $_ssl_dir = $::puppet_agent::params::ssldir
+        $_ssl_dir = $puppet_agent::params::ssldir
         $_sslcacert_path = "${_ssl_dir}/certs/ca.pem"
         $_sslclientcert_path = "${_ssl_dir}/certs/${facts['clientcert']}.pem"
         $_sslclientkey_path = "${_ssl_dir}/private_keys/${facts['clientcert']}.pem"
@@ -46,7 +46,7 @@ class puppet_agent::osfamily::debian {
 
         $_apt_settings = concat(
           $_ca_cert_verification,
-          $_proxy_host)
+        $_proxy_host)
 
         apt::setting { 'conf-pc_repo':
           content  => $_apt_settings.join(''),
@@ -69,7 +69,7 @@ class puppet_agent::osfamily::debian {
           content  => '',
         }
       } else {
-        $source = $::puppet_agent::apt_source
+        $source = $puppet_agent::apt_source
       }
       $legacy_keyname = 'GPG-KEY-puppet'
       $legacy_gpg_path = "/etc/pki/deb-gpg/${legacy_keyname}"
@@ -105,7 +105,7 @@ class puppet_agent::osfamily::debian {
 
       apt::source { 'pc_repo':
         location => $source,
-        repos    => $::puppet_agent::collection,
+        repos    => $puppet_agent::collection,
         key      => {
           'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
           'source' => $gpg_path,
@@ -116,7 +116,7 @@ class puppet_agent::osfamily::debian {
       # apt_update doesn't inherit the future class dependency, so it
       # can wait until the end of the run to exec. Force it to happen now.
       exec { 'pc_repo_force':
-        command     => "/bin/echo 'forcing apt update for pc_repo ${::puppet_agent::collection}'",
+        command     => "/bin/echo 'forcing apt update for pc_repo ${puppet_agent::collection}'",
         refreshonly => true,
         logoutput   => true,
         subscribe   => Exec['apt_update'],

@@ -10,8 +10,8 @@ class puppet_agent::prepare (
   # Manage /opt/puppetlabs for platforms. This is done before both config and prepare because,
   # on Windows, both can be in C:/ProgramData/Puppet Labs; doing it later creates a dependency
   # cycle.
-  if !defined(File[$::puppet_agent::params::local_puppet_dir]) {
-    file { $::puppet_agent::params::local_puppet_dir:
+  if !defined(File[$puppet_agent::params::local_puppet_dir]) {
+    file { $puppet_agent::params::local_puppet_dir:
       ensure => directory,
     }
   }

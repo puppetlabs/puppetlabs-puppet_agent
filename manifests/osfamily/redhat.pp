@@ -2,7 +2,7 @@
 class puppet_agent::osfamily::redhat {
   assert_private()
 
-  if $::puppet_agent::absolute_source {
+  if $puppet_agent::absolute_source {
     # Absolute sources are expected to be actual packages (not repos)
     # so when absolute_source is set just download the package to the
     # system and finish with this class.
@@ -37,22 +37,22 @@ class puppet_agent::osfamily::redhat {
         true    => "el-${amz_el_version}-${facts['os']['architecture']}",
         default => $facts['platform_tag'],
       }
-      if $::puppet_agent::source {
-        $source = "${::puppet_agent::source}/packages/${pe_server_version}/${pe_repo_dir}"
-      } elsif $::puppet_agent::alternate_pe_source {
-        $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${pe_repo_dir}"
+      if $puppet_agent::source {
+        $source = "${puppet_agent::source}/packages/${pe_server_version}/${pe_repo_dir}"
+      } elsif $puppet_agent::alternate_pe_source {
+        $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${pe_repo_dir}"
       } else {
         $source = "https://${facts['puppet_master_server']}:8140/packages/${pe_server_version}/${pe_repo_dir}"
       }
     } else {
-      if $::puppet_agent::collection == 'PC1' {
-        $source = "${::puppet_agent::yum_source}/${platform_and_version}/${::puppet_agent::collection}/${::puppet_agent::arch}"
+      if $puppet_agent::collection == 'PC1' {
+        $source = "${puppet_agent::yum_source}/${platform_and_version}/${puppet_agent::collection}/${puppet_agent::arch}"
       } else {
-        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/${platform_and_version}/${::puppet_agent::arch}"
+        $source = "${puppet_agent::yum_source}/${puppet_agent::collection}/${platform_and_version}/${puppet_agent::arch}"
       }
     }
 
-    if ($::puppet_agent::is_pe  and (!$::puppet_agent::use_alternate_sources)) {
+    if ($puppet_agent::is_pe  and (!$puppet_agent::use_alternate_sources)) {
       # In Puppet Enterprise, agent packages are served by the same server
       # as the master, which can be using either a self signed CA, or an external CA.
       # In order for yum to authenticate to the yumrepo on the PE Master, it will need
@@ -60,7 +60,7 @@ class puppet_agent::osfamily::redhat {
       # the module has already moved the certs to $ssl_dir/{certs,private_keys}, which
       # happen to be the default in PE already.
 
-      $_ssl_dir = $::puppet_agent::params::ssldir
+      $_ssl_dir = $puppet_agent::params::ssldir
       $_sslcacert_path = "${_ssl_dir}/certs/ca.pem"
       $_sslclientcert_path = "${_ssl_dir}/certs/${facts['clientcert']}.pem"
       $_sslclientkey_path = "${_ssl_dir}/private_keys/${facts['clientcert']}.pem"
@@ -146,14 +146,14 @@ fi
       logoutput => 'on_failure',
     }
 
-    if $::puppet_agent::manage_repo == true {
-      $_proxy = $::puppet_agent::disable_proxy ? {
+    if $puppet_agent::manage_repo == true {
+      $_proxy = $puppet_agent::disable_proxy ? {
         true    => '_none_',
-        default => $::puppet_agent::proxy,
+        default => $puppet_agent::proxy,
       }
       yumrepo { 'pc_repo':
         baseurl             => $source,
-        descr               => "Puppet Labs ${::puppet_agent::collection} Repository",
+        descr               => "Puppet Labs ${puppet_agent::collection} Repository",
         enabled             => true,
         gpgcheck            => '1',
         gpgkey              => $gpg_keys,
@@ -161,7 +161,7 @@ fi
         sslcacert           => $_sslcacert_path,
         sslclientcert       => $_sslclientcert_path,
         sslclientkey        => $_sslclientkey_path,
-        skip_if_unavailable => $::puppet_agent::skip_if_unavailable,
+        skip_if_unavailable => $puppet_agent::skip_if_unavailable,
       }
     }
   }
