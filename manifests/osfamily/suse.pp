@@ -55,6 +55,7 @@ class puppet_agent::osfamily::suse {
       }
     }
 
+# lint:ignore:strict_indent
     case $facts['os']['release']['major'] {
       '11', '12', '15': {
         # Import the GPG key
@@ -85,6 +86,7 @@ elif [ "${ACTION}" = "import" ]; then
   rpm --import "${GPG_KEY_PATH}"
 fi
 | SCRIPT
+# lint:endignore
 
         if getvar('::puppet_agent::manage_pki_dir') == true {
           file { ['/etc/pki', '/etc/pki/rpm-gpg']:

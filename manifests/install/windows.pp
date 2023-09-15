@@ -82,6 +82,7 @@ class puppet_agent::install::windows (
     content => file('puppet_agent/prerequisites_check.ps1'),
   }
 
+# lint:ignore:top_scope_facts
   exec { 'prerequisites_check.ps1':
     command => "${facts['os']['windows']['system32']}\\WindowsPowerShell\\v1.0\\powershell.exe \
                   -ExecutionPolicy Bypass \
@@ -129,6 +130,7 @@ class puppet_agent::install::windows (
       Exec['prerequisites_check.ps1'],
     ],
   }
+# lint:endignore
 
   # PUP-5480/PE-15037 Cache dir loses inheritable SYSTEM perms
   exec { 'fix inheritable SYSTEM perms':

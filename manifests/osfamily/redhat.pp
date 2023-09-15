@@ -12,6 +12,7 @@ class puppet_agent::osfamily::redhat {
     }
     contain puppet_agent::prepare::package
   } else {
+    # lint:ignore:only_variable_string
     case $facts['os']['name'] {
       'Fedora': {
         $platform_and_version = "fedora/${facts['os']['release']['major']}"
@@ -28,7 +29,8 @@ class puppet_agent::osfamily::redhat {
         $platform_and_version = "el/${facts['os']['release']['major']}"
       }
     }
-    if ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
+    # lint:endignore
+    if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
       $pe_server_version = pe_build_version()
       # Treat Amazon Linux just like Enterprise Linux
       $pe_repo_dir = ($facts['os']['name'] == 'Amazon') ? {
@@ -75,6 +77,7 @@ class puppet_agent::osfamily::redhat {
       $_sslclientkey_path = undef
     }
 
+# lint:ignore:strict_indent
     $legacy_keyname = 'GPG-KEY-puppet'
     $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
     $keyname = 'GPG-KEY-puppet-20250406'
