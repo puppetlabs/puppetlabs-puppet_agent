@@ -154,7 +154,7 @@ describe 'puppet_agent' do
       it {
         is_expected.to contain_file('/etc/pki/deb-gpg/GPG-KEY-puppet-20250406')
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'owner'  => '0',
                   'group'  => '0',
                   'mode'   => '0644',
@@ -165,7 +165,7 @@ describe 'puppet_agent' do
       it {
         is_expected.to contain_file('/etc/pki/deb-gpg/GPG-KEY-puppet')
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'owner'  => '0',
                   'group'  => '0',
                   'mode'   => '0644',

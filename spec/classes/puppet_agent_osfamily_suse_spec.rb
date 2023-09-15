@@ -105,7 +105,7 @@ SCRIPT
             end
 
             context 'with manage_pki_dir => false' do
-              let(:params) { { manage_pki_dir: 'false' } }
+              let(:params) { { manage_pki_dir: false } }
 
               ['/etc/pki', '/etc/pki/rpm-gpg'].each do |path|
                 it { is_expected.not_to contain_file(path) }
@@ -117,7 +117,7 @@ SCRIPT
             it {
               is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406')
                 .with({
-                        'ensure' => 'present',
+                        'ensure' => 'file',
                         'owner'  => '0',
                         'group'  => '0',
                         'mode'   => '0644',
@@ -128,7 +128,7 @@ SCRIPT
             it {
               is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet')
                 .with({
-                        'ensure' => 'present',
+                        'ensure' => 'file',
                         'owner'  => '0',
                         'group'  => '0',
                         'mode'   => '0644',
@@ -244,7 +244,7 @@ SCRIPT
             end
 
             context 'with manage_pki_dir => false' do
-              let(:params) { { manage_pki_dir: 'false' } }
+              let(:params) { { manage_pki_dir: false } }
 
               ['/etc/pki', '/etc/pki/rpm-gpg'].each do |path|
                 it { is_expected.not_to contain_file(path) }
@@ -256,7 +256,7 @@ SCRIPT
             it {
               is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406')
                 .with({
-                        'ensure' => 'present',
+                        'ensure' => 'file',
                         'owner'  => '0',
                         'group'  => '0',
                         'mode'   => '0644',
@@ -267,7 +267,7 @@ SCRIPT
             it {
               is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet')
                 .with({
-                        'ensure' => 'present',
+                        'ensure' => 'file',
                         'owner'  => '0',
                         'group'  => '0',
                         'mode'   => '0644',
@@ -373,7 +373,7 @@ SCRIPT
               it {
                 is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm')
                   .with(
-                  source: 'puppet:///pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                  source: 'puppet:///modules/pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
                 )
               }
               it {

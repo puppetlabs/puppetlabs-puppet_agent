@@ -94,7 +94,7 @@ describe 'puppet_agent' do
       override_facts(facts, aio_agent_version: '1.10.99', is_pe: true, os: { macosx: { version: { major: '10.13', }, }, }, platform_tag: 'osx-10.13-x86_64', serverversion: '5.10.200')
     end
 
-    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx10.13.dmg').with_source('puppet:///pe_packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.200-1.osx10.13.dmg') }
+    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx10.13.dmg').with_source('puppet:///modules/pe_packages/2000.0.0/osx-10.13-x86_64/puppet-agent-5.10.200-1.osx10.13.dmg') }
   end
 
   describe 'when using package_version auto with macOS 11 (two numbers version productversion)' do
@@ -107,7 +107,7 @@ describe 'puppet_agent' do
       override_facts(facts, aio_agent_version: '1.10.99', is_pe: true, os: { macosx: { version: { major: '11.2', }, }, }, platform_tag: 'osx-11-x86_64', serverversion: '5.10.200')
     end
 
-    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg').with_source('puppet:///pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
+    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg').with_source('puppet:///modules/pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
   end
 
   describe 'when using package_version auto with macOS 11 (one number version productversion)' do
@@ -120,6 +120,6 @@ describe 'puppet_agent' do
       override_facts(facts, aio_agent_version: '1.10.99', is_pe: true, os: { macosx: { version: { major: '11', }, }, }, platform_tag: 'osx-11-x86_64', serverversion: '5.10.200')
     end
 
-    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg').with_source('puppet:///pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
+    it { is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-5.10.200-1.osx11.dmg').with_source('puppet:///modules/pe_packages/2000.0.0/osx-11-x86_64/puppet-agent-5.10.200-1.osx11.dmg') }
   end
 end
