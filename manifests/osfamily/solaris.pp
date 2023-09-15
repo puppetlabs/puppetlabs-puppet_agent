@@ -53,7 +53,7 @@ class puppet_agent::osfamily::solaris {
         owner  => 0,
         group  => 0,
         mode   => '0644',
-        source => "puppet:///modules/pe_packages/${pe_server_version}/${facts['platform_tag']}/solaris-noask",
+        source => "puppet:///pe_packages/${pe_server_version}/${facts['platform_tag']}/solaris-noask",
       }
     }
     '11': {

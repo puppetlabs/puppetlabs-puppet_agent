@@ -138,7 +138,7 @@ EOF
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p")
           .with({
                   'ensure' => 'file',
-                  'source' => "puppet:///modules/pe_packages/#{pe_version}/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
+                  'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
                 })
       end
 
@@ -194,7 +194,7 @@ EOF
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p")
           .with({
                   'ensure' => 'file',
-                  'source' => "puppet:///modules/pe_packages/#{pe_version}/solaris-11-sparc/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p",
+                  'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-sparc/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p",
                 })
       end
 
@@ -271,11 +271,11 @@ EOF
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz")
           .with({
                   'ensure' => 'file',
-                  'source' => "puppet:///modules/pe_packages/#{pe_version}/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz"
+                  'source' => "puppet:///pe_packages/#{pe_version}/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz"
                 })
       end
 
-      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///modules/pe_packages/#{pe_version}/solaris-10-i386/solaris-noask") }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///pe_packages/#{pe_version}/solaris-10-i386/solaris-noask") }
       it do
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.i386.pkg.gz").with_command("gzip -d /opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz")
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.i386.pkg.gz").with_creates("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg")
@@ -319,11 +319,11 @@ EOF
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz")
           .with({
                   'ensure' => 'file',
-                  'source' => "puppet:///modules/pe_packages/#{pe_version}/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz"
+                  'source' => "puppet:///pe_packages/#{pe_version}/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz"
                 })
       end
 
-      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///modules/pe_packages/#{pe_version}/solaris-10-sparc/solaris-noask") }
+      it { is_expected.to contain_file('/opt/puppetlabs/packages/solaris-noask').with_source("puppet:///pe_packages/#{pe_version}/solaris-10-sparc/solaris-noask") }
       it do
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.sparc.pkg.gz").with_command("gzip -d /opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz")
         is_expected.to contain_exec("unzip puppet-agent-#{package_version}-1.sparc.pkg.gz").with_creates("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg")

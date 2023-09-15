@@ -18,7 +18,7 @@ class puppet_agent::osfamily::windows {
     if $puppet_agent::alternate_pe_source {
       $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${tag}/${puppet_agent::package_name}-${puppet_agent::arch}.msi"
     } else {
-      $source = "puppet:///modules/pe_packages/${pe_server_version}/${tag}/${puppet_agent::package_name}-${puppet_agent::arch}.msi"
+      $source = "puppet:///pe_packages/${pe_server_version}/${tag}/${puppet_agent::package_name}-${puppet_agent::arch}.msi"
     }
   } else {
     if $puppet_agent::collection == 'PC1' {

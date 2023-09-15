@@ -24,7 +24,7 @@ describe 'puppet_agent' do
   shared_examples 'aix' do |aixver, pkg_aixver, powerver|
     let(:rpmname) { "puppet-agent-#{params[:package_version]}-1.aix#{pkg_aixver}.ppc.rpm" }
     let(:tag) { "aix-#{pkg_aixver}-power" }
-    let(:source) { "puppet:///modules/pe_packages/2000.0.0/#{tag}/#{rpmname}" }
+    let(:source) { "puppet:///pe_packages/2000.0.0/#{tag}/#{rpmname}" }
     let(:facts) do
       common_facts.merge({
                            architecture: "PowerPC_POWER#{powerver}",

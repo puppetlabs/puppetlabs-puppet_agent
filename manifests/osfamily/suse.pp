@@ -26,7 +26,7 @@ class puppet_agent::osfamily::suse {
         } elsif $puppet_agent::alternate_pe_source {
           $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } else {
-          $source = "puppet:///modules/pe_packages/${pe_server_version}/${facts['platform_tag']}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.sles11.${puppet_agent::arch}.rpm"
+          $source = "puppet:///pe_packages/${pe_server_version}/${facts['platform_tag']}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.sles11.${puppet_agent::arch}.rpm"
         }
 
         # Nuke the repo if it exists to ensure zypper doesn't remain broken

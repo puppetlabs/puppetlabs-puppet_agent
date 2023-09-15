@@ -53,7 +53,7 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
       it {
         is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
-          'source' => "puppet:///modules/pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
+          'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
         )
       }
     end
@@ -91,7 +91,7 @@ describe 'puppet_agent' do
       it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
       it {
         is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
-          'source' => "puppet:///modules/pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
+          'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
         )
       }
     end
@@ -131,7 +131,7 @@ describe 'puppet_agent' do
     it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
     it do
       is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
-        'source' => "puppet:///modules/pe_packages/#{pe_version}/windowsfips-#{tag}/puppet-agent-#{arch}.msi",
+        'source' => "puppet:///pe_packages/#{pe_version}/windowsfips-#{tag}/puppet-agent-#{arch}.msi",
       )
     end
   end

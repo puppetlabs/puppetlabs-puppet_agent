@@ -373,7 +373,7 @@ SCRIPT
               it {
                 is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm')
                   .with(
-                  source: 'puppet:///modules/pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                  source: 'puppet:///pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
                 )
               }
               it {
