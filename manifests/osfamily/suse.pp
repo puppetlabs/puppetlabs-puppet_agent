@@ -21,12 +21,12 @@ class puppet_agent::osfamily::suse {
 
       # SLES 11 in PE can no longer install agents from pe_repo
       if $facts['os']['release']['major'] == '11' {
-        if $::puppet_agent::source {
-          $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
-        } elsif $::puppet_agent::alternate_pe_source {
-          $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
+        if $puppet_agent::source {
+          $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
+        } elsif $puppet_agent::alternate_pe_source {
+          $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } else {
-          $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.sles11.${::puppet_agent::arch}.rpm"
+          $source = "puppet:///modules/pe_packages/${pe_server_version}/${facts['platform_tag']}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.sles11.${puppet_agent::arch}.rpm"
         }
 
         # Nuke the repo if it exists to ensure zypper doesn't remain broken
@@ -39,12 +39,12 @@ class puppet_agent::osfamily::suse {
         }
         contain puppet_agent::prepare::package
       } else {
-        if $::puppet_agent::source {
-          $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
-        } elsif $::puppet_agent::alternate_pe_source {
-          $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
+        if $puppet_agent::source {
+          $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
+        } elsif $puppet_agent::alternate_pe_source {
+          $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } else {
-          $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${::platform_tag}"
+          $source = "https://${facts['puppet_master_server']}:8140/packages/${pe_server_version}/${facts['platform_tag']}"
         }
       }
     } else {

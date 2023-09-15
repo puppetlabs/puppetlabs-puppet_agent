@@ -33,7 +33,7 @@ class puppet_agent::osfamily::aix {
   #
   # The following will update the aix_ver_number variable to identify which package to install based
   # on puppet collection, package version and AIX version.
-  $_aix_ver_number = regsubst($::platform_tag,'aix-(\d+\.\d+)-power','\1')
+  $_aix_ver_number = regsubst($facts['platform_tag'],'aix-(\d+\.\d+)-power','\1')
   if $_aix_ver_number {
     if $::puppet_agent::collection =~ /^puppet8/ {
       $aix_ver_number = '7.2'

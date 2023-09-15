@@ -33,18 +33,18 @@ class puppet_agent::install::solaris (
     # Puppet 5.0 adds this, but some i18n implementation is loading code fairly late and appears
     # to be messing up the upgrade.
 
-    if $::puppet_agent::aio_upgrade_required {
-      $_logfile = "${::env_temp_variable}/solaris_install.log"
+    if $puppet_agent::aio_upgrade_required {
+      $_logfile = "${facts['env_temp_variable']}/solaris_install.log"
       notice ("Puppet install log file at ${_logfile}")
 
-      $_installsh = "${::env_temp_variable}/solaris_install.sh"
+      $_installsh = "${facts['env_temp_variable']}/solaris_install.sh"
       file { $_installsh:
         ensure  => file,
         mode    => '0755',
         content => template('puppet_agent/do_install.sh.erb'),
       }
       -> exec { 'solaris_install script':
-        command => "/usr/bin/ctrun -l none ${_installsh} ${::puppet_agent_pid} 2>&1 > ${_logfile} &",
+        command => "/usr/bin/ctrun -l none ${_installsh} ${facts['puppet_agent_pid']} 2>&1 > ${_logfile} &",
       }
     }
   } else {

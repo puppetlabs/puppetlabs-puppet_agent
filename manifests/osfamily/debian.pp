@@ -16,12 +16,12 @@ class puppet_agent::osfamily::debian {
       include ::apt
       if ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
         $pe_server_version = pe_build_version()
-        if $::puppet_agent::source {
-          $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
-        } elsif $::puppet_agent::alternate_pe_source {
-          $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
+        if $puppet_agent::source {
+          $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
+        } elsif $puppet_agent::alternate_pe_source {
+          $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } else {
-          $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${::platform_tag}"
+          $source = "https://${facts['puppet_master_server']}:8140/packages/${pe_server_version}/${facts['platform_tag']}"
         }
         # In Puppet Enterprise, agent packages are served by the same server
         # as the master, which can be using either a self signed CA, or an external CA.
@@ -31,8 +31,8 @@ class puppet_agent::osfamily::debian {
         # happen to be the default in PE already.
         $_ssl_dir = $::puppet_agent::params::ssldir
         $_sslcacert_path = "${_ssl_dir}/certs/ca.pem"
-        $_sslclientcert_path = "${_ssl_dir}/certs/${::clientcert}.pem"
-        $_sslclientkey_path = "${_ssl_dir}/private_keys/${::clientcert}.pem"
+        $_sslclientcert_path = "${_ssl_dir}/certs/${facts['clientcert']}.pem"
+        $_sslclientkey_path = "${_ssl_dir}/private_keys/${facts['clientcert']}.pem"
 
         # For debian based platforms, in order to add SSL verification, you need to add a
         # configuration file specific to just the sources host

@@ -197,14 +197,14 @@ class puppet_agent (
       $aio_upgrade_required = false
       $aio_downgrade_required = false
     } else {
-      $aio_upgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) < 0
-      $aio_downgrade_required = versioncmp($::aio_agent_version, $_expected_package_version) > 0
+      $aio_upgrade_required = versioncmp($facts['aio_agent_version'], $_expected_package_version) < 0
+      $aio_downgrade_required = versioncmp($facts['aio_agent_version'], $_expected_package_version) > 0
     }
 
     if $aio_upgrade_required {
       if any_resources_of_type('filebucket', { path => false }) {
-        if $settings::digest_algorithm != $::puppet_digest_algorithm {
-          fail("Remote filebuckets are enabled, but there was a agent/server digest algorithm mismatch. Server: ${settings::digest_algorithm}, agent: ${::puppet_digest_algorithm}. Either ensure the algorithms are matching, or disable remote filebuckets during the upgrade.")
+        if $settings::digest_algorithm != $facts['puppet_digest_algorithm'] {
+          fail("Remote filebuckets are enabled, but there was a agent/server digest algorithm mismatch. Server: ${settings::digest_algorithm}, agent: ${facts['puppet_digest_algorithm']}. Either ensure the algorithms are matching, or disable remote filebuckets during the upgrade.")
         }
       }
     }
@@ -236,7 +236,7 @@ class puppet_agent (
     # - On Windows, services are handled by the puppet-agent MSI packages themselves.
     # ...but outside of PE, on other platforms, we must make sure the services are restarted. We do that with the
     # ::puppet_agent::service class. Make sure it's applied after the install process finishes if needed:
-    if $facts['os']['family'] != 'windows' and (!$is_pe or versioncmp($::clientversion, '4.0.0') < 0) {
+    if $facts['os']['family'] != 'windows' and (!$is_pe or versioncmp($facts['clientversion'], '4.0.0') < 0) {
       Class['puppet_agent::configure']
       ~> contain('puppet_agent::service')
     }

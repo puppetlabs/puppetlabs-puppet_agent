@@ -58,25 +58,25 @@ class puppet_agent::install::windows (
   }
 
   $_timestamp = strftime('%Y_%m_%d-%H_%M')
-  $_logfile = windows_native_path("${::env_temp_variable}/puppet-${_timestamp}-installer.log")
+  $_logfile = windows_native_path("${facts['env_temp_variable']}/puppet-${_timestamp}-installer.log")
 
   notice ("Puppet upgrade log file at ${_logfile}")
   debug ("Installing puppet from ${_msi_location}")
 
-  $_helpers = windows_native_path("${::env_temp_variable}/helpers.ps1")
+  $_helpers = windows_native_path("${facts['env_temp_variable']}/helpers.ps1")
   file { $_helpers:
     ensure  => file,
     content => file('puppet_agent/helpers.ps1'),
   }
 
-  $_installps1 = windows_native_path("${::env_temp_variable}/install_puppet.ps1")
+  $_installps1 = windows_native_path("${facts['env_temp_variable']}/install_puppet.ps1")
   puppet_agent_upgrade_error { 'puppet_agent_upgrade_failure.log': }
   file { $_installps1:
     ensure  => file,
     content => file('puppet_agent/install_puppet.ps1'),
   }
 
-  $_prerequisites_check = windows_native_path("${::env_temp_variable}/prerequisites_check.ps1")
+  $_prerequisites_check = windows_native_path("${facts['env_temp_variable']}/prerequisites_check.ps1")
   file { $_prerequisites_check:
     ensure  => file,
     content => file('puppet_agent/prerequisites_check.ps1'),
@@ -103,11 +103,11 @@ class puppet_agent::install::windows (
                   -NoLogo \
                   -NonInteractive \
                   -Command ${_installps1} \
-                          -PuppetPID ${::puppet_agent_pid} \
+                          -PuppetPID ${facts['puppet_agent_pid']} \
                           -Source '${_msi_location}' \
                           -Logfile '${_logfile}' \
                           -InstallDir '${install_dir}' \
-                          -PuppetMaster '${::puppet_master_server}' \
+                          -PuppetMaster '${facts['puppet_master_server']}' \
                           -PuppetStartType '${_agent_startup_mode}' \
                           -InstallArgs '${_install_options}' \
                           ${_move_dll_workaround} \
@@ -123,7 +123,7 @@ class puppet_agent::install::windows (
                               exit 0; \
                             } \
                             exit 1; }.Invoke()",
-    path    => $::path,
+    path    => $facts['path'],
     require => [
       Puppet_agent_upgrade_error['puppet_agent_upgrade_failure.log'],
       File[$_installps1],
@@ -134,8 +134,8 @@ class puppet_agent::install::windows (
 
   # PUP-5480/PE-15037 Cache dir loses inheritable SYSTEM perms
   exec { 'fix inheritable SYSTEM perms':
-    command => "${facts['os']['windows']['system32']}\\icacls.exe \"${::puppet_client_datadir}\" /grant \"SYSTEM:(OI)(CI)(F)\"",
-    unless  => "${facts['os']['windows']['system32']}\\cmd.exe /c ${facts['os']['windows']['system32']}\\icacls.exe \"${::puppet_client_datadir}\" | findstr \"SYSTEM:(OI)(CI)(F)\"",
+    command => "${facts['os']['windows']['system32']}\\icacls.exe \"${facts['puppet_client_datadir']}\" /grant \"SYSTEM:(OI)(CI)(F)\"",
+    unless  => "${facts['os']['windows']['system32']}\\cmd.exe /c ${facts['os']['windows']['system32']}\\icacls.exe \"${facts['puppet_client_datadir']}\" | findstr \"SYSTEM:(OI)(CI)(F)\"",
     require => Exec['install_puppet.ps1'],
   }
 }

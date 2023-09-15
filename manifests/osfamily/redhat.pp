@@ -35,14 +35,14 @@ class puppet_agent::osfamily::redhat {
       # Treat Amazon Linux just like Enterprise Linux
       $pe_repo_dir = ($facts['os']['name'] == 'Amazon') ? {
         true    => "el-${amz_el_version}-${facts['os']['architecture']}",
-        default => $::platform_tag,
+        default => $facts['platform_tag'],
       }
       if $::puppet_agent::source {
         $source = "${::puppet_agent::source}/packages/${pe_server_version}/${pe_repo_dir}"
       } elsif $::puppet_agent::alternate_pe_source {
         $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${pe_repo_dir}"
       } else {
-        $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${pe_repo_dir}"
+        $source = "https://${facts['puppet_master_server']}:8140/packages/${pe_server_version}/${pe_repo_dir}"
       }
     } else {
       if $::puppet_agent::collection == 'PC1' {
@@ -62,8 +62,8 @@ class puppet_agent::osfamily::redhat {
 
       $_ssl_dir = $::puppet_agent::params::ssldir
       $_sslcacert_path = "${_ssl_dir}/certs/ca.pem"
-      $_sslclientcert_path = "${_ssl_dir}/certs/${::clientcert}.pem"
-      $_sslclientkey_path = "${_ssl_dir}/private_keys/${::clientcert}.pem"
+      $_sslclientcert_path = "${_ssl_dir}/certs/${facts['clientcert']}.pem"
+      $_sslclientkey_path = "${_ssl_dir}/private_keys/${facts['clientcert']}.pem"
       # Due to the file paths changing on the PE Master, the 3.8 repository is no longer valid.
       # On upgrade, remove the repo file so that a dangling reference is not left behind returning
       # a 404 on subsequent runs.

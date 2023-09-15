@@ -11,14 +11,14 @@ class puppet_agent::osfamily::solaris {
   }
 
   $pe_server_version = pe_build_version()
-  if $::puppet_agent::absolute_source {
-    $source_dir = $::puppet_agent::absolute_source
-  } elsif $::puppet_agent::alternate_pe_source {
-    $source_dir = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
-  } elsif $::puppet_agent::source {
-    $source_dir = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
+  if $puppet_agent::absolute_source {
+    $source_dir = $puppet_agent::absolute_source
+  } elsif $puppet_agent::alternate_pe_source {
+    $source_dir = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
+  } elsif $puppet_agent::source {
+    $source_dir = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
   } else {
-    $source_dir = "${::puppet_agent::solaris_source}/${pe_server_version}/${::platform_tag}"
+    $source_dir = "${puppet_agent::solaris_source}/${pe_server_version}/${facts['platform_tag']}"
   }
 
   $pkg_arch = $::puppet_agent::arch ? {
@@ -53,7 +53,7 @@ class puppet_agent::osfamily::solaris {
         owner  => 0,
         group  => 0,
         mode   => '0644',
-        source => "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/solaris-noask",
+        source => "puppet:///modules/pe_packages/${pe_server_version}/${facts['platform_tag']}/solaris-noask",
       }
     }
     '11': {

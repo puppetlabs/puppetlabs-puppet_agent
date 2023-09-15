@@ -12,10 +12,10 @@ class puppet_agent::params {
     $service_names = ['puppet']
   }
   if $facts['os']['family'] == 'windows' {
-    $local_puppet_dir = windows_native_path("${::puppet_agent_appdata}/Puppetlabs")
+    $local_puppet_dir = windows_native_path("${facts['puppet_agent_appdata']}/Puppetlabs")
     $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
-    $confdir = $::puppet_confdir
+    $confdir = $facts['puppet_confdir']
 
     $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
     $path_separator = ';'
