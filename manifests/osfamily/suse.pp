@@ -93,7 +93,7 @@ fi
         }
 
         file { $gpg_path:
-          ensure => present,
+          ensure => file,
           owner  => 0,
           group  => 0,
           mode   => '0644',
@@ -101,7 +101,7 @@ fi
         }
 
         file { $legacy_gpg_path:
-          ensure => present,
+          ensure => file,
           owner  => 0,
           group  => 0,
           mode   => '0644',

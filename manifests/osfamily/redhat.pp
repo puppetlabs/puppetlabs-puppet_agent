@@ -104,15 +104,16 @@ elif [ "${ACTION}" = "import" ]; then
   rpm --import "${GPG_KEY_PATH}"
 fi
 | SCRIPT
+# lint:endignore
 
-    if $::puppet_agent::manage_pki_dir == true {
+    if $puppet_agent::manage_pki_dir == true {
       file { ['/etc/pki', '/etc/pki/rpm-gpg']:
         ensure => directory,
       }
     }
 
     file { $legacy_gpg_path:
-      ensure => present,
+      ensure => file,
       owner  => 0,
       group  => 0,
       mode   => '0644',
@@ -120,7 +121,7 @@ fi
     }
 
     file { $gpg_path:
-      ensure => present,
+      ensure => file,
       owner  => 0,
       group  => 0,
       mode   => '0644',

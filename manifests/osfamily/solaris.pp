@@ -49,7 +49,7 @@ class puppet_agent::osfamily::solaris {
       }
 
       file { '/opt/puppetlabs/packages/solaris-noask':
-        ensure => present,
+        ensure => file,
         owner  => 0,
         group  => 0,
         mode   => '0644',
