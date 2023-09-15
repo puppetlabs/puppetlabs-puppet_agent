@@ -53,7 +53,7 @@ end
 group :system_tests do
   gem "serverspec", '~> 2.41',    require: false
   gem "puppet_litmus", '~> 1.0', require: false, platforms: [:ruby, :x64_mingw]
-  gem "voxpupuli-acceptance",     require: false
+  gem "voxpupuli-acceptance", '~> 1.0'
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
