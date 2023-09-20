@@ -119,7 +119,7 @@ EOF
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p")
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'source' => "http://fake-solaris-source.com/packages/2000.0.0/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
                 })
       end
@@ -137,7 +137,7 @@ EOF
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p")
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-i386/puppet-agent@#{sol11_package_version},5.11-1.i386.p5p",
                 })
       end
@@ -193,7 +193,7 @@ EOF
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p")
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'source' => "puppet:///pe_packages/#{pe_version}/solaris-11-sparc/puppet-agent@#{sol11_package_version},5.11-1.sparc.p5p",
                 })
       end
@@ -252,7 +252,7 @@ EOF
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz")
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'source' => "http://fake-solaris-source.com/packages/2000.0.0/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz",
                 })
       end
@@ -270,7 +270,7 @@ EOF
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.i386.pkg.gz")
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'source' => "puppet:///pe_packages/#{pe_version}/solaris-10-i386/puppet-agent-#{package_version}-1.i386.pkg.gz"
                 })
       end
@@ -318,7 +318,7 @@ EOF
       it do
         is_expected.to contain_file("/opt/puppetlabs/packages/puppet-agent-#{package_version}-1.sparc.pkg.gz")
           .with({
-                  'ensure' => 'present',
+                  'ensure' => 'file',
                   'source' => "puppet:///pe_packages/#{pe_version}/solaris-10-sparc/puppet-agent-#{package_version}-1.sparc.pkg.gz"
                 })
       end

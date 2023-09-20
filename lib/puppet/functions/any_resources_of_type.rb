@@ -1,4 +1,9 @@
+# @summary A function used to determine if there are any
+# Puppet::Parser::Resource instances of the passed in resource type
 Puppet::Functions.create_function(:any_resources_of_type, Puppet::Functions::InternalFunction) do
+  # @return [Boolean] Whether there are any instances of resource_type
+  # @param resource_type Resource type that is being looked for
+  # @param parameters Optional parameters
   dispatch :any_resources_of_type do
     scope_param
 

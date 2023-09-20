@@ -1,3 +1,4 @@
+# @summary Determines the puppet-agent package location for SUSE OSes.
 class puppet_agent::osfamily::suse {
   assert_private()
 
@@ -5,27 +6,27 @@ class puppet_agent::osfamily::suse {
     fail("${facts['os']['name']} not supported")
   }
 
-  if $::puppet_agent::absolute_source {
+  if $puppet_agent::absolute_source {
     # Absolute sources are expected to be actual packages (not repos)
     # so when absolute_source is set just download the package to the
     # system and finish with this class.
-    $source = $::puppet_agent::absolute_source
-    class { '::puppet_agent::prepare::package':
+    $source = $puppet_agent::absolute_source
+    class { 'puppet_agent::prepare::package':
       source => $source,
     }
     contain puppet_agent::prepare::package
   } else {
-    if ($::puppet_agent::is_pe and (!$::puppet_agent::use_alternate_sources)) {
+    if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
       $pe_server_version = pe_build_version()
 
       # SLES 11 in PE can no longer install agents from pe_repo
       if $facts['os']['release']['major'] == '11' {
-        if $::puppet_agent::source {
-          $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
-        } elsif $::puppet_agent::alternate_pe_source {
-          $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
+        if $puppet_agent::source {
+          $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
+        } elsif $puppet_agent::alternate_pe_source {
+          $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } else {
-          $source = "puppet:///pe_packages/${pe_server_version}/${::platform_tag}/${::puppet_agent::package_name}-${::puppet_agent::prepare::package_version}-1.sles11.${::puppet_agent::arch}.rpm"
+          $source = "puppet:///pe_packages/${pe_server_version}/${facts['platform_tag']}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.sles11.${puppet_agent::arch}.rpm"
         }
 
         # Nuke the repo if it exists to ensure zypper doesn't remain broken
@@ -33,27 +34,28 @@ class puppet_agent::osfamily::suse {
           ensure => absent,
         }
 
-        class { '::puppet_agent::prepare::package':
+        class { 'puppet_agent::prepare::package':
           source => $source,
         }
         contain puppet_agent::prepare::package
       } else {
-        if $::puppet_agent::source {
-          $source = "${::puppet_agent::source}/packages/${pe_server_version}/${::platform_tag}"
-        } elsif $::puppet_agent::alternate_pe_source {
-          $source = "${::puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${::platform_tag}"
+        if $puppet_agent::source {
+          $source = "${puppet_agent::source}/packages/${pe_server_version}/${facts['platform_tag']}"
+        } elsif $puppet_agent::alternate_pe_source {
+          $source = "${puppet_agent::alternate_pe_source}/packages/${pe_server_version}/${facts['platform_tag']}"
         } else {
-          $source = "https://${::puppet_master_server}:8140/packages/${pe_server_version}/${::platform_tag}"
+          $source = "https://${facts['puppet_master_server']}:8140/packages/${pe_server_version}/${facts['platform_tag']}"
         }
       }
     } else {
-      if $::puppet_agent::collection == 'PC1' {
-        $source = "${::puppet_agent::yum_source}/sles/${facts['os']['release']['major']}/${::puppet_agent::collection}/${::puppet_agent::arch}"
+      if $puppet_agent::collection == 'PC1' {
+        $source = "${puppet_agent::yum_source}/sles/${facts['os']['release']['major']}/${puppet_agent::collection}/${puppet_agent::arch}"
       } else {
-        $source = "${::puppet_agent::yum_source}/${::puppet_agent::collection}/sles/${facts['os']['release']['major']}/${::puppet_agent::arch}"
+        $source = "${puppet_agent::yum_source}/${puppet_agent::collection}/sles/${facts['os']['release']['major']}/${puppet_agent::arch}"
       }
     }
 
+# lint:ignore:strict_indent
     case $facts['os']['release']['major'] {
       '11', '12', '15': {
         # Import the GPG key
@@ -84,6 +86,7 @@ elif [ "${ACTION}" = "import" ]; then
   rpm --import "${GPG_KEY_PATH}"
 fi
 | SCRIPT
+# lint:endignore
 
         if getvar('::puppet_agent::manage_pki_dir') == true {
           file { ['/etc/pki', '/etc/pki/rpm-gpg']:
@@ -92,7 +95,7 @@ fi
         }
 
         file { $gpg_path:
-          ensure => present,
+          ensure => file,
           owner  => 0,
           group  => 0,
           mode   => '0644',
@@ -100,7 +103,7 @@ fi
         }
 
         file { $legacy_gpg_path:
-          ensure => present,
+          ensure => file,
           owner  => 0,
           group  => 0,
           mode   => '0644',
@@ -122,7 +125,7 @@ fi
           logoutput => 'on_failure',
         }
 
-        unless $facts['os']['release']['major'] == '11' and $::puppet_agent::is_pe {
+        unless $facts['os']['release']['major'] == '11' and $puppet_agent::is_pe {
           if getvar('::puppet_agent::manage_repo') == true {
             # Set up a zypper repository by creating a .repo file which mimics a ini file
             $repo_file = '/etc/zypp/repos.d/pc_repo.repo'

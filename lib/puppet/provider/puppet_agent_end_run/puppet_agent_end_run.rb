@@ -1,4 +1,6 @@
+
 Puppet::Type.type(:puppet_agent_end_run).provide :puppet_agent_end_run do
+  desc '@summary This provider will stop the puppet agent run after a Puppet upgrade is performed'
   def end_run
     false
   end

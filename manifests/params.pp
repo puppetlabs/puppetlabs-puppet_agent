@@ -1,8 +1,5 @@
-# == Class puppet_agent::params
-#
-# This class is meant to be called from puppet_agent
-# It sets variables according to platform.
-#
+# @summary Sets variables according to platform.
+# This class is meant to be called from puppet_agent.
 class puppet_agent::params {
   # Which services should be started after the upgrade process?
   if ($facts['os']['family'] == 'Solaris' and $facts['os']['release']['major'] == '11') {
@@ -12,10 +9,10 @@ class puppet_agent::params {
     $service_names = ['puppet']
   }
   if $facts['os']['family'] == 'windows' {
-    $local_puppet_dir = windows_native_path("${::puppet_agent_appdata}/Puppetlabs")
+    $local_puppet_dir = windows_native_path("${facts['puppet_agent_appdata']}/Puppetlabs")
     $local_packages_dir = windows_native_path("${local_puppet_dir}/packages")
 
-    $confdir = $::puppet_confdir
+    $confdir = $facts['puppet_confdir']
 
     $puppetdirs = [regsubst($confdir,'\/etc\/','/code/')]
     $path_separator = ';'

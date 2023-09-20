@@ -2,6 +2,7 @@
 
 # Make sure bolt's puppet is loaded
 require 'bolt/pal'
+require 'voxpupuli/acceptance/spec_helper_acceptance'
 Bolt::PAL.load_puppet
 
 require 'beaker-rspec'

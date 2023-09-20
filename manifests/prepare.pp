@@ -1,14 +1,8 @@
-# == Class puppet_agent::prepare
+# @summary This class is called from puppet_agent to prepare for the upgrade.
 #
-# This class is called from puppet_agent to prepare for the upgrade.
-#
-# === Parameters
-#
-# [version]
-#   The puppet-agent version to install.
-#
+# @param package_version The puppet-agent version to install.
 class puppet_agent::prepare (
-  $package_version = undef
+  Optional $package_version = undef
 ) {
   include puppet_agent::params
   $_windows_client = downcase($facts['os']['family']) == 'windows'
@@ -16,8 +10,8 @@ class puppet_agent::prepare (
   # Manage /opt/puppetlabs for platforms. This is done before both config and prepare because,
   # on Windows, both can be in C:/ProgramData/Puppet Labs; doing it later creates a dependency
   # cycle.
-  if !defined(File[$::puppet_agent::params::local_puppet_dir]) {
-    file { $::puppet_agent::params::local_puppet_dir:
+  if !defined(File[$puppet_agent::params::local_puppet_dir]) {
+    file { $puppet_agent::params::local_puppet_dir:
       ensure => directory,
     }
   }

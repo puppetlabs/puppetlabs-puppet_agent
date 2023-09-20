@@ -1,12 +1,12 @@
-# == Class puppet_agent::prepare::puppet_config
+# @summary Private class called from puppet_agent::prepare class.
 #
-# Private class called from puppet_agent::prepare class
-#
+# @param package_version
+#   The puppet-agent version to install.
 class puppet_agent::prepare::puppet_config (
-  $package_version,
+  Optional $package_version,
 ) {
   assert_private()
-  $puppetconf = $::puppet_agent::params::config
+  $puppetconf = $puppet_agent::params::config
 
   if !defined(File[$puppetconf]) {
     file { $puppetconf:
@@ -17,7 +17,7 @@ class puppet_agent::prepare::puppet_config (
   # (minimum agent package version) => (list of deprecated settings)
   $_deprecations = {
     '1.4.0'     => ['pluginsync'],
-    '5.0.0'     => ['app_management', 'ignorecache', 'configtimeout', 'trusted_server_facts']
+    '5.0.0'     => ['app_management', 'ignorecache', 'configtimeout', 'trusted_server_facts'],
   }
 
   $_pkg_version = getvar('package_version')

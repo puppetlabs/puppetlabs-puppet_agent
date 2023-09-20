@@ -1,16 +1,22 @@
-# == Class puppet_agent::install
-#
 # This class is called from puppet_agent for install.
 #
-# === Parameters
-#
-# [version]
+# @param package_version
 #   The puppet-agent version to install.
-#
+# @param install_dir
+#   The directory the puppet agent should be installed to. This is only applicable for
+#   windows operating systems.
+# @param install_options
+#   An array of additional options to pass when installing puppet-agent. Each option in
+#   the array can either be a string or a hash. Each option will automatically be quoted
+#   when passed to the install command. With Windows packages, note that file paths in an
+#   install option must use backslashes. (Since install options are passed directly to
+#   the installation command, forward slashes won't be automatically converted like they
+#   are in `file` resources.) Note also that backslashes in double-quoted strings _must_
+#   be escaped and backslashes in single-quoted strings _can_ be escaped.
 class puppet_agent::install (
-  $package_version   = 'present',
-  $install_dir       = undef,
-  $install_options   = [],
+  String   $package_version = 'present',
+  Optional $install_dir     = undef,
+  Array    $install_options = [],
 ) {
   assert_private()
 
@@ -22,7 +28,7 @@ class puppet_agent::install (
       package_version => $package_version,
       install_options => $install_options,
     }
-    contain '::puppet_agent::install::solaris'
+    contain 'puppet_agent::install::solaris'
   } elsif $facts['os']['name'] == 'Darwin' {
     # Prevent re-running the script install
     if $puppet_agent::aio_upgrade_required {
@@ -30,7 +36,7 @@ class puppet_agent::install (
         package_version => $package_version,
         install_options => $install_options,
       }
-      contain '::puppet_agent::install::darwin'
+      contain 'puppet_agent::install::darwin'
     }
   } elsif $facts['os']['family'] == 'windows' {
     # Prevent re-running the batch install
@@ -39,7 +45,7 @@ class puppet_agent::install (
         install_dir     => $install_dir,
         install_options => $install_options,
       }
-      contain '::puppet_agent::install::windows'
+      contain 'puppet_agent::install::windows'
     }
   } elsif $facts['os']['family'] == 'suse' {
     # Prevent re-running the batch install
@@ -48,7 +54,7 @@ class puppet_agent::install (
         package_version => $package_version,
         install_options => $install_options,
       }
-      contain '::puppet_agent::install::suse'
+      contain 'puppet_agent::install::suse'
     }
   } else {
     if $facts['os']['name'] == 'AIX' {
@@ -56,15 +62,15 @@ class puppet_agent::install (
       $_package_version = $package_version
       $_install_options = concat(['--ignoreos'],$install_options)
       $_provider = 'rpm'
-      $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+      $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
     } elsif $facts['os']['family'] == 'Debian' {
       $_install_options = $install_options
-      if $::puppet_agent::absolute_source {
+      if $puppet_agent::absolute_source {
         # absolute_source means we use dpkg on debian based platforms
         $_package_version = 'present'
         $_provider = 'dpkg'
         # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
-        $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+        $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
       } else {
         # any other type of source means we use apt with no 'source' defined in the package resource below
         if $package_version =~ /^latest$|^present$/ {
@@ -77,12 +83,12 @@ class puppet_agent::install (
       }
     } else { # RPM platforms: EL
       $_install_options = $install_options
-      if $::puppet_agent::absolute_source {
+      if $puppet_agent::absolute_source {
         # absolute_source means we use rpm on EL based platforms
         $_package_version = $package_version
         $_provider = 'rpm'
         # The source package should have been downloaded by puppet_agent::prepare::package to the local_packages_dir
-        $_source = "${::puppet_agent::params::local_packages_dir}/${::puppet_agent::prepare::package::package_file_name}"
+        $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
       } else {
         # any other type of source means we use a package manager (yum) with no 'source' parameter in the
         # package resource below
@@ -92,7 +98,7 @@ class puppet_agent::install (
       }
     }
     $_aio_package_version = $package_version.match(/^\d+\.\d+\.\d+(\.\d+)?|^latest$|^present$/)[0]
-    package { $::puppet_agent::package_name:
+    package { $puppet_agent::package_name:
       ensure          => $_package_version,
       install_options => $_install_options,
       provider        => $_provider,

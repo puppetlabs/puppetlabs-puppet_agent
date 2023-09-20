@@ -41,8 +41,9 @@ Gemfile:
         condition: 'ENV["GEM_BOLT"]'
       - gem: async
         version: '~> 1.30' # otherwise async 2.0.0(needs ruby >=3.1.0) is wrongly selected by bundler on jenkins while running with ruby 2.7.1
-      - gem: puppet_litmus
-        version: '0.34.5'
+    ":system_tests":
+      - gem: voxpupuli-acceptance
+        version: '~> 1.0'
 appveyor.yml:
   delete: true
 .travis.yml:

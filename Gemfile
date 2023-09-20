@@ -19,14 +19,14 @@ group :development do
   gem "json", '= 2.5.1',                                                        require: false if Gem::Requirement.create(['>= 3.0.0', '< 3.0.5']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "json", '= 2.6.1',                                                        require: false if Gem::Requirement.create(['>= 3.1.0', '< 3.1.3']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "json", '= 2.6.3',                                                        require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "voxpupuli-puppet-lint-plugins", '~> 3.1',                                require: false
+  gem "voxpupuli-puppet-lint-plugins", '~> 4.0',                                require: false
   gem "facterdb", '~> 1.18',                                                    require: false
   gem "metadata-json-lint", '>= 2.0.2', '< 4.0.0',                              require: false
-  gem "puppetlabs_spec_helper", '>= 3.0.0', '< 5.0.0',                          require: false
+  gem "puppetlabs_spec_helper", '~> 5.0',                                       require: false
   gem "rspec-puppet-facts", '~> 2.0',                                           require: false
   gem "codecov", '~> 0.2',                                                      require: false
   gem "dependency_checker", '~> 0.2',                                           require: false
-  gem "parallel_tests", '~> 3.4',                                               require: false
+  gem "parallel_tests", '= 3.12.1',                                             require: false
   gem "pry", '~> 0.10',                                                         require: false
   gem "simplecov-console", '~> 0.5',                                            require: false
   gem "puppet-debugger", '~> 1.0',                                              require: false
@@ -42,8 +42,8 @@ group :development do
   gem "beaker-rspec"
   gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 1.22')
   gem "github_changelog_generator", '= 1.16.4',                                 require: false
-  gem "concurrent-ruby", '= 1.1.10',                                            require: false
   gem "beaker-module_install_helper",                                           require: false
+  gem "concurrent-ruby", '= 1.1.10',                                            require: false
   gem "beaker-puppet_install_helper",                                           require: false
   gem "nokogiri",                                                               require: false
   gem "bolt", '~> 3.0',                                                         require: false if ENV["GEM_BOLT"]
@@ -51,11 +51,9 @@ group :development do
   gem "async", '~> 1.30',                                                       require: false
 end
 group :system_tests do
-  # Pin Litmus to the last version that doens't pin r10k
-  # We need later versions of r10k for Ruby 3.2 compatibility
-  gem "puppet_litmus", '= 0.34.5', require: false, platforms: [:ruby, :x64_mingw]
   gem "serverspec", '~> 2.41',    require: false
-  gem "voxpupuli-acceptance"
+  gem "puppet_litmus", '~> 1.0', require: false, platforms: [:ruby, :x64_mingw]
+  gem "voxpupuli-acceptance", '~> 1.0'
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']
