@@ -27,12 +27,11 @@ class puppet_agent::prepare::package (
   }
 
   file { $local_package_file_path:
-    ensure   => file,
-    owner    => $puppet_agent::params::user,
-    group    => $puppet_agent::params::group,
-    mode     => $mode,
-    source   => $source,
-    require  => File[$puppet_agent::params::local_packages_dir],
-    checksum => sha256lite,
+    ensure  => file,
+    owner   => $puppet_agent::params::user,
+    group   => $puppet_agent::params::group,
+    mode    => $mode,
+    source  => $source,
+    require => File[$puppet_agent::params::local_packages_dir],
   }
 }
