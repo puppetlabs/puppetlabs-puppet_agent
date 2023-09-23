@@ -12,8 +12,8 @@
 #   are in `file` resources.) Note also that backslashes in double-quoted strings _must_
 #   be escaped and backslashes in single-quoted strings _can_ be escaped.
 class puppet_agent::install::solaris (
-  Optional $package_version,
-  Array    $install_options = [],
+  String          $package_version,
+  Optional[Array] $install_options = undef,
 ) {
   assert_private()
   if $facts['os']['release']['major'] == '10' {

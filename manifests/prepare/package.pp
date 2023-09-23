@@ -3,8 +3,10 @@
 # working with a remote https repository.
 #
 # @param source
+#   The source file for the puppet-agent package. Can use any of the data types
+#   and protocols that the File resource's source attribute can.
 class puppet_agent::prepare::package (
-  Optional $source,
+  Variant[String, Array] $source,
 ) {
   assert_private()
 

@@ -64,8 +64,7 @@
 
 ### <a name="puppet_agent"></a>`puppet_agent`
 
-example for clients in dmz:s that need to use proxy to reach the repo
-  provided by puppetserver.
+Upgrades Puppet 4 and newer to the requested version.
 
 #### Parameters
 
@@ -343,6 +342,8 @@ Default value: `[]`
 Data type: `Optional`
 
 This is to be able to configure yum-repo with proxy, needed for
+example for clients in DMZs that need to use proxy to reach the repo
+provided by puppetserver.
 
 Default value: `undef`
 
@@ -388,15 +389,15 @@ The following parameters are available in the `puppet_agent::install` class:
 
 ##### <a name="-puppet_agent--install--package_version"></a>`package_version`
 
-Data type: `String`
+Data type: `Optional[String]`
 
 The puppet-agent version to install.
 
-Default value: `'present'`
+Default value: `undef`
 
 ##### <a name="-puppet_agent--install--install_dir"></a>`install_dir`
 
-Data type: `Optional`
+Data type: `Optional[[Stdlib::Absolutepath]]`
 
 The directory the puppet agent should be installed to. This is only applicable for
 windows operating systems.
@@ -405,7 +406,7 @@ Default value: `undef`
 
 ##### <a name="-puppet_agent--install--install_options"></a>`install_options`
 
-Data type: `Array`
+Data type: `Optional[Array]`
 
 An array of additional options to pass when installing puppet-agent. Each option in
 the array can either be a string or a hash. Each option will automatically be quoted
@@ -415,7 +416,7 @@ the installation command, forward slashes won't be automatically converted like 
 are in `file` resources.) Note also that backslashes in double-quoted strings _must_
 be escaped and backslashes in single-quoted strings _can_ be escaped.
 
-Default value: `[]`
+Default value: `undef`
 
 ### <a name="puppet_agent--install--darwin"></a>`puppet_agent::install::darwin`
 
@@ -430,13 +431,13 @@ The following parameters are available in the `puppet_agent::install::darwin` cl
 
 ##### <a name="-puppet_agent--install--darwin--package_version"></a>`package_version`
 
-Data type: `Optional`
+Data type: `String`
 
 The puppet-agent version to install.
 
 ##### <a name="-puppet_agent--install--darwin--install_options"></a>`install_options`
 
-Data type: `Array`
+Data type: `Optional[Array]`
 
 An array of additional options to pass when installing puppet-agent. Each option in
 the array can either be a string or a hash. Each option will automatically be quoted
@@ -446,7 +447,7 @@ the installation command, forward slashes won't be automatically converted like 
 are in `file` resources.) Note also that backslashes in double-quoted strings _must_
 be escaped and backslashes in single-quoted strings _can_ be escaped.
 
-Default value: `[]`
+Default value: `undef`
 
 ### <a name="puppet_agent--install--solaris"></a>`puppet_agent::install::solaris`
 
@@ -461,13 +462,13 @@ The following parameters are available in the `puppet_agent::install::solaris` c
 
 ##### <a name="-puppet_agent--install--solaris--package_version"></a>`package_version`
 
-Data type: `Optional`
+Data type: `String`
 
 The puppet-agent version to install.
 
 ##### <a name="-puppet_agent--install--solaris--install_options"></a>`install_options`
 
-Data type: `Array`
+Data type: `Optional[Array]`
 
 An array of additional options to pass when installing puppet-agent. Each option in
 the array can either be a string or a hash. Each option will automatically be quoted
@@ -477,7 +478,7 @@ the installation command, forward slashes won't be automatically converted like 
 are in `file` resources.) Note also that backslashes in double-quoted strings _must_
 be escaped and backslashes in single-quoted strings _can_ be escaped.
 
-Default value: `[]`
+Default value: `undef`
 
 ### <a name="puppet_agent--install--suse"></a>`puppet_agent::install::suse`
 
@@ -492,13 +493,13 @@ The following parameters are available in the `puppet_agent::install::suse` clas
 
 ##### <a name="-puppet_agent--install--suse--package_version"></a>`package_version`
 
-Data type: `Optional`
+Data type: `String`
 
 The puppet-agent version to install.
 
 ##### <a name="-puppet_agent--install--suse--install_options"></a>`install_options`
 
-Data type: `Array`
+Data type: `Optional[Array]`
 
 An array of additional options to pass when installing puppet-agent.
 Each option in the array can either be a string or a hash.
@@ -509,7 +510,7 @@ command, forward slashes won't be automatically converted like they are in
 `file` resources.) Note also that backslashes in double-quoted strings
 _must_ be escaped and backslashes in single-quoted strings _can_ be escaped.
 
-Default value: `[]`
+Default value: `undef`
 
 ### <a name="puppet_agent--install--windows"></a>`puppet_agent::install::windows`
 
@@ -608,9 +609,10 @@ The following parameters are available in the `puppet_agent::prepare::package` c
 
 ##### <a name="-puppet_agent--prepare--package--source"></a>`source`
 
-Data type: `Optional`
+Data type: `Variant[String, Array]`
 
-
+The source file for the puppet-agent package. Can use any of the data types
+and protocols that the File resource's source attribute can.
 
 ### <a name="puppet_agent--prepare--puppet_config"></a>`puppet_agent::prepare::puppet_config`
 
@@ -624,7 +626,7 @@ The following parameters are available in the `puppet_agent::prepare::puppet_con
 
 ##### <a name="-puppet_agent--prepare--puppet_config--package_version"></a>`package_version`
 
-Data type: `Optional`
+Data type: `String`
 
 The puppet-agent version to install.
 
