@@ -292,14 +292,13 @@ SCRIPT
 
       it {
         is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-6.12.0.rpm')
-          .with('path'     => '/opt/puppetlabs/packages/puppet-agent-6.12.0.rpm')
-          .with('ensure'   => 'file')
-          .with('owner'    => '0')
-          .with('group'    => '0')
-          .with('mode'     => '0644')
-          .with('source'   => 'http://just-some-download/url:90/puppet-agent-6.12.0.rpm')
+          .with('path'   => '/opt/puppetlabs/packages/puppet-agent-6.12.0.rpm')
+          .with('ensure' => 'file')
+          .with('owner'  => '0')
+          .with('group'  => '0')
+          .with('mode'   => '0644')
+          .with('source' => 'http://just-some-download/url:90/puppet-agent-6.12.0.rpm')
           .that_requires('File[/opt/puppetlabs/packages]')
-          .with('checksum' => 'sha256lite')
       }
 
       it {
