@@ -3,7 +3,7 @@
 # @param package_version
 #   The puppet-agent version to install.
 class puppet_agent::prepare::puppet_config (
-  Optional $package_version,
+  String $package_version,
 ) {
   assert_private()
   $puppetconf = $puppet_agent::params::config

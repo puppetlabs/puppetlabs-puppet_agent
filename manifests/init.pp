@@ -95,8 +95,8 @@
 #   This parameter is constrained to managing only a predetermined set of configuration
 #   settings, e.g. runinterval.
 # @param proxy
-#    This is to be able to configure yum-repo with proxy, needed for
-#   example for clients in dmz:s that need to use proxy to reach the repo
+#   This is to be able to configure yum-repo with proxy, needed for
+#   example for clients in DMZs that need to use proxy to reach the repo
 #   provided by puppetserver.
 # @param version_file_path
 #    The default install path for the VERSION file
