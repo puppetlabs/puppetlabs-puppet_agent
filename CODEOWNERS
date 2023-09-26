@@ -1,6 +1,6 @@
 # default to phoenix
-* @puppetlabs/phoenix
+* @puppetlabs/phoenix @bastelfreak
 
 # tasks
-/tasks @puppetlabs/bolt
-/task_spec @puppetlabs/bolt
+/tasks @puppetlabs/bolt @bastelfreak
+/task_spec @puppetlabs/bolt @bastelfreak
