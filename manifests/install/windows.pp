@@ -14,7 +14,7 @@
 #   windows operating systems.
 class puppet_agent::install::windows (
   Optional $install_dir           = undef,
-  Array    $install_options       = [],
+  Array[Variant[String, Hash]] $install_options = [],
 ) {
   assert_private()
 
