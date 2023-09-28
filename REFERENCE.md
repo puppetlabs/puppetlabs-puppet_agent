@@ -357,9 +357,9 @@ Default value: `$facts['os']['family'] ? { 'windows' => "${facts['env_windows_in
 
 ##### <a name="-puppet_agent--skip_if_unavailable"></a>`skip_if_unavailable`
 
-Data type: `String`
+Data type: `Variant[Boolean, String]`
 
-
+For yum-based repositories, set the skip_if_unavailable option of the `yumrepo` type.
 
 Default value: `'absent'`
 

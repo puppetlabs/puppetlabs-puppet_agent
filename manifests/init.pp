@@ -101,6 +101,7 @@
 # @param version_file_path
 #    The default install path for the VERSION file
 # @param skip_if_unavailable
+#    For yum-based repositories, set the skip_if_unavailable option of the `yumrepo` type.
 # @param disable_proxy
 class puppet_agent (
   String                         $arch                    = $facts['os']['architecture'],
@@ -125,7 +126,7 @@ class puppet_agent (
   Boolean                        $disable_proxy           = false,
   Optional                       $proxy                   = undef,
   Array                          $install_options         = [],
-  String                         $skip_if_unavailable     = 'absent',
+  Variant[Boolean, String]       $skip_if_unavailable     = 'absent',
   Boolean                        $msi_move_locked_files   = false,
   Optional                       $wait_for_pxp_agent_exit = undef,
   Optional                       $wait_for_puppet_run     = undef,
