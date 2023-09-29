@@ -12,8 +12,8 @@
 #   are in `file` resources.) Note also that backslashes in double-quoted strings _must_
 #   be escaped and backslashes in single-quoted strings _can_ be escaped.
 class puppet_agent::install::darwin (
-  String          $package_version,
-  Optional[Array] $install_options = undef,
+  String                       $package_version,
+  Array[Variant[String, Hash]] $install_options = [],
 ) {
   assert_private()
   $install_script = 'osx_install.sh.erb'
