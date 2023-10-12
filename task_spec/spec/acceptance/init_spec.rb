@@ -46,7 +46,7 @@ describe 'install task' do
     puppet_7_version = case target_platform
                        when %r{debian-11}
                          '7.9.0'
-                       when %r{el-9}
+                       when %r{el-9-x86_64}
                          '7.14.0'
                        when %r{fedora-36}
                          '7.19.0'
@@ -55,6 +55,8 @@ describe 'install task' do
                        when %r{osx-12}, %r{ubuntu-22.04}
                          '7.18.0'
                        when %r{osx-13}
+                         '7.26.0'
+                       when %r{el-9-aarch64}
                          'latest'
                        else
                          '7.18.0'
@@ -69,7 +71,7 @@ describe 'install task' do
     # else
     # end
     case target_platform
-    when %r{osx-13}
+    when %r{el-9-aarch64}
       puppet_7_collection = 'puppet7-nightly'
       puppet_8_collection = 'puppet8-nightly'
     else
@@ -87,7 +89,7 @@ describe 'install task' do
     #                               true
     #                             end
     multiple_puppet7_versions = case target_platform
-                                when %r{osx-13}
+                                when %r{osx-13|el-9-aarch64}
                                   false
                                 else
                                   true
