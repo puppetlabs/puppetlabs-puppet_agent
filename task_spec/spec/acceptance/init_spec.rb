@@ -52,11 +52,11 @@ describe 'install task' do
                          '7.19.0'
                        when %r{osx-11}
                          '7.7.0'
-                       when %r{osx-12}, %r{ubuntu-22.04}
+                       when %r{osx-12}, %r{ubuntu-22.04-amd64}
                          '7.18.0'
                        when %r{osx-13}
                          '7.26.0'
-                       when %r{el-9-aarch64}
+                       when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}
                          'latest'
                        else
                          '7.18.0'
@@ -71,7 +71,7 @@ describe 'install task' do
     # else
     # end
     case target_platform
-    when %r{el-9-aarch64}
+    when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}
       puppet_7_collection = 'puppet7-nightly'
       puppet_8_collection = 'puppet8-nightly'
     else
