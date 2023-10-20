@@ -80,6 +80,32 @@ describe 'puppet_agent' do
     }
   end
 
+  context 'with a user defined PE version' do
+    let(:facts) do
+      common_facts.merge(
+        {
+          architecture: 'PowerPC_POWER8',
+          platform_tag: 'aix-7.1-power',
+        }
+      )
+    end
+    let(:params) do
+      {
+        package_version: '7.10.100.1',
+        collection: 'puppet7',
+        alternate_pe_version: '2222.2.2',
+      }
+    end
+
+    before(:each) do
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
+    end
+
+    it {
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm').with_source('puppet:///pe_packages/2222.2.2/aix-7.1-power/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm')
+    }
+  end
+
   context 'with a puppet6 collection' do
     context 'with versions up to 6.19.1' do
       let(:params) do

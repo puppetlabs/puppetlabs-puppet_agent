@@ -10,7 +10,7 @@ class puppet_agent::osfamily::aix {
     fail('AIX upgrades are only supported on Puppet Enterprise')
   }
 
-  $pe_server_version = pe_build_version()
+  $pe_server_version = $puppet_agent::alternate_pe_version.lest || { pe_build_version() }
 
   # in puppet versions later than 4 we began using single agent packages for
   # multiple version of AIX. The support sequence is as follows:

@@ -342,6 +342,26 @@ SCRIPT
                 }
               end
 
+              context 'with manage_repo enabled and a user defined PE version' do
+                let(:params) do
+                  {
+                    manage_repo: true,
+                    package_version: package_version,
+                    alternate_pe_version: '2222.2.2',
+                  }
+                end
+
+                it {
+                  is_expected.to contain_ini_setting('zypper pc_repo baseurl')
+                    .with({
+                            'path'    => '/etc/zypp/repos.d/pc_repo.repo',
+                            'section' => 'pc_repo',
+                            'setting' => 'baseurl',
+                            'value'   => "https://master.example.vm:8140/packages/2222.2.2/sles-#{os_version}-x86_64?ssl_verify=no",
+                          })
+                }
+              end
+
               it do
                 is_expected.to contain_package('puppet-agent')
               end
@@ -369,23 +389,36 @@ SCRIPT
             end
 
             describe 'package source', if: os_version == '11' do
-              it { is_expected.to contain_file('/etc/zypp/repos.d/pc_repo.repo').with({ 'ensure' => 'absent' }) }
-              it {
-                is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm')
-                  .with(
-                  source: 'puppet:///pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
-                )
-              }
-              it {
-                is_expected.to contain_exec('GPG check the RPM file')
-                  .with(
-                  command: 'rpm -K /opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
-                  path: '/bin:/usr/bin:/sbin:/usr/sbin',
-                  require: 'File[/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm]',
-                  logoutput: 'on_failure',
-                  notify: 'Package[puppet-agent]',
-                )
-              }
+              context 'with no source overrides' do
+                it { is_expected.to contain_file('/etc/zypp/repos.d/pc_repo.repo').with({ 'ensure' => 'absent' }) }
+                it {
+                  is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm')
+                    .with(
+                    source: 'puppet:///pe_packages/2000.0.0/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                  )
+                }
+                it {
+                  is_expected.to contain_exec('GPG check the RPM file')
+                    .with(
+                    command: 'rpm -K /opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                    path: '/bin:/usr/bin:/sbin:/usr/sbin',
+                    require: 'File[/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm]',
+                    logoutput: 'on_failure',
+                    notify: 'Package[puppet-agent]',
+                  )
+                }
+              end
+
+              context 'with a user defined PE version' do
+                let(:params) { super().merge(alternate_pe_version: '2222.2.2') }
+
+                it {
+                  is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-1.10.100-1.sles11.x86_64.rpm')
+                    .with(
+                    source: 'puppet:///pe_packages/2222.2.2/sles-11-x86_64/puppet-agent-1.10.100-1.sles11.x86_64.rpm',
+                  )
+                }
+              end
             end
           end
         end

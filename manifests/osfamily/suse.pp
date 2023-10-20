@@ -17,7 +17,7 @@ class puppet_agent::osfamily::suse {
     contain puppet_agent::prepare::package
   } else {
     if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
-      $pe_server_version = pe_build_version()
+      $pe_server_version = $puppet_agent::alternate_pe_version.lest || { pe_build_version() }
 
       # SLES 11 in PE can no longer install agents from pe_repo
       if $facts['os']['release']['major'] == '11' {

@@ -10,7 +10,7 @@ class puppet_agent::osfamily::solaris {
     fail('Solaris upgrades are only supported on Puppet Enterprise')
   }
 
-  $pe_server_version = pe_build_version()
+  $pe_server_version = $puppet_agent::alternate_pe_version.lest || { pe_build_version() }
   if $puppet_agent::absolute_source {
     $source_dir = $puppet_agent::absolute_source
   } elsif $puppet_agent::alternate_pe_source {

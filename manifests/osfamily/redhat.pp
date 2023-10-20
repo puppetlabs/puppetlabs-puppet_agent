@@ -31,7 +31,7 @@ class puppet_agent::osfamily::redhat {
     }
     # lint:endignore
     if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
-      $pe_server_version = pe_build_version()
+      $pe_server_version = $puppet_agent::alternate_pe_version.lest || { pe_build_version() }
       # Treat Amazon Linux just like Enterprise Linux
       $pe_repo_dir = ($facts['os']['name'] == 'Amazon') ? {
         true    => "el-${amz_el_version}-${facts['os']['architecture']}",

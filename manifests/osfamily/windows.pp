@@ -7,7 +7,7 @@ class puppet_agent::osfamily::windows {
   } elsif $puppet_agent::source {
     $source = $puppet_agent::source
   } elsif  ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
-    $pe_server_version = pe_build_version()
+    $pe_server_version = $puppet_agent::alternate_pe_version.lest || { pe_build_version() }
     $tag = $puppet_agent::arch ? {
       'x64' => $facts['fips_enabled'] ? {
         true => 'windowsfips-x86_64',
