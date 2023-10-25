@@ -274,6 +274,37 @@ SCRIPT
         it { is_expected.to contain_package('puppet-agent').with_ensure(params[:package_version].to_s) }
       end
 
+      context 'with auto package version' do
+        let(:params) do
+          {
+            manage_repo: false,
+            package_version: 'auto'
+          }
+        end
+
+        context 'with Windows agent' do
+          let(:facts) do
+            override_facts(
+              super(),
+              os: { family: 'windows', 'windows' => { 'system32' => 'C:\Windows\System32' } },
+              'env_windows_installdir' => 'C:\Program Files\Puppet Labs\Puppet',
+              'puppet_agent_appdata' => 'C:\ProgramData',
+              'puppet_confdir' => 'C:\ProgramData\PuppetLabs\puppet',
+              'puppet_runmode' => 'agent',
+            )
+          end
+
+          before :each do
+            allow(Puppet::FileSystem).to receive(:exist?).and_call_original
+            allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).and_call_original
+            allow(Puppet::FileSystem).to receive(:exist?).with('/opt/puppetlabs/puppet/VERSION').and_return true
+            allow(Puppet::FileSystem).to receive(:read_preserve_line_endings).with('/opt/puppetlabs/puppet/VERSION').and_return "7.6.5\n"
+          end
+
+          it { is_expected.to contain_class('puppet_agent::install::windows') }
+        end
+      end
+
       it { is_expected.to contain_class('puppet_agent::osfamily::redhat') }
     end
 

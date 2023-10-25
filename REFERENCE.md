@@ -349,11 +349,11 @@ Default value: `undef`
 
 ##### <a name="-puppet_agent--version_file_path"></a>`version_file_path`
 
-Data type: `String`
+Data type: `Stdlib::Absolutepath`
 
 The default install path for the VERSION file
 
-Default value: `$facts['os']['family'] ? { 'windows' => "${facts['env_windows_installdir']}\\VERSION", default => '/opt/puppetlabs/puppet/VERSION'`
+Default value: `'/opt/puppetlabs/puppet/VERSION'`
 
 ##### <a name="-puppet_agent--skip_if_unavailable"></a>`skip_if_unavailable`
 

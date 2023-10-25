@@ -94,6 +94,23 @@ describe 'puppet_agent' do
           'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
         )
       }
+
+      describe 'when applying' do
+        let(:facts) do
+          override_facts(
+            super(),
+            puppet_runmode: 'user',
+          )
+        end
+
+        it { is_expected.to contain_file("#{appdata}\\Puppetlabs") }
+        it { is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages") }
+        it {
+          is_expected.to contain_file("#{appdata}\\Puppetlabs\\packages\\puppet-agent-#{arch}.msi").with(
+            'source' => "puppet:///pe_packages/#{pe_version}/windows-#{tag}/puppet-agent-#{arch}.msi",
+          )
+        }
+      end
     end
   end
 
