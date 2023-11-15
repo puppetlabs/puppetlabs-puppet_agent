@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.16.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.16.0) - 2023-11-15
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.15.0...v4.16.0)
+
+### Added
+
+- (PA-5065) Add Ubuntu 22.04 (ARM64) to the puppet_agent module [#676](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/676) ([imaqsood](https://github.com/imaqsood))
+- (PA-5013) Add Red Hat 9 (ARM64) to the puppet_agent module task [#675](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/675) ([skyamgarp](https://github.com/skyamgarp))
+- (PA-5266) Change checksum algorithm to SHA256  [#670](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/670) ([mhashizume](https://github.com/mhashizume))
+
+### Fixed
+
+- (PA-5826) Only read Windows VERSION file during puppet apply [#677](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/677) ([joshcooper](https://github.com/joshcooper))
+- (PA-5820) Correct parameter types [#673](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/673) ([mhashizume](https://github.com/mhashizume))
+
 ## [v4.15.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.15.0) - 2023-09-20
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.14.0...v4.15.0)
