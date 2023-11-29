@@ -621,6 +621,7 @@ case $platform in
     case $major_version in
       "10") deb_codename="buster";;
       "11") deb_codename="bullseye";;
+      "12") deb_codename="bookworm";;
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
