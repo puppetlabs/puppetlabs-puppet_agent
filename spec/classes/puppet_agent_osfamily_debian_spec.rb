@@ -8,12 +8,12 @@ describe 'puppet_agent' do
       family: 'Debian',
       name: 'Debian',
       distro: {
-        codename: 'stretch',
+        codename: 'buster',
         id: 'Debian',
       },
       release: {
-        full: '9.0',
-        major: '9',
+        full: '10.0',
+        major: '10',
       },
     },
     puppet_master_server: 'master.example.vm',
