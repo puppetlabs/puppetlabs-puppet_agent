@@ -626,6 +626,7 @@ case $platform in
       "3")  deb_codename="stretch";;
       "4")  deb_codename="buster";;
       "5")  deb_codename="bullseye";;
+      "6")  deb_codename="bookworm";;
       "21") deb_codename="jammy";;
       "20") deb_codename="focal";;
       "19") deb_codename="bionic";;
