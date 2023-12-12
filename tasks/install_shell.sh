@@ -601,7 +601,12 @@ case $platform in
   "Amzn"|"Amazon Linux")
     info "Amazon platform! Lets get you an RPM..."
     filetype="rpm"
-    filename="${collection}-release-el-${platform_version}.noarch.rpm"
+    platform_package="el"
+    # For Amazon Linux 2023 and onwards we can use the 'amazon' packages created instead of 'el' packages
+    if (( $platform_version >= 2023 )); then
+      platform_package="amazon"
+    fi
+    filename="${collection}-release-${platform_package}-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
   "Fedora")
