@@ -60,6 +60,30 @@ describe 'puppet_agent' do
     let(:facts) do
       common_facts.merge({
                            architecture: 'PowerPC_POWER8',
+                           platform_tag: 'aix-6.1-power',
+                         })
+    end
+    let(:params) do
+      {
+        package_version: '6.10.100.1',
+        collection: 'puppet6',
+        source: 'https://fake-pe-master.com',
+      }
+    end
+
+    before(:each) do
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
+    end
+
+    it {
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-6.10.100.1-1.aix6.1.ppc.rpm').with_source('https://fake-pe-master.com/packages/2000.0.0/aix-6.1-power/puppet-agent-6.10.100.1-1.aix6.1.ppc.rpm')
+    }
+  end
+
+  context 'with a user specified source for puppet 7' do
+    let(:facts) do
+      common_facts.merge({
+                           architecture: 'PowerPC_POWER8',
                            platform_tag: 'aix-7.1-power',
                          })
     end
@@ -72,11 +96,35 @@ describe 'puppet_agent' do
     end
 
     before(:each) do
-      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2021.7.7' }
     end
 
     it {
-      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm').with_source('https://fake-pe-master.com/packages/2000.0.0/aix-7.1-power/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm')
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm').with_source('https://fake-pe-master.com/packages/2021.7.7/aix-power/puppet-agent-7.10.100.1-1.aix7.1.ppc.rpm')
+    }
+  end
+
+  context 'with a user specified source for puppet 8' do
+    let(:facts) do
+      common_facts.merge({
+                           architecture: 'PowerPC_POWER8',
+                           platform_tag: 'aix-7.2-power',
+                         })
+    end
+    let(:params) do
+      {
+        package_version: '8.10.100.1',
+        collection: 'puppet8',
+        source: 'https://fake-pe-master.com',
+      }
+    end
+
+    before(:each) do
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2023.6.0' }
+    end
+
+    it {
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-8.10.100.1-1.aix7.2.ppc.rpm').with_source('https://fake-pe-master.com/packages/2023.6.0/aix-power/puppet-agent-8.10.100.1-1.aix7.2.ppc.rpm')
     }
   end
 
