@@ -56,7 +56,7 @@ describe 'install task' do
                          '7.18.0'
                        when %r{osx-13}
                          '7.26.0'
-                       when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}, %r{amazon-2023-x86_64}, %r{amazon-2023-aarch64}
+                       when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}, %r{amazon-2023-x86_64}, %r{amazon-2023-aarch64}, %r{osx-14}
                          'latest'
                        else
                          '7.18.0'
@@ -71,7 +71,7 @@ describe 'install task' do
     # else
     # end
     case target_platform
-    when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}, %r{amazon-2023-x86_64}, %r{amazon-2023-aarch64}
+    when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}, %r{amazon-2023-x86_64}, %r{amazon-2023-aarch64}, %r{osx-14}
       puppet_7_collection = 'puppet7-nightly'
       puppet_8_collection = 'puppet8-nightly'
     else
@@ -89,7 +89,7 @@ describe 'install task' do
     #                               true
     #                             end
     multiple_puppet7_versions = case target_platform
-                                when %r{osx-13|el-9-aarch64}
+                                when %r{osx-13|osx-14|el-9-aarch64}
                                   false
                                 else
                                   true
