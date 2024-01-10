@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.18.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.18.0) - 2024-01-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.17.0...v4.18.0)
+
+### Added
+
+- [PE-37297]: Added support for amazon 2023 in redhat.pp manifest file [#692](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/692) ([span786](https://github.com/span786))
+- (PA-5893) Update the task acceptance tests for macOS 14 (Intel) [#691](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/691) ([imaqsood](https://github.com/imaqsood))
+- (PA-5581) Add Amazon Linux 2023 (Intel and ARM) to the puppet_agent m… [#690](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/690) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- (PE-37302) Update puppet_agent module for recent AIX changes in PE [#689](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/689) ([amitkarsale](https://github.com/amitkarsale))
+
 ## [v4.17.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.17.0) - 2023-12-08
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.16.0...v4.17.0)
