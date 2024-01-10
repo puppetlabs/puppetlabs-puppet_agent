@@ -19,20 +19,22 @@ group :development do
   gem "json", '= 2.5.1',                                                        require: false if Gem::Requirement.create(['>= 3.0.0', '< 3.0.5']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "json", '= 2.6.1',                                                        require: false if Gem::Requirement.create(['>= 3.1.0', '< 3.1.3']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "json", '= 2.6.3',                                                        require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "voxpupuli-puppet-lint-plugins", '~> 4.0',                                require: false
+  gem "racc", '~> 1.4.0',                                                       require: false if Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "voxpupuli-puppet-lint-plugins", '~> 5.0',                                require: false
   gem "facterdb", '~> 1.18',                                                    require: false
-  gem "metadata-json-lint", '>= 2.0.2', '< 4.0.0',                              require: false
-  gem "puppetlabs_spec_helper", '~> 5.0',                                       require: false
+  gem "metadata-json-lint", '~> 3.0',                                           require: false
+  gem "puppetlabs_spec_helper", '~> 6.0',                                       require: false
   gem "rspec-puppet-facts", '~> 2.0',                                           require: false
   gem "codecov", '~> 0.2',                                                      require: false
-  gem "dependency_checker", '~> 0.2',                                           require: false
+  gem "dependency_checker", '~> 1.0.0',                                         require: false
   gem "parallel_tests", '= 3.12.1',                                             require: false
   gem "pry", '~> 0.10',                                                         require: false
   gem "simplecov-console", '~> 0.5',                                            require: false
   gem "puppet-debugger", '~> 1.0',                                              require: false
-  gem "rubocop", '= 1.6.1',                                                     require: false
-  gem "rubocop-performance", '= 1.9.1',                                         require: false
-  gem "rubocop-rspec", '= 2.0.1',                                               require: false
+  gem "rubocop", '= 1.48.1',                                                    require: false
+  gem "rubocop-performance", '= 1.16.0',                                        require: false
+  gem "rubocop-rspec", '= 2.19.0',                                              require: false
+  gem "puppet-strings", '~> 4.0',                                               require: false
   gem "rb-readline", '= 0.5.5',                                                 require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 4.30')
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 0.9')
@@ -41,9 +43,7 @@ group :development do
   gem "beaker-hostgenerator"
   gem "beaker-rspec"
   gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 1.22')
-  gem "github_changelog_generator", '= 1.16.4',                                 require: false
   gem "beaker-module_install_helper",                                           require: false
-  gem "concurrent-ruby", '= 1.1.10',                                            require: false
   gem "beaker-puppet_install_helper",                                           require: false
   gem "nokogiri",                                                               require: false
   gem "bolt", '~> 3.0',                                                         require: false if ENV["GEM_BOLT"]
@@ -51,9 +51,13 @@ group :development do
   gem "async", '~> 1.30',                                                       require: false
 end
 group :system_tests do
-  gem "serverspec", '~> 2.41',    require: false
-  gem "puppet_litmus", '~> 1.0', require: false, platforms: [:ruby, :x64_mingw]
-  gem "voxpupuli-acceptance", '~> 1.0'
+  gem "puppet_litmus", '~> 1.0',        require: false, platforms: [:ruby, :x64_mingw]
+  gem "serverspec", '~> 2.41',          require: false
+  gem "voxpupuli-acceptance", '~> 1.0', require: false
+end
+group :release_prep do
+  gem "puppet-strings", '~> 4.0',         require: false
+  gem "puppetlabs_spec_helper", '~> 6.0', require: false
 end
 
 puppet_version = ENV['PUPPET_GEM_VERSION']

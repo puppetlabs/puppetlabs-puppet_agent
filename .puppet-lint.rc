@@ -1,1 +1,2 @@
 --relative
+--no-puppet_url_without_modules-check

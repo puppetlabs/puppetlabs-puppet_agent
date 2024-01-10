@@ -28,11 +28,7 @@ Gemfile:
       - gem: beaker-puppet
         from_env: BEAKER_PUPPET_VERSION
         version: '~> 1.22'
-      - gem: github_changelog_generator
-        version: '= 1.16.4'
       - gem: beaker-module_install_helper
-      - gem: concurrent-ruby
-        version: '= 1.1.10'
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
       - gem: 'bolt'
@@ -46,13 +42,14 @@ Gemfile:
     ":system_tests":
       - gem: voxpupuli-acceptance
         version: '~> 1.0'
+
 appveyor.yml:
   delete: true
 .travis.yml:
   delete: true
-.github/workflows/auto_release.yml:
-  unmanaged: false
 .github/workflows/release.yml:
+  unmanaged: false
+.github/workflows/release_prep.yml:
   unmanaged: false
 .gitlab-ci.yml:
   delete: true
@@ -60,5 +57,11 @@ spec/default_facts.yml:
   delete: true
 spec/spec_helper.rb:
   unmanaged: true
+# puppet_url_without modules check in puppet-lint assumes any puppet:/// URL is
+# using the module mount. pe_packages is a custom mount and doesn't need
+# modules.
 Rakefile:
-  changelog_since_tag: 'v4.13.0'
+  extra_disabled_lint_checks:
+    - puppet_url_without_modules
+  requires:
+    - voxpupuli/acceptance/rake

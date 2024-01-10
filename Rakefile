@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
 require 'bundler'
-require 'puppet_litmus/rake_tasks' if Bundler.rubygems.find_name('puppet_litmus').any?
+require 'puppet_litmus/rake_tasks' if Gem.loaded_specs.key? 'puppet_litmus'
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-syntax/tasks/puppet-syntax'
-require 'github_changelog_generator/task' if Bundler.rubygems.find_name('github_changelog_generator').any?
-require 'puppet-strings/tasks' if Bundler.rubygems.find_name('puppet-strings').any?
+require 'github_changelog_generator/task' if Gem.loaded_specs.key? 'github_changelog_generator'
+require 'puppet-strings/tasks' if Gem.loaded_specs.key? 'puppet-strings'
 require 'voxpupuli/acceptance/rake'
-
-# puppet_url_without modules check in puppet-lint assumes any puppet:/// URL is
-# using the module mount. pe_packages is a custom mount and doesn't need
-# modules.
-PuppetLint.configuration.send('disable_puppet_url_without_modules')
 
 def changelog_user
   return unless Rake.application.top_level_tasks.include? "changelog"
@@ -47,14 +42,14 @@ def changelog_future_release
 end
 
 PuppetLint.configuration.send('disable_relative')
+PuppetLint.configuration.send('disable_puppet_url_without_modules')
 
 
-if Bundler.rubygems.find_name('github_changelog_generator').any?
+if Gem.loaded_specs.key? 'github_changelog_generator'
   GitHubChangelogGenerator::RakeTask.new :changelog do |config|
     raise "Set CHANGELOG_GITHUB_TOKEN environment variable eg 'export CHANGELOG_GITHUB_TOKEN=valid_token_here'" if Rake.application.top_level_tasks.include? "changelog" and ENV['CHANGELOG_GITHUB_TOKEN'].nil?
     config.user = "#{changelog_user}"
     config.project = "#{changelog_project}"
-    config.since_tag = "v4.13.0"
     config.future_release = "#{changelog_future_release}"
     config.exclude_labels = ['maintenance']
     config.header = "# Change log\n\nAll notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org)."

@@ -203,7 +203,9 @@ describe 'puppet_agent' do
 
         context 'package_version is same as master when set to auto' do
           let(:params) { { package_version: 'auto' } }
-          let(:node_params) { { serverversion: '7.6.5' } }
+          let(:facts) do
+            global_facts(facts, os).merge(serverversion: '7.6.5')
+          end
 
           before :each do
             allow(Puppet::FileSystem).to receive(:exist?).and_call_original
