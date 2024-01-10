@@ -49,7 +49,7 @@ class PuppetAgent::FactsDiff
     run_result = Puppet::Util::Execution.execute(command, options)
 
     minified_run_result = run_result.delete("\n").delete(' ')
-    minified_run_result == '{}' ? 'No differences found' : run_result
+    (minified_run_result == '{}') ? 'No differences found' : run_result
   end
 
   private

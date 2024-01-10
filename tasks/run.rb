@@ -138,11 +138,11 @@ class PuppetAgent::Runner
   end
 
   def noop(params)
-    params['noop'] == true ? '--noop' : ''
+    (params['noop'] == true) ? '--noop' : ''
   end
 
   def environment(params)
-    params['environment'].length > 1 ? "--environment=#{params['environment']}" : ''
+    (params['environment'].length > 1) ? "--environment=#{params['environment']}" : ''
   end
 
   # Attempts to run the Puppet agent, returning the mtime for the last run report
