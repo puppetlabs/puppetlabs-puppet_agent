@@ -26,7 +26,7 @@ describe 'puppet_agent' do
 
   def global_facts(facts, os)
     facts.merge(
-      if %r{sles}.match?(os)
+      if os.include?('sles')
         {
           is_pe: true,
           env_temp_variable: '/tmp',
@@ -36,17 +36,17 @@ describe 'puppet_agent' do
         {
           env_temp_variable: '/tmp',
         }
-      elsif %r{solaris}.match?(os)
+      elsif os.include?('solaris')
         {
           is_pe: true,
           puppet_agent_pid: 298,
         }
-      elsif %r{aix}.match?(os)
+      elsif os.include?('aix')
         {
           is_pe: true,
           platform_tag: "aix-#{AIX_VERSION[facts.dig(:os, 'release', 'major')]}-power",
         }
-      elsif %r{windows}.match?(os)
+      elsif os.include?('windows')
         {
           puppet_agent_appdata: 'C:\\ProgramData',
           puppet_confdir: 'C:\\ProgramData\\Puppetlabs\\puppet\\etc',
@@ -203,7 +203,9 @@ describe 'puppet_agent' do
 
         context 'package_version is same as master when set to auto' do
           let(:params) { { package_version: 'auto' } }
-          let(:node_params) { { serverversion: '7.6.5' } }
+          let(:facts) do
+            global_facts(facts, os).merge(serverversion: '7.6.5')
+          end
 
           before :each do
             allow(Puppet::FileSystem).to receive(:exist?).and_call_original
@@ -289,7 +291,7 @@ describe 'puppet_agent' do
             end
 
             let(:expected_package_install_options) do
-              if %r{aix}.match?(os)
+              if os.include?('aix')
                 ['--ignoreos', 'OPTION1=value1', 'OPTION2=value2']
               else
                 ['OPTION1=value1', 'OPTION2=value2']
@@ -305,7 +307,7 @@ describe 'puppet_agent' do
               it { is_expected.to contain_package('puppet-agent') .with_install_options(expected_package_install_options) }
             end
 
-            if %r{solaris-10}.match?(os)
+            if os.include?('solaris-10')
               it do
                 is_expected.to contain_exec('solaris_install script')
                   .with_command(
@@ -347,7 +349,7 @@ describe 'puppet_agent' do
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }
             end
 
-            unless %r{windows}.match?(os)
+            unless os.include?('windows')
               unless %r{sles|solaris|aix}.match?(os)
                 it { is_expected.to contain_class('puppet_agent::service').that_requires('Class[puppet_agent::configure]') }
               end

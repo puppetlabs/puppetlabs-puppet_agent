@@ -130,7 +130,7 @@ def teardown_puppet_on(host)
     clean_repo = ''
   end
 
-  if %r{windows}.match?(host['platform'])
+  if host['platform'].include?('windows')
     install_dir = on(host, 'facter.bat env_windows_installdir').output.tr('\\', '/').chomp
     scp_to host, "#{TEST_FILES}/uninstall.ps1", 'uninstall.ps1'
     on host, 'rm -rf C:/ProgramData/PuppetLabs'

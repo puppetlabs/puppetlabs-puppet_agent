@@ -1,4 +1,4 @@
-name: "Auto release"
+name: "Release Prep"
 
 on:
   workflow_dispatch:

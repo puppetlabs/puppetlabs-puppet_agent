@@ -334,7 +334,7 @@ module Beaker::DSL
         return
       end
 
-      unless %r{windows}.match?(host['platform'])
+      unless host['platform'].include?('windows')
         step '(Agent) waiting for upgrade pid file to be created...' do
           retry_on(host, "cat #{upgrade_pidfile}", { max_retries: 5, retry_interval: 2 })
         end
@@ -355,7 +355,7 @@ module Beaker::DSL
       end
 
       step "Teardown: (Agent) Uninstall the puppet-agent package on agent #{host_to_info_s(host)}" do
-        if %r{windows}.match?(host['platform'])
+        if host['platform'].include?('windows')
           install_dir = on(host, 'facter.bat env_windows_installdir').output.tr('\\', '/').chomp
           scp_to(host, "#{SUPPORTING_FILES}/uninstall.ps1", 'uninstall.ps1')
           on(host, 'rm -rf C:/ProgramData/PuppetLabs')

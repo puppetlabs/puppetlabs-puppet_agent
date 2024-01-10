@@ -19,7 +19,7 @@ describe 'install task' do
   def bolt_inventory
     host_data = hosts_to_inventory
     host_data['targets'].each do |node_data|
-      node_data['config']['winrm']['connect-timeout'] = 120 if %r{win}.match?(target_platform)
+      node_data['config']['winrm']['connect-timeout'] = 120 if target_platform.include?('win')
     end
 
     host_data
@@ -97,7 +97,7 @@ describe 'install task' do
 
     # extra request is needed on windows hosts
     # this will fail with "execution expired"
-    run_task('puppet_agent::version', 'target', {}) if %r{win}.match?(target_platform)
+    run_task('puppet_agent::version', 'target', {}) if target_platform.include?('win')
 
     # Test the agent isn't already installed and that the version task works
     results = run_task('puppet_agent::version', 'target', {})
@@ -131,7 +131,7 @@ describe 'install task' do
     end
 
     # Check that puppet agent service has been stopped due to 'stop_service' parameter set to true
-    service = if %r{win}.match?(target_platform)
+    service = if target_platform.include?('win')
                 run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet', 'target')
               else
                 run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
@@ -190,7 +190,7 @@ describe 'install task' do
     end
 
     # Puppet Agent can't be upgraded on Windows nodes while 'puppet agent' service or 'pxp-agent' service are running
-    if %r{win}.match?(target_platform)
+    if target_platform.include?('win')
       # Try to upgrade from puppet6 to puppet7 but fail due to puppet agent service already running
       results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet7', 'version' => 'latest' })
       results.each do |res|
