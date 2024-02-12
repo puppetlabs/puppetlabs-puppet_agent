@@ -67,13 +67,19 @@ assert_unmodified_apt_config() {
 }
 
 # Check whether perl and LWP::Simple module are installed
-exists_perl() {
-  if perl -e 'use LWP::Simple;' >/dev/null 2>&1
-  then
+exists_perl_lwp() {
+  if perl -e 'use LWP::Simple;' >/dev/null 2>&1 ; then
     return 0
-  else
-    return 1
   fi
+  return 1
+}
+
+# Check whether perl and File::Fetch module are installed
+exists_perl_ff() {
+  if perl -e 'use File::Fetch;' >/dev/null 2>&1 ; then
+    return 0
+  fi
+  return 1
 }
 
 # Get command line arguments
@@ -421,9 +427,9 @@ do_fetch() {
   return 0
 }
 
-# do_perl URL FILENAME
-do_perl() {
-  info "Trying perl..."
+# do_perl_lwp URL FILENAME
+do_perl_lwp() {
+  info "Trying perl (LWP::Simple)..."
   run_cmd "perl -e 'use LWP::Simple; getprint(\$ARGV[0]);' '$1' > '$2' 2>$tmp_stderr"
   rc=$?
 
@@ -434,13 +440,33 @@ do_perl() {
     unable_to_retrieve_package
   fi
 
-  # check for bad return status or empty output
-  if test $rc -ne 0 || test ! -s "$2"; then
-    capture_tmp_stderr "perl"
-    return 1
+  if test $rc -eq 0 && test -s "$2" ; then
+    return 0
   fi
 
-  return 0
+  capture_tmp_stderr "perl"
+  return 1
+}
+
+# do_perl_ff URL FILENAME
+do_perl_ff() {
+  info "Trying perl (File::Fetch)..."
+  run_cmd "perl -e 'use File::Fetch; use File::Copy; my \$ff = File::Fetch->new(uri => \$ARGV[0]); my \$outfile = \$ff->fetch() or die \$ff->server; copy(\$outfile, \$ARGV[1]) or die \"copy failed: \$!\"; unlink(\$outfile) or die \"delete failed: \$!\";' '$1' '$2' 2>>$tmp_stderr"
+  rc=$?
+
+  # check for 404
+  grep "HTTP response: 404" $tmp_stderr 2>&1 >/dev/null
+  if test $? -eq 0 ; then
+    critical "ERROR 404"
+    unable_to_retrieve_package
+  fi
+
+  if test $rc -eq 0 && test -s "$2" ; then
+    return 0
+  fi
+
+  capture_tmp_stderr "perl"
+  return 1
 }
 
 # do_download URL FILENAME
@@ -463,11 +489,15 @@ do_download() {
     do_fetch $1 $2 && return 0
   fi
 
-  if exists_perl; then
-    do_perl $1 $2 && return 0
+  if exists_perl_lwp; then
+    do_perl_lwp $1 $2 && return 0
   fi
 
-  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple is found"
+  if exists_perl_ff; then
+    do_perl_ff $1 $2 && return 0
+  fi
+
+  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple/perl-File-Fetch is found"
   unable_to_retrieve_package
 }
 
