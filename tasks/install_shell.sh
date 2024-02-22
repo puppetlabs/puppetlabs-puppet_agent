@@ -66,6 +66,11 @@ assert_unmodified_apt_config() {
   fi
 }
 
+# Check whether python3 and urllib.request are available
+exists_python3_urllib() {
+  python3 -c 'import urllib.request' >/dev/null 2>&1
+}
+
 # Check whether perl and LWP::Simple module are installed
 exists_perl_lwp() {
   if perl -e 'use LWP::Simple;' >/dev/null 2>&1 ; then
@@ -427,6 +432,25 @@ do_fetch() {
   return 0
 }
 
+do_python3_urllib() {
+  info "Trying python3 (urllib.request)..."
+  run_cmd "python3 -c 'import urllib.request ; urllib.request.urlretrieve(\"$1\", \"$2\")'" 2>$tmp_stderr
+  rc=$?
+
+  # check for 404
+  if grep "404: Not Found" $tmp_stderr 2>&1 >/dev/null ; then
+    critical "ERROR 404"
+    unable_to_retrieve_package
+  fi
+
+  if test $rc -eq 0 && test -s "$2" ; then
+    return 0
+  fi
+
+  capture_tmp_stderr "perl"
+  return 1
+}
+
 # do_perl_lwp URL FILENAME
 do_perl_lwp() {
   info "Trying perl (LWP::Simple)..."
@@ -497,7 +521,11 @@ do_download() {
     do_perl_ff $1 $2 && return 0
   fi
 
-  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple/perl-File-Fetch is found"
+  if exists_python3_urllib; then
+    do_python3_urllib $1 $2 && return 0
+  fi
+
+  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple/perl-File-Fetch/python3 is found"
   unable_to_retrieve_package
 }
 
