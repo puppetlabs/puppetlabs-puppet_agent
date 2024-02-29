@@ -144,7 +144,7 @@ fi
 # Track to handle puppet5 to puppet6
 if [ -f /opt/puppetlabs/puppet/VERSION ]; then
   installed_version=`cat /opt/puppetlabs/puppet/VERSION`
-elif which puppet >/dev/null 2>&1; then
+elif type -p puppet >/dev/null; then
   installed_version=`puppet --version`
 else
   installed_version=uninstalled
