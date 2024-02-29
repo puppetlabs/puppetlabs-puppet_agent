@@ -13,21 +13,22 @@ Gemfile:
   optional:
     ":development":
       - gem: beaker
-        version: '~> 4.30'
+        version: '~> 5.0'
         from_env: BEAKER_VERSION
       - gem: beaker-abs
         from_env: BEAKER_ABS_VERSION
-        version: '~> 0.9'
+        version: '~> 1.0'
       - gem: beaker-docker
         version: '~> 0.3'
-      - gem: beaker-pe
       - gem: beaker-hostgenerator
         from_env: BEAKER_HOSTGENERATOR_VERSION
       - gem: beaker-rspec
         from_env: BEAKER_RSPEC_VERSION
+      # Prevent beaker-puppet from being installed on Ruby > 3.1 until beaker-puppet supports newer Rubies (PA-6136)
       - gem: beaker-puppet
         from_env: BEAKER_PUPPET_VERSION
-        version: '~> 1.22'
+        version: '~> 3.0'
+        condition: Gem::Requirement.create('< 3.1.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
       - gem: beaker-module_install_helper
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
