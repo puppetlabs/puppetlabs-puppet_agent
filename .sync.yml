@@ -28,7 +28,7 @@ Gemfile:
       - gem: beaker-puppet
         from_env: BEAKER_PUPPET_VERSION
         version: '~> 3.0'
-        condition: Gem::Requirement.create('< 3.1.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+        condition: Gem::Requirement.create('< 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
       - gem: beaker-module_install_helper
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
