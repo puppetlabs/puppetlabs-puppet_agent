@@ -65,4 +65,5 @@ Rakefile:
   extra_disabled_lint_checks:
     - puppet_url_without_modules
   requires:
-    - voxpupuli/acceptance/rake
+    - require: voxpupuli/acceptance/rake
+      conditional: Gem.loaded_specs.key? 'voxpupuli-acceptance'
