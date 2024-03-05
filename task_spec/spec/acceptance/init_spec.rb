@@ -38,6 +38,19 @@ describe 'install task' do
     puts logger.info(out)
   end
 
+  # Added this method to simplify the 'case' condition
+  # used for target_platform, which will use latest puppet_agent
+  # in below mentioned test spec
+  def latest_platform_list
+    %r{
+      el-9-aarch64|
+      ubuntu-22\.04-aarch64|
+      amazon-2023|
+      osx-14|
+      debian-12
+    }x
+  end
+
   it 'works with version and install tasks' do
     # Specify the first released version for each target platform. When adding a new
     # OS, you'll typically want to specify 'latest' to install from nightlies, since
@@ -56,7 +69,7 @@ describe 'install task' do
                          '7.18.0'
                        when %r{osx-13}
                          '7.26.0'
-                       when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}, %r{amazon-2023-x86_64}, %r{amazon-2023-aarch64}, %r{osx-14}, %r{debian-12}
+                       when latest_platform_list
                          'latest'
                        else
                          '7.18.0'
@@ -71,7 +84,7 @@ describe 'install task' do
     # else
     # end
     case target_platform
-    when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}, %r{amazon-2023-x86_64}, %r{amazon-2023-aarch64}, %r{osx-14}, %r{debian-12}
+    when latest_platform_list
       puppet_7_collection = 'puppet7-nightly'
       puppet_8_collection = 'puppet8-nightly'
     else
