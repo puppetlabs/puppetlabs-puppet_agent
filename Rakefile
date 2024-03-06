@@ -6,7 +6,7 @@ require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-syntax/tasks/puppet-syntax'
 require 'github_changelog_generator/task' if Gem.loaded_specs.key? 'github_changelog_generator'
 require 'puppet-strings/tasks' if Gem.loaded_specs.key? 'puppet-strings'
-require 'voxpupuli/acceptance/rake'
+require 'voxpupuli/acceptance/rake' if Gem.loaded_specs.key? 'voxpupuli-acceptance'
 
 def changelog_user
   return unless Rake.application.top_level_tasks.include? "changelog"

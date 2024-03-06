@@ -28,7 +28,7 @@ Gemfile:
       - gem: beaker-puppet
         from_env: BEAKER_PUPPET_VERSION
         version: '~> 3.0'
-        condition: Gem::Requirement.create('< 3.1.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+        condition: Gem::Requirement.create('< 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
       - gem: beaker-module_install_helper
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
@@ -65,4 +65,5 @@ Rakefile:
   extra_disabled_lint_checks:
     - puppet_url_without_modules
   requires:
-    - voxpupuli/acceptance/rake
+    - require: voxpupuli/acceptance/rake
+      conditional: Gem.loaded_specs.key? 'voxpupuli-acceptance'
