@@ -140,6 +140,7 @@ fi
             $repo_settings = {
               'name'        => $repo_name,
               'enabled'     => '1',
+              'gpgcheck'    => '1',
               'autorefresh' => '0',
               'baseurl'     => "${source}?ssl_verify=no",
               'type'        => 'rpm-md',
