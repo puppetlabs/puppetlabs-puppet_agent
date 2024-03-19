@@ -149,6 +149,7 @@ SCRIPT
                 {
                   'name'        => 'pc_repo',
                   'enabled'     => '1',
+                  'gpgcheck'    => '1',
                   'autorefresh' => '0',
                   'baseurl'     => "http://yum.puppet.com/puppet6/sles/#{os_version}/x86_64?ssl_verify=no",
                   'type'        => 'rpm-md',
@@ -177,6 +178,7 @@ SCRIPT
                 [
                   'name',
                   'enabled',
+                  'gpgcheck',
                   'autorefresh',
                   'baseurl',
                   'type',
@@ -287,6 +289,7 @@ SCRIPT
                 {
                   'name'        => 'pc_repo',
                   'enabled'     => '1',
+                  'gpgcheck'    => '1',
                   'autorefresh' => '0',
                   'baseurl'     => "https://master.example.vm:8140/packages/2000.0.0/sles-#{os_version}-x86_64?ssl_verify=no",
                   'type'        => 'rpm-md',
@@ -314,6 +317,7 @@ SCRIPT
                 [
                   'name',
                   'enabled',
+                  'gpgcheck',
                   'autorefresh',
                   'baseurl',
                   'type',
@@ -359,6 +363,7 @@ SCRIPT
                 [
                   'name',
                   'enabled',
+                  'gpgcheck',
                   'autorefresh',
                   'baseurl',
                   'type',
