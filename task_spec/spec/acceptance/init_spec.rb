@@ -47,7 +47,8 @@ describe 'install task' do
       ubuntu-22\.04-aarch64|
       amazon-2023|
       osx-14|
-      debian-12
+      debian-12|
+      debian-11-aarch64
     }x
   end
 
@@ -57,7 +58,7 @@ describe 'install task' do
     # official packages won't be released until later. During the N+1 release, you'll
     # want to change `target_platform` to be the first version (N) that added the OS.
     puppet_7_version = case target_platform
-                       when %r{debian-11}
+                       when %r{debian-11-amd64}
                          '7.9.0'
                        when %r{el-9-x86_64}
                          '7.14.0'
@@ -102,7 +103,7 @@ describe 'install task' do
     #                               true
     #                             end
     multiple_puppet7_versions = case target_platform
-                                when %r{osx-13|osx-14|el-9-aarch64}
+                                when %r{osx-13|osx-14|el-9-aarch64|debian-11-aarch64}
                                   false
                                 else
                                   true
