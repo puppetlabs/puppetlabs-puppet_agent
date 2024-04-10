@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e
+
 # Install puppet-agent as a task
 #
 # From https://github.com/petems/puppet-install-shell/blob/master/install_puppet_5_agent.sh
