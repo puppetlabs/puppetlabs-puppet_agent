@@ -57,7 +57,7 @@ class puppet_agent::install::windows (
     $_puppet_run_wait = undef
   }
 
-  $_timestamp = strftime('%Y_%m_%d-%H_%M')
+  $_timestamp = Timestamp().strftime('%Y_%m_%d-%H_%M')
   $_logfile = windows_native_path("${facts['env_temp_variable']}/puppet-${_timestamp}-installer.log")
 
   notice ("Puppet upgrade log file at ${_logfile}")
