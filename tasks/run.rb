@@ -142,7 +142,7 @@ class PuppetAgent::Runner
   end
 
   def environment(params)
-    (params['environment'].length > 1) ? "--environment=#{params['environment']}" : ''
+    (params['environment'] && !params['environment'].empty?) ? "--environment=#{params['environment']}" : ''
   end
 
   # Attempts to run the Puppet agent, returning the mtime for the last run report
