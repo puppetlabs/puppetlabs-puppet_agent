@@ -48,7 +48,8 @@ describe 'install task' do
       amazon-2023|
       osx-14|
       debian-12|
-      debian-11-aarch64
+      debian-11-aarch64|
+      el-9-ppc64le
     }x
   end
 
@@ -103,7 +104,7 @@ describe 'install task' do
     #                               true
     #                             end
     multiple_puppet7_versions = case target_platform
-                                when %r{osx-13|osx-14|el-9-aarch64|debian-11-aarch64}
+                                when %r{osx-13|osx-14|el-9-aarch64|debian-11-aarch64|el-9-ppc64le}
                                   false
                                 else
                                   true
