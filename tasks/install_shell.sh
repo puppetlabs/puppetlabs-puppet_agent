@@ -554,10 +554,11 @@ install_file() {
       fi
 
       rpm -Uvh --oldpackage --replacepkgs "$2"
+      exists dnf && PKGCMD=dnf || PKGCMD=yum
       if test "$version" = 'latest'; then
-        run_cmd "yum install -y puppet-agent && yum upgrade -y puppet-agent"
+        run_cmd "${PKGCMD} install -y puppet-agent && ${PKGCMD} upgrade -y puppet-agent"
       else
-        run_cmd "yum install -y 'puppet-agent-${puppet_agent_version}'"
+        run_cmd "${PKGCMD} install -y 'puppet-agent-${puppet_agent_version}'"
       fi
       ;;
     "noarch.rpm")
