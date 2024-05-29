@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.20.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.20.0) - 2024-05-17
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.19.0...v4.20.0)
+
+### Added
+
+- Support rpm platforms without yum [#717](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/717) ([h0tw1r3](https://github.com/h0tw1r3))
+- (PA-5319) Add RedHat 9 (Power9) to the puppet_agent module task [#715](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/715) ([skyamgarp](https://github.com/skyamgarp))
+
+### Fixed
+
+- puppet_agent::run: properly validate environment parameter [#714](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/714) ([bastelfreak](https://github.com/bastelfreak))
+- Fix strftime() deprecation warning [#712](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/712) ([smortex](https://github.com/smortex))
+- Add GPG check to SUSE repository [#709](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/709) ([mhashizume](https://github.com/mhashizume))
+
 ## [v4.19.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.19.0) - 2024-03-06
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.18.0...v4.19.0)
@@ -381,7 +396,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - (MODULES-10238) Add Fedora 31 to puppet_agent module [#456](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/456) ([luchihoratiu](https://github.com/luchihoratiu))
 - (MODULES-10067) enhance perl download check [#455](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/455) ([ciprianbadescu](https://github.com/ciprianbadescu))
 - (maint) Merge release to master [#453](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/453) ([Dorin-Pleava](https://github.com/Dorin-Pleava))
-- (MODULES-10055) fix linter-errors in puppetlabs/puppet_agent [#451](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/451) ([t-kaesser](https://github.com/t-kaesser))
+- (MODULES-10055) fix linter-errors in puppetlabs/puppet_agent [#451](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/451) ([kaessert](https://github.com/kaessert))
 - (maint) Updated metadata.json with support for Windows Server 2019 [#449](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/449) ([sootysec](https://github.com/sootysec))
 - (MODULES-27043) Puppet agent upgrade for windows FIPS [#448](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/448) ([Dorin-Pleava](https://github.com/Dorin-Pleava))
 - (MODULES-10052) parameterize WaitForExit timeout in puppet_agent install script [#436](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/436) ([lucaswyoung](https://github.com/lucaswyoung))
