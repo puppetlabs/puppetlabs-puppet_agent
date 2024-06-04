@@ -13,13 +13,11 @@ Gemfile:
   optional:
     ":development":
       - gem: beaker
-        version: '~> 5.0'
+        version: '~> 6.0'
         from_env: BEAKER_VERSION
       - gem: beaker-abs
         from_env: BEAKER_ABS_VERSION
         version: '~> 1.0'
-      - gem: beaker-docker
-        version: '~> 0.3'
       - gem: beaker-hostgenerator
         from_env: BEAKER_HOSTGENERATOR_VERSION
       - gem: beaker-rspec
@@ -27,7 +25,7 @@ Gemfile:
       # Prevent beaker-puppet from being installed on Ruby > 3.1 until beaker-puppet supports newer Rubies (PA-6136)
       - gem: beaker-puppet
         from_env: BEAKER_PUPPET_VERSION
-        version: '~> 3.0'
+        version: '~> 4.0'
         condition: Gem::Requirement.create('< 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
       - gem: beaker-module_install_helper
       - gem: beaker-puppet_install_helper
@@ -42,7 +40,7 @@ Gemfile:
         version: '~> 1.30' # otherwise async 2.0.0(needs ruby >=3.1.0) is wrongly selected by bundler on jenkins while running with ruby 2.7.1
     ":system_tests":
       - gem: voxpupuli-acceptance
-        version: '~> 1.0'
+        version: '~> 3'
 
 appveyor.yml:
   delete: true
