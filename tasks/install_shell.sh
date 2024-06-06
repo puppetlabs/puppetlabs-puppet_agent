@@ -286,7 +286,7 @@ case $platform in
     ;;
   "Amzn"|"Amazon Linux")
     case $platform_version in
-      "2") platform_version="7";;
+      "2") platform_version="2";;
     esac
     ;;
 esac
@@ -663,7 +663,7 @@ case $platform in
     filetype="rpm"
     platform_package="el"
     # For Amazon Linux 2023 and onwards we can use the 'amazon' packages created instead of 'el' packages
-    if (( $platform_version >= 2023 )); then
+    if (( $platform_version == 2023 || $platform_version == 2 )); then
       platform_package="amazon"
     fi
     filename="${collection}-release-${platform_package}-${platform_version}.noarch.rpm"
