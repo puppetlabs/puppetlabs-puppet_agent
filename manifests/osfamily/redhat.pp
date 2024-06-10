@@ -20,7 +20,6 @@ class puppet_agent::osfamily::redhat {
       'Amazon': {
         $major_version = $facts['os']['release']['major']
         $amz_el_version = "${major_version}" ? {
-          '2'              => '7',
           /^(2017|2018)$/  => '6',
           default          => $major_version,
         }
