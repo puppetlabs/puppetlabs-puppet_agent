@@ -711,6 +711,7 @@ case $platform in
       "18.04") deb_codename="bionic";;
       "20.04") deb_codename="focal";;
       "22.04") deb_codename="jammy";;
+      "24.04") deb_codename="noble";;
     esac
     filetype="deb"
     filename="${collection}-release-${deb_codename}.deb"
