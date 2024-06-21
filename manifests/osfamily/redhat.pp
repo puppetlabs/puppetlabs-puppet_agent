@@ -19,8 +19,11 @@ class puppet_agent::osfamily::redhat {
       }
       'Amazon': {
         $major_version = $facts['os']['release']['major']
-        $amz_el_version = "${major_version}" ? {
-          /^(2017|2018)$/  => '6',
+        $arch = $facts['os']['architecture']
+        $amz_el_version = "${major_version}-${arch}" ? {
+          '2-aarch64'      => '2',
+          '2-x86_64'       => '7',
+          /^(2017|2018)-/  => '6',
           default          => $major_version,
         }
 
@@ -36,10 +39,16 @@ class puppet_agent::osfamily::redhat {
     # lint:endignore
     if ($puppet_agent::is_pe and (!$puppet_agent::use_alternate_sources)) {
       $pe_server_version = pe_build_version()
-      # Treat Amazon Linux just like Enterprise Linux
-      $pe_repo_dir = ($facts['os']['name'] == 'Amazon') ? {
-        true    => "el-${amz_el_version}-${facts['os']['architecture']}",
-        default => $facts['platform_tag'],
+      # Install amazon packages on AL2 (only aarch64) and 2003 and up (all arch)
+      if $facts['os']['name'] == 'Amazon' {
+        # lint:ignore:only_variable_string
+        $pe_repo_dir = "${amz_el_version}" ? {
+          /^(6|7)$/ => "el-${amz_el_version}-${facts['os']['architecture']}",
+          default   => $facts['platform_tag'],
+        }
+        # lint:endignore
+      } else {
+        $pe_repo_dir = $facts['platform_tag']
       }
       if $puppet_agent::source {
         $source = "${puppet_agent::source}/packages/${pe_server_version}/${pe_repo_dir}"
