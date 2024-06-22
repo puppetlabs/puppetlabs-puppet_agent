@@ -284,11 +284,6 @@ case $platform in
   "SLES")
     platform_version=$major_version
     ;;
-  "Amzn"|"Amazon Linux")
-    case $platform_version in
-      "2") platform_version="2";;
-    esac
-    ;;
 esac
 
 # Find which version of puppet is currently installed if any
@@ -662,8 +657,11 @@ case $platform in
     info "Amazon platform! Lets get you an RPM..."
     filetype="rpm"
     platform_package="el"
-    # For Amazon Linux 2023 and onwards we can use the 'amazon' packages created instead of 'el' packages
-    if (( $platform_version == 2023 || $platform_version == 2 )); then
+    arch="$(uname -p)"
+    # Install amazon packages on AL2 (only aarch64) and 2003 and up (all arch)
+    if [[ $platform_version == 2 && $arch == 'x86_64' ]]; then
+      platform_version="7"
+    elif (( platform_version == 2 || platform_version >= 2023 )); then
       platform_package="amazon"
     fi
     filename="${collection}-release-${platform_package}-${platform_version}.noarch.rpm"
