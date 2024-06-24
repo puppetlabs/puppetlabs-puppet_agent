@@ -67,6 +67,9 @@
     },
     {
       "operatingsystem": "Rocky"
+    },
+    {
+      "operatingsystem": "AmazonLinux"
     }
   ],
   "requirements": [
