@@ -42,17 +42,7 @@ describe 'install task' do
   # used for target_platform, which will use latest puppet_agent
   # in below mentioned test spec
   def latest_platform_list
-    %r{
-      el-9-aarch64|
-      ubuntu-22\.04-aarch64|
-      ubuntu-24|
-      amazon-2023|
-      amazon-2|
-      osx-14|
-      debian-12|
-      debian-11-aarch64|
-      el-9-ppc64le
-    }x
+    %r{ubuntu-24}
   end
 
   it 'works with version and install tasks' do
@@ -73,6 +63,14 @@ describe 'install task' do
                          '7.18.0'
                        when %r{osx-13}
                          '7.26.0'
+                       when %r{el-9-aarch64}, %r{ubuntu-22.04-aarch64}
+                         '7.27.0'
+                       when %r{amazon-2023}, %r{osx-14}, %r{debian-11-aarch64}
+                         '7.28.0'
+                       when %r{debian-12}
+                         '7.29.0'
+                       when %r{el-9-ppc64le}, %r{amazon-2}
+                         '7.31.0'
                        when latest_platform_list
                          'latest'
                        else
@@ -106,7 +104,7 @@ describe 'install task' do
     #                               true
     #                             end
     multiple_puppet7_versions = case target_platform
-                                when %r{osx-13|osx-14|el-9-aarch64|debian-11-aarch64|el-9-ppc64le|amazon-2|ubuntu-24}
+                                when %r{el-9-ppc64le|amazon-2|ubuntu-24}
                                   false
                                 else
                                   true
