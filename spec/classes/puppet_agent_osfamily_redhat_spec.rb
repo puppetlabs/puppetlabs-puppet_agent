@@ -21,7 +21,17 @@ describe 'puppet_agent' do
     }
   end
 
-  [['Rocky', 'el/8', 8], ['AlmaLinux', 'el/8', 8], ['Fedora', 'fedora/f36', 36], ['CentOS', 'el/7', 7], ['Amazon', 'el/6', 2017], ['Amazon', 'el/6', 2018], ['Amazon', 'amazon/2', 2], ['Amazon', 'amazon/2023', 2023]].each do |os, urlbit, osmajor|
+  [
+    ['Rocky', 'el/8', 8],
+    ['AlmaLinux', 'el/8', 8],
+    ['AlmaLinux', 'el/9', 9],
+    ['Fedora', 'fedora/f36', 36],
+    ['CentOS', 'el/7', 7],
+    ['Amazon', 'el/6', 2017],
+    ['Amazon', 'el/6', 2018],
+    ['Amazon', 'amazon/2', 2],
+    ['Amazon', 'amazon/2023', 2023],
+  ].each do |os, urlbit, osmajor|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
         override_facts(super(), os: { name: os, release: { major: osmajor, }, })
