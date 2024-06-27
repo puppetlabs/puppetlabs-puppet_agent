@@ -22,19 +22,21 @@ describe 'puppet_agent' do
   end
 
   [
-    ['Rocky', 'el/8', 8],
-    ['AlmaLinux', 'el/8', 8],
-    ['AlmaLinux', 'el/9', 9],
-    ['Fedora', 'fedora/f36', 36],
-    ['CentOS', 'el/7', 7],
-    ['Amazon', 'el/6', 2017],
-    ['Amazon', 'el/6', 2018],
-    ['Amazon', 'amazon/2', 2],
-    ['Amazon', 'amazon/2023', 2023],
-  ].each do |os, urlbit, osmajor|
+    ['Rocky', 'el/8', '8', 'x86_64'],
+    ['AlmaLinux', 'el/8', '8', 'x86_64'],
+    ['AlmaLinux', 'el/9', '9', 'x86_64'],
+    ['Fedora', 'fedora/f36', '36', 'x86_64'],
+    ['CentOS', 'el/7', '7', 'x86_64'],
+    ['Amazon', 'el/6', '2017', 'x86_64'],
+    ['Amazon', 'el/6', '2018', 'x86_64'],
+    ['Amazon', 'el/7', '2', 'x86_64'],
+    ['Amazon', 'amazon/2', '2', 'aarch64'],
+    ['Amazon', 'amazon/2023', '2023', 'x86_64'],
+    ['Amazon', 'amazon/2023', '2023', 'aarch64'],
+  ].each do |os, urlbit, osmajor, arch|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
-        override_facts(super(), os: { name: os, release: { major: osmajor, }, })
+        override_facts(super(), os: { name: os, release: { major: osmajor }, architecture: arch })
       end
 
       script = <<-SCRIPT
@@ -148,7 +150,7 @@ SCRIPT
           is_expected.to contain_yumrepo('pc_repo')
             .with({
                     # We no longer expect the 'f' in fedora repos
-                    'baseurl'  => "http://yum.puppet.com/puppet5/#{urlbit.gsub('/f', '/')}/x64",
+                    'baseurl'  => "http://yum.puppet.com/puppet5/#{urlbit.gsub('/f', '/')}/#{arch}",
                     'enabled'  => 'true',
                     'gpgcheck' => '1',
                     'gpgkey'   => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
@@ -165,12 +167,12 @@ SCRIPT
           }
         end
 
-        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/puppet5/#{urlbit.gsub('/f', '/')}/x64") }
+        it { is_expected.to contain_yumrepo('pc_repo').with_baseurl("http://fake-yum.com/puppet5/#{urlbit.gsub('/f', '/')}/#{arch}") }
       end
     end
   end
 
-  [['RedHat', 'el-7-x86_64', 'el-7-x86_64', 7], ['RedHat', 'el-8-x86_64', 'el-8-x86_64', 8], ['Amazon', '', 'el-6-x64', 6]].each do |os, tag, repodir, osmajor|
+  [['RedHat', 'el-7-x86_64', 'el-7-x86_64', '7'], ['RedHat', 'el-8-x86_64', 'el-8-x86_64', '8'], ['Amazon', '', 'el-6-x64', '6']].each do |os, tag, repodir, osmajor|
     context "when PE on #{os}" do
       before(:each) do
         # Need to mock the PE functions
