@@ -658,7 +658,7 @@ case $platform in
     filetype="rpm"
     platform_package="el"
     arch="$(uname -p)"
-    # Install amazon packages on AL2 (only aarch64) and 2003 and up (all arch)
+    # Install amazon packages on AL2 (only aarch64) and 2023 and up (all arch)
     if [[ $platform_version == 2 && $arch == 'x86_64' ]]; then
       platform_version="7"
     elif (( platform_version == 2 || platform_version >= 2023 )); then
