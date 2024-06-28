@@ -42,7 +42,10 @@ describe 'install task' do
   # used for target_platform, which will use latest puppet_agent
   # in below mentioned test spec
   def latest_platform_list
-    %r{ubuntu-24}
+    %r{
+      ubuntu-24|
+      fedora-40
+    }x
   end
 
   it 'works with version and install tasks' do
@@ -104,7 +107,7 @@ describe 'install task' do
     #                               true
     #                             end
     multiple_puppet7_versions = case target_platform
-                                when %r{el-9-ppc64le|amazon-2|ubuntu-24}
+                                when %r{el-9-ppc64le|amazon-2|ubuntu-24|fedora-40}
                                   false
                                 else
                                   true
