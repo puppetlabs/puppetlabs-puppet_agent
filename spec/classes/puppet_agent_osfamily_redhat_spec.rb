@@ -23,6 +23,7 @@ describe 'puppet_agent' do
 
   [
     ['Rocky', 'el/8', '8', 'x86_64'],
+    ['Rocky', 'el/9', '9', 'x86_64'],
     ['AlmaLinux', 'el/8', '8', 'x86_64'],
     ['AlmaLinux', 'el/9', '9', 'x86_64'],
     ['Fedora', 'fedora/f36', '36', 'x86_64'],
