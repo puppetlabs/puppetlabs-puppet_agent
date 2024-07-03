@@ -12,7 +12,7 @@ jobs:
     name: On ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'centos-7', 'ubuntu-20.04', 'rocky-8' ]
+        os: [ 'ubuntu-20.04', 'rocky-8' ]
 
     env:
       ruby_version: '3.1'
@@ -35,11 +35,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.ruby_version }}
-
-      - name: Prepare testing environment with bundler
-        run: |
-          git config --global core.longpaths true
-          bundle update --jobs 4 --retry 3
+          bundler-cache: true
 
       - name: Run task acceptance tests
         run: |
