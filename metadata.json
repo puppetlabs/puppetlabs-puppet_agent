@@ -10,15 +10,15 @@
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
-      "version_requirement": ">= 5.1.0 < 10.0.0"
+      "version_requirement": ">= 9.0.0 < 10.0.0"
     },
     {
       "name": "puppetlabs-inifile",
-      "version_requirement": ">= 2.4.0 < 7.0.0"
+      "version_requirement": ">= 6.1.0 < 7.0.0"
     },
     {
       "name": "puppetlabs-apt",
-      "version_requirement": ">= 7.7.1 < 10.0.0"
+      "version_requirement": ">= 9.2.0 < 10.0.0"
     },
     {
       "name": "puppetlabs-facts",
@@ -75,7 +75,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 5.0.0 < 9.0.0"
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     }
   ],
   "pdk-version": "3.2.0",

@@ -71,44 +71,15 @@ class puppet_agent::osfamily::debian {
       } else {
         $source = $puppet_agent::apt_source
       }
-      $legacy_keyname = 'GPG-KEY-puppet'
-      $legacy_gpg_path = "/etc/pki/deb-gpg/${legacy_keyname}"
+
       $keyname = 'GPG-KEY-puppet-20250406'
-      $gpg_path = "/etc/pki/deb-gpg/${keyname}"
-
-      if getvar('::puppet_agent::manage_pki_dir') == true {
-        file { ['/etc/pki', '/etc/pki/deb-gpg']:
-          ensure => directory,
-        }
-      }
-
-      file { $legacy_gpg_path:
-        ensure => file,
-        owner  => 0,
-        group  => 0,
-        mode   => '0644',
-        source => "puppet:///modules/puppet_agent/${legacy_keyname}",
-      }
-
-      apt::key { 'legacy key':
-        id     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
-        source => $legacy_gpg_path,
-      }
-
-      file { $gpg_path:
-        ensure => file,
-        owner  => 0,
-        group  => 0,
-        mode   => '0644',
-        source => "puppet:///modules/puppet_agent/${keyname}",
-      }
 
       apt::source { 'pc_repo':
         location => $source,
         repos    => $puppet_agent::collection,
         key      => {
-          'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
-          'source' => $gpg_path,
+          'name'    => "${keyname}.asc",
+          'content' => file("${module_name}/${keyname}"),
         },
         notify   => Exec['pc_repo_force'],
       }

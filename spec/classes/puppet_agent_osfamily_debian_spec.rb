@@ -152,43 +152,13 @@ describe 'puppet_agent' do
       }
 
       it {
-        is_expected.to contain_file('/etc/pki/deb-gpg/GPG-KEY-puppet-20250406')
-          .with({
-                  'ensure' => 'file',
-                  'owner'  => '0',
-                  'group'  => '0',
-                  'mode'   => '0644',
-                  'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet-20250406',
-                })
-      }
-
-      it {
-        is_expected.to contain_file('/etc/pki/deb-gpg/GPG-KEY-puppet')
-          .with({
-                  'ensure' => 'file',
-                  'owner'  => '0',
-                  'group'  => '0',
-                  'mode'   => '0644',
-                  'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet',
-                })
-      }
-
-      it {
-        is_expected.to contain_apt__key('legacy key')
-          .with({
-                  'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
-                  'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet',
-                })
-      }
-
-      it {
         is_expected.to contain_apt__source('pc_repo')
           .with({
                   'location' => 'https://master.example.vm:8140/packages/2000.0.0/debian-7-x86_64',
                   'repos'    => 'PC1',
                   'key'      => {
-                    'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
-                    'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet-20250406',
+                    'name'    => 'GPG-KEY-puppet-20250406.asc',
+                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
                   },
                 })
       }
@@ -209,8 +179,8 @@ describe 'puppet_agent' do
                   'location' => 'https://fake-apt-mirror.com/packages/2000.0.0/debian-7-x86_64',
                   'repos'    => 'PC1',
                   'key'      => {
-                    'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
-                    'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet-20250406',
+                    'name'    => 'GPG-KEY-puppet-20250406.asc',
+                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
                   },
                 })
       }
@@ -225,7 +195,6 @@ describe 'puppet_agent' do
       end
 
       it { is_expected.not_to contain_apt__setting('conf-pc_repo') }
-      it { is_expected.not_to contain_apt__key('legacy key') }
       it { is_expected.not_to contain_apt__source('pc_repo') }
     end
 
@@ -246,21 +215,13 @@ describe 'puppet_agent' do
       end
 
       it {
-        is_expected.to contain_apt__key('legacy key')
-          .with({
-                  'id'     => '6F6B15509CF8E59E6E469F327F438280EF8D349F',
-                  'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet',
-                })
-      }
-
-      it {
         is_expected.to contain_apt__source('pc_repo')
           .with({
                   'location' => 'https://apt.puppet.com',
                   'repos'    => 'puppet5',
                   'key'      => {
-                    'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
-                    'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet-20250406',
+                    'name'    => 'GPG-KEY-puppet-20250406.asc',
+                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
                   },
                 })
       }
@@ -282,8 +243,8 @@ describe 'puppet_agent' do
                   'location' => 'https://fake-apt-mirror.com/',
                   'repos'    => 'puppet5',
                   'key'      => {
-                    'id'     => 'D6811ED3ADEEB8441AF5AA8F4528B6CD9E61EF26',
-                    'source' => '/etc/pki/deb-gpg/GPG-KEY-puppet-20250406',
+                    'name'    => 'GPG-KEY-puppet-20250406.asc',
+                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
                   },
                 })
       }
@@ -297,7 +258,6 @@ describe 'puppet_agent' do
         }
       end
 
-      it { is_expected.not_to contain_apt__key('legacy key') }
       it { is_expected.not_to contain_apt__source('pc_repo') }
     end
 

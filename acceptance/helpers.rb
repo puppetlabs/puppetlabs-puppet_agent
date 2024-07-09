@@ -177,9 +177,9 @@ module Beaker::DSL
     # @param [String] environment The puppet environment to install the modules to, this must
     #   be a valid environment in the puppet install on the host.
     def install_puppet_agent_module_on(host, environment)
-      on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '8.4.0', '--environment', environment), { acceptable_exit_codes: [0] })
-      on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '5.3.0', '--environment', environment), { acceptable_exit_codes: [0] })
-      on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '9.0.0', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-stdlib',     '--version', '9.0.0', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-inifile',    '--version', '6.1.0', '--environment', environment), { acceptable_exit_codes: [0] })
+      on(host, puppet('module', 'install', 'puppetlabs-apt',        '--version', '9.4.0', '--environment', environment), { acceptable_exit_codes: [0] })
 
       install_dev_puppet_module_on(host,
                                    source: File.join(File.dirname(__FILE__), '..'),
@@ -235,6 +235,15 @@ module Beaker::DSL
                                   end
 
           install_puppet_agent_on(host, agent_install_options)
+
+          # beaker-puppet doesn't add signing information to the apt source list, but this module does.
+          # This discrepancy causes apt to error, so we manually add signing info.
+          if %r{debian|ubuntu}.match?(host['platform'])
+            step '(Agent) Add apt signing information' do
+              on(host, "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet-20250406.asc] http/' /etc/apt/sources.list.d/puppet*.list -i")
+            end
+          end
+
           teardowns << -> do
             remove_installed_agent(host)
           end
