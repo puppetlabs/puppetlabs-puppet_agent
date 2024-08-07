@@ -9,6 +9,10 @@
     "environment": {
       "description": "The desired puppet code environment to use",
       "type": "Optional[String[1]]"
+    },
+    "tags": {
+      "description": "Optional string that will be passed to --tags",
+      "type": "Optional[String[1]]"
     }
   },
   "files": ["puppet_agent/files/rb_task_helper.rb"],
