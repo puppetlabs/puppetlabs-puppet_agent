@@ -149,6 +149,10 @@ class PuppetAgent::Runner
     (params['noop'] == true) ? '--noop' : ''
   end
 
+  def tags(params)
+    (params['tags'] && !params['tags'].empty?) ? "--tags=#{[params['tags']].join(',')}" : ''
+  end
+
   def environment(params)
     (params['environment'] && !params['environment'].empty?) ? "--environment=#{params['environment']}" : ''
   end
@@ -158,7 +162,7 @@ class PuppetAgent::Runner
   def try_run(last_run_report, params)
     start_time = get_start_time(last_run_report)
 
-    command = [puppet_bin, 'agent', '-t', '--color', 'false', noop(params), environment(params)]
+    command = [puppet_bin, 'agent', '-t', '--color', 'false', noop(params), environment(params), tags(params)]
 
     options = {
       failonfail:         false,
