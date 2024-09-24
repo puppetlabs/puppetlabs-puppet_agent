@@ -24,11 +24,13 @@ class puppet_agent::osfamily::redhat {
           '2-aarch64'      => '2',
           '2-x86_64'       => '7',
           /^(2017|2018)-/  => '6',
+          '2023-x86_64'    => '8',
+          '2023-aarch64'   => '8',
           default          => $major_version,
         }
 
         $platform_and_version = "${amz_el_version}" ? {
-          /^(6|7)$/  => "el/${amz_el_version}",
+          /^(6|7|8)$/  => "el/${amz_el_version}",
           default    => "amazon/${amz_el_version}",
         }
       }
@@ -43,7 +45,7 @@ class puppet_agent::osfamily::redhat {
       if $facts['os']['name'] == 'Amazon' {
         # lint:ignore:only_variable_string
         $pe_repo_dir = "${amz_el_version}" ? {
-          /^(6|7)$/ => "el-${amz_el_version}-${facts['os']['architecture']}",
+          /^(6|7|8)$/ => "el-${amz_el_version}-${facts['os']['architecture']}",
           default   => $facts['platform_tag'],
         }
         # lint:endignore
