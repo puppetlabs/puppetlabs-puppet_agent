@@ -32,8 +32,8 @@ describe 'puppet_agent' do
     ['Amazon', 'el/6', '2018', 'x86_64'],
     ['Amazon', 'el/7', '2', 'x86_64'],
     ['Amazon', 'amazon/2', '2', 'aarch64'],
-    ['Amazon', 'amazon/2023', '2023', 'x86_64'],
-    ['Amazon', 'amazon/2023', '2023', 'aarch64'],
+    ['Amazon', 'el/8', '2023', 'x86_64'],
+    ['Amazon', 'el/8', '2023', 'aarch64'],
   ].each do |os, urlbit, osmajor, arch|
     context "with #{os} and #{urlbit}" do
       let(:facts) do
