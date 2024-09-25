@@ -69,6 +69,11 @@ assert_unmodified_apt_config() {
   fi
 }
 
+# Check whether apt-helper is available
+exists_apt_helper() {
+  test -x /usr/lib/apt/apt-helper
+}
+
 # Check whether python3 and urllib.request are available
 exists_python3_urllib() {
   python3 -c 'import urllib.request' >/dev/null 2>&1
@@ -430,6 +435,27 @@ do_fetch() {
   return 0
 }
 
+do_apt_helper() {
+  info "Trying apt-helper..."
+  run_cmd "/usr/lib/apt/apt-helper download-file '$1' '$2'" 2>$tmp_stderr
+  rc=$?
+
+  # check for 404
+  grep "E: Failed to fetch .* 404 " $tmp_stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    critical "ERROR 404"
+    unable_to_retrieve_package
+  fi
+
+  # check for bad return status or empty output
+  if test $rc -ne 0 && test ! -s "$2" ; then
+    capture_tmp_stderr "apthelper"
+    return 1
+  fi
+
+  return 0
+}
+
 do_python3_urllib() {
   info "Trying python3 (urllib.request)..."
   run_cmd "python3 -c 'import urllib.request ; urllib.request.urlretrieve(\"$1\", \"$2\")'" 2>$tmp_stderr
@@ -523,7 +549,11 @@ do_download() {
     do_python3_urllib $1 $2 && return 0
   fi
 
-  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple/perl-File-Fetch/python3 is found"
+  if exists_apt_helper; then
+    do_apt_helper $1 $2 && return 0
+  fi
+
+  critical "Cannot download package as none of wget/curl/fetch/perl-LWP-Simple/perl-File-Fetch/python3/apt-helper is found"
   unable_to_retrieve_package
 }
 
