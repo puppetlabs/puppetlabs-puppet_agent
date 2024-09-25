@@ -42,10 +42,7 @@ describe 'install task' do
   # used for target_platform, which will use latest puppet_agent
   # in below mentioned test spec
   def latest_platform_list
-    %r{
-      ubuntu-24|
-      fedora-40
-    }x
+    # %r{operatingsystem-version-architecture}
   end
 
   it 'works with version and install tasks' do
@@ -72,8 +69,10 @@ describe 'install task' do
                          '7.28.0'
                        when %r{debian-12}
                          '7.29.0'
-                       when %r{el-9-ppc64le}, %r{amazon-2}
+                       when %r{el-9-ppc64le}, %r{amazon-2}, %r{fedora-40}
                          '7.31.0'
+                       when %r{ubuntu-24.04}
+                         '7.32.1'
                        when latest_platform_list
                          'latest'
                        else
