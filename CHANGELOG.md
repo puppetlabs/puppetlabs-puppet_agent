@@ -5,7 +5,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.20.1](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.20.1) - 2024-05-29
+## [v4.21.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.21.0) - 2024-09-25
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.20.1...v4.21.0)
+
+### Added
+
+- (PA-6416) Support installing puppet-agent on Ubuntu 24.04 amd64/aarch64 [#723](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/723) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- (MODULES-9695) Debian: use modern APT keyring format [#681](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/681) ([kenyon](https://github.com/kenyon))
+
+### Fixed
+
+- (PA-6677) Restore AL2 x86_64 install task and manifest [#724](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/724) ([joshcooper](https://github.com/joshcooper))
+- (PA-6277) change manifests for amazon 2 repo [#722](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/722) ([imaqsood](https://github.com/imaqsood))
+
+## [v4.20.1](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.20.1) - 2024-06-03
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.20.0...v4.20.1)
 
@@ -423,7 +437,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - (maint) Release prep for 2.2.1 [#446](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/446) ([Dorin-Pleava](https://github.com/Dorin-Pleava))
 - (maint) Make the puppet_agent task available as a plugin [#445](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/445) ([adreyer](https://github.com/adreyer))
-- (MODULES-9981) Add Amazon Linux 2 support [#444](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/444) ([alexharv074](https://github.com/alexharv074))
+- (MODULES-9981) Add Amazon Linux 2 support [#444](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/444) ([alex-harvey-z3q](https://github.com/alex-harvey-z3q))
 - (maint) fix failing tests due to rspec changes [#443](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/443) ([gimmyxd](https://github.com/gimmyxd))
 - (maint) Add task to check commit messages [#442](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/442) ([gimmyxd](https://github.com/gimmyxd))
 - (maint) Add bolt team as codeowners for task content [#440](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/440) ([donoghuc](https://github.com/donoghuc))
@@ -442,7 +456,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ### Other
 
-- (maint) Release prep for 2.2.0 [#429](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/429) ([loopinu](https://github.com/loopinu))
+- (maint) Release prep for 2.2.0 [#429](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/429) ([alexandru-d-popa](https://github.com/alexandru-d-popa))
 - (MODULES-7760) relax agent versions on redhat [#426](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/426) ([gimmyxd](https://github.com/gimmyxd))
 - (MODULES-9575) fix solaris 10 tests [#425](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/425) ([gimmyxd](https://github.com/gimmyxd))
 - (PE-26530) Update spec and task acceptance tests with Fedora 30 [#424](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/424) ([GabrielNagy](https://github.com/GabrielNagy))
@@ -450,7 +464,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - (maint) Add CODEOWNERS [#422](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/422) ([mihaibuzgau](https://github.com/mihaibuzgau))
 - (MODULES-9444) Migrate puppet_agent module to Beaker 4 [#421](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/421) ([oanatmaria](https://github.com/oanatmaria))
 - (maint) Allow stdlib 6.x [#418](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/418) ([rnelson0](https://github.com/rnelson0))
-- (MODULES-9173) Mcollective service restarting when PA upgrade is done. [#417](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/417) ([loopinu](https://github.com/loopinu))
+- (MODULES-9173) Mcollective service restarting when PA upgrade is done. [#417](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/417) ([alexandru-d-popa](https://github.com/alexandru-d-popa))
 - (MODULES-8923) puppet_agent : could autodetect package_version based … [#416](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/416) ([oanatmaria](https://github.com/oanatmaria))
 - (maint) Use newer puppet versions for class_spec [#413](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/413) ([oanatmaria](https://github.com/oanatmaria))
 - (maint) Fix tests on SLES [#412](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/412) ([oanatmaria](https://github.com/oanatmaria))
@@ -505,7 +519,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - (FM-7732) Download puppet-agent packages over https [#382](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/382) ([donoghuc](https://github.com/donoghuc))
 - (MODULES-5535) Update test matrix to work with MacOS/Solaris/Windows [#381](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/381) ([mcdonaldseanp](https://github.com/mcdonaldseanp))
 - (MODULES-8320) Remove old platforms [#380](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/380) ([ekinanp](https://github.com/ekinanp))
-- (PE-25542) add RHEL8 to puppet agent module [#379](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/379) ([loopinu](https://github.com/loopinu))
+- (PE-25542) add RHEL8 to puppet agent module [#379](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/379) ([alexandru-d-popa](https://github.com/alexandru-d-popa))
 - (MODULES-4730) Do not pass the agent environment during MSI installs [#378](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/378) ([ScottGarman](https://github.com/ScottGarman))
 - (maint) Update minimum acceptance beaker-puppet version [#377](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/377) ([caseywilliams](https://github.com/caseywilliams))
 - (MODULES-8348) Refactor the acceptance test scaffold [#376](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/376) ([ekinanp](https://github.com/ekinanp))
