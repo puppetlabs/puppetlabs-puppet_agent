@@ -38,14 +38,11 @@ describe 'install task' do
     puts logger.info(out)
   end
 
-  # Added this method to simplify the 'case' condition
-  # used for target_platform, which will use latest puppet_agent
-  # in below mentioned test spec
+  # This method contains a list of platforms that are only available in nightly builds of puppet-agent. Once a regular
+  # release of puppet-agent includes support for these platforms, they can be removed from this method and added to
+  # the logic that determines the puppet_7_version variable below.
   def latest_platform_list
-    %r{
-      ubuntu-24|
-      fedora-40
-    }x
+    # %r{operatingsystem-version-architecture}
   end
 
   it 'works with version and install tasks' do
@@ -72,22 +69,17 @@ describe 'install task' do
                          '7.28.0'
                        when %r{debian-12}
                          '7.29.0'
-                       when %r{el-9-ppc64le}, %r{amazon-2}
+                       when %r{el-9-ppc64le}, %r{amazon-2}, %r{fedora-40}
                          '7.31.0'
+                       when %r{ubuntu-24.04}
+                         '7.32.1'
                        when latest_platform_list
                          'latest'
                        else
                          '7.18.0'
                        end
 
-    # Platforms that only have nightly builds available. Once a platform
-    # is released, it should be removed from this list.
-    # case target_platform
-    # when %r{fedora-36}
-    #   puppet_7_collection = 'puppet7-nightly'
-    #   puppet_8_collection = 'puppet8-nightly'
-    # else
-    # end
+    # Use nightlies for unreleased platforms
     case target_platform
     when latest_platform_list
       puppet_7_collection = 'puppet7-nightly'
