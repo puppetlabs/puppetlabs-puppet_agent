@@ -155,7 +155,8 @@ class PuppetAgent::Runner
     options = {
       failonfail:         false,
       custom_environment: get_env_fix_up,
-      override_locale:    false
+      override_locale:    false,
+      combine:            true # combine stdout and stderr
     }
 
     run_result = Puppet::Util::Execution.execute(command.reject(&:empty?), options)
