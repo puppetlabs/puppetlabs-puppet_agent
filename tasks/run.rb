@@ -153,7 +153,7 @@ class PuppetAgent::Runner
     command = [puppet_bin, 'agent', '-t', '--color', 'false', noop(params), environment(params)]
 
     options = {
-      failonfail:         false,
+      failonfail:         true, # fail the task when the puppet agent run fails
       custom_environment: get_env_fix_up,
       override_locale:    false,
       combine:            true # combine stdout and stderr
