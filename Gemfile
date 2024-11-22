@@ -44,6 +44,7 @@ group :development do
   gem "nokogiri",                                                              require: false
   gem "bolt", '~> 3.0',                                                        require: false if ENV["GEM_BOLT"]
   gem "beaker-task_helper", '~> 1.9',                                          require: false if ENV["GEM_BOLT"]
+  gem "orchestrator_client", '< 0.7.1',                                        require: false if ENV["GEM_BOLT"]
   gem "async", '~> 1.30',                                                      require: false
 end
 group :development, :release_prep do
