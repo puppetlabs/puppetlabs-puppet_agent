@@ -99,8 +99,16 @@ class PuppetAgent::Runner
         obj.tag = nil if obj.respond_to?(:tag=)
       end
 
+      ruby_report = report.to_ruby
+      # check if the run is marked as failed
+      if ruby_report['status'] == 'failed'
+        return error_result(
+          'puppet_agent/agent-run-error',
+          "Puppet agent run failed: #{run_result}",
+        )
+      end
       {
-        'report'   => report.to_ruby,
+        'report'   => ruby_report,
         'exitcode' => run_result.exitstatus,
         '_output'  => run_result
       }
@@ -155,7 +163,8 @@ class PuppetAgent::Runner
     options = {
       failonfail:         false,
       custom_environment: get_env_fix_up,
-      override_locale:    false
+      override_locale:    false,
+      combine:            true # combine stdout and stderr
     }
 
     run_result = Puppet::Util::Execution.execute(command.reject(&:empty?), options)
