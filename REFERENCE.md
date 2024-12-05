@@ -1051,6 +1051,12 @@ Data type: `Optional[String[1]]`
 
 The desired puppet code environment to use
 
+##### `tags`
+
+Data type: `Optional[Variant[String[1],Array[String[1]]]]`
+
+Optional tag or array of tags that will be passed to --tags
+
 ### <a name="version"></a>`version`
 
 Get the version of the Puppet agent package installed. Returns nothing if none present.
@@ -1083,6 +1089,7 @@ The following parameters are available in the `puppet_agent::run` plan:
 * [`targets`](#-puppet_agent--run--targets)
 * [`noop`](#-puppet_agent--run--noop)
 * [`environment`](#-puppet_agent--run--environment)
+* [`tags`](#-puppet_agent--run--tags)
 
 ##### <a name="-puppet_agent--run--targets"></a>`targets`
 
@@ -1103,6 +1110,14 @@ Default value: `false`
 Data type: `Optional[String[1]]`
 
 the desired puppet code environment
+
+Default value: `undef`
+
+##### <a name="-puppet_agent--run--tags"></a>`tags`
+
+Data type: `Optional[Variant[String[1],Array[String[1]]]]`
+
+an optional string that will be passed to --tags
 
 Default value: `undef`
 

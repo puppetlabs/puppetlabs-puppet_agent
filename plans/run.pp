@@ -3,10 +3,12 @@
 # @param targets The targets to start a Puppet agent run on.
 # @param noop if true, all runs will use --noop
 # @param environment the desired puppet code environment
+# @param tags an optional string that will be passed to --tags
 plan puppet_agent::run (
   TargetSpec $targets,
   Boolean $noop = false,
   Optional[String[1]] $environment = undef,
+  Optional[Variant[String[1],Array[String[1]]]] $tags = undef
 ) {
   # Check which targets have the agent installed by checking
   # the version of the agent. No point in trying to run the
@@ -65,7 +67,11 @@ plan puppet_agent::run (
     true    => { 'noop' => true, },
     default => {},
   }
-  $args = $arg_env + $arg_noop + { '_catch_errors' => true }
+  $arg_tags = $tags ? {
+    Undef   => {},
+    default => { 'tags' => $tags },
+  }
+  $args = $arg_env + $arg_noop + $arg_tags + { '_catch_errors' => true }
   $run_results = run_task(
     'puppet_agent::run',
     $agent_results.targets,
