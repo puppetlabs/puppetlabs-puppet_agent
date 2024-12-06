@@ -58,6 +58,7 @@ describe 'puppet_agent' do
         is_expected.to contain_apt__setting('conf-pe-repo')
           .with({
                   'priority' => 90,
+                  'content'  => '',
                   'ensure'   => 'absent',
                 })
       }
@@ -65,7 +66,8 @@ describe 'puppet_agent' do
       it {
         is_expected.to contain_apt__setting('list-puppet-enterprise-installer')
           .with({
-                  'ensure' => 'absent',
+                  'content' => '',
+                  'ensure'  => 'absent',
                 })
       }
     end

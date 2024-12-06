@@ -60,11 +60,13 @@ class puppet_agent::osfamily::debian {
         # Pass in an empty content string since apt requires it even though we are removing it
         apt::setting { 'list-puppet-enterprise-installer':
           ensure  => absent,
+          content => '',
         }
 
         apt::setting { 'conf-pe-repo':
           ensure   => absent,
           priority => '90',
+          content  => '',
         }
       } else {
         $source = $puppet_agent::apt_source
