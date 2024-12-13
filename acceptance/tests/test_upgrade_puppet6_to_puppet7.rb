@@ -21,10 +21,10 @@ node default {
 
   class { puppet_agent:
     package_version => $_package_version,
-    apt_source      => 'http://nightlies.puppet.com/apt',
-    yum_source      => 'http://nightlies.puppet.com/yum',
-    mac_source      => 'http://nightlies.puppet.com/downloads',
-    windows_source  => 'http://nightlies.puppet.com/downloads',
+    apt_source      => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/apt',
+    yum_source      => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum',
+    mac_source      => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads',
+    windows_source  => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads',
     collection      => 'puppet7-nightly',
     service_names   => []
   }
