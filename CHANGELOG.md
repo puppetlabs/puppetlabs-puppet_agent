@@ -5,7 +5,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v4.21.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.21.0) - 2024-09-25
+## [v4.22.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.22.0) - 2025-01-15
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.21.0...v4.22.0)
+
+### Changed
+
+- (#732) puppet_agent::run: mark failed puppet runs as failed task [#742](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/742) ([bastelfreak](https://github.com/bastelfreak))
+
+### Added
+
+- support --tags for triggering puppet agent [#732](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/732) ([bastelfreak](https://github.com/bastelfreak))
+- install support download with apt-helper [#713](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/713) ([h0tw1r3](https://github.com/h0tw1r3))
+
+### Fixed
+
+- (#732) run.rb: Combine stderr and stdout [#739](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/739) ([bastelfreak](https://github.com/bastelfreak))
+- sh tasks: Run with set -e [#711](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/711) ([bastelfreak](https://github.com/bastelfreak))
+
+## [v4.21.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.21.0) - 2024-09-24
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.20.1...v4.21.0)
 
