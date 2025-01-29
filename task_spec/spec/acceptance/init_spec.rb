@@ -42,7 +42,10 @@ describe 'install task' do
   # release of puppet-agent includes support for these platforms, they can be removed from this method and added to
   # the logic that determines the puppet_7_version variable below.
   def latest_platform_list
-    %r{osx-15-arm64}
+    %r{
+      osx-15-arm64|
+      fedora-41
+    }x
   end
 
   it 'works with version and install tasks' do
