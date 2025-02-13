@@ -9,7 +9,7 @@
     },
     "collection": {
       "description": "The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)",
-      "type": "Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]"
+      "type": "Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8]]"
     },
     "absolute_source": {
       "description": "The absolute source location to find the Puppet agent package",
@@ -43,6 +43,14 @@
       "description": "The number of retries in case of network connectivity failures",
       "type": "Optional[Integer]",
       "default": 5
+    },
+    "username": {
+      "description": "The username to use when downloading from a source location requiring authentication",
+      "type": "Optional[String]"
+    },
+    "password": {
+      "description": "The password to use when downloading from a source location requiring authentication",
+      "type": "Optional[String]"
     }
   },
   "files": ["facts/tasks/bash.sh"],

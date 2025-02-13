@@ -100,6 +100,16 @@ if [ -n "$PT_version" ]; then
   version=$PT_version
 fi
 
+if [ -n "$PT_username" ]; then
+    username=$PT_username
+else
+    username='forge-key'
+fi
+
+if [ -n "$PT_password" ]; then
+    password=$PT_password
+fi
+
 if [ -n "$PT_collection" ]; then
   # Check whether collection is nightly
   if [[ "$PT_collection" == *"nightly"* ]]; then
@@ -116,10 +126,18 @@ fi
 if [ -n "$PT_yum_source" ]; then
   yum_source=$PT_yum_source
 else
-  if [ "$nightly" = true ]; then
-    yum_source='http://nightlies.puppet.com/yum'
+  if [[ "$collection" == "puppetcore"* ]]; then
+    yum_source='https://yum-puppetcore.puppet.com/public'
+    if [ -z "$password" ]; then
+      echo "A password parameter is required to install from ${yum_source}"
+      exit 1
+    fi
   else
-    yum_source='http://yum.puppet.com'
+    if [ "$nightly" = true ]; then
+      yum_source='http://nightlies.puppet.com/yum'
+    else
+      yum_source='http://yum.puppet.com'
+    fi
   fi
 fi
 
@@ -582,7 +600,14 @@ install_file() {
         fi
       fi
 
+      repo="/etc/yum.repos.d/${collection/core/}-release.repo"
       rpm -Uvh --oldpackage --replacepkgs "$2"
+      if [[ -n $username ]]; then
+          sed -i "s/^#\?username=.*/username=${username}/" "${repo}"
+      fi
+      if [[ -n $password ]]; then
+          sed -i "s/^#\?password=.*/password=${password}/" "${repo}"
+      fi
       exists dnf && PKGCMD=dnf || PKGCMD=yum
       if test "$version" = 'latest'; then
         run_cmd "${PKGCMD} install -y puppet-agent && ${PKGCMD} upgrade -y puppet-agent"
@@ -607,6 +632,12 @@ install_file() {
       fi
 
       run_cmd "zypper install --no-confirm '$2'"
+      if [[ -n $username ]]; then
+          sed -i "s/^username=.*/username=${username}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
+      fi
+      if [[ -n $password ]]; then
+          sed -i "s/^password=.*/password=${password}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
+      fi
       if test "$version" = "latest"; then
         run_cmd "zypper install --no-confirm 'puppet-agent'"
       else
@@ -669,22 +700,31 @@ case $platform in
     info "SLES platform! Lets get you an RPM..."
 
     if [[ $PT__noop != true ]]; then
-      for key in "puppet" "puppet-20250406"; do
-        gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
-        do_download "https://yum.puppet.com/RPM-GPG-KEY-${key}" "$gpg_key"
-        rpm --import "$gpg_key"
-        rm -f "$gpg_key"
-      done
+      if [[ "$PT_collection" =~ core ]]; then
+        for key in "puppet"; do
+          gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
+          do_download "https://yum-puppetcore.puppet.com/public/RPM-GPG-KEY-${key}" "$gpg_key"
+          rpm --import "$gpg_key"
+          rm -f "$gpg_key"
+        done
+      else
+        for key in "puppet" "puppet-20250406"; do
+          gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
+          do_download "https://yum.puppet.com/public/RPM-GPG-KEY-${key}" "$gpg_key"
+          rpm --import "$gpg_key"
+          rm -f "$gpg_key"
+        done
+      fi
     fi
 
     filetype="noarch.rpm"
-    filename="${collection}-release-sles-${platform_version}.noarch.rpm"
+    filename="${collection/core/}-release-sles-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
   "el")
     info "Red hat like platform! Lets get you an RPM..."
     filetype="rpm"
-    filename="${collection}-release-el-${platform_version}.noarch.rpm"
+    filename="${collection/core/}-release-el-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
   "Amzn"|"Amazon Linux")
@@ -698,13 +738,13 @@ case $platform in
     elif (( platform_version == 2 || platform_version >= 2023 )); then
       platform_package="amazon"
     fi
-    filename="${collection}-release-${platform_package}-${platform_version}.noarch.rpm"
+    filename="${collection/core/}-release-${platform_package}-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
   "Fedora")
     info "Fedora platform! Lets get the RPM..."
     filetype="rpm"
-    filename="${collection}-release-fedora-${platform_version}.noarch.rpm"
+    filename="${collection/core/}-release-fedora-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
   "Debian")
