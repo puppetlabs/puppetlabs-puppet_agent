@@ -261,6 +261,24 @@ SCRIPT
             is_expected.to contain_yumrepo('pc_repo').with_skip_if_unavailable(true)
           }
         end
+        describe 'with credentials' do
+          let(:params) do
+            {
+              manage_repo: true,
+              package_version: package_version,
+              username: 'forge-key',
+              password: sensitive('open-sesame'),
+            }
+          end
+
+          it {
+            is_expected.to contain_yumrepo('pc_repo')
+              .with(
+                username: 'forge-key',
+                password: sensitive('open-sesame'),
+              )
+          }
+        end
       end
 
       context 'with manage_repo disabled' do
