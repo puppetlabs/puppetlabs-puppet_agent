@@ -48,6 +48,16 @@ describe 'install task' do
     }x
   end
 
+  # This method lists sources to be used when installing packages that haven't been released yet (see above).
+  def latest_sources
+    {
+      'yum_source'     => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum',
+      'apt_source'     => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/apt',
+      'mac_source'     => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads',
+      'windows_source' => 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads',
+    }
+  end
+
   it 'works with version and install tasks' do
     case target_platform
     when latest_platform_list
@@ -57,7 +67,7 @@ describe 'install task' do
       # Install an puppet8 nightly version
       results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet8-nightly',
                                                               'version' => 'latest',
-                                                              'stop_service' => true })
+                                                              'stop_service' => true }.merge(latest_sources))
 
       results.each do |result|
         logger.info("Installed puppet-agent on #{result['target']}: #{result['status']}")
