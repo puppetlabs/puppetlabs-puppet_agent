@@ -137,7 +137,7 @@ if [ -n "$PT_mac_source" ]; then
   mac_source=$PT_mac_source
 else
   if [ "$nightly" = true ]; then
-    mac_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads'
+    mac_source='http://nightlies.puppet.com/downloads'
   else
     mac_source='http://downloads.puppet.com'
   fi
