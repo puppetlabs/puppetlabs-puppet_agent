@@ -595,8 +595,8 @@ install_file() {
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
         else
-          info "Collection upgrade detected, replacing puppet${major}-release"
-          rpm -e "puppet${major}-release"
+          info "Collection upgrade detected, replacing $pkg"
+          rpm -e "$pkg"
         fi
       fi
 
@@ -626,8 +626,8 @@ install_file() {
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
         else
-          info "Collection upgrade detected, replacing puppet${major}-release"
-          zypper remove --no-confirm "puppet${major}-release"
+          info "Collection upgrade detected, replacing $pkg"
+          zypper remove --no-confirm "$pkg"
         fi
       fi
 
@@ -655,8 +655,8 @@ install_file() {
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
         else
-          info "Collection upgrade detected, replacing puppet${major}-release"
-          dpkg --purge "puppet${major}-release"
+          info "Collection upgrade detected, replacing $pkg"
+          dpkg --purge "$pkg"
         fi
       fi
 
