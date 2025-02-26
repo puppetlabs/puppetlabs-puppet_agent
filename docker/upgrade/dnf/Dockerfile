@@ -70,10 +70,14 @@ RUN /opt/puppetlabs/puppet/bin/puppet module install --modulepath $module_path -
 
 # Installing dependencies from source. These versions should be within the range
 # of `dependencies` in metadata.json.
-#RUN git clone https://github.com/puppetlabs/puppetlabs-stdlib ../stdlib --branch 9.7.0
-#RUN git clone https://github.com/puppetlabs/puppetlabs-inifile ../inifile --branch 6.2.0
-#RUN git clone https://github.com/puppetlabs/puppetlabs-apt ../apt --branch 10.0.1
-#RUN git clone https://github.com/puppetlabs/puppetlabs-facts ../facts --branch 1.7.0
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-stdlib ../stdlib && \
+#     $(cd ../stdlib && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-inifile ../inifile && \
+#     $(cd ../inifile && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-apt ../apt && \
+#     $(cd ../apt && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-facts ../facts && \
+#     $(cd ../facts && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
 
 # Check that all dependencies are installed.
 RUN /opt/puppetlabs/puppet/bin/puppet module --modulepath $module_path list --tree

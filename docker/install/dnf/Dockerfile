@@ -33,10 +33,14 @@ COPY metadata.json ./
 
 # Installing dependencies from source. These versions should be within the range
 # of `dependencies` in metadata.json.
-RUN git clone --depth 1 https://github.com/puppetlabs/puppetlabs-stdlib ../stdlib --branch v9.7.0
-RUN git clone --depth 1 https://github.com/puppetlabs/puppetlabs-inifile ../inifile --branch v6.2.0
-RUN git clone --depth 1 https://github.com/puppetlabs/puppetlabs-apt ../apt --branch v10.0.1
-RUN git clone --depth 1 https://github.com/puppetlabs/puppetlabs-facts ../facts --branch 1.7.0
+RUN git clone --tags https://github.com/puppetlabs/puppetlabs-stdlib ../stdlib && \
+    $(cd ../stdlib && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+RUN git clone --tags https://github.com/puppetlabs/puppetlabs-inifile ../inifile && \
+    $(cd ../inifile && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+RUN git clone --tags https://github.com/puppetlabs/puppetlabs-apt ../apt && \
+    $(cd ../apt && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+RUN git clone --tags https://github.com/puppetlabs/puppetlabs-facts ../facts && \
+    $(cd ../facts && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
 
 # Now move the project directory's files into the image. That way, if these
 # files change, caching will skip everything before this.
