@@ -103,6 +103,8 @@
 # @param skip_if_unavailable
 #    For yum-based repositories, set the skip_if_unavailable option of the `yumrepo` type.
 # @param disable_proxy
+# @param username The username to use when downloading from a source location requiring authentication.
+# @param password The password to use when downloading from a source location requiring authentication.
 class puppet_agent (
   String                         $arch                    = $facts['os']['architecture'],
   String                         $collection              = $puppet_agent::params::collection,
@@ -131,7 +133,9 @@ class puppet_agent (
   Optional                       $wait_for_pxp_agent_exit = undef,
   Optional                       $wait_for_puppet_run     = undef,
   Array[Puppet_agent::Config]    $config                  = [],
-  Stdlib::Absolutepath           $version_file_path       = '/opt/puppetlabs/puppet/VERSION'
+  Stdlib::Absolutepath           $version_file_path       = '/opt/puppetlabs/puppet/VERSION',
+  Optional                       $username                = undef,
+  Optional[Sensitive]            $password                = undef,
 ) inherits puppet_agent::params {
   # The configure class uses $puppet_agent::config to manage settings in
   # puppet.conf, and will always be present. It does not require management of
