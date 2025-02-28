@@ -32,8 +32,13 @@ Puppet::Type.type(:puppet_agent_end_run).provide :puppet_agent_end_run do
     return false if desired_version == 'present'
 
     if desired_version == 'latest'
-      latest_version = @resource.catalog.resource('package', 'puppet-agent').parameters[:ensure].latest
-      desired_version = latest_version.match(%r{^(?:[0-9]:)?(\d+\.\d+(\.\d+)?(?:\.\d+))?}).captures.first
+      # Package name might be different to puppet-agent, hence we need to look it up.
+      package_name = @resource.catalog.resource('class', 'puppet_agent')[:package_name]
+ 
+      # Latest version might be undefined, e.G. if we're about to install a different named
+      # package  than the currently running one. In that case, we'll leave desired_version empty.
+      latest_version = @resource.catalog.resource('package', package_name).parameters[:ensure].latest
+      desired_version = latest_version.match(%r{^(?:[0-9]:)?(\d+\.\d+(\.\d+)?(?:\.\d+))?}).captures.first unless latest_version.nil?
     end
 
     Puppet::Util::Package.versioncmp(desired_version, current_version) != 0
