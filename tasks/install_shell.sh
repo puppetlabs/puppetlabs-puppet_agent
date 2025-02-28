@@ -144,10 +144,18 @@ fi
 if [ -n "$PT_apt_source" ]; then
   apt_source=$PT_apt_source
 else
-  if [ "$nightly" = true ]; then
-    apt_source='http://nightlies.puppet.com/apt'
+  if [[ "$collection" == "puppetcore"* ]]; then
+    apt_source='https://apt-puppetcore.puppet.com/public'
+    if [ -z "$password" ]; then
+        echo "A password parameter is required to install from ${apt_source}"
+        exit 1
+    fi
   else
-    apt_source='http://apt.puppet.com'
+    if [ "$nightly" = true ]; then
+      apt_source='http://nightlies.puppet.com/apt'
+    else
+      apt_source='http://apt.puppet.com'
+    fi
   fi
 fi
 
@@ -667,6 +675,13 @@ install_file() {
       assert_unmodified_apt_config
 
       dpkg -i --force-confmiss "$2"
+      if [[ "$collection" =~ core ]]; then
+        auth_conf="/etc/apt/auth.conf.d/apt-puppetcore-puppet.conf"
+        sed -i "/^#?login/d" "${auth_conf}"
+        echo "login ${username}" >> "${auth_conf}"
+        sed -i "/^#?password/d" "${auth_conf}"
+        echo "password ${password}" >> "${auth_conf}"
+      fi
       run_cmd 'apt-get update -y'
 
       if test "$version" = 'latest'; then
@@ -759,7 +774,7 @@ case $platform in
       "12") deb_codename="bookworm";;
     esac
     filetype="deb"
-    filename="${collection}-release-${deb_codename}.deb"
+    filename="${collection/core/}-release-${deb_codename}.deb"
     download_url="${apt_source}/${filename}"
     ;;
   "Linuxmint"|"LinuxMint")
@@ -776,7 +791,7 @@ case $platform in
       "17") deb_codename="trusty";;
     esac
     filetype="deb"
-    filename="${collection}-release-${deb_codename}.deb"
+    filename="${collection/core/}-release-${deb_codename}.deb"
     download_url="${apt_source}/${filename}"
     ;;
   "Ubuntu")
@@ -790,7 +805,7 @@ case $platform in
       "24.04") deb_codename="noble";;
     esac
     filetype="deb"
-    filename="${collection}-release-${deb_codename}.deb"
+    filename="${collection/core/}-release-${deb_codename}.deb"
     download_url="${apt_source}/${filename}"
     ;;
   "mac_os_x")
