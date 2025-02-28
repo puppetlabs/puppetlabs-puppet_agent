@@ -682,15 +682,16 @@ install_file() {
         sed -i "/^#?password/d" "${auth_conf}"
         echo "password ${password}" >> "${auth_conf}"
       fi
+      frontend="DEBIAN_FRONTEND=noninteractive"
       run_cmd 'apt-get update -y'
 
       if test "$version" = 'latest'; then
-        run_cmd "apt-get install -y puppet-agent"
+        run_cmd "${frontend} apt-get install -y puppet-agent"
       else
         if test "x$deb_codename" != "x"; then
-          run_cmd "apt-get install -y 'puppet-agent=${puppet_agent_version}-1${deb_codename}'"
+          run_cmd "${frontend} apt-get install -y 'puppet-agent=${puppet_agent_version}-1${deb_codename}'"
         else
-          run_cmd "apt-get install -y 'puppet-agent=${puppet_agent_version}'"
+          run_cmd "${frontend} apt-get install -y 'puppet-agent=${puppet_agent_version}'"
         fi
       fi
       ;;
