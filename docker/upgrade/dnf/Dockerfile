@@ -22,30 +22,28 @@
 # This specifies the versions that were used for upgrade.
 #
 # Arguments:
-# - before: The version to do upgrade FROM. Default: "1.10.14"
+# - before: The version to do upgrade FROM. Default: "7.34.0"
 
-FROM rockylinux/rockylinux:8
+ARG BASE_IMAGE=rocky:8
+FROM ${BASE_IMAGE}
 
 # Use this to force a cache reset (e.g. for output purposes)
 #COPY $0 /tmp/Dockerfile
 
 # Install some other dependencies for ease of life.
 RUN  dnf update -y \
-  && dnf install -y wget git \
+  && dnf install -y git \
   && dnf clean all
 
-ARG before=1.10.14
+ARG before=7.34.0
 LABEL before=${before}
 
-# Install proper FROM repo: puppet 6 or puppet 7.
-RUN if [[ ${before} == 6.* ]]; then \
-        echo Installing puppet6 repo; \
-        wget -O puppet6.rpm http://yum.puppet.com/puppet6-release-el-8.noarch.rpm && \
-        rpm -i puppet6.rpm; \
-    elif [[ ${before} == 7.* ]]; then \
+ARG RELEASE_PACKAGE
+
+# Install proper FROM repo pupet 7
+RUN if [[ ${before} == 7.* ]]; then \
         echo Installing puppet7 repo; \
-        wget -O puppet7.rpm http://yum.puppet.com/puppet7-release-el-8.noarch.rpm && \
-        rpm -i puppet7.rpm; \
+        rpm -Uvh ${RELEASE_PACKAGE}; \
     else echo no; \
     fi
 
@@ -54,7 +52,8 @@ RUN if [[ ${before} == 6.* ]]; then \
 
 # Install FROM version of puppet-agent.
 RUN dnf -y update && \
-    dnf install -y puppet-agent-${before}-1.el8
+    dnf install -y puppet-agent-${before} && \
+    dnf clean all
 
 # This is also duplicated in the docker/bin/helpers/run-upgrade.sh.
 ENV module_path=/tmp/modules
@@ -67,13 +66,18 @@ COPY metadata.json ./
 RUN /opt/puppetlabs/puppet/bin/puppet module install --modulepath $module_path --target-dir .. puppetlabs-stdlib
 RUN /opt/puppetlabs/puppet/bin/puppet module install --modulepath $module_path --target-dir .. puppetlabs-inifile
 RUN /opt/puppetlabs/puppet/bin/puppet module install --modulepath $module_path --target-dir .. puppetlabs-apt
+RUN /opt/puppetlabs/puppet/bin/puppet module install --modulepath $module_path --target-dir .. puppetlabs-facts
 
 # Installing dependencies from source. These versions should be within the range
-# of `dependencies` in metadata.json. `translate` is a dependency for inifile.
-#RUN git clone https://github.com/puppetlabs/puppetlabs-stdlib ../stdlib --branch 5.2.0
-#RUN git clone https://github.com/puppetlabs/puppetlabs-inifile ../inifile --branch 2.5.0
-#RUN git clone https://github.com/puppetlabs/puppetlabs-translate ../translate --branch 1.2.0
-#RUN git clone https://github.com/puppetlabs/puppetlabs-apt ../apt --branch 6.3.0
+# of `dependencies` in metadata.json.
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-stdlib ../stdlib && \
+#     $(cd ../stdlib && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-inifile ../inifile && \
+#     $(cd ../inifile && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-apt ../apt && \
+#     $(cd ../apt && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
+# RUN git clone --tags https://github.com/puppetlabs/puppetlabs-facts ../facts && \
+#     $(cd ../facts && git checkout $(git describe --tags $(git rev-list --tags --max-count=1)))
 
 # Check that all dependencies are installed.
 RUN /opt/puppetlabs/puppet/bin/puppet module --modulepath $module_path list --tree

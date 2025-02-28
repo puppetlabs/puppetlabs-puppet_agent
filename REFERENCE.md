@@ -98,6 +98,8 @@ The following parameters are available in the `puppet_agent` class:
 * [`version_file_path`](#-puppet_agent--version_file_path)
 * [`skip_if_unavailable`](#-puppet_agent--skip_if_unavailable)
 * [`disable_proxy`](#-puppet_agent--disable_proxy)
+* [`username`](#-puppet_agent--username)
+* [`password`](#-puppet_agent--password)
 
 ##### <a name="-puppet_agent--arch"></a>`arch`
 
@@ -370,6 +372,22 @@ Data type: `Boolean`
 
 
 Default value: `false`
+
+##### <a name="-puppet_agent--username"></a>`username`
+
+Data type: `Optional`
+
+The username to use when downloading from a source location requiring authentication.
+
+Default value: `undef`
+
+##### <a name="-puppet_agent--password"></a>`password`
+
+Data type: `Optional[Sensitive]`
+
+The password to use when downloading from a source location requiring authentication.
+
+Default value: `undef`
 
 ### <a name="puppet_agent--configure"></a>`puppet_agent::configure`
 
@@ -843,7 +861,7 @@ The version of puppet-agent to install (defaults to latest when no agent is inst
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
@@ -894,6 +912,18 @@ Whether to stop the puppet agent service after install
 Data type: `Optional[Integer]`
 
 The number of retries in case of network connectivity failures
+
+##### `username`
+
+Data type: `Optional[String]`
+
+The username to use when downloading from a source location requiring authentication
+
+##### `password`
+
+Data type: `Optional[String]`
+
+The password to use when downloading from a source location requiring authentication
 
 ### <a name="install_powershell"></a>`install_powershell`
 
@@ -979,7 +1009,7 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
@@ -1030,6 +1060,18 @@ Whether to stop the puppet agent service after install
 Data type: `Optional[Integer]`
 
 The number of retries in case of network connectivity failures
+
+##### `username`
+
+Data type: `Optional[String]`
+
+The username to use when downloading from a source location requiring authentication
+
+##### `password`
+
+Data type: `Optional[String]`
+
+The password to use when downloading from a source location requiring authentication
 
 ### <a name="run"></a>`run`
 
