@@ -602,11 +602,13 @@ install_file() {
 
       repo="/etc/yum.repos.d/${collection/core/}-release.repo"
       rpm -Uvh --oldpackage --replacepkgs "$2"
-      if [[ -n $username ]]; then
+      if [[ "$collection" =~ core ]]; then
+        if [[ -n $username ]]; then
           sed -i "s/^#\?username=.*/username=${username}/" "${repo}"
-      fi
-      if [[ -n $password ]]; then
+        fi
+        if [[ -n $password ]]; then
           sed -i "s/^#\?password=.*/password=${password}/" "${repo}"
+        fi
       fi
       exists dnf && PKGCMD=dnf || PKGCMD=yum
       if test "$version" = 'latest'; then
@@ -632,11 +634,13 @@ install_file() {
       fi
 
       run_cmd "zypper install --no-confirm '$2'"
-      if [[ -n $username ]]; then
+      if [[ "$collection" =~ core ]]; then
+        if [[ -n $username ]]; then
           sed -i "s/^username=.*/username=${username}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
-      fi
-      if [[ -n $password ]]; then
+        fi
+        if [[ -n $password ]]; then
           sed -i "s/^password=.*/password=${password}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
+        fi
       fi
       if test "$version" = "latest"; then
         run_cmd "zypper install --no-confirm 'puppet-agent'"
@@ -700,7 +704,7 @@ case $platform in
     info "SLES platform! Lets get you an RPM..."
 
     if [[ $PT__noop != true ]]; then
-      if [[ "$PT_collection" =~ core ]]; then
+      if [[ "$collection" =~ core ]]; then
         for key in "puppet"; do
           gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
           do_download "https://yum-puppetcore.puppet.com/public/RPM-GPG-KEY-${key}" "$gpg_key"
@@ -710,7 +714,7 @@ case $platform in
       else
         for key in "puppet" "puppet-20250406"; do
           gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
-          do_download "https://yum.puppet.com/public/RPM-GPG-KEY-${key}" "$gpg_key"
+          do_download "https://yum.puppet.com/RPM-GPG-KEY-${key}" "$gpg_key"
           rpm --import "$gpg_key"
           rm -f "$gpg_key"
         done
