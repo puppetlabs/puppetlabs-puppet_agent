@@ -56,12 +56,25 @@ do
             dockerfile='docker/upgrade/sles/Dockerfile'
             ;;
 
+        debian)
+            base_image='debian:bookworm'
+            release_package='https://apt.puppet.com/puppet7-release-bookworm.deb'
+            dockerfile='docker/upgrade/apt/Dockerfile'
+            ;;
+
+        ubuntu)
+            base_image='ubuntu:jammy'
+            release_package='https://apt.puppet.com/puppet7-release-jammy.deb'
+            dockerfile='docker/upgrade/apt/Dockerfile'
+            ;;
+
         *)
-            echo "$0: Usage upgrade.sh [amazon|fedora|rocky|sles] [before] [after]"
+            echo "$0: Usage upgrade.sh [amazon|debian|fedora|rocky|sles|ubuntu] [before] [after]"
             exit 1
             ;;
     esac
 
+    # Add "--progress plain" for complete build output
     docker build --rm -f ${dockerfile} . -t pa-dev:$platform \
            --build-arg before=${before} \
            --build-arg BASE_IMAGE=${base_image} \

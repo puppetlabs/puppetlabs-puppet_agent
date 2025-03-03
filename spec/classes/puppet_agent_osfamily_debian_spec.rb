@@ -155,8 +155,8 @@ describe 'puppet_agent' do
                   'location' => 'https://master.example.vm:8140/packages/2000.0.0/debian-7-x86_64',
                   'repos'    => 'PC1',
                   'key'      => {
-                    'name'    => 'GPG-KEY-puppet-20250406.asc',
-                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
+                    'name'    => 'puppet-keyring.gpg',
+                    'source'  => 'puppet:///modules/puppet_agent/puppet-keyring.gpg',
                   },
                 })
       }
@@ -177,8 +177,8 @@ describe 'puppet_agent' do
                   'location' => 'https://fake-apt-mirror.com/packages/2000.0.0/debian-7-x86_64',
                   'repos'    => 'PC1',
                   'key'      => {
-                    'name'    => 'GPG-KEY-puppet-20250406.asc',
-                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
+                    'name'    => 'puppet-keyring.gpg',
+                    'source'  => 'puppet:///modules/puppet_agent/puppet-keyring.gpg',
                   },
                 })
       }
@@ -218,8 +218,8 @@ describe 'puppet_agent' do
                   'location' => 'https://apt.puppet.com',
                   'repos'    => 'puppet5',
                   'key'      => {
-                    'name'    => 'GPG-KEY-puppet-20250406.asc',
-                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
+                    'name'    => 'puppet-keyring.gpg',
+                    'source'  => 'puppet:///modules/puppet_agent/puppet-keyring.gpg',
                   },
                 })
       }
@@ -241,8 +241,8 @@ describe 'puppet_agent' do
                   'location' => 'https://fake-apt-mirror.com/',
                   'repos'    => 'puppet5',
                   'key'      => {
-                    'name'    => 'GPG-KEY-puppet-20250406.asc',
-                    'content' => Puppet::FileSystem.read_preserve_line_endings('files/GPG-KEY-puppet-20250406'),
+                    'name'    => 'puppet-keyring.gpg',
+                    'source'  => 'puppet:///modules/puppet_agent/puppet-keyring.gpg',
                   },
                 })
       }
