@@ -11,10 +11,10 @@ puppet_version=( ${to_version//./ } )
 puppet_major=${puppet_version[0]}
 case $puppet_major in
 7)
-    to_collection=puppet7
+    to_collection=puppetcore7
     ;;
 8)
-    to_collection=puppet8
+    to_collection=puppetcore8
     ;;
 *)
     echo "Invalid version supplied" 1>&2
