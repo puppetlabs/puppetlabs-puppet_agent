@@ -27,6 +27,7 @@ fi
 cd "$(dirname "$0")/../.."
 platforms=${1:-rocky}
 version=${2:-8.11.0}
+collection=${3:-puppetcore8}
 for platform in ${platforms//,/ }
 do
     case $platform in
@@ -70,6 +71,6 @@ do
     # Add "--progress plain" for complete build output
     docker build --rm -f "${dockerfile}" . -t pa-dev:$platform.install \
            --build-arg BASE_IMAGE="${base_image}"
-    docker run -e PUPPET_FORGE_TOKEN --rm -ti pa-dev:$platform.install "${version}"
+    docker run -e PUPPET_FORGE_TOKEN --rm -ti pa-dev:$platform.install "${version}" "${collection}"
 done
 echo Complete
