@@ -60,6 +60,9 @@ class puppet_agent::osfamily::redhat {
     } else {
       if $puppet_agent::collection == 'PC1' {
         $source = "${puppet_agent::yum_source}/${platform_and_version}/${puppet_agent::collection}/${puppet_agent::arch}"
+      } elsif $puppet_agent::collection =~ /core/ {
+        $_collection = regsubst($puppet_agent::collection, /core/, '')
+        $source = "https://yum-puppetcore.puppet.com/${_collection}/${platform_and_version}/${puppet_agent::arch}"
       } else {
         $source = "${puppet_agent::yum_source}/${puppet_agent::collection}/${platform_and_version}/${puppet_agent::arch}"
       }
