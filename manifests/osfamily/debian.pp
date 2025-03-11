@@ -59,7 +59,7 @@ class puppet_agent::osfamily::debian {
 
         # Pass in an empty content string since apt requires it even though we are removing it
         apt::setting { 'list-puppet-enterprise-installer':
-          ensure  => absent,
+          ensure => absent,
         }
 
         apt::setting { 'conf-pe-repo':
