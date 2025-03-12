@@ -43,8 +43,9 @@ describe 'install task' do
   # the logic that determines the puppet_7_version variable below.
   def latest_platform_list
     %r{
+      fedora-41|
       osx-15-arm64|
-      fedora-41
+      osx-15-x86_64
     }x
   end
 
