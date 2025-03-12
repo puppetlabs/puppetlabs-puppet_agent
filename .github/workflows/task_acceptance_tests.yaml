@@ -20,7 +20,7 @@ jobs:
       BEAKER_debug: true
       BEAKER_set: docker/${{ matrix.os }}
 
-    runs-on: 'ubuntu-20.04'
+    runs-on: 'ubuntu-latest'
     steps:
       - name: Checkout current PR code
         uses: actions/checkout@v4
