@@ -7,19 +7,22 @@ if [[ -z "${to_version}" ]]; then
     echo "$0: The version to install must be passed as an argument"
     exit 1
 fi
+to_collection="$2"
 puppet_version=( ${to_version//./ } )
 puppet_major=${puppet_version[0]}
-case $puppet_major in
-    7)
-        to_collection=puppetcore7
-        ;;
-    8)
-        to_collection=puppetcore8
-        ;;
-    *)
-        echo "$0: Invalid version supplied" 1>&2
-        exit 1
-esac
+if [[ -z "$to_collection" ]]; then
+    case $puppet_major in
+        7)
+            to_collection=puppetcore7
+            ;;
+        8)
+            to_collection=puppetcore8
+            ;;
+        *)
+            echo "$0: Invalid version supplied" 1>&2
+            exit 1
+    esac
+fi
 
 export PT__installdir=../
 export PT_version=${to_version}

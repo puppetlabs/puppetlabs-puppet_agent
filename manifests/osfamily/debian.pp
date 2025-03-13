@@ -66,18 +66,39 @@ class puppet_agent::osfamily::debian {
           ensure   => absent,
           priority => '90',
         }
+      } elsif $puppet_agent::collection =~ /core/ {
+        $source = 'https://apt-puppetcore.puppet.com'
       } else {
         $source = $puppet_agent::apt_source
       }
 
-      $keyname = 'GPG-KEY-puppet-20250406'
+      $repo_username = getvar('puppet_agent::username')
+      $repo_password = unwrap(getvar('puppet_agent::password'))
+
+      if $repo_username and $repo_password {
+        # lint:ignore:strict_indent
+        file { "/etc/apt/auth.conf.d/apt-${puppet_agent::collection}-puppet.conf":
+          ensure  => file,
+          owner   => 0,
+          group   => 0,
+          mode    => '0600',
+          content => Sensitive(@("EOT"))
+            machine ${source}
+            login ${repo_username}
+            password ${repo_password}
+            | EOT
+        }
+        # lint:endignore
+      }
+
+      $keyname = 'puppet-keyring.gpg'
 
       apt::source { 'pc_repo':
         location => $source,
-        repos    => $puppet_agent::collection,
+        repos    => regsubst($puppet_agent::collection, /core/, ''),
         key      => {
-          'name'    => "${keyname}.asc",
-          'content' => file("${module_name}/${keyname}"),
+          'name'   => $keyname,
+          'source' => "puppet:///modules/${module_name}/${keyname}",
         },
         notify   => Exec['pc_repo_force'],
       }
