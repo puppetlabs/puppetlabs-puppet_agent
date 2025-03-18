@@ -624,6 +624,7 @@ working with a remote https repository.
 The following parameters are available in the `puppet_agent::prepare::package` class:
 
 * [`source`](#-puppet_agent--prepare--package--source)
+* [`package_file_name`](#-puppet_agent--prepare--package--package_file_name)
 
 ##### <a name="-puppet_agent--prepare--package--source"></a>`source`
 
@@ -631,6 +632,16 @@ Data type: `Variant[String, Array]`
 
 The source file for the puppet-agent package. Can use any of the data types
 and protocols that the File resource's source attribute can.
+
+##### <a name="-puppet_agent--prepare--package--package_file_name"></a>`package_file_name`
+
+Data type: `Optional[String]`
+
+The destination file name for the puppet-agent package. If no destination
+is given, then the basename component of the source will be used as the
+destination filename.
+
+Default value: `undef`
 
 ### <a name="puppet_agent--prepare--puppet_config"></a>`puppet_agent::prepare::puppet_config`
 
@@ -992,6 +1003,18 @@ Whether to stop the puppet agent service after install
 Data type: `Optional[Integer]`
 
 The number of retries in case of network connectivity failures
+
+##### `username`
+
+Data type: `Optional[String]`
+
+The username to use when downloading from a source location requiring authentication
+
+##### `password`
+
+Data type: `Optional[String]`
+
+The password to use when downloading from a source location requiring authentication
 
 ### <a name="install_shell"></a>`install_shell`
 
