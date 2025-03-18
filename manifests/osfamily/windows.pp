@@ -2,6 +2,8 @@
 class puppet_agent::osfamily::windows {
   assert_private()
 
+  $destination_name = undef
+
   if $puppet_agent::absolute_source {
     $source = $puppet_agent::absolute_source
   } elsif $puppet_agent::source {
