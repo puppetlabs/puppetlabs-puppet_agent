@@ -66,7 +66,7 @@ class puppet_agent::osfamily::debian {
           ensure   => absent,
           priority => '90',
         }
-      } elsif $puppet_agent::collection =~ /core/ {
+      } elsif $puppet_agent::collection and $puppet_agent::collection =~ /core/ {
         $source = 'https://apt-puppetcore.puppet.com'
       } else {
         $source = $puppet_agent::apt_source
