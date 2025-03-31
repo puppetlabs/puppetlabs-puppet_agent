@@ -38,7 +38,7 @@ class puppet_agent::prepare::package (
     $mode = '0644'
   }
 
-  if $puppet_agent::collection =~ /core/ and $facts['os']['family'] =~ /windows/ {
+  if $puppet_agent::collection and $puppet_agent::collection =~ /core/ and $facts['os']['family'] =~ /windows/ {
     $download_username = getvar('puppet_agent::username', 'forge-key')
     $download_password = unwrap(getvar('puppet_agent::password'))
 

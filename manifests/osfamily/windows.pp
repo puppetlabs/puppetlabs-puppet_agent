@@ -25,7 +25,7 @@ class puppet_agent::osfamily::windows {
   } else {
     if $puppet_agent::collection == 'PC1' {
       $source = "${puppet_agent::windows_source}/windows/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-${puppet_agent::arch}.msi"
-    } elsif $puppet_agent::collection =~ /core/ {
+    } elsif $puppet_agent::collection and $puppet_agent::collection =~ /core/ {
       $source = 'https://artifacts-puppetcore.puppet.com/v1/download'
       $destination_name = "${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-${puppet_agent::arch}.msi"
     } else {
