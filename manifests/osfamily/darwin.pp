@@ -20,12 +20,20 @@ class puppet_agent::osfamily::darwin {
     } else {
       $source = "puppet:///pe_packages/${pe_server_version}/${facts['platform_tag']}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
     }
-  } else {
+  } elsif $puppet_agent::collection and $puppet_agent::collection =~ /core/ {
+    if $puppet_agent::prepare::package_version =~ /^\d+\.\d+\.\d+\.\d+\.g([a-f0-9]+)+$/ {
+      $source = "https://artifacts-puppetcore.puppet.com/v1/download?type=native&version=${puppet_agent::prepare::package_version}&os_name=osx&os_version=${productversion_major}&os_arch=${puppet_agent::arch}&dev=true"
+    } else {
+      $source = "https://artifacts-puppetcore.puppet.com/v1/download?type=native&version=${puppet_agent::prepare::package_version}&os_name=osx&os_version=${productversion_major}&os_arch=${puppet_agent::arch}"
+    }
+    $destination_name = "${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.osx${productversion_major}.dmg"
+    } else {
     $source = "${puppet_agent::mac_source}/mac/${puppet_agent::collection}/${productversion_major}/${puppet_agent::arch}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
   }
 
   class { 'puppet_agent::prepare::package':
     source => $source,
+    destination_name => $destination_name,
   }
 
   contain puppet_agent::prepare::package
