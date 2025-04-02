@@ -3,7 +3,9 @@
 # @param arch
 #   The package architecture. Defaults to the architecture fact.
 # @param collection
-#   The Puppet Collection to track. Defaults to 'PC1'.
+#   The Puppet Collection to track. Defaults to 'PC1'. Valid values are puppet7,
+#   puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly,
+#   puppetcore7, puppetcore8.
 # @param is_pe
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 # @param manage_pki_dir

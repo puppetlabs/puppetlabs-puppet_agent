@@ -45,11 +45,11 @@
     },
     "username": {
       "description": "The username to use when downloading from a source location requiring authentication",
-      "type": "Optional[String]"
+      "type": "Optional[String[1]]"
     },
     "password": {
       "description": "The password to use when downloading from a source location requiring authentication",
-      "type": "Optional[String]"
+      "type": "Optional[Sensitive[String[1]]]"
     }
   },
   "supports_noop": true
