@@ -2,16 +2,10 @@
 # for installation. This is used on platforms without package managers capable of
 # working with a remote https repository.
 #
-# @param source
-#   The source file for the puppet-agent package. Can use any of the data types
-#   and protocols that the File resource's source attribute can.
-# @param destination_name
-#   The destination file name for the puppet-agent package. If no destination
-#   is given, then the basename component of the source will be used as the
-#   destination name.
+# @api private
 class puppet_agent::prepare::package (
   Variant[String, Array] $source,
-  Optional[String] $destination_name = undef
+  Optional[String[1]] $destination_name = undef
 ) {
   assert_private()
 
@@ -19,15 +13,15 @@ class puppet_agent::prepare::package (
     ensure => directory,
   }
 
-  if $destination_name {
-    $package_file_name = $destination_name
+  $package_file_name = if $destination_name {
+    $destination_name
   } else {
     # In order for the 'basename' function to work correctly we need to change
     # any \s to /s (even for windows UNC paths) so that it will correctly pull off
     # the filename. Since this operation is only grabbing the base filename and not
     # any part of the path this should be safe, since the source will simply remain
     # what it was before and we can still pull off the filename.
-    $package_file_name = basename(regsubst($source, "\\\\", '/', 'G'))
+    basename(regsubst($source, "\\\\", '/', 'G'))
   }
 
   if $facts['os']['family'] =~ /windows/ {
