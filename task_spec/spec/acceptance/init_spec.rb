@@ -45,7 +45,8 @@ describe 'install task' do
     %r{
       fedora-41|
       osx-15-arm64|
-      osx-15-x86_64
+      osx-15-x86_64|
+      amazonfips-2023
     }x
   end
 
