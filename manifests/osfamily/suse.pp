@@ -50,7 +50,7 @@ class puppet_agent::osfamily::suse {
     } else {
       if $puppet_agent::collection == 'PC1' {
         $source = "${puppet_agent::yum_source}/sles/${facts['os']['release']['major']}/${puppet_agent::collection}/${puppet_agent::arch}"
-      } elsif $puppet_agent::collection =~ /core/ {
+      } elsif $puppet_agent::collection and $puppet_agent::collection =~ /core/ {
         $_collection = regsubst($puppet_agent::collection, /core/, '')
         $source = "https://yum-puppetcore.puppet.com/${_collection}/sles/${facts['os']['release']['major']}/${puppet_agent::arch}"
       } else {
