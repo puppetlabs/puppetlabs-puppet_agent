@@ -240,7 +240,7 @@ module Beaker::DSL
           # This discrepancy causes apt to error, so we manually add signing info.
           if %r{debian|ubuntu}.match?(host['platform'])
             step '(Agent) Add apt signing information' do
-              on(host, "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet-20250406.asc] http/' /etc/apt/sources.list.d/puppet*.list -i")
+              on(host, "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet.asc] http/' /etc/apt/sources.list.d/puppet*.list -i")
             end
           end
 

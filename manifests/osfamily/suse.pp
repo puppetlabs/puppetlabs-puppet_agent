@@ -62,9 +62,7 @@ class puppet_agent::osfamily::suse {
     case $facts['os']['release']['major'] {
       '11', '12', '15': {
         # Import the GPG key
-        $legacy_keyname  = 'GPG-KEY-puppet'
-        $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
-        $keyname         = 'GPG-KEY-puppet-20250406'
+        $keyname         = 'GPG-KEY-puppet'
         $gpg_path        = "/etc/pki/rpm-gpg/RPM-${keyname}"
         $gpg_homedir     = '/root/.gnupg'
 
@@ -105,21 +103,6 @@ fi
           source => "puppet:///modules/puppet_agent/${keyname}",
         }
 
-        file { $legacy_gpg_path:
-          ensure => file,
-          owner  => 0,
-          group  => 0,
-          mode   => '0644',
-          source => "puppet:///modules/puppet_agent/${legacy_keyname}",
-        }
-
-        exec { "import-${legacy_keyname}":
-          path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-          command   => "/bin/bash -c '${script}' import ${gpg_homedir} ${legacy_gpg_path}",
-          unless    => "/bin/bash -c '${script}' check ${gpg_homedir} ${legacy_gpg_path}",
-          require   => File[$legacy_gpg_path],
-          logoutput => 'on_failure',
-        }
         exec { "import-${keyname}":
           path      => '/bin:/usr/bin:/sbin:/usr/sbin',
           command   => "/bin/bash -c '${script}' import ${gpg_homedir} ${gpg_path}",

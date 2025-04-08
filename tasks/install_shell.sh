@@ -728,7 +728,7 @@ case $platform in
           rm -f "$gpg_key"
         done
       else
-        for key in "puppet" "puppet-20250406"; do
+        for key in "puppet"; do
           gpg_key="${tmp_dir}/RPM-GPG-KEY-${key}"
           do_download "https://yum.puppet.com/RPM-GPG-KEY-${key}" "$gpg_key"
           rpm --import "$gpg_key"
