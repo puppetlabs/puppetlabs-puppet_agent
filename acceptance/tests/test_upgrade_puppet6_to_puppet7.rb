@@ -37,7 +37,7 @@ node default {
   end
 
   agents_only.each do |agent|
-    set_up_initial_agent_on(agent, 'puppet6-nightly') do
+    set_up_initial_agent_on(agent, puppet_collection: 'puppet6-nightly') do
       step '(Agent) Change agent environment to testing environment' do
         on(agent, puppet("config --section agent set environment #{puppet_testing_environment}"))
         on(agent, puppet('config --section user set environment production'))

@@ -207,9 +207,8 @@ module Beaker::DSL
     # purpose to facilitate an upgrade scenario.
     #
     # @param [Beaker::Host] host The host
-    # @param [String] initial_package_version_or_collection Either a version
-    #   of puppet-agent or the name of a puppet collection to install the agent from.
-    def set_up_initial_agent_on(host, initial_package_version_or_collection)
+    # @param [Hash] options Install options
+    def set_up_initial_agent_on(host, options)
       master_agent_version = fact_on(master, 'aio_agent_version')
       unless master_agent_version
         fail_test('Expected puppet-agent to already be installed on the master, but it was not. ' \
@@ -224,17 +223,7 @@ module Beaker::DSL
 
       step 'Set-up the agents to upgrade' do
         step '(Agent) Install the puppet-agent package' do
-          initial_package_version_or_collection ||= master_agent_version
-          agent_install_options = if %r{(^pc1$|^puppet\d+)}i.match?(initial_package_version_or_collection)
-                                    { puppet_collection: initial_package_version_or_collection }
-                                  else
-                                    {
-                                      puppet_agent_version: initial_package_version_or_collection,
-                                      puppet_collection: puppet_collection_for(:puppet_agent, initial_package_version_or_collection)
-                                    }
-                                  end
-
-          install_puppet_agent_on(host, agent_install_options)
+          install_puppet_agent_on(host, options)
 
           # beaker-puppet doesn't add signing information to the apt source list, but this module does.
           # This discrepancy causes apt to error, so we manually add signing info.
