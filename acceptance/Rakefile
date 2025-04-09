@@ -54,8 +54,6 @@ task :ci do
   begin
     Rake.application['prepare'].invoke
     case ENV['MASTER_COLLECTION']
-    when /puppet7/
-      beaker('exec ./tests/test_upgrade_puppet6_to_puppet7.rb')
     when /puppet8/
       beaker('exec ./tests/test_upgrade_puppet7_to_puppet8.rb')
     end
