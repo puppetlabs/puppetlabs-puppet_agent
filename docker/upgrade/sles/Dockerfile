@@ -46,7 +46,7 @@ RUN if [[ ${before} == 7.* ]]; then \
     fi
 
 # Install FROM version of puppet-agent.
-RUN rpm --import https://yum.puppet.com/RPM-GPG-KEY-puppet-20250406 && \
+RUN rpm --import https://yum.puppet.com/RPM-GPG-KEY-puppet && \
     zypper install --no-confirm --oldpackage --no-recommends --no-confirm puppet-agent-${before}
 
 # This is also duplicated in the docker/bin/helpers/run-upgrade.sh.

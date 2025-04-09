@@ -94,13 +94,10 @@ class puppet_agent::osfamily::redhat {
     }
 
 # lint:ignore:strict_indent
-    $legacy_keyname = 'GPG-KEY-puppet'
-    $legacy_gpg_path = "/etc/pki/rpm-gpg/RPM-${legacy_keyname}"
-    $keyname = 'GPG-KEY-puppet-20250406'
+    $keyname = 'GPG-KEY-puppet'
     $gpg_path = "/etc/pki/rpm-gpg/RPM-${keyname}"
     $gpg_homedir = '/root/.gnupg'
-    $gpg_keys = "file://${legacy_gpg_path}
-  file://${gpg_path}"
+    $gpg_keys = "file://${gpg_path}"
 
     $script = @(SCRIPT/L)
 ACTION=$0
@@ -131,14 +128,6 @@ fi
       }
     }
 
-    file { $legacy_gpg_path:
-      ensure => file,
-      owner  => 0,
-      group  => 0,
-      mode   => '0644',
-      source => "puppet:///modules/puppet_agent/${legacy_keyname}",
-    }
-
     file { $gpg_path:
       ensure => file,
       owner  => 0,
@@ -147,13 +136,6 @@ fi
       source => "puppet:///modules/puppet_agent/${keyname}",
     }
 
-    exec { "import-${legacy_keyname}":
-      path      => '/bin:/usr/bin:/sbin:/usr/sbin',
-      command   => "/bin/bash -c '${script}' import ${gpg_homedir} ${legacy_gpg_path}",
-      unless    => "/bin/bash -c '${script}' check ${gpg_homedir} ${legacy_gpg_path}",
-      require   => File[$legacy_gpg_path],
-      logoutput => 'on_failure',
-    }
     exec { "import-${keyname}":
       path      => '/bin:/usr/bin:/sbin:/usr/sbin',
       command   => "/bin/bash -c '${script}' import ${gpg_homedir} ${gpg_path}",

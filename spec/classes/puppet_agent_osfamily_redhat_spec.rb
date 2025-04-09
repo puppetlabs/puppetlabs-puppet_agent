@@ -63,17 +63,6 @@ fi
 SCRIPT
 
       it {
-        is_expected.to contain_exec('import-GPG-KEY-puppet-20250406')
-          .with({
-                  'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
-                  'command'   => "/bin/bash -c '#{script}' import /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
-                  'unless'    => "/bin/bash -c '#{script}' check /root/.gnupg /etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
-                  'require'   => 'File[/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406]',
-                  'logoutput' => 'on_failure',
-                })
-      }
-
-      it {
         is_expected.to contain_exec('import-GPG-KEY-puppet')
           .with({
                   'path'      => '/bin:/usr/bin:/sbin:/usr/sbin',
@@ -102,17 +91,6 @@ SCRIPT
           it { is_expected.not_to contain_file(path) }
         end
       end
-
-      it {
-        is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406')
-          .with({
-                  'ensure' => 'file',
-                  'owner'  => '0',
-                  'group'  => '0',
-                  'mode'   => '0644',
-                  'source' => 'puppet:///modules/puppet_agent/GPG-KEY-puppet-20250406',
-                })
-      }
 
       it {
         is_expected.to contain_file('/etc/pki/rpm-gpg/RPM-GPG-KEY-puppet')
@@ -154,7 +132,7 @@ SCRIPT
                     'baseurl'  => "http://yum.puppet.com/puppet5/#{urlbit.gsub('/f', '/')}/#{arch}",
                     'enabled'  => 'true',
                     'gpgcheck' => '1',
-                    'gpgkey'   => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
+                    'gpgkey'   => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
                   })
         }
       end
@@ -215,7 +193,7 @@ SCRIPT
                     'baseurl'             => "https://master.example.vm:8140/packages/2000.0.0/#{repodir}",
                     'enabled'             => 'true',
                     'gpgcheck'            => '1',
-                    'gpgkey'              => "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet\n  file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet-20250406",
+                    'gpgkey'              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-puppet',
                     'sslcacert'           => '/etc/puppetlabs/puppet/ssl/certs/ca.pem',
                     'sslclientcert'       => '/etc/puppetlabs/puppet/ssl/certs/foo.example.vm.pem',
                     'sslclientkey'        => '/etc/puppetlabs/puppet/ssl/private_keys/foo.example.vm.pem',
