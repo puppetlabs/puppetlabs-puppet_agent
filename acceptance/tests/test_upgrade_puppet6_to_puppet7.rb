@@ -37,7 +37,8 @@ node default {
   end
 
   agents_only.each do |agent|
-    set_up_initial_agent_on(agent, puppet_collection: 'puppet6-nightly') do
+    # REMIND: PA-7431 use nightly repos once those release packages are fixed
+    set_up_initial_agent_on(agent, puppet_collection: 'puppet6') do
       step '(Agent) Change agent environment to testing environment' do
         on(agent, puppet("config --section agent set environment #{puppet_testing_environment}"))
         on(agent, puppet('config --section user set environment production'))
