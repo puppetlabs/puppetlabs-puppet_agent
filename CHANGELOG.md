@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.23.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.23.0) - 2025-04-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.22.0...v4.23.0)
+
+### Added
+
+- (PA-7222) Add Amazon FIPS 2023 (x86_64) support in task acceptance tests [#767](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/767) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- Update module to support apt-puppetcore.puppet.com [#764](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/764) ([joshcooper](https://github.com/joshcooper))
+- (PA-6786): Added osx-15-x86_64 support in task acceptance tests [#760](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/760) ([span786](https://github.com/span786))
+- Update module to support yum-puppetcore.puppet.com [#757](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/757) ([joshcooper](https://github.com/joshcooper))
+- (PA-6619) Add Fedora 41 (x86_64) support in task acceptance tests [#753](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/753) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- (PA-6760) Update task_acceptance tests for MacOS15 ARM [#752](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/752) ([skyamgarp](https://github.com/skyamgarp))
+
+### Fixed
+
+- (PA-7437) Drop expired key and rotate "current" key [#771](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/771) ([joshcooper](https://github.com/joshcooper))
+
 ## [v4.22.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.22.0) - 2025-01-15
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.21.0...v4.22.0)
