@@ -2,6 +2,8 @@
 class puppet_agent::osfamily::windows {
   assert_private()
 
+  $destination_name = undef
+
   if $puppet_agent::absolute_source {
     $source = $puppet_agent::absolute_source
   } elsif $puppet_agent::source {
@@ -23,13 +25,17 @@ class puppet_agent::osfamily::windows {
   } else {
     if $puppet_agent::collection == 'PC1' {
       $source = "${puppet_agent::windows_source}/windows/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-${puppet_agent::arch}.msi"
+    } elsif $puppet_agent::collection =~ /core/ {
+      $source = 'https://artifacts-puppetcore.puppet.com/v1/download'
+      $destination_name = "${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-${puppet_agent::arch}.msi"
     } else {
       $source = "${puppet_agent::windows_source}/windows/${puppet_agent::collection}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-${puppet_agent::arch}.msi"
     }
   }
 
   class { 'puppet_agent::prepare::package':
-    source => $source,
+    source           => $source,
+    destination_name => $destination_name,
   }
 
   contain puppet_agent::prepare::package
