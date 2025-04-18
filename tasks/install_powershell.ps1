@@ -124,9 +124,14 @@ if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('w
 
 if ($absolute_source) {
     $msi_source = "$absolute_source"
-}
-elseif ($collection -like '*puppetcore*') {
-    $msi_source = "${windows_source}?version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}"
+} elseif ($collection -like '*puppetcore*') {
+    # dev param is case-sensitive, so don't use $True
+    if (($version -split '\.').count -gt 3) {
+        $dev = '&dev=true'
+    } else {
+        $dev = ''
+    }
+    $msi_source = "${windows_source}?version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}${dev}"
 } else {
     $msi_source = "$windows_source/windows/${collection}/${msi_name}"
 }
