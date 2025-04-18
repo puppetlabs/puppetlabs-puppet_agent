@@ -1,0 +1,20 @@
+$body = @{
+    "version"    = "<%= $puppet_agent::prepare::package_version %>"
+    "dev"        = "<%= $puppet_agent::prepare::package::dev %>"
+    "os_name"    = "<%= $facts['os']['family'] %>"
+    "os_version" = "<%= $facts['os']['release']['major'] %>"
+    "os_arch"    = "<%= $facts['os']['architecture'] %>"
+    "fips"       = "<%= $facts['fips_enabled'] %>"
+}
+$username = "<%= $puppet_agent::prepare::package::download_username %>"
+$password = ConvertTo-SecureString "<%= $puppet_agent::prepare::package::download_password %>" -AsPlainText -Force
+$credential = New-Object System.Management.Automation.PSCredential($username, $password)
+try {
+    Invoke-WebRequest -Uri "<%= $puppet_agent::prepare::package::source %>" `
+      -Body $body `
+      -Credential $credential `
+      -OutFile "<%= $puppet_agent::prepare::package::local_package_file_path %>"
+} catch [System.Net.WebException] {
+    Write-Host "Network-related error: $($_.Exception.Message)"
+    exit 1
+}

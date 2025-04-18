@@ -7,10 +7,20 @@ Param(
   [String]$install_options = 'REINSTALLMODE="amus"',
   [Bool]$stop_service = $False,
   [Int]$retry = 5,
-  [Bool]$_noop = $False
+  [Bool]$_noop = $False,
+  [String]$username = 'forge-key',
+  [String]$password
 )
 # If an error is encountered, the script will stop instead of the default of "Continue"
 $ErrorActionPreference = "Stop"
+
+try {
+  $os_version = (Get-WmiObject Win32_OperatingSystem).Version
+}
+catch [System.Management.Automation.CommandNotFoundException] {
+  $os_version = (Get-CimInstance -ClassName win32_OperatingSystem).Version
+}
+$major_os_version = ($os_version -split '\.')[0]
 
 try {
   if ((Get-WmiObject Win32_OperatingSystem).OSArchitecture -match '^32') {
@@ -27,9 +37,19 @@ catch [System.Management.Automation.CommandNotFoundException] {
   }
 }
 
+$fips = 'false'
+try {
+  if ((Get-ItemPropertyValue -Path 'HKLM:\System\CurrentControlSet\Control\Lsa\FipsAlgorithmPolicy' -Name Enabled) -ne 0) {
+    $fips = 'true'
+  }
+}
+catch {
+  Write-Output "Failed to lookup FIPS mode, assuming it is disabled"
+}
+
 function Test-PuppetInstalled {
   $rootPath = 'HKLM:\SOFTWARE\Puppet Labs\Puppet'
-  try { 
+  try {
     if (Get-ItemProperty -Path $rootPath) { RETURN $true }
   }
   catch {
@@ -98,12 +118,21 @@ if (Test-RunningServices) {
 # Change windows_source only if the collection is a nightly build, and the source was not explicitly specified.
 if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
   $windows_source = 'https://nightlies.puppet.com/downloads'
+} elseif (($collection -like '*puppetcore*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
+  $windows_source = 'https://artifacts-puppetcore.puppet.com/v1/download'
 }
 
 if ($absolute_source) {
     $msi_source = "$absolute_source"
-}
-else {
+} elseif ($collection -like '*puppetcore*') {
+    # dev param is case-sensitive, so don't use $True
+    if (($version -split '\.').count -gt 3) {
+        $dev = '&dev=true'
+    } else {
+        $dev = ''
+    }
+    $msi_source = "${windows_source}?version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}${dev}"
+} else {
     $msi_source = "$windows_source/windows/${collection}/${msi_name}"
 }
 
@@ -125,15 +154,19 @@ function Set-Tls12 {
 }
 
 function DownloadPuppet {
-  Write-Output "Downloading the Puppet Agent installer on $env:COMPUTERNAME..."
+  Write-Output "Downloading the Puppet Agent installer on $env:COMPUTERNAME from ${msi_source}"
   Set-Tls12
 
   $webclient = New-Object system.net.webclient
-
+  if ($password) {
+    $credentials = [Convert]::ToBase64String([System.Text.Encoding]::ASCII.GetBytes("${username}:${password}"))
+    $webclient.Headers.Add("Authorization", "Basic ${credentials}")
+  }
   try {
     $webclient.DownloadFile($msi_source,$msi_dest)
   }
   catch [System.Net.WebException] {
+    Write-Host "Download exception: $($_.Exception.Message)"
     For ($attempt_number = 1; $attempt_number -le $retry; $attempt_number++) {
       try {
         Write-Output "Retrying... [$attempt_number/$retry]"
@@ -141,6 +174,7 @@ function DownloadPuppet {
         break
       }
       catch [System.Net.WebException] {
+        Write-Host "Download exception: $($_.Exception.Message)"
         if($attempt_number -eq $retry) {
           # If we can't find the msi, then we may not be configured correctly
           if($_.Exception.Response.StatusCode -eq [system.net.httpstatuscode]::NotFound) {
