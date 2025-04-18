@@ -35,6 +35,7 @@ class puppet_agent::prepare::package (
   if $puppet_agent::collection =~ /core/ and $facts['os']['family'] =~ /windows/ {
     $download_username = getvar('puppet_agent::username', 'forge-key')
     $download_password = unwrap(getvar('puppet_agent::password'))
+    $dev = count(split($puppet_agent::prepare::package_version, '\.')) > 3
 
     $_download_puppet = windows_native_path("${facts['env_temp_variable']}/download_puppet.ps1")
     file { $_download_puppet:
