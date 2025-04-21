@@ -6,6 +6,8 @@
 
 ### Classes
 
+#### Public Classes
+
 * [`puppet_agent`](#puppet_agent): Upgrades Puppet 4 and newer to the requested version.
 * [`puppet_agent::configure`](#puppet_agent--configure): Uses $puppet_agent::config to manage settings in puppet.conf.
 * [`puppet_agent::install`](#puppet_agent--install): This class is called from puppet_agent for install.
@@ -22,9 +24,12 @@
 * [`puppet_agent::osfamily::windows`](#puppet_agent--osfamily--windows): Determines the puppet-agent package location for Windows OSes.
 * [`puppet_agent::params`](#puppet_agent--params): Sets variables according to platform.
 * [`puppet_agent::prepare`](#puppet_agent--prepare): This class is called from puppet_agent to prepare for the upgrade.
-* [`puppet_agent::prepare::package`](#puppet_agent--prepare--package): Ensures correct puppet-agent package is downloaded locally.
 * [`puppet_agent::prepare::puppet_config`](#puppet_agent--prepare--puppet_config): Private class called from puppet_agent::prepare class.
 * [`puppet_agent::service`](#puppet_agent--service): Ensures that managed services are running.
+
+#### Private Classes
+
+* `puppet_agent::prepare::package`: Ensures correct puppet-agent package is downloaded locally.
 
 ### Resource types
 
@@ -614,24 +619,6 @@ The puppet-agent version to install.
 
 Default value: `undef`
 
-### <a name="puppet_agent--prepare--package"></a>`puppet_agent::prepare::package`
-
-for installation. This is used on platforms without package managers capable of
-working with a remote https repository.
-
-#### Parameters
-
-The following parameters are available in the `puppet_agent::prepare::package` class:
-
-* [`source`](#-puppet_agent--prepare--package--source)
-
-##### <a name="-puppet_agent--prepare--package--source"></a>`source`
-
-Data type: `Variant[String, Array]`
-
-The source file for the puppet-agent package. Can use any of the data types
-and protocols that the File resource's source attribute can.
-
 ### <a name="puppet_agent--prepare--puppet_config"></a>`puppet_agent::prepare::puppet_config`
 
 Private class called from puppet_agent::prepare class.
@@ -993,6 +980,18 @@ Data type: `Optional[Integer]`
 
 The number of retries in case of network connectivity failures
 
+##### `username`
+
+Data type: `Optional[String[1]]`
+
+The username to use when downloading from a source location requiring authentication
+
+##### `password`
+
+Data type: `Optional[Sensitive[String[1]]]`
+
+The password to use when downloading from a source location requiring authentication
+
 ### <a name="install_shell"></a>`install_shell`
 
 Install the Puppet agent package
@@ -1063,13 +1062,13 @@ The number of retries in case of network connectivity failures
 
 ##### `username`
 
-Data type: `Optional[String]`
+Data type: `Optional[String[1]]`
 
 The username to use when downloading from a source location requiring authentication
 
 ##### `password`
 
-Data type: `Optional[String]`
+Data type: `Optional[Sensitive[String[1]]]`
 
 The password to use when downloading from a source location requiring authentication
 
