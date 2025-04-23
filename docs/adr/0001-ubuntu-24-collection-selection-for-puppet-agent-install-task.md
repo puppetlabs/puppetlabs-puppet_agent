@@ -14,7 +14,7 @@ This issue specifically affected Ubuntu 24, while other operating systems worked
 
 The puppet_agent::install task (implemented in install_shell.sh) provides a mechanism for installing the Puppet agent across various platforms. It accepts parameters including 'collection', which determines which package collection to use. If no collection is specified, it was defaulting to the generic 'puppet' collection.
 
-A temporary fix was implemented in Bolt's apply_prep.rb function, which added logic to determine the Puppet version and set the collection parameter accordingly. While this fix worked, it violated architectural separation of concerns by placing target-specific logic in the higher-level orchestration function.
+A temporary fix was implemented in Bolt's apply_prep.rb function, which added logic to determine the Puppet version and set the collection parameter accordingly. While this fix worked, it violated architectural separation of concerns by placing target-specific logic in the higher-level orchestration function. For more information, see [this pr](https://github.com/puppetlabs/bolt/pull/3376) and [this PR](https://github.com/puppetlabs/bolt-private/pull/16).
 
 ## Decision
 
