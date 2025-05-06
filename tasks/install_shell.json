@@ -50,6 +50,7 @@
     },
     "password": {
       "description": "The password to use when downloading from a source location requiring authentication",
+      "sensitive": true,
       "type": "Optional[Sensitive[String[1]]]"
     }
   },
