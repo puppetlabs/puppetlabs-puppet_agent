@@ -120,7 +120,24 @@ if [ -n "$PT_collection" ]; then
 
   collection=$PT_collection
 else
-  collection='puppet'
+  # Try to determine the appropriate collection based on puppet version
+  # This helps ensure we use version-specific packages (e.g., puppet8-release) 
+  # rather than generic packages (puppet-release) which can fail on some platforms like Ubuntu 24
+  if [ -f /opt/puppetlabs/puppet/VERSION ]; then
+    puppet_version=`cat /opt/puppetlabs/puppet/VERSION`
+    major_version=`echo $puppet_version | cut -d. -f1`
+    collection="puppet${major_version}"
+    info "Setting collection to ${collection} based on installed Puppet version ${puppet_version}"
+  elif type -p puppet >/dev/null; then
+    puppet_version=`puppet --version`
+    major_version=`echo $puppet_version | cut -d. -f1`  
+    collection="puppet${major_version}"
+    info "Setting collection to ${collection} based on puppet command version ${puppet_version}"
+  else
+    # Default to generic collection as a last resort
+    collection='puppet'
+    info "No puppet version detected, using default collection: ${collection}"
+  fi
 fi
 
 if [ -n "$PT_yum_source" ]; then
