@@ -16,6 +16,7 @@ end
 
 # Install a puppet-agent package on the master:
 test_name "Pre-Suite: Install puppet-agent #{description} on the master" do
+  install_options[:nightly_yum_repo_url] = 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum'
   install_puppet_agent_on(master, install_options)
 
   agent_version = puppet_agent_version_on(master)
@@ -30,7 +31,10 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
 
   step 'Install puppetserver' do
     # puppetserver is distributed in "release streams" instead of collections.
-    opts = { release_stream: install_options[:puppet_collection] }
+    opts = {
+      release_stream: install_options[:puppet_collection],
+      nightly_yum_repo_url: 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum'
+    }
 
     install_puppetserver_on(master, opts)
 
