@@ -56,6 +56,45 @@ class puppet_agent::prepare::package (
       creates => $local_package_file_path,
       require => File[$puppet_agent::params::local_packages_dir],
     }
+  } elsif $puppet_agent::collection =~ /core/ and $facts['os']['family'] =~ /Darwin/ {
+    $download_username = getvar('puppet_agent::username', 'forge-key')
+    $download_password = unwrap(getvar('puppet_agent::password'))
+
+    $response_file = "${local_package_file_path}.response"
+    $netrc_file = "${facts['env_temp_variable']}/.netrc"
+    file { $netrc_file:
+      ensure    => file,
+      content   => "machine artifacts-puppetcore.puppet.com\nlogin ${download_username}\npassword ${download_password}\n",
+      mode      => '0600',
+      show_diff => false,
+    }
+
+    $curl_command = "curl --fail -1 -sL --netrc-file '${netrc_file}' -w '%{http_code}' -o '${local_package_file_path}' '${source}' > '${response_file}'"
+    exec { 'Download Puppet Agent for Darwin':
+      command => $curl_command,
+      creates => $local_package_file_path,
+      path    => ['/usr/bin', '/usr/sbin', '/bin', '/sbin'],
+    }
+
+    exec { 'Remove .netrc file':
+      command => "rm -f '${netrc_file}'",
+      path    => ['/usr/bin', '/bin'],
+      onlyif  => "test -f '${netrc_file}'",
+      require => Exec['Download Puppet Agent for Darwin'],
+    }
+    #
+    # TODO: This is a temporary workaround to get the HTTP response code from the curl command.
+    #       For now just outputting the response is good enough.
+    #       We need to find a way to interspect this value and fail the catalog if the response
+    #       code is not 200, and then logging the output wont be as important.
+    #
+    exec { 'Read HTTP Response Code':
+      command   => "cat '${response_file}'",
+      path      => ['/usr/bin', '/bin'],
+      onlyif    => "test -f '${response_file}'",
+      logoutput => true,
+      require   => Exec['Download Puppet Agent for Darwin'],
+    }
   } else {
     file { $local_package_file_path:
       ensure  => file,
