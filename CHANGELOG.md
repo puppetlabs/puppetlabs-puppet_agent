@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.24.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.24.0) - 2025-06-10
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.23.0...v4.24.0)
+
+### Fixed
+
+- bug: mark password as sensitive in puppet_agent::install task [#775](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/775) ([jordanbreen28](https://github.com/jordanbreen28))
+
+### Other
+
+- (PA-7432) Install server packages from internal nightlies [#777](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/777) ([joshcooper](https://github.com/joshcooper))
+- Update module to support puppetcore on Windows [#766](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/766) ([joshcooper](https://github.com/joshcooper))
+
 ## [v4.23.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.23.0) - 2025-04-10
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.22.0...v4.23.0)
