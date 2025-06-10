@@ -118,7 +118,9 @@ Default value: `$facts['os']['architecture']`
 
 Data type: `String`
 
-The Puppet Collection to track. Defaults to 'PC1'.
+The Puppet Collection to track. Defaults to 'PC1'. Valid values are puppet7,
+puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly,
+puppetcore7, puppetcore8.
 
 Default value: `$puppet_agent::params::collection`
 
