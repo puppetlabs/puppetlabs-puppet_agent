@@ -26,6 +26,14 @@ warn () {
     log "WARN: ${1}"
 }
 
+url_parameters() {
+  if [[ "$version" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)\.g([a-f0-9]+)$ ]]; then
+    echo "&dev=true"
+  else
+    echo ""
+  fi
+}
+
 critical () {
     log "CRIT: ${1}"
 }
@@ -162,10 +170,18 @@ fi
 if [ -n "$PT_mac_source" ]; then
   mac_source=$PT_mac_source
 else
-  if [ "$nightly" = true ]; then
-    mac_source='http://nightlies.puppet.com/downloads'
-  else
-    mac_source='http://downloads.puppet.com'
+ if [[ "$PT_collection" =~ core ]]; then
+    if [ -z "$password" ]; then
+      echo "A password parameter is required to install with puppetcore"
+      exit 1
+    fi
+  mac_source='https://artifacts-puppetcore.puppet.com/v1/download'
+ else
+    if [ "$nightly" = true ]; then
+      mac_source='http://nightlies.puppet.com/downloads'
+    else
+      mac_source='http://downloads.puppet.com'
+    fi
   fi
 fi
 
@@ -421,13 +437,23 @@ do_wget() {
 # do_curl URL FILENAME
 do_curl() {
   info "Trying curl..."
-  run_cmd "curl -1 -sL -D $tmp_stderr '$1' > '$2'"
+  if [[ -n "$3" && -n "$4" ]]; then
+    run_cmd "curl -1 -sL -u '$3:$4' -D $tmp_stderr '$1' > '$2'"
+  else
+    run_cmd "curl -1 -sL -D $tmp_stderr '$1' > '$2'"
+  fi
   rc=$?
 
   # check for 404
   grep "404 Not Found" $tmp_stderr 2>&1 >/dev/null
   if test $? -eq 0; then
     critical "ERROR 404"
+    unable_to_retrieve_package
+  fi
+
+  grep "401 Unauthorized" $tmp_stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    critical "ERROR 401: Unauthorized access"
     unable_to_retrieve_package
   fi
 
@@ -557,7 +583,11 @@ do_download() {
   fi
 
   if exists curl; then
-    do_curl $1 $2 && return 0
+    if [[ "$collection" =~ core ]]; then
+      do_curl $1 $2 "$username" "$password" && return 0
+    else
+      do_curl $1 $2 && return 0
+    fi
   fi
 
   if exists fetch; then
@@ -810,19 +840,25 @@ case $platform in
     download_url="${apt_source}/${filename}"
     ;;
   "mac_os_x")
-    info "Mac platform! Lets get you a DMG..."
-    filetype="dmg"
+    arch="x86_64"
+    if [[ $(uname -p) == "arm" ]]; then
+        arch="arm64"
+    fi
     if test "$version" = "latest"; then
       filename="puppet-agent-latest.dmg"
     else
       filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
     fi
+    info "Mac platform! Lets get you a DMG...!!"
+    if [[ "$collection" =~ core ]]; then
 
-    arch="x86_64"
-    if [[ $(uname -p) == "arm" ]]; then
-        arch="arm64"
+      # Call the url_parameters function to append to the download_url
+      download_url="${mac_source}/?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}&fips=false$(url_parameters)"
+    else
+      download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
     fi
-    download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
+    filetype="dmg"
+
     ;;
   *)
     critical "Sorry $platform is not supported yet!"
