@@ -122,7 +122,6 @@ describe 'install task' do
                          end
 
       puppet_7_collection = 'puppet7'
-      puppet_8_collection = 'puppet8'
 
       # We can only test puppet 7 -> 7 upgrades if multiple Puppet releases
       # have supported a given platform.
@@ -161,6 +160,7 @@ describe 'install task' do
           expect(res['value']['version']).to eq(puppet_7_version)
         end
         expect(res['value']['source']).to be
+        logger.info("Successfully installed puppet-agent version: #{res['value']['version']}")
       end
 
       # Check that puppet agent service has been stopped due to 'stop_service' parameter set to true
@@ -174,7 +174,7 @@ describe 'install task' do
 
       # Try to upgrade with no specific version given in parameter
       # Expect nothing to happen and receive a message regarding this
-      results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_8_collection })
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet8-nightly' }.merge(latest_sources))
 
       results.each do |result|
         logger.info("Ensuring installed puppet-agent on #{result['target']}: #{result['status']}")
@@ -219,6 +219,7 @@ describe 'install task' do
           expect(res['value']['version']).not_to eq(puppet_7_version)
           expect(res['value']['version']).to match(%r{^7\.\d+\.\d+})
           expect(res['value']['source']).to be
+          logger.info("Successfully upgraded to puppet7 latest version: #{res['value']['version']}")
         end
       end
 
@@ -238,8 +239,8 @@ describe 'install task' do
       end
 
       # Succesfully upgrade from puppet7 to puppet8
-      results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_8_collection, 'version' => 'latest' })
-
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet8-nightly',
+                                                              'version' => 'latest' }.merge(latest_sources))
       results.each do |result|
         logger.info("Upgraded puppet-agent to puppet8 on #{result['target']}: #{result['status']}")
         log_output_errors(result)
@@ -256,12 +257,13 @@ describe 'install task' do
         expect(installed_version).not_to match(%r{^7\.\d+\.\d+})
         expect(installed_version).to match(%r{^8\.\d+\.\d+})
         expect(res['value']['source']).to be
+        logger.info("Successfully upgraded to puppet8 latest version: #{res['value']['version']}")
       end
 
       # Try installing the same version again
       # Expect nothing to happen and receive a message regarding this
-      results = run_task('puppet_agent::install', 'target', { 'collection' => puppet_8_collection, 'version' => installed_version })
-
+      results = run_task('puppet_agent::install', 'target', { 'collection' => 'puppet8-nightly',
+                                                              'version' => installed_version }.merge(latest_sources))
       results.each do |res|
         expect(res).to include('status' => 'success')
         expect(res['value']['_output']).to match(%r{Puppet Agent #{installed_version} detected. Nothing to do.})
