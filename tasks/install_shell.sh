@@ -162,10 +162,18 @@ fi
 if [ -n "$PT_mac_source" ]; then
   mac_source=$PT_mac_source
 else
-  if [ "$nightly" = true ]; then
-    mac_source='http://nightlies.puppet.com/downloads'
+  if [[ "$collection" == "puppetcore"* ]]; then
+    mac_source='https://artifacts-puppetcore.puppet.com/v1/download'
+    if [ -z "$password" ]; then
+      echo "A password parameter is required to install from ${mac_source}"
+      exit 1
+    fi
   else
-    mac_source='http://downloads.puppet.com'
+    if [ "$nightly" = true ]; then
+      mac_source='http://nightlies.puppet.com/downloads'
+    else
+      mac_source='http://downloads.puppet.com'
+    fi
   fi
 fi
 
@@ -396,10 +404,14 @@ run_cmd() {
   return $rc
 }
 
-# do_wget URL FILENAME
+# do_wget URL FILENAME [USERNAME] [PASSWORD]
 do_wget() {
   info "Trying wget..."
-  run_cmd "wget -O '$2' '$1' 2>$tmp_stderr"
+  if [[ -n "$3" && -n "$4" ]]; then
+    run_cmd "wget -O '$2' --user '$3' --password '$4' '$1' 2>$tmp_stderr"
+  else
+    run_cmd "wget -O '$2' '$1' 2>$tmp_stderr"
+  fi
   rc=$?
 
   # check for 404
@@ -418,10 +430,14 @@ do_wget() {
   return 0
 }
 
-# do_curl URL FILENAME
+# do_curl URL FILENAME [USERNAME] [PASSWORD]
 do_curl() {
   info "Trying curl..."
-  run_cmd "curl -1 -sL -D $tmp_stderr '$1' > '$2'"
+  if [[ -n "$3" && -n "$4" ]]; then
+    run_cmd "curl -1 -sL -u'$3:$4' -D $tmp_stderr '$1' > '$2'"
+  else
+    run_cmd "curl -1 -sL -D $tmp_stderr '$1' > '$2'"
+  fi
   rc=$?
 
   # check for 404
@@ -544,7 +560,7 @@ do_perl_ff() {
   return 1
 }
 
-# do_download URL FILENAME
+# do_download URL FILENAME [USERNAME] [PASSWORD]
 do_download() {
   info "Downloading $1"
   info "  to file $2"
@@ -553,11 +569,11 @@ do_download() {
   # perl, in particular may be present but LWP::Simple may not be installed
 
   if exists wget; then
-    do_wget $1 $2 && return 0
+    do_wget $1 $2 $3 $4 && return 0
   fi
 
   if exists curl; then
-    do_curl $1 $2 && return 0
+    do_curl $1 $2 $3 $4 && return 0
   fi
 
   if exists fetch; then
@@ -822,7 +838,16 @@ case $platform in
     if [[ $(uname -p) == "arm" ]]; then
         arch="arm64"
     fi
-    download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
+    if [[ "$collection" =~ "puppetcore" ]]; then
+      dots=$(echo "${version}" | grep -o '\.' | wc -l)
+      if (( dots >= 3 )); then
+        download_url="${mac_source}?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}&dev=true"
+      else
+        download_url="${mac_source}?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}"
+      fi
+    else
+      download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
+    fi
     ;;
   *)
     critical "Sorry $platform is not supported yet!"
@@ -837,7 +862,7 @@ fi
 if [[ $PT__noop != true ]]; then
   download_filename="${tmp_dir}/${filename}"
 
-  do_download "$download_url" "$download_filename"
+  do_download "$download_url" "$download_filename" "$username" "$password"
 
   install_file $filetype "$download_filename"
 
