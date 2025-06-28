@@ -123,58 +123,39 @@ else
   collection='puppet'
 fi
 
+if [[ "$collection" == "puppetcore"* && -z "$password" ]]; then
+  echo "A password parameter is required to install from puppetcore"
+  exit 1
+fi
+
 if [ -n "$PT_yum_source" ]; then
   yum_source=$PT_yum_source
+elif [[ "$collection" == "puppetcore"* ]]; then
+  yum_source='https://yum-puppetcore.puppet.com/public'
+elif [ "$nightly" = true ]; then
+  yum_source='http://nightlies.puppet.com/yum'
 else
-  if [[ "$collection" == "puppetcore"* ]]; then
-    yum_source='https://yum-puppetcore.puppet.com/public'
-    if [ -z "$password" ]; then
-      echo "A password parameter is required to install from ${yum_source}"
-      exit 1
-    fi
-  else
-    if [ "$nightly" = true ]; then
-      yum_source='http://nightlies.puppet.com/yum'
-    else
-      yum_source='http://yum.puppet.com'
-    fi
-  fi
+  yum_source='http://yum.puppet.com'
 fi
 
 if [ -n "$PT_apt_source" ]; then
   apt_source=$PT_apt_source
+elif [[ "$collection" == "puppetcore"* ]]; then
+  apt_source='https://apt-puppetcore.puppet.com/public'
+elif [ "$nightly" = true ]; then
+  apt_source='http://nightlies.puppet.com/apt'
 else
-  if [[ "$collection" == "puppetcore"* ]]; then
-    apt_source='https://apt-puppetcore.puppet.com/public'
-    if [ -z "$password" ]; then
-        echo "A password parameter is required to install from ${apt_source}"
-        exit 1
-    fi
-  else
-    if [ "$nightly" = true ]; then
-      apt_source='http://nightlies.puppet.com/apt'
-    else
-      apt_source='http://apt.puppet.com'
-    fi
-  fi
+  apt_source='http://apt.puppet.com'
 fi
 
 if [ -n "$PT_mac_source" ]; then
   mac_source=$PT_mac_source
+elif [[ "$collection" == "puppetcore"* ]]; then
+  mac_source='https://artifacts-puppetcore.puppet.com/v1/download'
+elif [ "$nightly" = true ]; then
+  mac_source='http://nightlies.puppet.com/downloads'
 else
-  if [[ "$collection" == "puppetcore"* ]]; then
-    mac_source='https://artifacts-puppetcore.puppet.com/v1/download'
-    if [ -z "$password" ]; then
-      echo "A password parameter is required to install from ${mac_source}"
-      exit 1
-    fi
-  else
-    if [ "$nightly" = true ]; then
-      mac_source='http://nightlies.puppet.com/downloads'
-    else
-      mac_source='http://downloads.puppet.com'
-    fi
-  fi
+  mac_source='http://downloads.puppet.com'
 fi
 
 if [ -n "$PT_retry" ]; then
