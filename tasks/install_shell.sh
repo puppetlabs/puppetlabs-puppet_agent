@@ -402,6 +402,13 @@ do_wget() {
     unable_to_retrieve_package
   fi
 
+  # check for 401
+  grep "ERROR 401" $tmp_stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    critical "ERROR 401"
+    unable_to_retrieve_package
+  fi
+
   # check for bad return status or empty output
   if test $rc -ne 0 || test ! -s "$2"; then
     capture_tmp_stderr "wget"
@@ -425,6 +432,13 @@ do_curl() {
   grep "404 Not Found" $tmp_stderr 2>&1 >/dev/null
   if test $? -eq 0; then
     critical "ERROR 404"
+    unable_to_retrieve_package
+  fi
+
+  # check for 401
+  grep "401 Unauthorized" $tmp_stderr 2>&1 >/dev/null
+  if test $? -eq 0; then
+    critical "ERROR 401"
     unable_to_retrieve_package
   fi
 
