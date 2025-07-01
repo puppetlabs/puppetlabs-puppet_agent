@@ -20,12 +20,21 @@ class puppet_agent::osfamily::darwin {
     } else {
       $source = "puppet:///pe_packages/${pe_server_version}/${facts['platform_tag']}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
     }
+  } elsif $puppet_agent::collection =~ /core/ {
+    $source = 'https://artifacts-puppetcore.puppet.com/v1/download'
   } else {
     $source = "${puppet_agent::mac_source}/mac/${puppet_agent::collection}/${productversion_major}/${puppet_agent::arch}/${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
   }
 
+  $destination_name = if $puppet_agent::collection =~ /core/ {
+    "${puppet_agent::package_name}-${puppet_agent::prepare::package_version}-1.osx${$productversion_major}.dmg"
+  } else {
+    undef
+  }
+
   class { 'puppet_agent::prepare::package':
-    source => $source,
+    source           => $source,
+    destination_name => $destination_name,
   }
 
   contain puppet_agent::prepare::package
