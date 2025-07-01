@@ -56,6 +56,29 @@ class puppet_agent::prepare::package (
       creates => $local_package_file_path,
       require => File[$puppet_agent::params::local_packages_dir],
     }
+  } elsif $puppet_agent::collection =~ /core/ and $facts['os']['family'] =~ /Darwin/ {
+    $download_username = getvar('puppet_agent::username', 'forge-key')
+    $download_password = unwrap(getvar('puppet_agent::password'))
+    $osname = 'osx'
+    $osversion = $facts['os']['macosx']['version']['major']
+    $osarch = $facts['os']['architecture']
+    $fips = 'false'
+    $dev = count(split($puppet_agent::prepare::package_version, '\.')) > 3
+
+    $_download_puppet = "${puppet_agent::params::local_packages_dir}/download_puppet.sh"
+    file { $_download_puppet:
+      ensure  => file,
+      owner   => $puppet_agent::params::user,
+      group   => $puppet_agent::params::group,
+      mode    => '0700',
+      content => Sensitive(epp('puppet_agent/download_puppet.sh.epp')),
+    }
+
+    exec { 'Download Puppet Agent':
+      command => [$_download_puppet],
+      creates => $local_package_file_path,
+      require => File[$puppet_agent::params::local_packages_dir],
+    }
   } else {
     file { $local_package_file_path:
       ensure  => file,

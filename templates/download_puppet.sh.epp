@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -x
+netrc=$(mktemp)
+trap 'rm -f "$netrc"' EXIT
+chmod 0600 "$netrc"
+cat <<EOF > "$netrc"
+machine artifacts-puppetcore.puppet.com
+login <%= $puppet_agent::prepare::package::download_username %>
+password <%= $puppet_agent::prepare::package::download_password %>
+EOF
+/opt/puppetlabs/puppet/bin/curl \
+ --get \
+ --fail \
+ --location \
+ --netrc-file "$netrc" \
+ --retry 3 \
+ --data-urlencode "version=<%= $puppet_agent::prepare::package_version %>" \
+ --data-urlencode "dev=<%= $puppet_agent::prepare::package::dev %>" \
+ --data-urlencode "os_name=<%= $puppet_agent::prepare::package::osname %>" \
+ --data-urlencode "os_version=<%= $puppet_agent::prepare::package::osversion %>" \
+ --data-urlencode "os_arch=<%= $puppet_agent::prepare::package::osarch %>" \
+ --data-urlencode "fips=<%= $puppet_agent::prepare::package::fips %>" \
+ --output "<%= $puppet_agent::prepare::package::local_package_file_path %>" \
+ "<%= $puppet_agent::prepare::package::source %>"
+
