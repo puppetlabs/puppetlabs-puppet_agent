@@ -22,6 +22,12 @@ jobs:
 
     runs-on: 'ubuntu-latest'
     steps:
+
+      - name: Connect to Twingate
+        uses: twingate/github-action@v1
+        with:
+          service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
+
       - name: Checkout current PR code
         uses: actions/checkout@v4
 
