@@ -133,7 +133,7 @@ if [ -n "$PT_yum_source" ]; then
 elif [[ "$collection" == "puppetcore"* ]]; then
   yum_source='https://yum-puppetcore.puppet.com/public'
 elif [ "$nightly" = true ]; then
-  yum_source='http://nightlies.puppet.com/yum'
+  yum_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum'
 else
   yum_source='http://yum.puppet.com'
 fi
