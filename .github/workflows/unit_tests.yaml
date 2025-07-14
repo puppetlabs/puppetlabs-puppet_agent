@@ -10,7 +10,7 @@ on:
 
 jobs:
   Nightly:
-    uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_nightly_puppet_gem.yaml@main"
+    uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_nightly_puppet_gem.yaml@68970f48dd476960f44a21e652500f3b7f55b8b4"
   
   Released:
     uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_released_puppet_gem.yaml@main"
