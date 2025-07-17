@@ -28,6 +28,9 @@ jobs:
         with:
           service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
 
+      - name: Add delay for network connection
+        run: sleep 30
+
       - name: Checkout current PR code
         uses: actions/checkout@v4
 
