@@ -22,11 +22,18 @@ jobs:
 
     runs-on: 'ubuntu-latest'
     steps:
-
+      
       - name: Connect to Twingate
         uses: twingate/github-action@v1
         with:
           service-key: ${{ secrets.TWINGATE_DIAMOND_SKINK_SECURITY_PROD }}
+        env:
+          TWINGATE_LOG_LEVEL: debug
+
+      - name: Test connectivity after Twingate
+        run: |
+          echo "Testing connection..."
+          curl -v --connect-timeout 10 https://artifactory.delivery.puppetlabs.net/ || echo "Connection failed"
 
       # - name: Add delay for network connection
       #   run: sleep 30
