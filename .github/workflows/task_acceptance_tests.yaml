@@ -26,7 +26,7 @@ jobs:
       - name: Connect to Twingate
         uses: twingate/github-action@v1
         with:
-          service-key: ${{ secrets.TWINGATE_HASTY_GROUSE_PUBLIC }}
+          service-key: ${{ secrets.TWINGATE_DIAMOND_SKINK_SECURITY_PROD }}
 
       # - name: Add delay for network connection
       #   run: sleep 30
