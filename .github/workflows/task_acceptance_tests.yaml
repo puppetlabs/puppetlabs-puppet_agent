@@ -22,9 +22,18 @@ jobs:
 
     runs-on: 'ubuntu-latest'
     steps:
-      - name: Network diagnostics
+      - name: Debug internal DNS resolution
         run: |
-          nslookup puppet.twingate.com
+          echo "=== Testing internal domain resolution ==="
+          nslookup artifactory.delivery.puppetlabs.net || echo "nslookup failed"
+          dig artifactory.delivery.puppetlabs.net || echo "dig failed"
+
+          echo "=== Current DNS servers ==="
+          cat /etc/resolv.conf
+
+          echo "=== Twingate status ==="
+          sudo systemctl status twingate || echo "systemctl not available"
+          ps aux | grep twingate || echo "no twingate processes visible"
 
       - name: Connect to Twingate
         uses: twingate/github-action@v1
