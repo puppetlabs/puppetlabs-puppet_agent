@@ -33,13 +33,13 @@ jobs:
       - name: Fix DNS
         run:  |
           echo "=== Current DNS config ==="
-          cat /etc/resolv.conf
+          sudo cat /etc/resolv.conf
           
           echo "=== Remove Azure DNS interference (as documented) ==="
-          sed '/^nameserver 168.63.129.16$/d; /^search/d' /etc/resolv.conf > /tmp/resolv.conf && cat /tmp/resolv.conf > /etc/resolv.conf
+          sudo sed '/^nameserver 168.63.129.16$/d; /^search/d' /etc/resolv.conf > /tmp/resolv.conf && sudo cat /tmp/resolv.conf > /etc/resolv.conf
           
           echo "=== Updated DNS config ==="
-          cat /etc/resolv.conf
+          sudo cat /etc/resolv.conf
           
           echo "=== Check what Twingate created ==="
           resolvectl status || systemd-resolve --status
