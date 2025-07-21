@@ -24,9 +24,29 @@ jobs:
     steps:
 
       - name: Connect to Twingate
-        uses: twingate/github-action@v1
+        uses: twingate/github-action@v1.5
         with:
           service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
+        env:
+          TWINGATE_LOG_LEVEL: debug
+
+      - name: Fix DNS
+        run: |
+          echo "=== Remove Azure DNS from eth0 interface ==="
+          sudo resolvectl dns eth0 ""
+
+          echo "=== Configure Twingate DNS properly ==="
+          sudo resolvectl dns sdwan0 100.95.0.251 100.95.0.252
+          sudo resolvectl domain sdwan0 delivery.puppetlabs.net
+
+          echo "=== Flush DNS cache ==="
+          sudo resolvectl flush-caches
+
+          echo "=== Check new configuration ==="
+          resolvectl status
+
+          echo "=== Test DNS resolution ==="
+          nslookup artifactory.delivery.puppetlabs.net
 
       - name: Checkout current PR code
         uses: actions/checkout@v4
