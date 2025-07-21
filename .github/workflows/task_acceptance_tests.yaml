@@ -23,7 +23,7 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: Network diagnostics
-      - run: |
+        run: |
       - nslookup puppet.twingate.com
 
       - name: Connect to Twingate
