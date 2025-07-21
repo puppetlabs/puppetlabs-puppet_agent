@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Network diagnostics
         run: |
-      - nslookup puppet.twingate.com
+          nslookup puppet.twingate.com
 
       - name: Connect to Twingate
         uses: twingate/github-action@v1
