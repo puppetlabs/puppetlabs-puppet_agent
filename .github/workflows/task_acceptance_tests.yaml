@@ -22,26 +22,30 @@ jobs:
 
     runs-on: 'ubuntu-latest'
     steps:
-      - name: Debug internal DNS resolution
-        run: |
-          echo "=== Testing internal domain resolution ==="
-          nslookup artifactory.delivery.puppetlabs.net || echo "nslookup failed"
-          dig artifactory.delivery.puppetlabs.net || echo "dig failed"
-
-          echo "=== Current DNS servers ==="
-          cat /etc/resolv.conf
-
-          echo "=== Twingate status ==="
-          sudo systemctl status twingate || echo "systemctl not available"
-          ps aux | grep twingate || echo "no twingate processes visible"
-
       - name: Connect to Twingate
         uses: twingate/github-action@v1
         with:
-          service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
+         service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
 
         env:
-          TWINGATE_LOG_LEVEL: debug
+         TWINGATE_LOG_LEVEL: debug
+
+      - name: Fix DNS
+        run:  |
+          echo "=== Current DNS config ==="
+          cat /etc/resolv.conf
+          
+          echo "=== Remove Azure DNS interference (as documented) ==="
+          sed '/^nameserver 168.63.129.16$/d; /^search/d' /etc/resolv.conf > /tmp/resolv.conf && cat /tmp/resolv.conf > /etc/resolv.conf
+          
+          echo "=== Updated DNS config ==="
+          cat /etc/resolv.conf
+          
+          echo "=== Check what Twingate created ==="
+          resolvectl status || systemd-resolve --status
+          
+          echo "=== Test internal domain resolution ==="
+          nslookup artifactory.delivery.puppetlabs.net
 
       - name: Checkout current PR code
         uses: actions/checkout@v4
