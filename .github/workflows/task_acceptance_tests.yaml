@@ -33,13 +33,14 @@ jobs:
       - name: Fix dns
         run: |
           echo "=== Remove Azure DNS from eth0 interface ==="
-          sudo systemd-resolve --interface=eth0 --set-dns=""
+          sudo resolvectl dns eth0 ""
 
           echo "=== Configure Twingate DNS properly ==="
-          sudo systemd-resolve --interface=sdwan0 --set-dns=100.95.0.251 --set-dns=100.95.0.252 --set-domain=delivery.puppetlabs.net
+          sudo resolvectl dns sdwan0 100.95.0.251 100.95.0.252
+          sudo resolvectl domain sdwan0 delivery.puppetlabs.net
 
           echo "=== Flush DNS cache ==="
-          sudo systemd-resolve --flush-caches
+          sudo resolvectl flush-caches
 
           echo "=== Check new configuration ==="
           resolvectl status
