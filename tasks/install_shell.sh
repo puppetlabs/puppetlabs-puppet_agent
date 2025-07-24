@@ -143,7 +143,7 @@ if [ -n "$PT_apt_source" ]; then
 elif [[ "$collection" == "puppetcore"* ]]; then
   apt_source='https://apt-puppetcore.puppet.com/public'
 elif [ "$nightly" = true ]; then
-  apt_source='http://nightlies.puppet.com/apt'
+  apt_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/apt'
 else
   apt_source='http://apt.puppet.com'
 fi
@@ -153,7 +153,7 @@ if [ -n "$PT_mac_source" ]; then
 elif [[ "$collection" == "puppetcore"* ]]; then
   mac_source='https://artifacts-puppetcore.puppet.com/v1/download'
 elif [ "$nightly" = true ]; then
-  mac_source='http://nightlies.puppet.com/downloads'
+  mac_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads'
 else
   mac_source='http://downloads.puppet.com'
 fi

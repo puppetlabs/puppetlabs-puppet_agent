@@ -117,7 +117,7 @@ if (Test-RunningServices) {
 
 # Change windows_source only if the collection is a nightly build, and the source was not explicitly specified.
 if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
-  $windows_source = 'https://nightlies.puppet.com/downloads'
+  $windows_source = 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads'
 } elseif (($collection -like '*puppetcore*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
   $windows_source = 'https://artifacts-puppetcore.puppet.com/v1/download'
 }
