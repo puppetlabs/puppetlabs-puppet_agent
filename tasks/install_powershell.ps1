@@ -131,7 +131,7 @@ if ($absolute_source) {
     } else {
         $dev = ''
     }
-    $msi_source = "${windows_source}?version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}${dev}"
+    $msi_source = "${windows_source}?type=native&version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}${dev}"
 } else {
     $msi_source = "$windows_source/windows/${collection}/${msi_name}"
 }
