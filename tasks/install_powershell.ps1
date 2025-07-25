@@ -131,6 +131,16 @@ if ($absolute_source) {
     } else {
         $dev = ''
     }
+
+    # If version is not specified, default to 8.14.0
+    # This is the version that Puppet Core is currently on.
+    # If the version is specified, it will be used instead.
+    # This is intended as a tempoary fix until the Puppet Core team
+    #   has a better solution for versioning.
+    if ($version -eq "" || !$version) {
+      $version = '8.14.0'
+    } 
+  
     $msi_source = "${windows_source}?type=native&version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}${dev}"
 } else {
     $msi_source = "$windows_source/windows/${collection}/${msi_name}"
