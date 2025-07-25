@@ -122,6 +122,15 @@ if (($collection -like '*puppetcore*-nightly*') -And -Not ($PSBoundParameters.Co
   $windows_source = 'https://nightlies.puppet.com/downloads'
 } elseif (($collection -like '*puppetcore*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
   $windows_source = 'https://artifacts-puppetcore.puppet.com/v1/download'
+  # Puppetcore requires a version to be specified, so we will use the latest version if not specified.
+  # Or if the version is set to "latest".
+  if ($version -eq "" || !$version || $version -eq "latest") {
+    $response = Invoke-WebRequest -Uri "https://forgeapi.puppet.com/private/versions/puppet-agent" -UseBasicParsing
+    $jsonData = $response.Content | ConvertFrom-Json
+    $allVersions = $jsonData.PSObject.Properties.Name
+    $version8x = $allVersions | Where-Object { $_ -like "8.*" }
+    $version = $version8x | Sort-Object { [Version]$_ } | Select-Object -Last 1
+  }
 }
 
 if ($absolute_source) {
