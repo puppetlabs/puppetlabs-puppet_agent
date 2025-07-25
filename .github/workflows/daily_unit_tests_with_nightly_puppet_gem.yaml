@@ -8,7 +8,7 @@ on:
 
 jobs:
   daily_unit_tests_with_nightly_puppet_gem:
-    uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_nightly_puppet_gem.yaml@main"
+    uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_nightly_puppet_gem.yaml@a8369c5363ed3828c0926d7784345ebeafcfee19"
 
   notify-via-slack:
     name: Notify workflow conclusion via Slack
