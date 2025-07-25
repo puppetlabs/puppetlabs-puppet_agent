@@ -116,7 +116,9 @@ if (Test-RunningServices) {
 }
 
 # Change windows_source only if the collection is a nightly build, and the source was not explicitly specified.
-if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
+if (($collection -like '*puppetcore*-nightly*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
+  $windows_source = 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads'
+} elseif (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
   $windows_source = 'https://nightlies.puppet.com/downloads'
 } elseif (($collection -like '*puppetcore*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
   $windows_source = 'https://artifacts-puppetcore.puppet.com/v1/download'
@@ -124,7 +126,7 @@ if (($collection -like '*nightly*') -And -Not ($PSBoundParameters.ContainsKey('w
 
 if ($absolute_source) {
     $msi_source = "$absolute_source"
-} elseif ($collection -like '*puppetcore*') {
+} elseif (($collection -like '*puppetcore*') -And -Not ($collection -like 'puppetcore*-nightly')) {
     # dev param is case-sensitive, so don't use $True
     if (($version -split '\.').count -gt 3) {
         $dev = '&dev=true'
@@ -132,6 +134,9 @@ if ($absolute_source) {
         $dev = ''
     }
     $msi_source = "${windows_source}?type=native&version=${version}&os_name=windows&os_version=${major_os_version}&os_arch=${arch}&fips=${fips}${dev}"
+} elseif ($collection -like 'puppetcore*-nightly') {
+    $core_collection = $collection -replace "core", ""
+    $msi_source = "$windows_source/windows/${core_collection}/${msi_name}"
 } else {
     $msi_source = "$windows_source/windows/${collection}/${msi_name}"
 }

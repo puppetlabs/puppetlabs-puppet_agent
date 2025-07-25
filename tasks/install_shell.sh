@@ -123,23 +123,27 @@ else
   collection='puppet'
 fi
 
-if [[ "$collection" == "puppetcore"* && -z "$password" ]]; then
+if [[ "$collection" != puppetcore*-nightly && "$collection" == "puppetcore"* && -z "$password" ]]; then
   echo "A password parameter is required to install from puppetcore"
   exit 1
 fi
 
 if [ -n "$PT_yum_source" ]; then
   yum_source=$PT_yum_source
+elif [[ "$collection" == puppetcore*-nightly ]]; then
+  yum_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum'
 elif [[ "$collection" == "puppetcore"* ]]; then
   yum_source='https://yum-puppetcore.puppet.com/public'
 elif [ "$nightly" = true ]; then
-  yum_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum'
+  yum_source='http://nightlies.puppet.com/yum'
 else
   yum_source='http://yum.puppet.com'
 fi
 
 if [ -n "$PT_apt_source" ]; then
   apt_source=$PT_apt_source
+elif [[ "$collection" == puppetcore*-nightly ]]; then
+  apt_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/apt'
 elif [[ "$collection" == "puppetcore"* ]]; then
   apt_source='https://apt-puppetcore.puppet.com/public'
 elif [ "$nightly" = true ]; then
@@ -150,6 +154,9 @@ fi
 
 if [ -n "$PT_mac_source" ]; then
   mac_source=$PT_mac_source
+
+elif [[ "$collection" == puppetcore*-nightly ]]; then
+  mac_source='https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/downloads'
 elif [[ "$collection" == "puppetcore"* ]]; then
   mac_source='https://artifacts-puppetcore.puppet.com/v1/download'
 elif [ "$nightly" = true ]; then
