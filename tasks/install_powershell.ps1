@@ -1,6 +1,9 @@
 [CmdletBinding()]
 Param(
-	[String]$version,
+  # The version of the Puppet Agent to install. If not specified, the given version will be installed.
+  # As of the change to puppetcore, a specific given version is always required, not "latest".
+  # This should be a temporary pin.
+	[String]$version = '8.14.0',
   [String]$collection = 'puppet',
   [String]$absolute_source,
   [String]$windows_source = 'https://downloads.puppet.com',
