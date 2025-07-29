@@ -9,6 +9,7 @@ on:
 jobs:
   daily_unit_tests_with_nightly_puppet_gem:
     uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_nightly_puppet_gem.yaml@main"
+    secrets: inherit
 
   notify-via-slack:
     name: Notify workflow conclusion via Slack
