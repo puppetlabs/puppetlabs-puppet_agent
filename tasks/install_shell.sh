@@ -841,11 +841,15 @@ case $platform in
         arch="arm64"
     fi
     if [[ "$collection" =~ "puppetcore" ]]; then
+      if [[ -z "$version" ]]; then
+        critical "You must provide a version to install the agent from puppetcore on MacOS/Windows."
+        exit 1
+      fi
       dots=$(echo "${version}" | grep -o '\.' | wc -l)
       if (( dots >= 3 )); then
-        download_url="${mac_source}?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}&dev=true"
+        download_url="${mac_source}?type=native&version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}&dev=true"
       else
-        download_url="${mac_source}?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}"
+        download_url="${mac_source}?type=native&version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}"
       fi
     else
       download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
