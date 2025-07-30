@@ -693,7 +693,7 @@ install_file() {
       assert_unmodified_apt_config
 
       dpkg -i --force-confmiss "$2"
-      if [[ "$collection" =~ core ]]; then
+      if [[ "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
         auth_conf="/etc/apt/auth.conf.d/apt-puppetcore-puppet.conf"
         sed -i "/^#?login/d" "${auth_conf}"
         echo "login ${username}" >> "${auth_conf}"
