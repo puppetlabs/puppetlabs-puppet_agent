@@ -830,24 +830,33 @@ case $platform in
   "mac_os_x")
     info "Mac platform! Lets get you a DMG..."
     filetype="dmg"
-    if test "$version" = "latest"; then
-      filename="puppet-agent-latest.dmg"
-    else
-      filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
-    fi
-
     arch="x86_64"
     if [[ $(uname -p) == "arm" ]]; then
         arch="arm64"
     fi
     if [[ "$collection" =~ "puppetcore" ]]; then
+      # Puppetcore requires a version to be specified, so we will use the latest version if not specified.
+      # Or if the version is set to "latest".
+      if [[ -z "$version" || "$version" == "latest" ]]; then
+        version=$(curl -sL https://forgeapi.puppet.com/private/versions/puppet-agent | \
+                  jq -r 'keys_unsorted | 
+                        map(select(startswith("8."))) | 
+                        max_by(split(".") | map(tonumber))')
+      fi
+
       dots=$(echo "${version}" | grep -o '\.' | wc -l)
       if (( dots >= 3 )); then
-        download_url="${mac_source}?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}&dev=true"
+        download_url="${mac_source}?type=native&version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}&dev=true"
       else
-        download_url="${mac_source}?version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}"
+        download_url="${mac_source}?type=native&version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}"
       fi
     else
+      if test "$version" = "latest"; then
+        filename="puppet-agent-latest.dmg"
+      else
+        filename="puppet-agent-${version}-1.osx${platform_version}.dmg"
+      fi
+
       download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
     fi
     ;;
