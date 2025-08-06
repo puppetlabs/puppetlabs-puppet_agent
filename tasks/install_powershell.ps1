@@ -122,6 +122,9 @@ if (($collection -like '*puppetcore*-nightly*') -And -Not ($PSBoundParameters.Co
   $windows_source = 'https://nightlies.puppet.com/downloads'
 } elseif (($collection -like '*puppetcore*') -And -Not ($PSBoundParameters.ContainsKey('windows_source'))) {
   $windows_source = 'https://artifacts-puppetcore.puppet.com/v1/download'
+  if ($version -eq "" -Or !$version) {
+    Throw "You must provide a version to install the agent from puppetcore on Windows/MacOS."
+  }
 }
 
 if ($absolute_source) {
