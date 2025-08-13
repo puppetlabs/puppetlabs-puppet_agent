@@ -396,9 +396,9 @@ run_cmd() {
 do_wget() {
   info "Trying wget..."
   if [[ -n "$3" && -n "$4" ]]; then
-    run_cmd "wget -O '$2' --user '$3' --password '$4' '$1' 2>$tmp_stderr"
+    run_cmd "wget -O '$2' --user '$3' --password '$4' '$1' 2 --verbose>$tmp_stderr"
   else
-    run_cmd "wget -O '$2' '$1' 2>$tmp_stderr"
+    run_cmd "wget -O '$2' '$1' 2 --verbose>$tmp_stderr"
   fi
   rc=$?
 
