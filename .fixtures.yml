@@ -2,6 +2,8 @@ fixtures:
   repositories:
     stdlib: https://github.com/puppetlabs/puppetlabs-stdlib.git
     apt: https://github.com/puppetlabs/puppetlabs-apt.git
-    inifile: https://github.com/puppetlabs/puppetlabs-inifile.git
+    inifile:
+      repo: https://github.com/puppetlabs/puppetlabs-inifile.git
+      ref: "v6.2.0"
     yumrepo_core: https://github.com/puppetlabs/puppetlabs-yumrepo_core.git
     facts: https://github.com/puppetlabs/puppetlabs-facts.git
