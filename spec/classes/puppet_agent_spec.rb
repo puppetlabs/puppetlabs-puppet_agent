@@ -119,6 +119,26 @@ describe 'puppet_agent' do
     end
   end
 
+  context 'package provider' do
+    # module is still pinned to older rspec-puppet and facterdb
+    os_name = 'fedora-41-x86_64'
+    os_facts = {
+      os_name => on_supported_os['fedora-39-x86_64'],
+    }
+    os_facts.values.first[:os]['release'] = { 'full' => '41', 'major' => '41' }
+    os_facts.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) do
+          global_facts(facts, os)
+        end
+
+        let(:params) { { package_version: '6.18.0' } }
+
+        it { is_expected.to contain_package('puppet-agent').with_provider(nil) }
+      end
+    end
+  end
+
   context 'supported_operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
