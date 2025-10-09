@@ -347,6 +347,9 @@ try {
     Reset-PuppetresDLL $temp_puppetres
   }
   "$_" | Out-File -FilePath (Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade_failure.log')
+  # Put relevant errors in puppet_agent_upgrade_failure.log
+  Get-Content -Path $Logfile | Select-String -Pattern "^Error.*$|-- Error" | Select-String -Pattern "^.*PUPPET_AGENT_ACCOUNT_PASSWORD.*$" -NotMatch | Add-Content -Path (Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade_failure.log')
+  Get-Content -Path $Logfile -Tail 10 | Select-String -Pattern "^.*PUPPET_AGENT_ACCOUNT_PASSWORD.*$" -NotMatch | Add-Content -Path (Join-Path -Path $state_dir -ChildPath 'puppet_agent_upgrade_failure.log')
 } finally {
   Reset-PuppetServices $services_before
   Unlock-Installation $install_pid_lock

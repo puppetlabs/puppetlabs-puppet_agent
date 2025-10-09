@@ -19,7 +19,7 @@ Puppet::Type.type(:puppet_agent_upgrade_error).provide :puppet_agent_upgrade_err
                 # In this scenario we need to open the file in binmode and read each line
                 # individually, then encode the result back to UTF-8 so we can sub out both
                 # the UTF-16 header \uFEFF and the \r\n line carriages.
-                File.open(logfile, 'rb:UTF-16LE') { |file| file.readlines }[0].encode!('UTF-8').delete("\uFEFF").delete("\r")
+                File.open(logfile, 'rb:UTF-16LE') { |file| file.read.encode!('UTF-8').delete("\uFEFF").delete("\r") }
               else
                 File.read(logfile)
               end
