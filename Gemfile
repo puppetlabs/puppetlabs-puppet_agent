@@ -34,7 +34,7 @@ group :development do
   gem "rb-readline", '= 0.5.5',                                                require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 6.0')
   gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 1.0')
-  gem "beaker-hostgenerator"
+  gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'] || '~> 2')
   gem "beaker-rspec"
   gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 4.0') if Gem::Requirement.create('< 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "beaker-module_install_helper",                                          require: false
