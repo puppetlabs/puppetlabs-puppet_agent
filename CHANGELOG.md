@@ -5,13 +5,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.26.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.26.0) - 2025-10-28
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.25.0...v4.26.0)
+
+### Added
+
+- puppetlabs/apt: Allow 11.x [#810](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/810) ([bastelfreak](https://github.com/bastelfreak))
+- (PA-7407) Add more detailed error information when upgrade fails [#807](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/807) ([AriaXLi](https://github.com/AriaXLi))
+
+### Fixed
+
+- (PE-42492) Use dnf on fedora >= 41 [#806](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/806) ([joshcooper](https://github.com/joshcooper))
+- (CAT-2413) Install tasks require version to install on MacOS/Windows [#801](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/801) ([david22swan](https://github.com/david22swan))
+- (CAT-2413) Update `install_powershell.ps1` to generate the correct link [#796](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/796) ([david22swan](https://github.com/david22swan))
+
 ## [v4.25.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.25.0) - 2025-07-14
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.24.0...v4.25.0)
 
 ### Other
 
-- (PA-7608) Update artifactory URL instead nightlies for yum source [#787](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/787) ([skyamgarp](https://github.com/skyamgarp))
 - Add puppetcore support for macOS [#784](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/784) ([joshcooper](https://github.com/joshcooper))
 - (PA-7433) Update task_spec to upgrade from puppet7 to latest puppet8 dev build [#783](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/783) ([AriaXLi](https://github.com/AriaXLi))
 - (PA-7196) Update the task acceptance tests for Redhat 10(x86_64) [#782](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/782) ([skyamgarp](https://github.com/skyamgarp))
