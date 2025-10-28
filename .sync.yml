@@ -40,8 +40,6 @@ Gemfile:
       - gem: 'orchestrator_client'
         version: '< 0.7.1'
         condition: 'ENV["GEM_BOLT"]'
-      - gem: async
-        version: '~> 1.30' # otherwise async 2.0.0(needs ruby >=3.1.0) is wrongly selected by bundler on jenkins while running with ruby 2.7.1
     ":system_tests":
       - gem: voxpupuli-acceptance
         version: '~> 3'
