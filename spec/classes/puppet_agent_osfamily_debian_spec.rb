@@ -23,7 +23,7 @@ describe 'puppet_agent' do
   package_version = '1.10.100'
   let(:params) do
     {
-      package_version: package_version
+      package_version:
     }
   end
   let(:facts) { facts }
@@ -48,7 +48,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: true,
-          package_version: package_version
+          package_version:
         }
       end
 
@@ -74,7 +74,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: false,
-          package_version: package_version
+          package_version:
         }
       end
 
@@ -94,7 +94,7 @@ describe 'puppet_agent' do
         let(:params) do
           {
             manage_repo: true,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -118,7 +118,7 @@ describe 'puppet_agent' do
         let(:params) do
           {
             manage_repo: false,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -133,7 +133,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: true,
-          package_version: package_version
+          package_version:
         }
       end
 
@@ -166,7 +166,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: true,
-          package_version: package_version,
+          package_version:,
           source: 'https://fake-apt-mirror.com'
         }
       end
@@ -188,7 +188,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: false,
-          package_version: package_version
+          package_version:
         }
       end
 
@@ -207,7 +207,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: true,
-          package_version: package_version,
+          package_version:,
           collection: 'puppet5',
         }
       end
@@ -229,7 +229,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: true,
-          package_version: package_version,
+          package_version:,
           collection: 'puppet5',
           apt_source: 'https://fake-apt-mirror.com/'
         }
@@ -252,7 +252,7 @@ describe 'puppet_agent' do
       let(:params) do
         {
           manage_repo: false,
-          package_version: package_version
+          package_version:
         }
       end
 

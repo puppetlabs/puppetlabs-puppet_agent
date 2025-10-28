@@ -17,12 +17,12 @@ describe "the 'any_resources_of_type' function" do
 
   # A fresh environment is needed for each test since tests create resources
   let(:environment) { Puppet::Node::Environment.create(:testing, [File.expand_path(fixtures('modules'))]) }
-  let(:node) { Puppet::Node.new('yaynode', environment: environment) }
+  let(:node) { Puppet::Node.new('yaynode', environment:) }
   let(:compiler) { Puppet::Parser::Compiler.new(node) }
   let(:scope) { Puppet::Parser::Scope.new(compiler) }
 
   def newresource(type, title, parameters = {})
-    resource = Puppet::Resource.new(type, title, parameters: parameters)
+    resource = Puppet::Resource.new(type, title, parameters:)
     compiler.add_resource(scope, resource)
     resource
   end

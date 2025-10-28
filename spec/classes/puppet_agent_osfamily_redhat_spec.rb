@@ -5,7 +5,7 @@ describe 'puppet_agent' do
   package_version = '5.5.4'
   let(:params) do
     {
-      package_version: package_version
+      package_version:
     }
   end
 
@@ -107,7 +107,7 @@ SCRIPT
         let(:params) do
           {
             manage_repo: false,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -181,7 +181,7 @@ SCRIPT
         let(:params) do
           {
             manage_repo: true,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -204,7 +204,7 @@ SCRIPT
           let(:params) do
             {
               manage_repo: true,
-              package_version: package_version,
+              package_version:,
               disable_proxy: true,
             }
           end
@@ -217,7 +217,7 @@ SCRIPT
           let(:params) do
             {
               manage_repo: true,
-              package_version: package_version,
+              package_version:,
               proxy: 'http://myrepo-proxy.example.com',
             }
           end
@@ -230,7 +230,7 @@ SCRIPT
           let(:params) do
             {
               manage_repo: true,
-              package_version: package_version,
+              package_version:,
               skip_if_unavailable: 'true',
             }
           end
@@ -243,7 +243,7 @@ SCRIPT
           let(:params) do
             {
               manage_repo: true,
-              package_version: package_version,
+              package_version:,
               username: 'forge-key',
               password: sensitive('open-sesame'),
             }
@@ -263,7 +263,7 @@ SCRIPT
         let(:params) do
           {
             manage_repo: false,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -276,7 +276,7 @@ SCRIPT
         let(:params) do
           {
             manage_repo: false,
-            package_version: package_version
+            package_version:
           }
         end
 

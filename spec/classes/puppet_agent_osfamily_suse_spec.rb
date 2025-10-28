@@ -20,7 +20,7 @@ describe 'puppet_agent' do
 
   let(:params) do
     {
-      package_version: package_version
+      package_version:
     }
   end
 
@@ -45,7 +45,7 @@ describe 'puppet_agent' do
 
             let(:params) do
               {
-                package_version: package_version,
+                package_version:,
               }
             end
 
@@ -120,7 +120,7 @@ SCRIPT
                   {
                     manage_repo: true,
                     collection: 'puppet6',
-                    package_version: package_version
+                    package_version:
                   }
                 end
 
@@ -149,7 +149,7 @@ SCRIPT
                   {
                     manage_repo: false,
                     collection: 'puppet6',
-                    package_version: package_version
+                    package_version:
                   }
                 end
 
@@ -169,7 +169,7 @@ SCRIPT
                 let(:params) do
                   {
                     manage_repo: true,
-                    package_version: package_version,
+                    package_version:,
                     collection: 'puppet6',
                     yum_source: 'https://nightlies.puppet.com/yum',
                   }
@@ -249,7 +249,7 @@ SCRIPT
                 let(:params) do
                   {
                     manage_repo: true,
-                    package_version: package_version
+                    package_version:
                   }
                 end
 
@@ -277,7 +277,7 @@ SCRIPT
                 let(:params) do
                   {
                     manage_repo: false,
-                    package_version: package_version
+                    package_version:
                   }
                 end
 
@@ -297,7 +297,7 @@ SCRIPT
                 let(:params) do
                   {
                     manage_repo: true,
-                    package_version: package_version,
+                    package_version:,
                     source: 'https://fake-sles-source.com',
                   }
                 end
@@ -323,7 +323,7 @@ SCRIPT
                 let(:params) do
                   {
                     manage_repo: false,
-                    package_version: package_version
+                    package_version:
                   }
                 end
 
