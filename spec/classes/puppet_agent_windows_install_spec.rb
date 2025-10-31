@@ -4,8 +4,8 @@ RSpec.describe 'puppet_agent', tag: 'win' do
   package_version = '5.10.100.1'
   collection = 'puppet5'
   global_params = {
-    package_version: package_version,
-    collection: collection
+    package_version:,
+    collection:
   }
   ['x86', 'x64'].each do |arch|
     context "Windows arch #{arch}" do

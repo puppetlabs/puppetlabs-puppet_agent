@@ -4,7 +4,7 @@ describe 'puppet_agent' do
   package_version = '1.10.100'
   pe_version = '2000.0.0'
 
-  let(:params) { { package_version: package_version } }
+  let(:params) { { package_version: } }
   let(:version_file) { '/opt/puppetlabs/puppet/VERSION' }
   let(:windows_version_file) { 'C:\Program Files\Puppet Labs\Puppet\VERSION' }
 

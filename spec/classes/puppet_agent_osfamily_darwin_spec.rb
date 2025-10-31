@@ -34,7 +34,7 @@ describe 'puppet_agent' do
   }
 
   describe 'supported environment' do
-    let(:params) { { package_version: package_version } }
+    let(:params) { { package_version: } }
 
     context 'when running a supported macOS' do
       ['osx-11-x86_64', 'osx-12-x86_64'].each do |tag|

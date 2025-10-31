@@ -4,7 +4,6 @@ require 'spec_helper'
 
 # maps AIX release major fact value to the known AIX version
 AIX_VERSION = {
-  '6100': '6.1',
   '7100': '7.2',
   '7200': '7.2',
 }.freeze
@@ -13,8 +12,10 @@ def redhat_familly_supported_os
   on_supported_os(
     supported_os: [
       {
-        'operatingsystem' => 'RedHat',
-        "operatingsystemrelease": ['5', '6', '7', '8'],
+        'os' => {
+          'name' => 'RedHat',
+          'release' => ['6', '7', '8', '9', '10'],
+        }
       },
     ],
   )
@@ -22,7 +23,7 @@ end
 
 describe 'puppet_agent' do
   package_version = '6.5.4'
-  global_params = { package_version: package_version }
+  global_params = { package_version: }
 
   def global_facts(facts, os)
     facts.merge(
@@ -30,7 +31,6 @@ describe 'puppet_agent' do
         {
           is_pe: true,
           env_temp_variable: '/tmp',
-          operatingsystemmajrelease: facts[:operatingsystemrelease].split('.')[0],
         }
       elsif %r{redhat|centos|fedora|scientific|oracle}.match?(os)
         {
@@ -120,12 +120,10 @@ describe 'puppet_agent' do
   end
 
   context 'package provider' do
-    # module is still pinned to older rspec-puppet and facterdb
-    os_name = 'fedora-41-x86_64'
+    # Package provider behavior changes on Fedora in >= 41
     os_facts = {
-      os_name => on_supported_os['fedora-39-x86_64'],
+      'fedora-41-x86_64' => on_supported_os['fedora-41-x86_64']
     }
-    os_facts.values.first[:os]['release'] = { 'full' => '41', 'major' => '41' }
     os_facts.each do |os, facts|
       context "on #{os}" do
         let(:facts) do
@@ -349,10 +347,10 @@ describe 'puppet_agent' do
             it { is_expected.to contain_class('puppet_agent::prepare') }
             it { is_expected.to contain_class('puppet_agent::install').that_requires('Class[puppet_agent::prepare]') }
 
-            if facts[:osfamily] == 'Debian'
+            if facts[:os]['family'] == 'Debian'
               deb_package_version = package_version + '-1' + facts.dig(:os, 'distro', 'codename')
               it { is_expected.to contain_package('puppet-agent').with_ensure(deb_package_version) }
-            elsif facts[:osfamily] == 'Solaris'
+            elsif facts[:os]['family'] == 'Solaris'
               if facts[:operatingsystemmajrelease] == '11'
                 it { is_expected.to contain_package('puppet-agent').with_ensure('6.5.4') }
               else
@@ -363,7 +361,7 @@ describe 'puppet_agent' do
                     )
                 end
               end
-            elsif facts[:osfamily] == 'windows'
+            elsif facts[:os]['family'] == 'windows'
               # Windows does not contain any Package resources
             else
               it { is_expected.to contain_package('puppet-agent').with_ensure(package_version) }
@@ -377,7 +375,7 @@ describe 'puppet_agent' do
 
             # Windows platform does not use Service resources; their services
             # are managed by the MSI installer.
-            unless facts[:osfamily] == 'windows'
+            unless facts[:os]['family'] == 'windows'
               if params[:service_names].nil? && os !~ %r{sles|solaris|aix}
                 it { is_expected.to contain_service('puppet') }
               else
