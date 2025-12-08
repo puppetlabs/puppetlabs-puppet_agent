@@ -660,6 +660,13 @@ install_file() {
       fi
 
       run_cmd "zypper install --no-confirm '$2'"
+
+      # Create credentials file if it does not exist
+      cred_file='/etc/zypp/credentials.d/PuppetcoreCreds'
+      if [ ! -e "$cred_file" ]; then
+        touch "$cred_file"
+      fi
+      
       if [[ "$collection" =~ core ]]; then
         if [[ -n $username ]]; then
           sed -i "s/^username=.*/username=${username}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
