@@ -27,7 +27,7 @@ class PuppetAgent::DeleteLocalFilebucket
     begin
       path = clientbucketdir
       if path && !path.empty? && (File.directory?(path) || force)
-        FileUtils.rm_r(Dir.glob("#{path}/*"), secure: true, force: force)
+        FileUtils.rm_r(Dir.glob("#{path}/*"), secure: true, force:)
         { "success": true }
       else
         error_result(

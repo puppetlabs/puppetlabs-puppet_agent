@@ -73,7 +73,7 @@ EOF
   # is how developer builds are labelled.
   sol11_package_version = '1.10.100.90.9335'
   pe_version = '2000.0.0'
-  let(:params) { { package_version: package_version } }
+  let(:params) { { package_version: } }
 
   describe 'unsupported environment' do
     context 'when not PE' do
@@ -85,7 +85,7 @@ EOF
       # fact isn't available.
       let(:params) do
         {
-          package_version: package_version
+          package_version:
         }
       end
 
@@ -111,7 +111,7 @@ EOF
       end
       let(:params) do
         {
-          package_version: package_version,
+          package_version:,
           source: 'http://fake-solaris-source.com'
         }
       end
@@ -146,7 +146,7 @@ EOF
         let(:params) do
           {
             manage_repo: true,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -163,7 +163,7 @@ EOF
         let(:params) do
           {
             manage_repo: false,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -202,7 +202,7 @@ EOF
         let(:params) do
           {
             manage_repo: true,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -219,7 +219,7 @@ EOF
         let(:params) do
           {
             manage_repo: false,
-            package_version: package_version
+            package_version:
           }
         end
 
@@ -244,7 +244,7 @@ EOF
       end
       let(:params) do
         {
-          package_version: package_version,
+          package_version:,
           source: 'http://fake-solaris-source.com'
         }
       end
