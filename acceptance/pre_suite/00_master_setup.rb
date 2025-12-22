@@ -71,6 +71,6 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
   end
 
   step 'Start puppetserver' do
-    on(master, puppet('resource', 'service', master['puppetservice'], 'ensure=running', 'enable=true'))
+    on(master, puppet('resource', 'service', master['puppetservice'], 'ensure=running', 'enable=true', '--fail'))
   end
 end
