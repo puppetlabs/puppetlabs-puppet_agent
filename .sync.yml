@@ -44,16 +44,10 @@ Gemfile:
       - gem: voxpupuli-acceptance
         version: '~> 3'
 
-appveyor.yml:
-  delete: true
-.travis.yml:
-  delete: true
 .github/workflows/release.yml:
   unmanaged: false
 .github/workflows/release_prep.yml:
   unmanaged: false
-.gitlab-ci.yml:
-  delete: true
 spec/default_facts.yml:
   delete: true
 spec/spec_helper.rb:
