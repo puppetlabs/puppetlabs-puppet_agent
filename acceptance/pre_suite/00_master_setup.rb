@@ -32,7 +32,10 @@ test_name 'Pre-Suite: Install, configure, and start a compatible puppetserver on
   step 'Install puppetserver' do
     # puppetserver is distributed in "release streams" instead of collections.
     opts = {
-      release_stream: install_options[:puppet_collection],
+      # Install a specific version while puppetserver 9 and its new Java 
+      # requirements are still in flux. See PA-8054
+      version: '8.9.5.SNAPSHOT.2025.11.19T1837',
+      # release_stream: install_options[:puppet_collection],
       nightly_yum_repo_url: 'https://artifactory.delivery.puppetlabs.net:443/artifactory/internal_nightly__local/yum'
     }
 
