@@ -791,6 +791,7 @@ case $platform in
       "10") deb_codename="buster";;
       "11") deb_codename="bullseye";;
       "12") deb_codename="bookworm";;
+      "13") deb_codename="trixie";;
     esac
     filetype="deb"
     filename="${collection/core/}-release-${deb_codename}.deb"
