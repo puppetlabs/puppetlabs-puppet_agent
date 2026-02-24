@@ -47,7 +47,9 @@ describe 'install task' do
       osx-15-arm64|
       osx-15-x86_64|
       amazonfips-2023|
-      el-10
+      el-10|
+      debian-13-aarch64|
+      debian-13-amd64
     }x
   end
 
