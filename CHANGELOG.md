@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.27.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.27.0) - 2026-02-24
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.26.0...v4.27.0)
+
+### Added
+
+- (PA-8013) Update the task acceptance tests for Debian 13(ARM & x86_64) [#818](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/818) ([skyamgarp](https://github.com/skyamgarp))
+
 ## [v4.26.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.26.0) - 2025-10-28
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.25.0...v4.26.0)
