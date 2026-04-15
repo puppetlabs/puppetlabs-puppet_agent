@@ -628,7 +628,7 @@ install_file() {
 
       repo="/etc/yum.repos.d/${collection/core/}-release.repo"
       rpm -Uvh --oldpackage --replacepkgs "$2"
-      if [[ "$collection" =~ core ]]; then
+      if [[ "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
         if [[ -n $username ]]; then
           sed -i "s/^#\?username=.*/username=${username}/" "${repo}"
         fi
@@ -660,7 +660,7 @@ install_file() {
       fi
 
       run_cmd "zypper install --no-confirm '$2'"
-      if [[ "$collection" =~ core ]]; then
+      if [[ "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
         if [[ -n $username ]]; then
           sed -i "s/^username=.*/username=${username}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
         fi
