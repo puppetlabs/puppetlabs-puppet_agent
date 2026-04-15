@@ -27,6 +27,7 @@ fi
 export PT__installdir=../
 export PT_version=${to_version}
 export PT_collection=${to_collection}
+export PT_username=${PUPPET_FORGE_USERNAME}
 export PT_password=${PUPPET_FORGE_TOKEN}
 chmod u+x tasks/install_shell.sh
 tasks/install_shell.sh

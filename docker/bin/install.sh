@@ -72,6 +72,6 @@ do
     # Add "--progress plain" for complete build output
     docker build --rm -f "${dockerfile}" . -t pa-dev:$platform.install \
            --build-arg BASE_IMAGE="${base_image}"
-    docker run -e PUPPET_FORGE_TOKEN --rm -ti pa-dev:$platform.install "${version}" "${collection}"
+    docker run -e PUPPET_FORGE_USERNAME -e PUPPET_FORGE_TOKEN --rm -ti pa-dev:$platform.install "${version}" "${collection}"
 done
 echo Complete
