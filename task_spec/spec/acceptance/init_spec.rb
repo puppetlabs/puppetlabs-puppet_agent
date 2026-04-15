@@ -49,7 +49,8 @@ describe 'install task' do
       amazonfips-2023|
       el-10|
       debian-13-aarch64|
-      debian-13-amd64
+      debian-13-amd64|
+      osx-26-arm64
     }x
   end
 
