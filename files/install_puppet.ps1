@@ -320,6 +320,30 @@ try {
     $msi_arguments += " PUPPET_AGENT_STARTUP_MODE=`"$PuppetStartType`""
   }
   $msi_arguments += " $InstallArgs"
+
+  # Check & wait for other ruby process to end 
+  # This ensures no other ruby.exe processes are running before installing
+  if ($InstallDir) {
+    $escapedInstallDir = $InstallDir -replace '\\', '\\'
+  }
+  if (Test-Path "$escapedInstallDir\puppet\bin\ruby.exe") { # The first time an upgrade is run with InstallDir, ruby.exe will not yet exist there yet
+    $other_ruby_process_id = Get-CimInstance Win32_Process -Filter "Name='ruby.exe' AND ExecutablePath LIKE '$escapedInstallDir\\puppet\\bin\\ruby.exe'" | Select-Object -First 1 -ExpandProperty ProcessID
+  } else {
+    $other_ruby_process_id = Get-CimInstance Win32_Process -Filter "Name='ruby.exe' AND ExecutablePath LIKE 'C:\\Program Files\\Puppet Labs\\Puppet\\puppet\\bin\\ruby.exe%'" | Select-Object -First 1 -ExpandProperty ProcessID
+  }
+  if ($other_ruby_process_id) {
+    Write-Log "Waiting for other ruby process to stop, PID: $other_ruby_process_id" $Logfile
+    $ruby_process = Get-Process -ID $other_ruby_process_id -ErrorAction SilentlyContinue
+    if ($ruby_process) {
+      if (!$ruby_process.WaitForExit($WaitForPuppetRun)){
+        Write-Log "ERROR: Timed out waiting for ruby!" $Logfile
+        throw
+      }
+    } else {
+      Write-Log "Ruby already finished" $Logfile
+    }
+  }
+
   Write-Log "Beginning MSI installation with Arguments: $msi_arguments" $Logfile
   Write-Log "****************************** Begin msiexec.exe output ******************************" $Logfile
   $startInfo = New-Object System.Diagnostics.ProcessStartInfo('msiexec.exe', $msi_arguments)
