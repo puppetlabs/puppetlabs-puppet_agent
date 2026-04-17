@@ -620,7 +620,8 @@ install_file() {
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
-        pkg="puppet${major}-release"
+        pkg=$(rpm -qa --qf '%{NAME}\n' | grep "^puppet${major}.*-release$" | head -1)
+        [ -z "$pkg" ] && pkg="puppet${major}-release"
 
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
@@ -653,7 +654,8 @@ install_file() {
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
-        pkg="puppet${major}-release"
+        pkg=$(rpm -qa --qf '%{NAME}\n' | grep "^puppet${major}.*-release$" | head -1)
+        [ -z "$pkg" ] && pkg="puppet${major}-release"
 
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
@@ -684,7 +686,8 @@ install_file() {
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
-        pkg="puppet${major}-release"
+        pkg=$(dpkg-query -W -f='${Package}\n' 2>/dev/null | grep "^puppet${major}.*-release$" | head -1)
+        [ -z "$pkg" ] && pkg="puppet${major}-release"
 
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
