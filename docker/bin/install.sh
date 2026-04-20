@@ -19,15 +19,16 @@
 #          Default: 8.1.0
 set -e
 
-if [[ -z "${PUPPET_FORGE_TOKEN}" ]]; then
-    echo "$0: Environment variable PUPPET_FORGE_TOKEN must be set"
-    exit 1
-fi
-
 cd "$(dirname "$0")/../.."
 platforms=${1:-rocky}
 version=${2:-8.11.0}
 collection=${3:-puppetcore8}
+
+if [[ -z "${PUPPET_FORGE_TOKEN}" && "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
+    echo "$0: Environment variable PUPPET_FORGE_TOKEN must be set"
+    exit 1
+fi
+
 for platform in ${platforms//,/ }
 do
     case $platform in
@@ -71,6 +72,6 @@ do
     # Add "--progress plain" for complete build output
     docker build --rm -f "${dockerfile}" . -t pa-dev:$platform.install \
            --build-arg BASE_IMAGE="${base_image}"
-    docker run -e PUPPET_FORGE_TOKEN --rm -ti pa-dev:$platform.install "${version}" "${collection}"
+    docker run -e PUPPET_FORGE_USERNAME -e PUPPET_FORGE_TOKEN --rm -ti pa-dev:$platform.install "${version}" "${collection}"
 done
 echo Complete

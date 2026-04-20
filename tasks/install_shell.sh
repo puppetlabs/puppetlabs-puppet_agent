@@ -629,7 +629,7 @@ install_file() {
 
       repo="/etc/yum.repos.d/${collection/core/}-release.repo"
       rpm -Uvh --oldpackage --replacepkgs "$2"
-      if [[ "$collection" =~ core ]]; then
+      if [[ "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
         if [[ -n $username ]]; then
           sed -i "s/^#\?username=.*/username=${username}/" "${repo}"
         fi
@@ -661,7 +661,7 @@ install_file() {
       fi
 
       run_cmd "zypper install --no-confirm '$2'"
-      if [[ "$collection" =~ core ]]; then
+      if [[ "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
         if [[ -n $username ]]; then
           sed -i "s/^username=.*/username=${username}/" "/etc/zypp/credentials.d/PuppetcoreCreds"
         fi
@@ -842,7 +842,7 @@ case $platform in
     if [[ $(uname -p) == "arm" ]]; then
         arch="arm64"
     fi
-    if [[ "$collection" =~ "puppetcore" ]]; then
+    if [[ "$collection" != puppetcore*-nightly && "$collection" =~ core ]]; then
       if [[ -z "$version" ]]; then
         critical "You must provide a version to install the agent from puppetcore on MacOS/Windows."
         exit 1
@@ -854,7 +854,7 @@ case $platform in
         download_url="${mac_source}?type=native&version=${version}&os_name=osx&os_version=${platform_version}&os_arch=${arch}"
       fi
     else
-      download_url="${mac_source}/mac/${collection}/${platform_version}/${arch}/${filename}"
+      download_url="${mac_source}/mac/${collection/core/}/${platform_version}/${arch}/${filename}"
     fi
     ;;
   *)
