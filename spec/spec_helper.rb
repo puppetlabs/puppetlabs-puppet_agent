@@ -11,7 +11,11 @@ require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spe
 
 include RspecPuppetFacts
 
-default_facts = {}
+default_facts = {
+  puppetversion: Puppet.version,
+  facterversion: Facter.version,
+  aio_agent_version: Puppet.version,
+}
 
 default_fact_files = [
   File.expand_path(File.join(File.dirname(__FILE__), 'default_facts.yml')),
@@ -22,15 +26,16 @@ default_fact_files.each do |f|
   next unless File.exist?(f) && File.readable?(f) && File.size?(f)
 
   begin
-    default_facts.merge!(YAML.safe_load(File.read(f), permitted_classes: [], permitted_symbols: [], aliases: true))
+    require 'deep_merge'
+    default_facts.deep_merge!(YAML.safe_load(File.read(f), permitted_classes: [], permitted_symbols: [], aliases: true))
   rescue StandardError => e
     RSpec.configuration.reporter.message "WARNING: Unable to load #{f}: #{e}"
   end
 end
 
-# check if default_module_facts is defined and merge them if the case
-if @default_module_facts.is_a?(Hash)
-  default_facts.merge!(@default_module_facts)
+# read default_facts and merge them over what is provided by facterdb
+default_facts.each do |fact, value|
+  add_custom_fact fact, value, merge_facts: true
 end
 
 RSpec.configure do |c|
