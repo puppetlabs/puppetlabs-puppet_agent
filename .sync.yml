@@ -50,8 +50,6 @@ Gemfile:
   unmanaged: false
 .github/workflows/release_prep.yml:
   unmanaged: false
-spec/default_facts.yml:
-  delete: true
 spec/spec_helper.rb:
   unmanaged: true
 # puppet_url_without modules check in puppet-lint assumes any puppet:/// URL is
