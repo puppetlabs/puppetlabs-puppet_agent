@@ -1,0 +1,14 @@
+HOSTS:
+  sles-15-x64:
+    roles:
+      - target
+    platform: sles-15-x86_64
+    hypervisor: docker
+    image: registry.suse.com/suse/sle15:15.6
+    docker_preserve_image: true
+    docker_cmd: '["/bin/sh", "-c", "/usr/sbin/sshd && tail -f /dev/null"]'
+    # install various tools required to get the image up to usable levels
+    docker_image_commands:
+      - 'zypper install -y tar wget openssl iproute2 which'
+CONFIG:
+  trace_limit: 200

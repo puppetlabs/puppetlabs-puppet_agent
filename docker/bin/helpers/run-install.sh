@@ -18,6 +18,9 @@ if [[ -z "$to_collection" ]]; then
         8)
             to_collection=puppetcore8
             ;;
+        9)
+            to_collection=puppetcore9
+            ;;
         *)
             echo "$0: Invalid version supplied" 1>&2
             exit 1

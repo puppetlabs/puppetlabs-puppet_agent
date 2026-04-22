@@ -45,6 +45,7 @@ assert_unmodified_apt_config() {
   puppet_list=/etc/apt/sources.list.d/puppet.list
   puppet7_list=/etc/apt/sources.list.d/puppet7.list
   puppet8_list=/etc/apt/sources.list.d/puppet8.list
+  puppet9_list=/etc/apt/sources.list.d/puppet9.list
 
   if [[ -f $puppet_list ]]; then
     list_file=puppet_list
@@ -52,6 +53,8 @@ assert_unmodified_apt_config() {
     list_file=puppet7_list
   elif [[ -f $puppet8_list ]]; then
     list_file=puppet8_list
+  elif [[ -f $puppet9_list ]]; then
+    list_file=puppet9_list
   fi
 
   # If puppet.list exists, get its md5sum on disk and its md5sum from the puppet-release package
@@ -617,7 +620,8 @@ install_file() {
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
-        pkg="puppet${major}-release"
+        pkg=$(rpm -qa --qf '%{NAME}\n' | grep "^puppet${major}.*-release$" | head -1)
+        [ -z "$pkg" ] && pkg="puppet${major}-release"
 
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
@@ -650,7 +654,8 @@ install_file() {
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
-        pkg="puppet${major}-release"
+        pkg=$(rpm -qa --qf '%{NAME}\n' | grep "^puppet${major}.*-release$" | head -1)
+        [ -z "$pkg" ] && pkg="puppet${major}-release"
 
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
@@ -681,7 +686,8 @@ install_file() {
       if test "x$installed_version" != "xuninstalled"; then
         info "Version ${installed_version} detected..."
         major=$(echo $installed_version | cut -d. -f1)
-        pkg="puppet${major}-release"
+        pkg=$(dpkg-query -W -f='${Package}\n' 2>/dev/null | grep "^puppet${major}.*-release$" | head -1)
+        [ -z "$pkg" ] && pkg="puppet${major}-release"
 
         if echo $2 | grep $pkg; then
           info "No collection upgrade detected"
