@@ -64,7 +64,11 @@ describe 'install task' do
     expect(results).to all(include('status' => 'success'))
 
     # Check that puppet agent service has been stopped due to 'stop_service' parameter set to true
-    service = run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
+    service = if target_platform.include?('win')
+                run_command('c:/"program files"/"puppet labs"/puppet/bin/puppet resource service puppet', 'target')
+              else
+                run_command('/opt/puppetlabs/bin/puppet resource service puppet', 'target')
+              end
     output = service[0]['value']['stdout']
     expect(output).to match(%r{ensure\s+=> 'stopped'})
 
