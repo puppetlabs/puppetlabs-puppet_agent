@@ -19,6 +19,8 @@ jobs:
       GEM_BOLT: true
       BEAKER_debug: true
       BEAKER_set: docker/${{ matrix.os }}
+      BUNDLE_RUBYGEMS___PUPPETCORE__PUPPET__COM: forge-key:${{ secrets.PUPPET_FORGE_TOKEN_PUBLIC || '' }}
+      PUPPET_FORGE_TOKEN: 'YES'
 
     runs-on: 'ubuntu-latest'
     steps:
