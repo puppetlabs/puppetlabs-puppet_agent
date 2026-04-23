@@ -9,6 +9,8 @@
       Enabled: false
     Style/ClassAndModuleChildren:
       Enabled: false
+    Style/FileNull:
+      Enabled: false
 Gemfile:
   optional:
     ":development":
@@ -29,16 +31,8 @@ Gemfile:
       - gem: beaker-module_install_helper
       - gem: beaker-puppet_install_helper
       - gem: nokogiri
-      - gem: 'bolt'
-        version: '~> 3.0'
-        condition: 'ENV["GEM_BOLT"]'
       - gem: 'beaker-task_helper'
         version: '~> 1.9'
-        condition: 'ENV["GEM_BOLT"]'
-      # The Faraday requirements in orchestrator_client 0.7.1 causes Bundler to
-      # resolve the dependency in unexpected ways and causes issues in CI
-      - gem: 'orchestrator_client'
-        version: '< 0.7.1'
         condition: 'ENV["GEM_BOLT"]'
     ":system_tests":
       - gem: voxpupuli-acceptance
@@ -56,8 +50,6 @@ Gemfile:
   unmanaged: false
 .github/workflows/release_prep.yml:
   unmanaged: false
-spec/default_facts.yml:
-  delete: true
 spec/spec_helper.rb:
   unmanaged: true
 # puppet_url_without modules check in puppet-lint assumes any puppet:/// URL is
