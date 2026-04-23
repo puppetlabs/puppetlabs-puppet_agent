@@ -76,12 +76,13 @@ group :development, :release_prep do
   gem "puppetlabs_spec_helper", '~> 8.0', require: false
   gem "puppet-blacksmith", '~> 7.0',      require: false
 end
+# We are overriding the default PDK template's Litmus logic in order to use the
+# latest Bolt in tests. See PA-7824.
 group :system_tests do
-  gem "puppet_litmus", '~> 2.0',             require: false, platforms: [:ruby, :x64_mingw] if !ENV['PUPPET_FORGE_TOKEN'].to_s.empty?
-  gem "puppet_litmus", '~> 1.0', '!= 1.6.1', require: false, platforms: [:ruby, :x64_mingw] if ENV["PUPPET_FORGE_TOKEN"].to_s.empty?
-  gem "CFPropertyList", '< 3.0.7',           require: false, platforms: [:mswin, :mingw, :x64_mingw]
-  gem "serverspec", '~> 2.41',               require: false
-  gem "voxpupuli-acceptance", '~> 3',        require: false
+  gem "puppet_litmus", '~> 2.0',      require: false, platforms: [:ruby, :x64_mingw]
+  gem "CFPropertyList", '< 3.0.7',    require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "serverspec", '~> 2.41',        require: false
+  gem "voxpupuli-acceptance", '~> 3', require: false
 end
 
 gems = {}
