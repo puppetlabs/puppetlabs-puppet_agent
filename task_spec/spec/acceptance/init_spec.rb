@@ -105,7 +105,8 @@ describe 'install task' do
     ^sles-11-|
     ^solaris-10-|
     ^ubuntu-18.04-|
-    ^ubuntu-20.04-
+    ^ubuntu-20.04-|
+    ^windows-.*-32
   END
 
   it 'upgrades to puppetcore9-nightly' do
