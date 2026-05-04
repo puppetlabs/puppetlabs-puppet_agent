@@ -2,5 +2,5 @@
 * @puppetlabs/phoenix @bastelfreak
 
 # tasks
-/tasks @puppetlabs/bolt @bastelfreak
-/task_spec @puppetlabs/bolt @bastelfreak
+/tasks @bastelfreak
+/task_spec @bastelfreak

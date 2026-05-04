@@ -37,14 +37,6 @@ Gemfile:
     ":system_tests":
       - gem: voxpupuli-acceptance
         version: '~> 3'
-      - gem: puppet_litmus
-        version:
-          - '~> 1.0'
-          - '!= 1.6.1'
-        condition: 'ENV["PUPPET_FORGE_TOKEN"].to_s.empty?'
-        platforms:
-          - ruby
-          - x64_mingw
 
 .github/workflows/release.yml:
   unmanaged: false
