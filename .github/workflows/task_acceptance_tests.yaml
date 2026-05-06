@@ -62,8 +62,9 @@ jobs:
         with:
           ruby-version: ${{ env.ruby_version }}
           bundler-cache: true
+          working-directory: task_spec
 
       - name: Run task acceptance tests
         run: |
-          cd task_spec
           bundle exec rake task_acceptance
+        working-directory: task_spec
