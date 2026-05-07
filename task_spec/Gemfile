@@ -1,0 +1,28 @@
+source ENV['GEM_SOURCE'] || "https://rubygems.org"
+
+# Find a location or specific version before installing a gem
+#
+# @param place_or_version can be one of:
+#   - A specific version,
+#   - A git branch, as `https://<your-repo>.git#<branch-name>`
+#   - A file URI, as `file:///absolute/file/path`
+def location_for(place, fake_version = nil)
+  if place.is_a?(String) && place =~ /^((?:git[:@]|https:)[^#]*)#(.*)/
+    [fake_version, { git: $1, branch: $2, require: false }].compact
+  elsif place.is_a?(String) && place =~ /^file:\/\/(.*)/
+    ['>= 0', { path: File.expand_path($1), require: false }]
+  else
+    [place, { require: false }]
+  end
+end
+
+gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 6')
+gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 1')
+gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'] || '~> 2')
+gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 4')
+gem "beaker-module_install_helper", require: false
+gem "beaker-puppet_install_helper", require: false
+gem "beaker-task_helper", '~>1.9' if ENV['GEM_BOLT']
+gem "puppetlabs_spec_helper", '~> 8.0', require: false
+gem "voxpupuli-acceptance", '~> 3', require: false
+gem "puppet_litmus", '~> 2.0',      require: false, platforms: [:ruby, :x64_mingw] 
