@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.28.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.28.0) - 2026-05-07
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.27.0...v4.28.0)
+
+### Added
+
+- (PA-7824) Use newest Bolt [#829](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/829) ([mhashizume](https://github.com/mhashizume))
+- (PA-7897) Update to pdk-templates 3.6.1.1 [#825](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/825) ([joshcooper](https://github.com/joshcooper))
+- (PA-8250) Allow installation of puppetcore9-nightly packages [#822](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/822) ([joshcooper](https://github.com/joshcooper))
+- (PA-8238) Add support for MacOS 26 in install_shell.sh [#821](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/821) ([shubhamshinde360](https://github.com/shubhamshinde360))
+
+### Fixed
+
+- (PA-8250) Restore windows command to check puppet service [#826](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/826) ([joshcooper](https://github.com/joshcooper))
+- (PA-8041) Fix puppetcore8-nightly installs on rpm and mac [#824](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/824) ([joshcooper](https://github.com/joshcooper))
+- (PA-8247) Add guard against other ruby process when installing [#823](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/823) ([AriaXLi](https://github.com/AriaXLi))
+
 ## [v4.27.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.27.0) - 2026-02-24
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.26.0...v4.27.0)
