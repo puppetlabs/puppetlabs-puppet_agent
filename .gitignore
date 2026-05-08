@@ -11,14 +11,12 @@
 /bin/
 /doc/
 /Gemfile.local
-Gemfile.lock
+/Gemfile.lock
 /junit/
 /log/
-/task_spec/log/
 /pkg/
 /spec/fixtures/manifests/
 /spec/fixtures/modules/*
-/task_spec/spec/fixtures/
 /tmp/
 /vendor/
 /.vendor/
