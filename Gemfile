@@ -35,6 +35,8 @@ def print_gem_statement_for(gems)
   end
 end
 
+bolt_gem_version = ENV.fetch('BOLT_GEM_VERSION', nil)
+
 group :development do
   gem "json", '= 2.6.1',                                                                     require: false if Gem::Requirement.create(['>= 3.1.0', '< 3.1.3']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "json", '= 2.6.3',                                                                     require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
@@ -69,6 +71,9 @@ group :development do
   gem "beaker-module_install_helper",                                                        require: false
   gem "beaker-puppet_install_helper",                                                        require: false
   gem "nokogiri",                                                                            require: false
+  # We are overriding the default PDK template's beaker logic in order to constrain
+  # bolt to development group
+  gem "bolt", *location_for(bolt_gem_version, nil, {source: gemsource_puppetcore})           if ENV["GEM_BOLT"]
   gem "beaker-task_helper", '~> 1.9',                                                        require: false if ENV["GEM_BOLT"]
 end
 group :development, :release_prep do
@@ -86,12 +91,10 @@ group :system_tests do
 end
 
 gems = {}
-bolt_version = ENV.fetch('BOLT_GEM_VERSION', nil)
 puppet_version = ENV.fetch('PUPPET_GEM_VERSION', nil)
 facter_version = ENV.fetch('FACTER_GEM_VERSION', nil)
 hiera_version = ENV.fetch('HIERA_GEM_VERSION', nil)
 
-gems['bolt'] = location_for(bolt_version, nil, { source: gemsource_puppetcore })
 gems['puppet'] = location_for(puppet_version, nil, { source: gemsource_puppetcore })
 gems['facter'] = location_for(facter_version, nil, { source: gemsource_puppetcore })
 gems['hiera'] = location_for(hiera_version, nil, {}) if hiera_version

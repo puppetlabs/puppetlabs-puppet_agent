@@ -38,6 +38,8 @@ Gemfile:
       - gem: voxpupuli-acceptance
         version: '~> 3'
 
+Gemfile:
+  unmanaged: true
 .github/workflows/release.yml:
   unmanaged: false
 .github/workflows/release_prep.yml:
