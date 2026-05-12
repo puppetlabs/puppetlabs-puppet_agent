@@ -35,49 +35,66 @@ def print_gem_statement_for(gems)
   end
 end
 
+bolt_gem_version = ENV.fetch('BOLT_GEM_VERSION', nil)
+
 group :development do
-  gem "json", '= 2.6.1',                         require: false if Gem::Requirement.create(['>= 3.1.0', '< 3.1.3']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "json", '= 2.6.3',                         require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "racc", '~> 1.4.0',                        require: false if Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "deep_merge", '~> 1.2.2',                  require: false
-  gem "voxpupuli-puppet-lint-plugins", '~> 5.0', require: false
-  gem "facterdb", '~> 2.1',                      require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "facterdb", '~> 3.0',                      require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "metadata-json-lint", '~> 4.0',            require: false
-  gem "json-schema", '< 5.1.1',                  require: false
-  gem "rspec-puppet-facts", '~> 4.0',            require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "rspec-puppet-facts", '~> 5.0',            require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
-  gem "dependency_checker", '~> 1.0.0',          require: false
-  gem "parallel_tests", '= 3.12.1',              require: false
-  gem "pry", '~> 0.10',                          require: false
-  gem "simplecov-console", '~> 0.9',             require: false
-  gem "puppet-debugger", '~> 1.6',               require: false
-  gem "rubocop", '~> 1.73.0',                    require: false
-  gem "rubocop-performance", '~> 1.24.0',        require: false
-  gem "rubocop-rspec", '~> 3.5.0',               require: false
-  gem "rubocop-rspec_rails", '~> 2.31.0',        require: false
-  gem "rubocop-factory_bot", '~> 2.27.0',        require: false
-  gem "rubocop-capybara", '~> 2.22.0',           require: false
-  gem "rubocop-ast", '< 1.43.0',                 require: false, platforms: [:mswin, :mingw, :x64_mingw]
-  gem "rb-readline", '= 0.5.5',                  require: false, platforms: [:mswin, :mingw, :x64_mingw]
-  gem "bigdecimal", '< 3.2.2',                   require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "json", '= 2.6.1',                                                                     require: false if Gem::Requirement.create(['>= 3.1.0', '< 3.1.3']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "json", '= 2.6.3',                                                                     require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "racc", '~> 1.4.0',                                                                    require: false if Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "deep_merge", '~> 1.2.2',                                                              require: false
+  gem "voxpupuli-puppet-lint-plugins", '~> 5.0',                                             require: false
+  gem "facterdb", '~> 2.1',                                                                  require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "facterdb", '~> 3.0',                                                                  require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "metadata-json-lint", '~> 4.0',                                                        require: false
+  gem "json-schema", '< 5.1.1',                                                              require: false
+  gem "rspec-puppet-facts", '~> 4.0',                                                        require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "rspec-puppet-facts", '~> 5.0',                                                        require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "dependency_checker", '~> 1.0.0',                                                      require: false
+  gem "parallel_tests", '= 3.12.1',                                                          require: false
+  gem "pry", '~> 0.10',                                                                      require: false
+  gem "simplecov-console", '~> 0.9',                                                         require: false
+  gem "puppet-debugger", '~> 1.6',                                                           require: false
+  gem "rubocop", '~> 1.73.0',                                                                require: false
+  gem "rubocop-performance", '~> 1.24.0',                                                    require: false
+  gem "rubocop-rspec", '~> 3.5.0',                                                           require: false
+  gem "rubocop-rspec_rails", '~> 2.31.0',                                                    require: false
+  gem "rubocop-factory_bot", '~> 2.27.0',                                                    require: false
+  gem "rubocop-capybara", '~> 2.22.0',                                                       require: false
+  gem "rubocop-ast", '< 1.43.0',                                                             require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "rb-readline", '= 0.5.5',                                                              require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "bigdecimal", '< 3.2.2',                                                               require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "beaker", *location_for(ENV['BEAKER_VERSION'] || '~> 6.0')
+  gem "beaker-abs", *location_for(ENV['BEAKER_ABS_VERSION'] || '~> 1.0')
+  gem "beaker-hostgenerator", *location_for(ENV['BEAKER_HOSTGENERATOR_VERSION'] || '~> 2.0')
+  gem "beaker-rspec"
+  gem "beaker-puppet", *location_for(ENV['BEAKER_PUPPET_VERSION'] || '~> 4.0')
+  gem "beaker-module_install_helper",                                                        require: false
+  gem "beaker-puppet_install_helper",                                                        require: false
+  gem "nokogiri",                                                                            require: false
+  # We are overriding the default PDK template's beaker logic in order to constrain
+  # bolt to development group
+  gem "bolt", *location_for(bolt_gem_version, nil, {source: gemsource_puppetcore})           if ENV["GEM_BOLT"]
+  gem "beaker-task_helper", '~> 1.9',                                                        require: false if ENV["GEM_BOLT"]
 end
 group :development, :release_prep do
   gem "puppet-strings", '~> 4.0',         require: false
   gem "puppetlabs_spec_helper", '~> 8.0', require: false
   gem "puppet-blacksmith", '~> 7.0',      require: false
 end
+# We are overriding the default PDK template's Litmus logic in order to use the
+# latest Bolt in tests. See PA-7824.
 group :system_tests do
-  # add gems to acceptance/Gemfile or task_spec/Gemfile
+  gem "puppet_litmus", '~> 2.0',      require: false, platforms: [:ruby, :x64_mingw]
+  gem "CFPropertyList", '< 3.0.7',    require: false, platforms: [:mswin, :mingw, :x64_mingw]
+  gem "serverspec", '~> 2.41',        require: false
+  gem "voxpupuli-acceptance", '~> 3', require: false
 end
 
 gems = {}
-bolt_version = ENV.fetch('BOLT_GEM_VERSION', nil)
 puppet_version = ENV.fetch('PUPPET_GEM_VERSION', nil)
 facter_version = ENV.fetch('FACTER_GEM_VERSION', nil)
 hiera_version = ENV.fetch('HIERA_GEM_VERSION', nil)
 
-gems['bolt'] = location_for(bolt_version, nil, { source: gemsource_puppetcore })
 gems['puppet'] = location_for(puppet_version, nil, { source: gemsource_puppetcore })
 gems['facter'] = location_for(facter_version, nil, { source: gemsource_puppetcore })
 gems['hiera'] = location_for(hiera_version, nil, {}) if hiera_version
