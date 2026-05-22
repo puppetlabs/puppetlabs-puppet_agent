@@ -53,9 +53,15 @@ desc 'Run all the tests and destroy the hosts afterward'
 task :ci do
   begin
     Rake.application['prepare'].invoke
-    case ENV['MASTER_COLLECTION']
+    # UPGRADE_TARGET_COLLECTION selects which upgrade test to run, defaulting to
+    # MASTER_COLLECTION. Override when the master must be on an older stream than
+    # the upgrade target — e.g. testing puppet8→9 agent upgrades with a puppet8
+    # master because puppetserver-9 nightlies aren't yet published.
+    case ENV['UPGRADE_TARGET_COLLECTION'] || ENV['MASTER_COLLECTION']
     when /puppet8/
       beaker('exec ./tests/test_upgrade_puppet7_to_puppet8.rb')
+    when /puppet9/
+      beaker('exec ./tests/test_upgrade_puppet8_to_puppet9.rb')
     end
   ensure
     beaker('destroy')
