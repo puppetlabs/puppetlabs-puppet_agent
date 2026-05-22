@@ -1,4 +1,5 @@
 require 'beaker-puppet'
+require 'open-uri'
 require_relative '../helpers'
 
 # Tests FOSS upgrades from the latest Puppet 8 (the puppet8-nightly collection)
@@ -14,14 +15,27 @@ test_name 'puppet_agent class: Upgrade agents from puppet8 to puppet9' do
   # Both passing-agent-SHAs lookups have to succeed; if VPN/network flaps and
   # either returns empty, the test silently degrades (empty package_version
   # crashes the puppet_agent class; empty SHA produces a nonsense dev_builds
-  # URL). Use curl --retry and assert non-empty.
-  curl_passing_sha = ->(name) do
-    out = `curl --silent --fail --retry 5 --retry-delay 3 --retry-connrefused --max-time 30 https://builds.delivery.puppetlabs.net/passing-agent-SHAs/#{name}`.strip
-    fail_test("Failed to fetch passing-agent-SHAs/#{name} from builds.delivery.puppetlabs.net; check VPN") if out.empty?
-    out
+  # URL). Use Ruby HTTP with retry rather than shelling out to curl, since
+  # `--retry-connrefused` isn't supported on older curl versions (e.g. CentOS 7).
+  fetch_passing_sha = ->(name) do
+    url = "https://builds.delivery.puppetlabs.net/passing-agent-SHAs/#{name}"
+    attempts = 5
+    last_error = nil
+    attempts.times do |i|
+      begin
+        body = URI.parse(url).open(open_timeout: 10, read_timeout: 30, &:read).strip
+        return body unless body.empty?
+
+        last_error = 'empty response body'
+      rescue StandardError => e
+        last_error = "#{e.class}: #{e.message}"
+      end
+      sleep 3 unless i == attempts - 1
+    end
+    fail_test("Failed to fetch #{url} after #{attempts} attempts: #{last_error}")
   end
 
-  latest_version = curl_passing_sha.call('puppet-agent-9.x-version')
+  latest_version = fetch_passing_sha.call('puppet-agent-9.x-version')
   logger.info("Using latest puppet-agent-9.x #{latest_version}")
 
   puppet_testing_environment = new_puppet_testing_environment
@@ -59,7 +73,7 @@ node default {
   # /puppet-agent/<full-sha>/artifacts/<full-sha>.yaml. The `puppet-agent-8.x`
   # file under passing-agent-SHAs/ holds that full SHA; the `-version` sibling
   # is a human-readable version+short-sha that beaker can't resolve to a YAML.
-  initial_agent_version = ENV['INITIAL_PUPPET_AGENT_VERSION'] || curl_passing_sha.call('puppet-agent-8.x')
+  initial_agent_version = ENV['INITIAL_PUPPET_AGENT_VERSION'] || fetch_passing_sha.call('puppet-agent-8.x')
   logger.info("Using puppet-agent 8.x ref for initial agent install: #{initial_agent_version}")
   agents_only.each do |agent|
     # REMIND: PA-7431 use nightly repos once those release packages are fixed
