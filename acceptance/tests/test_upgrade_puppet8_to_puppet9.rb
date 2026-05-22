@@ -15,7 +15,7 @@ test_name 'puppet_agent class: Upgrade agents from puppet8 to puppet9' do
   # either returns empty, the test silently degrades (empty package_version
   # crashes the puppet_agent class; empty SHA produces a nonsense dev_builds
   # URL). Use curl --retry and assert non-empty.
-  curl_passing_sha = lambda do |name|
+  curl_passing_sha = ->(name) do
     out = `curl --silent --fail --retry 5 --retry-delay 3 --retry-connrefused --max-time 30 https://builds.delivery.puppetlabs.net/passing-agent-SHAs/#{name}`.strip
     fail_test("Failed to fetch passing-agent-SHAs/#{name} from builds.delivery.puppetlabs.net; check VPN") if out.empty?
     out
@@ -80,7 +80,7 @@ node default {
         logger.error("=== puppet agent -t output on #{agent} (exit #{result.exit_code}) ===")
         logger.error(result.stdout)
         logger.error(result.stderr) unless result.stderr.empty?
-        logger.error("=== end output ===")
+        logger.error('=== end output ===')
         fail_test("puppet agent -t expected exit 2 (changes applied) on #{agent}, got exit #{result.exit_code}")
       end
       wait_for_installation_pid(agent)
