@@ -830,6 +830,7 @@ case $platform in
       "20.04") deb_codename="focal";;
       "22.04") deb_codename="jammy";;
       "24.04") deb_codename="noble";;
+      "26.04") deb_codename="resolute";;
     esac
     filetype="deb"
     filename="${collection/core/}-release-${deb_codename}.deb"
