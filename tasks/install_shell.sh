@@ -275,9 +275,6 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
     major_version=$(echo "${major_version}" | cut -d '.' -f 1);
 
     case $major_version in
-      "11")    platform_version="11";;
-      "12")    platform_version="12";;
-      "13")    platform_version="13";;
       "14")    platform_version="14";;
       "15")    platform_version="15";;
       "26")    platform_version="26";;
