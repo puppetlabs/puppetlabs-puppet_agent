@@ -18,8 +18,8 @@ module Beaker::DSL
   # Collection handling
   module Structure
     def collection_cmp(col_1, col_2)
-      col_1 = col_1.to_sym
-      col_2 = col_2.to_sym
+      col_1 = col_1.to_s
+      col_2 = col_2.to_s
 
       return 0 if col_1 == col_2
 
