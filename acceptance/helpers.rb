@@ -229,18 +229,14 @@ module Beaker::DSL
           # This discrepancy causes apt to error, so we manually add signing info.
           if %r{debian|ubuntu}.match?(host['platform'])
             step '(Agent) Add apt signing information' do
-              sed_command = "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet.asc] http/' /etc/apt/sources.list.d/*puppet*.list -i"
-              if host['platform'].include?('ubuntu-24.04') || host['platform'].include?('ubuntu-26.04')
-                # Confirmed via the puppet8-to-puppet9 experimental Jenkins pipeline that
-                # ubuntu-24.04 and ubuntu-26.04 install the initial puppet8 agent via a
-                # direct dev_builds .deb download rather than an apt repo (no sources.list.d
-                # file to sign). ubuntu-22.04 is confirmed passing with the unconditional
-                # sed, so it (and debian) are left on that path.
-                result = on(host, 'ls /etc/apt/sources.list.d/*puppet*.list', acceptable_exit_codes: [0, 2])
-                on(host, sed_command) if result.exit_code.zero?
-              else
-                on(host, sed_command)
-              end
+              # On some platform/release combos beaker-puppet's dev_builds install path
+              # dpkg-installs the artifact directly rather than through an apt repo, leaving
+              # no *puppet*.list file to sign. Skip signing when no such file exists instead
+              # of hardcoding the affected platform/version strings.
+              on(host, 'for f in /etc/apt/sources.list.d/*puppet*.list; do ' \
+                       '[ -e "$f" ] || continue; ' \
+                       "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet.asc] http/' -i \"$f\"; " \
+                       'done')
             end
           end
 
