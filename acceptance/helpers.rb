@@ -229,7 +229,14 @@ module Beaker::DSL
           # This discrepancy causes apt to error, so we manually add signing info.
           if %r{debian|ubuntu}.match?(host['platform'])
             step '(Agent) Add apt signing information' do
-              on(host, "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet.asc] http/' /etc/apt/sources.list.d/*puppet*.list -i")
+              # On some platform/release combos beaker-puppet's dev_builds install path
+              # dpkg-installs the artifact directly rather than through an apt repo, leaving
+              # no *puppet*.list file to sign. Skip signing when no such file exists instead
+              # of hardcoding the affected platform/version strings.
+              on(host, 'for f in /etc/apt/sources.list.d/*puppet*.list; do ' \
+                       '[ -e "$f" ] || continue; ' \
+                       "sed -e 's/^deb http/deb [signed-by=\\/etc\\/apt\\/keyrings\\/GPG-KEY-puppet.asc] http/' -i \"$f\"; " \
+                       'done')
             end
           end
 
