@@ -1,5 +1,6 @@
 require 'beaker-puppet'
 require 'open-uri'
+require 'yaml'
 require_relative '../helpers'
 
 # Tests FOSS upgrades from the latest Puppet 8 (the puppet8-nightly collection)
@@ -17,8 +18,7 @@ test_name 'puppet_agent class: Upgrade agents from puppet8 to puppet9' do
   # crashes the puppet_agent class; empty SHA produces a nonsense dev_builds
   # URL). Use Ruby HTTP with retry rather than shelling out to curl, since
   # `--retry-connrefused` isn't supported on older curl versions (e.g. CentOS 7).
-  fetch_passing_sha = ->(name) do
-    url = "https://builds.delivery.puppetlabs.net/passing-agent-SHAs/#{name}"
+  fetch_with_retry = ->(url) do
     attempts = 5
     last_error = nil
     attempts.times do |i|
@@ -34,8 +34,22 @@ test_name 'puppet_agent class: Upgrade agents from puppet8 to puppet9' do
     end
     fail_test("Failed to fetch #{url} after #{attempts} attempts: #{last_error}")
   end
+  fetch_passing_sha = ->(name) { fetch_with_retry.call("https://builds.delivery.puppetlabs.net/passing-agent-SHAs/#{name}") }
 
-  latest_version = fetch_passing_sha.call('puppet-agent-9.x-version')
+  # The `puppet-agent-9.x-version` convenience file reports the eventual release
+  # version (e.g. "9.0.0.204.g<sha>", derived from the build's `:version:` field),
+  # but pre-9.0.0 nightlies are still packaged under Puppet's next-major
+  # pre-release convention (8.99.99.<build>, the build's `:origversion:`). mac/
+  # windows/solaris/aix install from a hand-built, exact filename (see
+  # osfamily/{darwin,windows,solaris,aix}.pp), so using the "friendly" version
+  # 404s -- apt/yum below are unaffected, since they resolve `latest` via repo
+  # metadata rather than a literal filename. Resolve the real package version
+  # from the build's own YAML instead of trusting the convenience file.
+  latest_version_sha = fetch_passing_sha.call('puppet-agent-9.x')
+  build_yaml_url = "https://builds.delivery.puppetlabs.net/puppet-agent/#{latest_version_sha}/artifacts/#{latest_version_sha}.yaml"
+  build_data = YAML.safe_load(fetch_with_retry.call(build_yaml_url), permitted_classes: [Symbol])
+  origversion = build_data[:origversion] || fail_test("No :origversion found in #{build_yaml_url}")
+  latest_version = "#{origversion}.g#{latest_version_sha[0, 9]}"
   logger.info("Using latest puppet-agent-9.x #{latest_version}")
 
   puppet_testing_environment = new_puppet_testing_environment
