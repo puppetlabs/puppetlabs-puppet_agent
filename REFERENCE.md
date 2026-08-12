@@ -120,7 +120,7 @@ Data type: `String`
 
 The Puppet Collection to track. Defaults to 'PC1'. Valid values are puppet7,
 puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly,
-puppetcore7, puppetcore8.
+puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9, puppetcore9-nightly
 
 Default value: `$puppet_agent::params::collection`
 
@@ -850,7 +850,7 @@ The version of puppet-agent to install (defaults to latest when no agent is inst
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9, puppetcore9-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
@@ -930,7 +930,7 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9, puppetcore9-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 
@@ -1010,7 +1010,7 @@ The version of puppet-agent to install
 
 ##### `collection`
 
-Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9-nightly]]`
+Data type: `Optional[Enum[puppet7, puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly, puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9, puppetcore9-nightly]]`
 
 The Puppet collection to install from (defaults to puppet, which maps to the latest collection released)
 

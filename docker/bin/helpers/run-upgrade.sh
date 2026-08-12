@@ -16,6 +16,9 @@ case $puppet_major in
 8)
     to_collection=puppetcore8
     ;;
+9)
+    to_collection=puppetcore9
+    ;;
 *)
     echo "Invalid version supplied" 1>&2
     exit 1
