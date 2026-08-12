@@ -1,6 +1,6 @@
 require 'beaker-puppet'
 require 'open-uri'
-require 'yaml'
+require 'json'
 require_relative '../helpers'
 
 # Tests FOSS upgrades from the latest Puppet 8 (the puppet8-nightly collection)
@@ -39,17 +39,17 @@ test_name 'puppet_agent class: Upgrade agents from puppet8 to puppet9' do
   # The `puppet-agent-9.x-version` convenience file reports the eventual release
   # version (e.g. "9.0.0.204.g<sha>", derived from the build's `:version:` field),
   # but pre-9.0.0 nightlies are still packaged under Puppet's next-major
-  # pre-release convention (8.99.99.<build>, the build's `:origversion:`). mac/
-  # windows/solaris/aix install from a hand-built, exact filename (see
-  # osfamily/{darwin,windows,solaris,aix}.pp), so using the "friendly" version
-  # 404s -- apt/yum below are unaffected, since they resolve `latest` via repo
-  # metadata rather than a literal filename. Resolve the real package version
-  # from the build's own YAML instead of trusting the convenience file.
-  latest_version_sha = fetch_passing_sha.call('puppet-agent-9.x')
-  build_yaml_url = "https://builds.delivery.puppetlabs.net/puppet-agent/#{latest_version_sha}/artifacts/#{latest_version_sha}.yaml"
-  build_data = YAML.safe_load(fetch_with_retry.call(build_yaml_url), permitted_classes: [Symbol])
-  origversion = build_data[:origversion] || fail_test("No :origversion found in #{build_yaml_url}")
-  latest_version = "#{origversion}.g#{latest_version_sha[0, 9]}"
+  # pre-release convention (8.99.99.<build>). mac/windows/solaris/aix install
+  # from a hand-built, exact filename (see osfamily/{darwin,windows,solaris,aix}.pp),
+  # so using the "friendly" version 404s -- apt/yum below are unaffected, since
+  # they resolve `latest` via repo metadata rather than a literal filename.
+  #
+  # Resolve the real, currently-packaged version from the generic "suite"
+  # report instead of trusting the convenience file or a single build's own
+  # YAML (per-SHA YAML lookups don't reflect the version once that build is
+  # promoted to a tagged release -- see PR #846 review discussion).
+  report = JSON.parse(fetch_with_retry.call('https://artifactory.delivery.puppetlabs.net/artifactory/generic/api/v1/json/report-9.x'))
+  latest_version = report['suite-version'] || fail_test("No 'suite-version' found in report-9.x: #{report}")
   logger.info("Using latest puppet-agent-9.x #{latest_version}")
 
   puppet_testing_environment = new_puppet_testing_environment
