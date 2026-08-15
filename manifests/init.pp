@@ -5,7 +5,7 @@
 # @param collection
 #   The Puppet Collection to track. Defaults to 'PC1'. Valid values are puppet7,
 #   puppet8, puppet, puppet7-nightly, puppet8-nightly, puppet-nightly,
-#   puppetcore7, puppetcore8.
+#   puppetcore7, puppetcore8, puppetcore8-nightly, puppetcore9, puppetcore9-nightly
 # @param is_pe
 #   Install from Puppet Enterprise repos. Enabled if communicating with a PE master.
 # @param manage_pki_dir
