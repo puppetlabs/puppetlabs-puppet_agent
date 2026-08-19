@@ -120,47 +120,7 @@ node default {
       # Pre-release puppet9 nightlies report as 8.99.99.<build>.g<sha> (Puppet's
       # next-major pre-release convention); accept those alongside the eventual
       # stable 9.x.y form.
-      installed_version = puppet_agent_version_on(agent)
-      # puppet_agent_version_on returns nil (rather than a non-matching
-      # string) when `facter aio_agent_version` itself fails to run -- e.g.
-      # exactly the "package removed, reinstall failed" failure mode these
-      # diagnostics exist for -- so guard before calling String methods on it.
-      is_upgraded = !installed_version.nil? && installed_version.match?(%r{^(?:9\.\d+\.\d+|8\.99\.99\.\d+).*})
-      unless is_upgraded
-        # Checked with a plain, non-raising shell test rather than
-        # fact_on/facter: this branch exists specifically for the case where
-        # the agent's Ruby/facter is broken or gone, and fact_on has no
-        # accept_all_exit_codes equivalent, so it would raise in exactly
-        # that scenario instead of running these diagnostics. Presence of
-        # /etc/yum.repos.d is also the precondition for the pc_repo.repo read
-        # a few lines below, so it doubles as that guard too.
-        is_rpm_family = on(agent, 'test -d /etc/yum.repos.d', accept_all_exit_codes: true).exit_code.zero?
-        if is_rpm_family
-          # Capture repo/package state before the test's teardown removes
-          # pc_repo and (attempts to) purge the package, which would
-          # otherwise destroy this evidence. RPM-family only: dnf/yum aren't
-          # meaningful on other platforms, and running them there just adds
-          # "command not found" noise on top of the real failure.
-          logger.error("=== repo/package diagnostics on #{agent} (installed version: #{installed_version.inspect}) ===")
-          # The dnf/yum provider's own reasoning about Package[puppet-agent]
-          # is only visible in this run's --debug output, which is discarded
-          # above whenever exit_code == 2 (no error). Re-surface the
-          # relevant lines here since that's exactly the scenario we need to
-          # see into.
-          logger.error('--- puppet agent -t --debug lines mentioning the package/dnf/yum decision ---')
-          logger.error(result.stdout.lines.grep(%r{puppet-agent|dnf|yum}i).join)
-          # Deliberately not re-running `dnf check-update` here -- doing so
-          # would itself refresh dnf5's metadata cache and destroy the very
-          # "cold cache" evidence these read-only commands are meant to
-          # capture. The real check-update invocation (including whether it
-          # forced a refresh) is already visible in the debug lines above.
-          logger.error(on(agent, 'cat /etc/yum.repos.d/pc_repo.repo', accept_all_exit_codes: true).stdout)
-          logger.error(on(agent, 'dnf repolist', accept_all_exit_codes: true).stdout)
-          logger.error(on(agent, 'dnf list --showduplicates puppet-agent', accept_all_exit_codes: true).stdout)
-          logger.error('=== end diagnostics ===')
-        end
-      end
-      assert(is_upgraded, "expected puppet9 on #{agent}, got installed version: #{installed_version.inspect}")
+      assert(puppet_agent_version_on(agent) =~ %r{^(?:9\.\d+\.\d+|8\.99\.99\.\d+).*})
     end
   end
 
