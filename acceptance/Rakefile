@@ -55,10 +55,9 @@ task :ci do
     Rake.application['prepare'].invoke
     # UPGRADE_TARGET_COLLECTION selects which upgrade test to run, defaulting to
     # MASTER_COLLECTION. Override when the master must be on an older stream than
-    # the upgrade target — e.g. testing puppet8→9 agent upgrades with a puppet8
-    # master because puppetserver-9 nightlies aren't yet published. Treat blank
-    # env values as unset; an empty string is truthy in Ruby and would otherwise
-    # mask the MASTER_COLLECTION fallback.
+    # the upgrade target -- e.g. to deliberately test a puppet9 agent upgrade
+    # against an older master. Treat blank env values as unset; an empty string
+    # is truthy in Ruby and would otherwise mask the MASTER_COLLECTION fallback.
     upgrade_target = ENV['UPGRADE_TARGET_COLLECTION'].to_s.strip
     upgrade_target = ENV['MASTER_COLLECTION'].to_s.strip if upgrade_target.empty?
     case upgrade_target

@@ -6,11 +6,17 @@ require_relative '../helpers'
 # Tests FOSS upgrades from the latest Puppet 8 (the puppet8-nightly collection)
 # to the latest puppet9-nightly build.
 test_name 'puppet_agent class: Upgrade agents from puppet8 to puppet9' do
-  # puppet9-nightly puppetserver may not yet be published; accept a puppet8 or
-  # newer master so the test can run while agents are upgraded to puppet9.
-  # puppet_collection_for(:puppetserver, ...) returns bare 'puppet8'/'puppet9'
-  # (no -nightly suffix), so compare against the bare collection name.
-  require_master_collection min: 'puppet8'
+  # puppetserver 9-nightly builds are now available (PA-8998), so require an
+  # actual puppet9 master to properly exercise the upgrade instead of falling
+  # back to a puppet8 master. puppet_collection_for(:puppetserver, ...) returns
+  # bare 'puppet8'/'puppet9' (no -nightly suffix), so compare against the bare
+  # collection name.
+  #
+  # Note puppetserver 9-nightly platform coverage differs from puppet8-nightly
+  # (some platforms were dropped, others added) -- if the master platform in
+  # hosts.yaml changes, confirm a puppetserver9-nightly build still exists for
+  # it before relying on this.
+  require_master_collection min: 'puppet9'
   exclude_pe_upgrade_platforms
 
   # Both passing-agent-SHAs lookups have to succeed; if VPN/network flaps and
