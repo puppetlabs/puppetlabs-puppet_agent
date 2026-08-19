@@ -146,6 +146,26 @@ describe 'puppet_agent' do
         it { is_expected.to contain_package('puppet-agent').with_provider(nil) }
       end
     end
+
+    # Regression test for a versioncmp() truthiness bug (PA-9119): versioncmp
+    # returns an Integer, and Puppet treats every Integer -- including 0 and
+    # negatives -- as truthy, so a bare `if versioncmp(...)` was true for
+    # every Fedora release, not just >= 41. Fedora releases below 41 must
+    # still get the explicit 'yum' provider.
+    context 'on a pre-dnf5 Fedora release (< 41)' do
+      # fedora-38 facts aren't available from every FacterDB version pinned
+      # across this module's supported Puppet/Ruby matrix (see the fallback
+      # above), so derive them the same way: reuse whichever Fedora facts
+      # `os_facts` above already resolved and override just the release.
+      pre_dnf5_os_name = 'fedora-38-x86_64'
+      pre_dnf5_facts = os_facts.values.first.dup
+      pre_dnf5_facts[:os] = pre_dnf5_facts[:os].merge('release' => { 'full' => '38', 'major' => '38' })
+
+      let(:facts) { global_facts(pre_dnf5_facts, pre_dnf5_os_name) }
+      let(:params) { { package_version: '6.18.0' } }
+
+      it { is_expected.to contain_package('puppet-agent').with_provider('yum') }
+    end
   end
 
   context 'supported_operating systems' do

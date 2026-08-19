@@ -93,7 +93,7 @@ class puppet_agent::install (
         # any other type of source means we use a package manager (yum) with no 'source' parameter in the
         # package resource below
         $_package_version = $package_version
-        if $facts['os']['name'] == 'Fedora' and versioncmp($facts['os']['release']['major'], '41') {
+        if $facts['os']['name'] == 'Fedora' and versioncmp($facts['os']['release']['major'], '41') >= 0 {
           $_provider = undef
         } else {
           $_provider = 'yum'
