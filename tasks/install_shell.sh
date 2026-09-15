@@ -245,7 +245,9 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
     platform="el"
 
   # Handle AlmaLinux
-  elif test "x$platform" = "xAlmalinux"; then
+  # puppetlabs-facts >= 1.8.0 returns "AlmaLinux" (matching facter's os.name);
+  # earlier versions returned "Almalinux" from munge_name()'s generic fallback.
+  elif test "x$platform" = "xAlmaLinux" -o "x$platform" = "xAlmalinux"; then
     platform="el"
 
   # If facts task return "Linux" for platform, investigate.
