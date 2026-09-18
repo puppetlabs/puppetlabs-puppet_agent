@@ -789,7 +789,7 @@ case $platform in
     filename="${collection/core/}-release-fedora-${platform_version}.noarch.rpm"
     download_url="${yum_source}/${filename}"
     ;;
-  "Debian")
+  "Debian"|"Raspbian")
     info "Debian platform! Lets get you a DEB..."
     case $major_version in
       "10") deb_codename="buster";;
