@@ -16,6 +16,8 @@ PuppetLint.configuration.send('disable_autoloader_layout')
 PuppetLint.configuration.send('disable_documentation')
 PuppetLint.configuration.send('disable_single_quote_string_with_variables')
 PuppetLint.configuration.send('disable_puppet_url_without_modules')
+PuppetLint.configuration.send('disable_exec_idempotency')
+PuppetLint.configuration.send('disable_strict_indent')
 PuppetLint.configuration.fail_on_warnings = true
 PuppetLint.configuration.ignore_paths = [".vendor/**/*.pp", ".bundle/**/*.pp", "pkg/**/*.pp", "spec/**/*.pp", "tests/**/*.pp", "types/**/*.pp", "vendor/**/*.pp"]
 

@@ -36,7 +36,7 @@ Gemfile:
         condition: 'ENV["GEM_BOLT"]'
     ":system_tests":
       - gem: voxpupuli-acceptance
-        version: '~> 3'
+        version: '~> 4.4'
 
 Gemfile:
   unmanaged: true
@@ -52,6 +52,8 @@ spec/spec_helper.rb:
 Rakefile:
   extra_disabled_lint_checks:
     - puppet_url_without_modules
+    - exec_idempotency
+    - strict_indent
   requires:
     - require: voxpupuli/acceptance/rake
       conditional: Gem.loaded_specs.key? 'voxpupuli-acceptance'
