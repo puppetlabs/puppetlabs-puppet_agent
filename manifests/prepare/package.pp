@@ -51,7 +51,7 @@ class puppet_agent::prepare::package (
         '-NoProfile',
         '-NoLogo',
         '-NonInteractive',
-        $_download_puppet
+        $_download_puppet,
       ],
       creates => $local_package_file_path,
       require => File[$puppet_agent::params::local_packages_dir],
