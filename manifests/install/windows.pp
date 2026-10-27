@@ -83,7 +83,7 @@ class puppet_agent::install::windows (
   }
 
 # lint:ignore:top_scope_facts
-  exec { 'prerequisites_check.ps1':
+  exec { 'prerequisites_check.ps1': # lint:ignore:exec_idempotency
     command => "${facts['os']['windows']['system32']}\\WindowsPowerShell\\v1.0\\powershell.exe \
                   -ExecutionPolicy Bypass \
                   -NoProfile \

@@ -22,7 +22,7 @@ class puppet_agent::install::suse (
     $_provider = 'rpm'
     $_source = "${puppet_agent::params::local_packages_dir}/${puppet_agent::prepare::package::package_file_name}"
 
-    exec { 'GPG check the RPM file':
+    exec { 'GPG check the RPM file': # lint:ignore:exec_idempotency
       path      => '/bin:/usr/bin:/sbin:/usr/sbin',
       command   => "rpm -K ${_source}",
       require   => File[$_source],

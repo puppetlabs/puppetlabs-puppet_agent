@@ -10,5 +10,7 @@ on:
 
 jobs:
   static_code_analysis:
-    uses: "puppetlabs/phoenix-github-actions/.github/workflows/static_code_analysis.yaml@main"
+    uses: "puppetlabs/phoenix-github-actions/.github/workflows/static_code_analysis.yaml@PA-9451/main/puppet9-ruby4"
+    with:
+      ruby_version: '4.0'
     secrets: inherit

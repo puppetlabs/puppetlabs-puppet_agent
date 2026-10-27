@@ -43,7 +43,7 @@ class puppet_agent::install::solaris (
         mode    => '0755',
         content => template('puppet_agent/do_install.sh.erb'),
       }
-      -> exec { 'solaris_install script':
+      -> exec { 'solaris_install script': # lint:ignore:exec_idempotency
         command => "/usr/bin/ctrun -l none ${_installsh} ${facts['puppet_agent_pid']} 2>&1 > ${_logfile} &",
       }
     }

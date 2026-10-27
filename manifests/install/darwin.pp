@@ -27,7 +27,7 @@ class puppet_agent::install::darwin (
     mode    => '0755',
     content => template('puppet_agent/do_install.sh.erb'),
   }
-  -> exec { 'osx_install script':
+  -> exec { 'osx_install script': # lint:ignore:exec_idempotency
     command => "${_installsh} ${facts['puppet_agent_pid']} 2>&1 > ${_logfile} &",
   }
 }
