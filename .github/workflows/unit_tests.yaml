@@ -12,11 +12,11 @@ jobs:
   Nightly:
     uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_nightly_puppet_gem.yaml@main"
     with:
-      puppet_versions: '["9"]'
+      puppet_versions: '["8", "9"]'
     secrets: inherit
   
   Released:
     uses: "puppetlabs/phoenix-github-actions/.github/workflows/unit_tests_with_released_puppet_gem.yaml@main"
     with:
-      puppet_versions: '["9"]'
+      puppet_versions: '["8", "9"]'
     secrets: inherit
