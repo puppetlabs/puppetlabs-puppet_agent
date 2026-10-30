@@ -56,30 +56,6 @@ describe 'puppet_agent' do
     }
   end
 
-  context 'with a user specified source' do
-    let(:facts) do
-      common_facts.merge({
-                           architecture: 'PowerPC_POWER8',
-                           platform_tag: 'aix-6.1-power',
-                         })
-    end
-    let(:params) do
-      {
-        package_version: '6.10.100.1',
-        collection: 'puppet6',
-        source: 'https://fake-pe-master.com',
-      }
-    end
-
-    before(:each) do
-      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2000.0.0' }
-    end
-
-    it {
-      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-6.10.100.1-1.aix6.1.ppc.rpm').with_source('https://fake-pe-master.com/packages/2000.0.0/aix-6.1-power/puppet-agent-6.10.100.1-1.aix6.1.ppc.rpm')
-    }
-  end
-
   context 'with a user specified source for puppet 7' do
     let(:facts) do
       common_facts.merge({
@@ -128,36 +104,52 @@ describe 'puppet_agent' do
     }
   end
 
-  context 'with a puppet6 collection' do
-    context 'with versions up to 6.19.1' do
-      let(:params) do
-        {
-          package_version: '6.0.0',
-          collection: 'puppet6',
-        }
-      end
-
-      [['7.2', '6.1', '8'], ['7.1', '6.1', '8'], ['7.1', '6.1', '7'], ['6.1', '6.1', '7']].each do |aixver, pkg_aixver, powerver|
-        context "aix #{aixver}" do
-          include_examples 'aix', aixver, pkg_aixver, powerver
-        end
-      end
+  context 'with a user specified source for puppet 9' do
+    let(:facts) do
+      common_facts.merge({
+                           architecture: 'PowerPC_POWER8',
+                           platform_tag: 'aix-7.3-power',
+                         })
+    end
+    let(:params) do
+      {
+        package_version: '9.1.1',
+        collection: 'puppet9',
+        source: 'https://fake-pe-master.com',
+      }
     end
 
-    context 'with versions higher than 6.19.1' do
-      let(:params) do
-        {
-          package_version: '6.20.0',
-          collection: 'puppet6',
-        }
-      end
-
-      [['7.2', '7.1', '8'], ['7.1', '7.1', '8'], ['7.1', '7.1', '7'], ['6.1', '7.1', '7']].each do |aixver, pkg_aixver, powerver|
-        context "aix #{aixver}" do
-          include_examples 'aix', aixver, pkg_aixver, powerver
-        end
-      end
+    before(:each) do
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2026.0.0' }
     end
+
+    it {
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-9.1.1-1.aix7.2.ppc.rpm').with_source('https://fake-pe-master.com/packages/2026.0.0/aix-power/puppet-agent-9.1.1-1.aix7.2.ppc.rpm')
+    }
+  end
+
+  context 'with an alternate_pe_source for puppet 9' do
+    let(:facts) do
+      common_facts.merge({
+                           architecture: 'PowerPC_POWER8',
+                           platform_tag: 'aix-7.3-power',
+                         })
+    end
+    let(:params) do
+      {
+        package_version: '9.1.1',
+        collection: 'puppet9',
+        alternate_pe_source: 'https://fake-alternate-source.com',
+      }
+    end
+
+    before(:each) do
+      Puppet::Parser::Functions.newfunction(:pe_build_version, type: :rvalue) { |_args| '2026.0.0' }
+    end
+
+    it {
+      is_expected.to contain_file('/opt/puppetlabs/packages/puppet-agent-9.1.1-1.aix7.2.ppc.rpm').with_source('https://fake-alternate-source.com/packages/2026.0.0/aix-power/puppet-agent-9.1.1-1.aix7.2.ppc.rpm')
+    }
   end
 
   context 'with a puppet7 collection' do
@@ -177,16 +169,16 @@ describe 'puppet_agent' do
     end
   end
 
-  context 'with a puppet8 collection' do
-    context 'with versions greater than or equal to 8.0.0' do
+  [['puppet8', '8.0.0'], ['puppet9', '9.1.1'], ['puppet10', '10.0.0']].each do |collection, package_version|
+    context "with a #{collection} collection" do
       let(:params) do
         {
-          package_version: '8.0.0',
-          collection: 'puppet8',
+          package_version: package_version,
+          collection: collection,
         }
       end
 
-      [['7.2', '7.2', '7']].each do |aixver, pkg_aixver, powerver|
+      [['7.2', '7.2', '8'], ['7.3', '7.2', '9']].each do |aixver, pkg_aixver, powerver|
         context "aix #{aixver}" do
           include_examples 'aix', aixver, pkg_aixver, powerver
         end
@@ -224,8 +216,8 @@ describe 'puppet_agent' do
   context 'unsupported environments' do
     let(:params) do
       {
-        package_version: '6.0.0',
-        collection: 'puppet6'
+        package_version: '8.0.0',
+        collection: 'puppet8'
       }
     end
 
