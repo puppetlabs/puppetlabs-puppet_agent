@@ -42,7 +42,8 @@ group :development do
   gem "json", '= 2.6.3',                                                                     require: false if Gem::Requirement.create(['>= 3.2.0', '< 4.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "racc", '~> 1.4.0',                                                                    require: false if Gem::Requirement.create(['>= 2.7.0', '< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "deep_merge", '~> 1.2.2',                                                              require: false
-  gem "voxpupuli-puppet-lint-plugins", '~> 5.0',                                             require: false
+  gem "voxpupuli-puppet-lint-plugins", '~> 5.0',                                             require: false if Gem::Requirement.create('< 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "voxpupuli-puppet-lint-plugins", '~> 7.0',                                             require: false if Gem::Requirement.create('>= 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "facterdb", '~> 2.1',                                                                  require: false if Gem::Requirement.create(['< 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "facterdb", '~> 3.0',                                                                  require: false if Gem::Requirement.create(['>= 3.0.0']).satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
   gem "metadata-json-lint", '~> 4.0',                                                        require: false
@@ -77,17 +78,21 @@ group :development do
   gem "beaker-task_helper", '~> 1.9',                                                        require: false if ENV["GEM_BOLT"]
 end
 group :development, :release_prep do
-  gem "puppet-strings", '~> 4.0',         require: false
-  gem "puppetlabs_spec_helper", '~> 8.0', require: false
-  gem "puppet-blacksmith", '~> 7.0',      require: false
+  gem "puppet-strings", '>= 4.0', '< 6.0',     require: false
+  gem "puppetlabs_spec_helper", '~> 8.0',      require: false if Gem::Requirement.create('< 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "puppetlabs_spec_helper", '~> 9.0',      require: false if Gem::Requirement.create('>= 3.2.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "puppet-blacksmith", '>= 7.0', '< 10.0', require: false
 end
 # We are overriding the default PDK template's Litmus logic in order to use the
-# latest Bolt in tests. See PA-7824.
+# latest Bolt in tests. See PA-7824. Litmus is skipped on Windows because Bolt
+# requires minitar < 1, which conflicts with the Windows Puppet 9 gem's
+# minitar ~> 1.0, and acceptance tests don't run on Windows.
 group :system_tests do
-  gem "puppet_litmus", '~> 2.0',      require: false, platforms: [:ruby, :x64_mingw]
+  gem "puppet_litmus", '~> 2.0',      require: false unless Gem.win_platform?
   gem "CFPropertyList", '< 3.0.7',    require: false, platforms: [:mswin, :mingw, :x64_mingw]
   gem "serverspec", '~> 2.41',        require: false
-  gem "voxpupuli-acceptance", '~> 3', require: false
+  gem "voxpupuli-acceptance", '~> 3', require: false if Gem::Requirement.create('< 4.0.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
+  gem "voxpupuli-acceptance", '~> 4', require: false if Gem::Requirement.create('>= 4.0.0').satisfied_by?(Gem::Version.new(RUBY_VERSION.dup))
 end
 
 gems = {}

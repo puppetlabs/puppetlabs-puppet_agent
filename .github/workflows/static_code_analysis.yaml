@@ -11,4 +11,6 @@ on:
 jobs:
   static_code_analysis:
     uses: "puppetlabs/phoenix-github-actions/.github/workflows/static_code_analysis.yaml@main"
+    with:
+      ruby_version: '4.0'
     secrets: inherit

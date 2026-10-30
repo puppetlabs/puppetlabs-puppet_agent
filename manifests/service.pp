@@ -18,7 +18,7 @@ class puppet_agent::service {
       source => 'puppet:///modules/puppet_agent/solaris_start_puppet.sh',
       mode   => '0755',
     }
-    -> exec { 'solaris_start_puppet.sh':
+    -> exec { 'solaris_start_puppet.sh': # lint:ignore:exec_idempotency
       command => "${facts['env_temp_variable']}/solaris_start_puppet.sh ${facts['puppet_agent_pid']} ${_service_names_arg} 2>&1 > ${_logfile} &",
       path    => '/usr/bin:/bin:/usr/sbin',
     }
