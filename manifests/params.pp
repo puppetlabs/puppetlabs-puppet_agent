@@ -62,9 +62,13 @@ class puppet_agent::params {
     elsif versioncmp($_pe_version, '2023.3') < 0 {
       $collection = 'puppet7'
     }
-    # pe_version >= 2023.3, use puppet8
-    else {
+    # 2023.3 <= pe_version < 2026.0, use puppet8
+    elsif versioncmp($_pe_version, '2026.0') < 0 {
       $collection = 'puppet8'
+    }
+    # pe_version >= 2026.0, use puppet9
+    else {
+      $collection = 'puppet9'
     }
   } else {
     $_pe_version = undef
