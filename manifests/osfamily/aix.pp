@@ -25,12 +25,13 @@ class puppet_agent::osfamily::aix {
   #     * AIX version 7.3 < aix-7.2-power package
   #
   # The following will update the aix_ver_number variable to identify which package to install based
-  # on the puppet collection. Collections older than puppet7 are no longer supported and fall back to
-  # the aix-7.1-power package.
+  # on the puppet-agent version being installed. The version, rather than the collection, determines
+  # the package, so every collection name (puppetN, puppetcoreN, puppetN-nightly, puppet) is handled
+  # the same way. Versions older than 7 are no longer supported and fall back to the aix-7.1-power
+  # package.
   $_aix_ver_number = regsubst($facts['platform_tag'],'aix-(\d+\.\d+)-power','\1')
   if $_aix_ver_number {
-    $_collection_match = $puppet_agent::collection.match(/^puppet(\d+)/)
-    if $_collection_match and Integer($_collection_match[1]) >= 8 {
+    if versioncmp($puppet_agent::prepare::package_version, '8.0.0') >= 0 {
       $aix_ver_number = '7.2'
     } else {
       $aix_ver_number = '7.1'

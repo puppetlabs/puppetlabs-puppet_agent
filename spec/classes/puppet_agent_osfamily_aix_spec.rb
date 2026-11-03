@@ -186,6 +186,30 @@ describe 'puppet_agent' do
     end
   end
 
+  # The package is selected by package_version, so every collection name maps the same way.
+  [
+    ['puppetcore8', '8.0.0', '7.2'],
+    ['puppetcore9', '9.1.1', '7.2'],
+    ['puppetcore9-nightly', '9.1.1.37.g1234abc', '7.2'],
+    ['puppet9-nightly', '9.1.1.37.g1234abc', '7.2'],
+    ['puppet', '9.1.1', '7.2'],
+    ['puppetcore7', '7.34.0', '7.1'],
+    ['puppet8', '7.34.0', '7.1'],
+  ].each do |collection, package_version, pkg_aixver|
+    context "with a #{collection} collection and package_version #{package_version}" do
+      let(:params) do
+        {
+          package_version: package_version,
+          collection: collection,
+        }
+      end
+
+      context 'aix 7.3' do
+        include_examples 'aix', '7.3', pkg_aixver, '9'
+      end
+    end
+  end
+
   context 'with package_version auto' do
     let(:params) do
       {
