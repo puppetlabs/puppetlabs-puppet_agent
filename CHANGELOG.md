@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.29.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.29.0) - 2026-11-04
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.28.0...v4.29.0)
+
+### Added
+
+- (MODULES-11840) Allow puppetlabs/stdlib 10.x [#839](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/839) ([imaqsood](https://github.com/imaqsood))
+
+### Other
+
+- (PA-9471) Use the AIX 7.2 package for puppet8 and later collections [#858](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/858) ([cthorn42](https://github.com/cthorn42))
+- (PA-9451) Run unit tests on Puppet 8 and Puppet 9 / Ruby 4 [#857](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/857) ([cthorn42](https://github.com/cthorn42))
+- (PA-7783) Recognize Raspbian as a Debian platform in install task [#855](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/855) ([span786](https://github.com/span786))
+- Revert dnf5 upgrade-test diagnostics added in #851 [#853](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/853) ([span786](https://github.com/span786))
+- (PA-9119) Diagnose dnf5 metadata staleness and fix versioncmp() truthiness bug [#851](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/851) ([span786](https://github.com/span786))
+- Add puppetcore9 install support [#850](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/850) ([cthorn42](https://github.com/cthorn42))
+- (PA-8337) Mark module compatible with puppet9 [#849](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/849) ([mhashizume](https://github.com/mhashizume))
+- (PA-8998) Require a puppet9 master for the puppet8->9 upgrade test [#847](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/847) ([span786](https://github.com/span786))
+- Resolve real puppet9 package version instead of trusting convenience file [#846](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/846) ([span786](https://github.com/span786))
+- (PA-9081) Guard apt-signing sed for ubuntu-24.04/26.04 when no repo file exists [#844](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/844) ([SugatD](https://github.com/SugatD))
+- Fix apt signed-by glob to match dev-build repo filenames [#843](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/843) ([span786](https://github.com/span786))
+- (PA-8924) Remove macOS 11, 12, and 13 support [#842](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/842) ([mhashizume](https://github.com/mhashizume))
+- (PA-8275) Add ubuntu-26-aarch64 support to install task [#841](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/841) ([shubhamshinde360](https://github.com/shubhamshinde360))
+- (PE-43839) Add acceptance test for puppet8 to puppet9 agent upgrade [#838](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/838) ([span786](https://github.com/span786))
+
 ## [v4.28.0](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/v4.28.0) - 2026-05-07
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-puppet_agent/compare/v4.27.0...v4.28.0)
@@ -626,9 +651,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - (MODULES-7840) Update docs with better parameter descriptions [#372](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/372) ([mcdonaldseanp](https://github.com/mcdonaldseanp))
 - (MODULES-8348) Acceptance scaffold with beaker-puppet [#371](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/371) ([caseywilliams](https://github.com/caseywilliams))
 - (MODULES-8432) refresh PA repo if the version is not in the local cache [#366](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/366) ([mihaibuzgau](https://github.com/mihaibuzgau))
-- (PA-2282) Add developer documentation [#357](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/357) ([smcclellan](https://github.com/smcclellan))
+- (PA-2282) Add developer documentation [#357](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/357) ([scottsolowild](https://github.com/scottsolowild))
 - (PE-25223) Add OSX 10.14 to the puppet_agent_module [#355](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/355) ([sebastian-miclea](https://github.com/sebastian-miclea))
-- (PA-2282) Add Docker workflow for iterative development [#352](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/352) ([smcclellan](https://github.com/smcclellan))
+- (PA-2282) Add Docker workflow for iterative development [#352](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/352) ([scottsolowild](https://github.com/scottsolowild))
 
 ## [2.0.1](https://github.com/puppetlabs/puppetlabs-puppet_agent/tree/2.0.1) - 2019-01-17
 
@@ -726,11 +751,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - (MODULES-7167) Prepare module for 1.6.1 release [#298](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/298) ([glennsarti](https://github.com/glennsarti))
 - (MODULES-5230) Use legacy fact variables [#297](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/297) ([glennsarti](https://github.com/glennsarti))
 - (MODULES-4424) Add skip_if_unavailable to yumrepo resource [#296](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/296) ([speedofdark](https://github.com/speedofdark))
-- (MODULES-7329) Fix update failure for FIPS [#295](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/295) ([smcclellan](https://github.com/smcclellan))
+- (MODULES-7329) Fix update failure for FIPS [#295](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/295) ([scottsolowild](https://github.com/scottsolowild))
 - (PE-23722) Update metadata to add Ubuntu 18.04 [#294](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/294) ([caseywilliams](https://github.com/caseywilliams))
 - [MODULES-4195] Install AIX 6.1 RPMs on all AIX versions for puppet6 [#292](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/292) ([caseywilliams](https://github.com/caseywilliams))
 - (MODULES-7167) Prepare for 1.6.1 release [#290](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/290) ([glennsarti](https://github.com/glennsarti))
-- (MODULES-6915) Remove check for PE when calculating whether to upgrade [#289](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/289) ([smcclellan](https://github.com/smcclellan))
+- (MODULES-6915) Remove check for PE when calculating whether to upgrade [#289](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/289) ([scottsolowild](https://github.com/scottsolowild))
 - (MODULES-4271) Update Windows OSes in metadata [#288](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/288) ([glennsarti](https://github.com/glennsarti))
 - Merge 1.x into master [#287](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/287) ([branan](https://github.com/branan))
 - (MODULES-5230) Do not manage PA version on PE infra nodes [#286](https://github.com/puppetlabs/puppetlabs-puppet_agent/pull/286) ([npwalker](https://github.com/npwalker))
