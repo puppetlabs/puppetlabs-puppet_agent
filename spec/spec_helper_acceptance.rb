@@ -23,6 +23,8 @@ end
 PROJ_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 TEST_FILES = File.expand_path(File.join(File.dirname(__FILE__), 'acceptance', 'files'))
 PUPPET_COLLECTION = 'puppet7'.freeze
+# voxpupuli-acceptance >= 3.8 defaults this to openvox8; keep Puppet packages
+ENV['BEAKER_PUPPET_COLLECTION'] ||= PUPPET_COLLECTION
 
 def install_modules_on(host)
   install_ca_certs_on(host)
