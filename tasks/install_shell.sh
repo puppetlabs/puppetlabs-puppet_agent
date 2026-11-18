@@ -278,6 +278,7 @@ if [ -f "$PT__installdir/facts/tasks/bash.sh" ]; then
       "14")    platform_version="14";;
       "15")    platform_version="15";;
       "26")    platform_version="26";;
+      "27")    platform_version="27";;
       *) echo "No builds for platform: $major_version"
          exit 1
          ;;
